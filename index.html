@@ -498,7 +498,7 @@
                 }).catch(() => {
                     if (!responded) { responded = true; document.getElementById(loadingId)?.remove(); streamBotMessage(getLocalFallbackAnswer()); }
                 });
-            setTimeout(() => { if (!responded) { responded = true; document.getElementById(loadingId)?.remove(); streamBotMessage(getLocalFallbackAnswer()); } }, 2000);
+            setTimeout(() => { if (!responded) { responded = true; document.getElementById(loadingId)?.remove(); streamBotMessage(getLocalFallbackAnswer()); } }, 20000);
         }
     </script>
 </body>
