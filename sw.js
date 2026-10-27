@@ -1,5 +1,5 @@
 // Tên bộ nhớ cache (thay đổi version khi bạn cập nhật code mới để app tải lại)
-const CACHE_NAME = 'fox-lab-offline-v5';
+const CACHE_NAME = 'fox-lab-offline-v7';
 
 // Danh sách các tệp tĩnh cần lưu về máy người dùng
 const ASSETS_TO_CACHE = [
