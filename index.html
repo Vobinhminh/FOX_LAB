@@ -16,7 +16,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
     <style>
-        /* TỔNG THỂ & LAYOUT */
         html, body { margin: 0; padding: 0; width: 100%; height: 100%; background-color: #e6f7ff; font-family: 'Be Vietnam Pro', 'Inter', sans-serif; overflow: hidden; display: flex; flex-direction: column; }
         button, input, select, textarea { font-family: inherit; }
         .top-bar { display: flex; background-color: #f0f4f8; border-bottom: 3px solid #000; z-index: 10; padding: 8px; gap: 8px; align-items: stretch; }
@@ -24,7 +23,6 @@
         .settings-row { display: flex; gap: 6px; width: 100%; }
         .btn-group { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; width: 100%; }
         
-        /* NÚT & UI CƠ BẢN */
         .custom-select { padding: 6px 8px; font-size: 13px; font-weight: bold; color: #0056b3; border-radius: 6px; border: 1px solid #ccc; background-color: #fff; width: 100%; cursor: pointer; box-shadow: inset 0 1px 2px rgba(0,0,0,0.1); }
         .qr-panel { display: flex; flex-direction: column; align-items: center; justify-content: center; background: #fff; border: 1px solid #ccc; border-radius: 6px; padding: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); width: 94px; flex-shrink: 0; }
         .qr-panel img { width: 65px; height: 65px; border: 1px solid #eee; }
@@ -40,16 +38,13 @@
         #saveButton { background-color: #17a2b8; }
         #fullscreenButton { background-color: #6c757d; }
         
-        /* BẢNG THÔNG BÁO (INFO PANEL) */
         .info-panel { font-weight: 600; font-size: 13.5px; color: #d93025; background: #fff; padding: 7px 12px; border-radius: 6px; border: 1px solid #ccc; width: 100%; text-align: center; box-sizing: border-box; display: block; min-height: 34px; }
         .info-badge { display: inline-block; padding: 1px 7px; margin: 0 4px; border-radius: 4px; background-color: rgba(40,167,69,0.15); color: #1e7e34; border: 1px solid rgba(40,167,69,0.35); }
         .channel-tag-a { display: inline-block; padding: 1px 7px; margin: 0 3px; border-radius: 4px; color: #dc3545; background-color: rgba(220,53,69,0.12); }
         .channel-tag-b { display: inline-block; padding: 1px 7px; margin: 0 3px; border-radius: 4px; color: #0d6efd; background-color: rgba(13,110,253,0.12); }
         
-        /* CANVAS OSCILLOSCOPE */
         canvas { flex-grow: 1; width: 100%; height: 0; display: block; cursor: crosshair; touch-action: none; }
 
-        /* DROPDOWN SETTINGS */
         .settings-dropdown { position: relative; flex: 1; }
         .settings-dropdown-toggle { padding: 6px 8px; font-size: 13px; font-weight: bold; color: #0056b3; border-radius: 6px; border: 1px solid #ccc; background-color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: space-between; user-select: none; }
         .settings-dropdown-menu { display: none; position: absolute; top: 100%; left: 0; min-width: 280px; z-index: 200; background: #fff; border: 1px solid #bbb; border-radius: 6px; box-shadow: 0 4px 16px rgba(0,0,0,0.18); }
@@ -60,28 +55,13 @@
         .settings-item { padding: 8px 14px 8px 24px; font-size: 13px; color: #0056b3; cursor: pointer; border-bottom: 1px solid #f0f0f0; display: flex; align-items: center; justify-content: space-between; }
         .settings-item.active { background-color: #cce5ff; font-weight: 700; }
         
-        /* RESPONSIVE */
         @media (max-width: 800px) { .top-bar { padding: 0; gap: 0; } .controls-wrapper { padding: 8px; } .qr-panel { display: none; } .btn-group { grid-template-columns: repeat(3, 1fr); } }
         @media (max-width: 500px) { .btn-group { grid-template-columns: 1fr 1fr; } #fullscreenButton { grid-column: span 2; } .settings-row { flex-direction: column; } }
 
-        /* ==========================================================
-           FOX-LAB AI CHATBOT WIDGET
-           ========================================================== */
-        :root {
-            --fox-font: 'Be Vietnam Pro', 'Inter', sans-serif;
-            --fox-font-mono: 'JetBrains Mono', monospace;
-            --fox-primary: #f97316;
-            --fox-cyan: #38bdf8;
-            --fox-bg-glass: rgba(15, 23, 42, 0.94);
-            --fox-surface-elevated: rgba(30, 41, 59, 0.85);
-            --fox-border-subtle: rgba(255, 255, 255, 0.08);
-            --fox-text-secondary: #94a3b8;
-            --fox-text-muted: #64748b;
-        }
-
+        /* WIDGET CHATBOT */
+        :root { --fox-font: 'Be Vietnam Pro', 'Inter', sans-serif; --fox-font-mono: 'JetBrains Mono', monospace; --fox-primary: #f97316; --fox-cyan: #38bdf8; --fox-bg-glass: rgba(15, 23, 42, 0.94); --fox-surface-elevated: rgba(30, 41, 59, 0.85); --fox-border-subtle: rgba(255, 255, 255, 0.08); --fox-text-secondary: #94a3b8; --fox-text-muted: #64748b; }
         #fox-chat-widget { position: fixed; bottom: 24px; right: 24px; z-index: 99999; font-family: var(--fox-font); user-select: none; }
         
-        /* NÚT TRIGGER */
         .fox-trigger-wrapper { position: relative; display: flex; align-items: center; justify-content: center; }
         .fox-ping-ring { position: absolute; width: 100%; height: 100%; border-radius: 50%; background: rgba(249,115,22,0.4); animation: foxPulsePing 3s infinite; pointer-events: none; }
         @keyframes foxPulsePing { 0% { transform: scale(0.95); opacity: 0.8; } 70%, 100% { transform: scale(1.65); opacity: 0; } }
@@ -94,13 +74,12 @@
         #fox-chat-widget.open .fox-ping-ring, #fox-chat-widget.open .fox-trigger-fox-icon { display: none; }
         #fox-chat-widget.open .fox-trigger-close-icon { display: flex; transform: rotate(90deg); }
 
-        /* KHUNG CHAT WINDOW */
         #fox-chat-box { position: absolute; bottom: 72px; right: 0; width: 380px; height: 560px; max-height: calc(100vh - 110px); max-width: calc(100vw - 32px); background: var(--fox-bg-glass); backdrop-filter: blur(24px); border: 1px solid var(--fox-border-subtle); border-radius: 20px; box-shadow: 0 24px 60px -10px rgba(0,0,0,0.7); display: flex; flex-direction: column; overflow: hidden; transform-origin: bottom right; transform: scale(0.9) translateY(20px); opacity: 0; visibility: hidden; transition: 0.32s; z-index: 10; pointer-events: none; }
         #fox-chat-widget.open #fox-chat-box { transform: scale(1) translateY(0); opacity: 1; visibility: visible; pointer-events: auto; }
         
         .fox-chat-header { padding: 12px 16px; background: rgba(30,41,59,0.65); border-bottom: 1px solid var(--fox-border-subtle); display: flex; align-items: center; justify-content: space-between; }
         .fox-header-left { display: flex; align-items: center; gap: 10px; }
-        .fox-avatar-container { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, rgba(249,115,22,0.22), rgba(56,189,248,0.12)); border: 1px solid rgba(249,115,22,0.45); display: flex; align-items: center; justify-content: center; padding: 2px; }
+        .fox-avatar-container { width: 36px; height: 36px; border-radius: 8px; border: 1px solid rgba(249,115,22,0.45); display: flex; align-items: center; justify-content: center; overflow: hidden; }
         .fox-header-title { font-size: 14.5px; font-weight: 700; color: #f8fafc; display: flex; align-items: center; gap: 6px; }
         .fox-header-badge { font-size: 9.5px; font-weight: 700; padding: 1.5px 6px; border-radius: 10px; background: rgba(249,115,22,0.2); color: #ff9d66; }
         .fox-header-status { font-size: 11px; color: var(--fox-text-secondary); display: flex; align-items: center; gap: 5px; }
@@ -109,7 +88,6 @@
         .fox-header-actions button { width: 30px; height: 30px; border-radius: 8px; background: transparent; color: var(--fox-text-secondary); display: flex; align-items: center; justify-content: center; padding: 0; box-shadow: none; }
         .fox-header-actions button:hover { background: rgba(255,255,255,0.1); color: #f8fafc; }
 
-        /* VÙNG TIN NHẮN */
         #fox-chat-content { flex: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; scroll-behavior: smooth; user-select: text; }
         #fox-chat-content::-webkit-scrollbar { width: 5px; }
         #fox-chat-content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
@@ -119,18 +97,16 @@
         .fox-msg-user { justify-content: flex-end; }
         .fox-msg-bot { justify-content: flex-start; }
         
-        .fox-msg-avatar { width: 28px; height: 28px; border-radius: 8px; background: rgba(30,41,59,0.9); border: 1px solid rgba(249,115,22,0.35); display: flex; align-items: center; justify-content: center; flex-shrink: 0; padding: 2px; }
+        .fox-msg-avatar { width: 28px; height: 28px; border-radius: 6px; border: 1px solid rgba(249,115,22,0.35); display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; background: #000; }
         .fox-msg-bubble { position: relative; padding: 11px 15px; border-radius: 16px; font-size: 13.5px; line-height: 1.6; word-wrap: break-word; max-width: 85%; }
         .fox-msg-user .fox-msg-bubble { background: linear-gradient(135deg, #f97316, #ea580c); color: #ffffff; border-bottom-right-radius: 4px; }
         .fox-msg-bot .fox-msg-bubble { background: var(--fox-surface-elevated); color: #f1f5f9; border: 1px solid var(--fox-border-subtle); border-top-left-radius: 4px; }
         .fox-msg-bot .fox-msg-bubble strong { color: #38bdf8; font-weight: 600; }
         
-        /* STYLE CHO NÚT COPY MỚI */
         .fox-copy-btn { margin-top: 6px; display: flex; align-items: center; gap: 4px; font-size: 11px; background: rgba(255,255,255,0.05); color: #94a3b8; border: 1px solid rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 6px; cursor: pointer; transition: 0.2s; float: right; width: fit-content; box-shadow: none;}
         .fox-copy-btn:hover { background: rgba(255,255,255,0.15); color: #f8fafc; }
         .fox-copy-btn svg { width: 12px; height: 12px; }
         
-        /* HIỆU ỨNG STREAMING / THINKING */
         .fox-math { font-family: var(--fox-font-mono); font-style: italic; color: #38bdf8; background: rgba(56,189,248,0.12); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
         .fox-cursor { display: inline-block; width: 7px; height: 14px; background: var(--fox-cyan); border-radius: 1px; margin-left: 3px; vertical-align: -2px; animation: foxCursorPulse 0.8s infinite; }
         @keyframes foxCursorPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.1; } }
@@ -141,7 +117,6 @@
         .fox-wave-bar:nth-child(3) { height: 8px; animation-delay: 0.3s; } .fox-wave-bar:nth-child(4) { height: 16px; animation-delay: 0.45s; }
         @keyframes foxWavePulse { 0%, 100% { transform: scaleY(0.4); } 50% { transform: scaleY(1.2); } }
 
-        /* KHUNG NHẬP TEXT */
         .fox-suggestions-bar { padding: 8px 16px 4px; display: flex; gap: 6px; overflow-x: auto; flex-shrink: 0; scrollbar-width: none; }
         .fox-suggestions-bar::-webkit-scrollbar { display: none; }
         .fox-chip { background: rgba(30,41,59,0.7); border: 1px solid rgba(255,255,255,0.1); color: #cbd5e1; font-size: 12px; padding: 6px 12px; border-radius: 14px; cursor: pointer; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; width: auto; box-shadow: none;}
@@ -209,42 +184,11 @@
 
     <canvas id="oscilloscope"></canvas>
 
-    <!-- SVG ASSETS CHO FOX-LAB AI -->
-    <svg style="display:none;" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-            <linearGradient id="foxAmberGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff7a30"/><stop offset="100%" stop-color="#e04006"/></linearGradient>
-            <linearGradient id="foxAmberDark" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#d4380d"/><stop offset="100%" stop-color="#9a2503"/></linearGradient>
-            <linearGradient id="foxSteel" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1e293b"/><stop offset="100%" stop-color="#0f172a"/></linearGradient>
-            <linearGradient id="foxBeam" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#00f2fe"/><stop offset="50%" stop-color="#38bdf8"/><stop offset="100%" stop-color="#00f2fe"/></linearGradient>
-            <symbol id="foxCyberIcon" viewBox="0 0 100 100">
-                <polygon points="22,12 10,48 36,40" fill="url(#foxAmberGrad)"/>
-                <polygon points="23,19 16,44 32,38" fill="url(#foxSteel)"/>
-                <polygon points="78,12 64,40 90,48" fill="url(#foxAmberGrad)"/>
-                <polygon points="77,19 68,38 84,44" fill="url(#foxSteel)"/>
-                <polygon points="50,22 36,40 50,46" fill="#ff8f4a"/>
-                <polygon points="50,22 50,46 64,40" fill="url(#foxAmberGrad)"/>
-                <polygon points="36,40 10,48 20,68 38,58" fill="url(#foxAmberDark)"/>
-                <polygon points="64,40 38,58 50,46" fill="#e04006"/>
-                <polygon points="64,40 50,46 62,58" fill="#d4380d"/>
-                <polygon points="64,40 90,48 80,68 62,58" fill="url(#foxAmberDark)"/>
-                <polygon points="38,58 50,46 50,78 36,68" fill="#ff7a30"/>
-                <polygon points="62,58 50,46 50,78 64,68" fill="#e04006"/>
-                <polygon points="50,78 36,68 44,88 50,88" fill="#f8fafc"/>
-                <polygon points="50,78 64,68 56,88 50,88" fill="#e2e8f0"/>
-                <polygon points="50,88 45,82 55,82" fill="#0f172a"/>
-                <circle cx="50" cy="84" r="1.3" fill="#38bdf8"/>
-                <polygon points="25,48 50,54 75,48 71,59 50,65 29,59" fill="#090d16" stroke="rgba(56,189,248,0.5)" stroke-width="0.9"/>
-                <path d="M 27 54 Q 32 46, 37 54 T 47 54 T 57 54 T 67 54 L 73 54" fill="none" stroke="url(#foxBeam)" stroke-width="2"/>
-            </symbol>
-        </defs>
-    </svg>
-
-    <!-- WIDGET CHATBOT FOX-LAB -->
     <div id="fox-chat-widget">
         <div class="fox-trigger-wrapper">
             <div class="fox-ping-ring"></div>
             <button id="fox-chat-trigger" onclick="toggleChat()">
-                <span class="fox-trigger-icon fox-trigger-fox-icon"><svg viewBox="0 0 100 100"><use href="#foxCyberIcon"/></svg></span>
+                <span class="fox-trigger-icon fox-trigger-fox-icon"><img src="./icon-512.png" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;"></span>
                 <span class="fox-trigger-icon fox-trigger-close-icon"><svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span>
             </button>
         </div>
@@ -252,7 +196,7 @@
         <div id="fox-chat-box">
             <div class="fox-chat-header">
                 <div class="fox-header-left">
-                    <div class="fox-avatar-container"><svg viewBox="0 0 100 100"><use href="#foxCyberIcon"/></svg></div>
+                    <div class="fox-avatar-container"><img src="./icon-512.png" style="width: 100%; height: 100%; object-fit: cover;"></div>
                     <div>
                         <div class="fox-header-title">FOX-Lab AI <span class="fox-header-badge">VẬT LÝ 11</span></div>
                         <div class="fox-header-status"><span class="fox-status-dot"></span><span id="foxStatusText">Trực tuyến • Sóng âm</span></div>
@@ -266,7 +210,7 @@
 
             <div id="fox-chat-content">
                 <div class="fox-msg-row fox-msg-bot">
-                    <div class="fox-msg-avatar"><svg viewBox="0 0 100 100"><use href="#foxCyberIcon"/></svg></div>
+                    <div class="fox-msg-avatar"><img src="./icon-512.png" style="width: 100%; height: 100%; object-fit: cover;"></div>
                     <div class="fox-msg-bubble">Chào em! Thầy là <strong>FOX-Lab AI</strong>. Em có thể hỏi thầy bất kỳ kiến thức nào về biên độ, chu kỳ và tần số sóng âm nhé!</div>
                 </div>
             </div>
@@ -289,9 +233,8 @@
         </div>
     </div>
 
-    <!-- CODE LOGIC XỬ LÝ -->
+    <!-- CODE LOGIC -->
     <script>
-        // Các biến Oscilloscope
         const qrImage = document.getElementById('qrImage');
         const channelModeSelect = document.getElementById('channelModeSelect'), modeSelect = document.getElementById('modeSelect'), speedSelect = document.getElementById('speedSelect');
         const micSelectA = document.getElementById('micSelectA'), micSelectB = document.getElementById('micSelectB');
@@ -311,7 +254,6 @@
             resizeCanvas();
         });
 
-        // Xử lý UI Settings
         settingsToggle.addEventListener('click', e => { e.stopPropagation(); settingsDropdown.classList.toggle('open'); });
         document.addEventListener('click', e => { if (!settingsDropdown.contains(e.target)) settingsDropdown.classList.remove('open'); });
         settingsMenu.querySelectorAll('.settings-group-header').forEach(h => h.addEventListener('click', e => { e.stopPropagation(); const g = h.parentElement; settingsMenu.querySelectorAll('.settings-group').forEach(grp => { if (grp !== g) grp.classList.remove('expanded'); }); g.classList.toggle('expanded'); }));
@@ -339,7 +281,6 @@
 
         function resizeCanvas() { const dpr = window.devicePixelRatio || 1; canvas.width = (canvas.clientWidth || window.innerWidth) * dpr; canvas.height = (canvas.clientHeight || window.innerHeight - 160) * dpr; canvasCtx.setTransform(dpr, 0, 0, dpr, 0, 0); drawFrame(); }
         window.addEventListener('resize', resizeCanvas);
-
         canvas.addEventListener('wheel', e => { e.preventDefault(); if (!isPaused) return; isUserZoomed = true; if (e.deltaY > 0) { totalTimeOnScreen *= 1.1; currentZoomY /= 1.1; } else { totalTimeOnScreen /= 1.1; currentZoomY *= 1.1; } totalTimeOnScreen = Math.max(0.002, Math.min(totalTimeOnScreen, 2.4)); currentZoomY = Math.max(0.5, Math.min(currentZoomY, 10.0)); if (isPaused) drawFrame(); }, { passive: false });
         fullscreenButton.addEventListener('click', () => { let elem = document.documentElement; if (!document.fullscreenElement) elem.requestFullscreen().catch(()=>{}); else document.exitFullscreen(); });
         document.addEventListener('fullscreenchange', () => fullscreenButton.textContent = document.fullscreenElement ? "Thu nhỏ" : "Toàn màn hình");
@@ -381,8 +322,6 @@
         resetButton.addEventListener('click', () => { isPaused = true; clearTimeout(stopTimer); pauseButton.textContent = "Đo / Dừng"; pauseButton.style.backgroundColor = "#28a745"; stopAudioChannel('A'); stopAudioChannel('B'); channelModeSelect.value = "1"; modeSelect.value = "auto"; isContinuousMode = false; speedSelect.style.display = 'none'; resetSettingsDropdown(); isUserZoomed = false; updateUIState(); drawFrame(true); });
         saveButton.addEventListener('click', () => { const a = document.createElement('a'); a.download = `DoThi_SongAm.png`; a.href = canvas.toDataURL('image/png'); a.click(); });
 
-        function drawLabelWithPill(text, x, y, align = 'center', baseline = 'top') { canvasCtx.save(); canvasCtx.font = '600 13px "Segoe UI"'; canvasCtx.textAlign = align; canvasCtx.textBaseline = baseline; const w = canvasCtx.measureText(text).width; let bx = x - 4, by = y - 2; if (align === 'center') bx = x - w/2 - 4; else if (align === 'right') bx = x - w - 4; if (baseline === 'middle') by = y - 7; canvasCtx.fillStyle = 'rgba(230, 247, 255, 0.88)'; canvasCtx.fillRect(bx, by, w + 8, 18); canvasCtx.fillStyle = '#000'; canvasCtx.fillText(text, x, y); canvasCtx.restore(); }
-
         function drawFrame(isReset = false) {
             const w = canvas.clientWidth || canvas.width, h = canvas.clientHeight || canvas.height; canvasCtx.fillStyle = '#e6f7ff'; canvasCtx.fillRect(0, 0, w, h);
             if (!audioCtx && isReset) return;
@@ -392,7 +331,6 @@
             canvasCtx.strokeStyle = '#000'; canvasCtx.lineWidth = 2; canvasCtx.beginPath(); canvasCtx.moveTo(0, h/2); canvasCtx.lineTo(w, h/2); canvasCtx.moveTo(w/2, 0); canvasCtx.lineTo(w/2, h); canvasCtx.stroke();
             if (!isUserZoomed) totalTimeOnScreen = Math.max(0.002, Math.min(5 * (1.0 / (lockedFrequency > 0 ? lockedFrequency : 440)), 2.4));
             
-            // Vẽ đồ thị thật nhanh nếu có dữ liệu (lược bớt code chi tiết đồ thị để gọn gàng theo yêu cầu)
             if (audioCtx && !isReset) {
                 ['A', 'B'].forEach(ch => {
                     const cfg = channelConfig[ch]; if (getActiveChannelMode() === '1' && ch === 'B') return;
@@ -411,7 +349,7 @@
         function draw() { if (isPaused) return; requestAnimationFrame(draw); drawFrame(); }
 
         // ==========================================================
-        // TÍCH HỢP CHATBOT AI VỚI LINK API MỚI & NÚT COPY
+        // TÍCH HỢP CHATBOT AI VỚI LINK API MỚI & NÚT COPY & LOGO CHUẨN
         // ==========================================================
         const GAS_URL = "https://script.google.com/macros/s/AKfycbzzzTeqKILrcAtipJHeFId-3o5W88P8JAO1GBRheU3eOXgwJAbtH_-rOL98coiGNPCsfw/exec";
         let isStreaming = false;
@@ -431,37 +369,34 @@
         function updateSendButtonState() { foxSendBtn.disabled = foxChatInput.value.trim().length === 0 || isStreaming; }
         if (foxChatInput) { foxChatInput.addEventListener("input", updateSendButtonState); foxChatInput.addEventListener("keypress", e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendChatMessage(); } }); }
         function quickAsk(q) { if (!isStreaming) { foxChatInput.value = q; updateSendButtonState(); sendChatMessage(); } }
-        function clearChatHistory() { if (isStreaming) return; document.getElementById("fox-chat-content").innerHTML = `<div class="fox-msg-row fox-msg-bot"><div class="fox-msg-avatar"><svg viewBox="0 0 100 100"><use href="#foxCyberIcon"/></svg></div><div class="fox-msg-bubble">Thầy FOX-Lab đã làm mới cuộc trò chuyện. Em có câu hỏi nào không?</div></div>`; }
+        
+        function clearChatHistory() { 
+            if (isStreaming) return; 
+            document.getElementById("fox-chat-content").innerHTML = `<div class="fox-msg-row fox-msg-bot"><div class="fox-msg-avatar"><img src="./icon-512.png" style="width:100%;height:100%;object-fit:cover;"></div><div class="fox-msg-bubble">Thầy FOX-Lab đã làm mới cuộc trò chuyện. Em có câu hỏi nào không?</div></div>`; 
+        }
 
         function showThinkingIndicator() {
             const chatContent = document.getElementById("fox-chat-content"), id = "think-" + Date.now();
-            chatContent.insertAdjacentHTML('beforeend', `<div class="fox-msg-row fox-msg-bot" id="${id}"><div class="fox-msg-avatar"><svg viewBox="0 0 100 100"><use href="#foxCyberIcon"/></svg></div><div class="fox-msg-bubble"><div class="fox-wave-equalizer"><span class="fox-wave-bar"></span><span class="fox-wave-bar"></span><span class="fox-wave-bar"></span></div></div></div>`);
+            chatContent.insertAdjacentHTML('beforeend', `<div class="fox-msg-row fox-msg-bot" id="${id}"><div class="fox-msg-avatar"><img src="./icon-512.png" style="width:100%;height:100%;object-fit:cover;"></div><div class="fox-msg-bubble"><div class="fox-wave-equalizer"><span class="fox-wave-bar"></span><span class="fox-wave-bar"></span><span class="fox-wave-bar"></span></div></div></div>`);
             chatContent.scrollTop = chatContent.scrollHeight; return id;
         }
 
-        // Tạo nút Copy và chèn vào Bubble AI
         function createCopyButton(textToCopy) {
-            const btn = document.createElement("button");
-            btn.className = "fox-copy-btn";
+            const btn = document.createElement("button"); btn.className = "fox-copy-btn";
             btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Copy`;
             btn.onclick = () => {
                 navigator.clipboard.writeText(textToCopy).then(() => {
-                    btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg> Đã chép`;
-                    btn.style.color = "#22c55e";
-                    setTimeout(() => {
-                        btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Copy`;
-                        btn.style.color = "#94a3b8";
-                    }, 2500);
+                    btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg> Đã chép`; btn.style.color = "#22c55e";
+                    setTimeout(() => { btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Copy`; btn.style.color = "#94a3b8"; }, 2500);
                 });
-            };
-            return btn;
+            }; return btn;
         }
 
         function streamBotMessage(fullText) {
             isStreaming = true; updateSendButtonState();
             const chatContent = document.getElementById("fox-chat-content");
             const row = document.createElement("div"); row.className = "fox-msg-row fox-msg-bot";
-            row.innerHTML = `<div class="fox-msg-avatar"><svg viewBox="0 0 100 100"><use href="#foxCyberIcon"/></svg></div>`;
+            row.innerHTML = `<div class="fox-msg-avatar"><img src="./icon-512.png" style="width:100%;height:100%;object-fit:cover;"></div>`;
             const bubble = document.createElement("div"); bubble.className = "fox-msg-bubble";
             const textSpan = document.createElement("span"), cursor = document.createElement("span"); cursor.className = "fox-cursor";
             bubble.appendChild(textSpan); bubble.appendChild(cursor); row.appendChild(bubble); chatContent.appendChild(row);
@@ -473,9 +408,7 @@
                     chatContent.scrollTop = chatContent.scrollHeight; setTimeout(typeToken, 18);
                 } else {
                     cursor.remove(); isStreaming = false; updateSendButtonState();
-                    // Thêm nút Copy xịn xò vào tin nhắn của AI
-                    bubble.appendChild(createCopyButton(fullText));
-                    chatContent.scrollTop = chatContent.scrollHeight;
+                    bubble.appendChild(createCopyButton(fullText)); chatContent.scrollTop = chatContent.scrollHeight;
                 }
             }
             typeToken();
@@ -494,12 +427,17 @@
             fetch(`${GAS_URL}?action=chat&message=${encodeURIComponent(`[Tần số: ${lockedFrequency.toFixed(1)} Hz] \nHS hỏi: ` + msg)}`)
                 .then(r => r.text())
                 .then(text => {
-                    if (!responded) { responded = true; document.getElementById(loadingId)?.remove(); (text && text.trim().length > 0 && !text.includes("Error")) ? streamBotMessage(text) : streamBotMessage(getLocalFallbackAnswer()); }
+                    if (!responded) { responded = true; document.getElementById(loadingId)?.remove(); (text && text.trim().length > 0 && !text.includes("Error") && !text.includes("html")) ? streamBotMessage(text) : streamBotMessage(getLocalFallbackAnswer()); }
                 }).catch(() => {
                     if (!responded) { responded = true; document.getElementById(loadingId)?.remove(); streamBotMessage(getLocalFallbackAnswer()); }
                 });
+            
+            // Đã đổi Timeout thành 20000ms (20 giây) để AI có đủ thời gian phản hồi
             setTimeout(() => { if (!responded) { responded = true; document.getElementById(loadingId)?.remove(); streamBotMessage(getLocalFallbackAnswer()); } }, 20000);
         }
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(()=>{}); }); }
     </script>
 </body>
 </html>
