@@ -184,8 +184,8 @@
 
     <canvas id="oscilloscope"></canvas>
 
-    <!-- TRẢ LẠI SVG CON CÁO CỰC NGẦU CHO BẠN Ở ĐÂY -->
-    <svg style="display:none;" xmlns="http://www.w3.org/2000/svg">
+    <!-- SVG CON CÁO CỰC NGẦU (Đã fix lỗi mất màu trên iOS/Safari) -->
+    <svg aria-hidden="true" style="position: absolute; width: 0; height: 0; overflow: hidden;" version="1.1" xmlns="http://www.w3.org/2000/svg">
         <defs>
             <linearGradient id="foxAmberGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff7a30"/><stop offset="100%" stop-color="#e04006"/></linearGradient>
             <linearGradient id="foxAmberDark" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#d4380d"/><stop offset="100%" stop-color="#9a2503"/></linearGradient>
@@ -379,7 +379,7 @@
         function draw() { if (isPaused) return; requestAnimationFrame(draw); drawFrame(); }
 
         // ==========================================================
-        // TÍCH HỢP CHATBOT AI VỚI LINK API MỚI & NÚT COPY
+        // TÍCH HỢP CHATBOT AI VỚI LINK API MỚI CỦA BẠN
         // ==========================================================
         const GAS_URL = "https://script.google.com/macros/s/AKfycbyX_0CGrpId37bQwoWjCvJ5NkforieJC4rJNe7lTRHFdo8WiZCp6KTO3LiHHBanKj79Tg/exec";
         let isStreaming = false;
@@ -462,7 +462,7 @@
                     if (!responded) { responded = true; document.getElementById(loadingId)?.remove(); streamBotMessage(getLocalFallbackAnswer()); }
                 });
             
-            // Thời gian chờ AI lên đến 20 giây
+            // Thời gian chờ AI lên đến 20 giây (20000ms)
             setTimeout(() => { if (!responded) { responded = true; document.getElementById(loadingId)?.remove(); streamBotMessage(getLocalFallbackAnswer()); } }, 20000);
         }
     </script>
