@@ -1373,7 +1373,7 @@
             const qrImage = document.getElementById('qrImage');
             if (qrImage) {
                 let currentUrl = window.location.href;
-                if (currentUrl.startsWith('file://')) currentUrl = 'https://github.com/TenCuaThay/DaoDongKy';
+                if (currentUrl.startsWith('file://')) currentUrl = 'https://github.com/TenCuaThay/FOX_LAB';
                 qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(currentUrl)}`;
             }
             resizeCanvas();
@@ -2121,6 +2121,7 @@
         // TRỢ LÝ ẢO THÔNG MINH FOX-LAB AI (CHATGPT STREAMING SPEC)
         // ==========================================================
         const GAS_URL = "https://script.google.com/macros/s/AKfycbyX_0CGrpId37bQwoWjCvJ5NkforieJC4rJNe7lTRHFdo8WiZCp6KTO3LiHHBanKj79Tg/exec";
+        
         let isStreaming = false;
 
         function toggleChat() {
@@ -2315,15 +2316,20 @@
             }
         }
 
-        // Gửi câu hỏi đến Trợ lý AI
+        // ==========================================================
+        // Gửi câu hỏi đến Trợ lý AI (Đã tối ưu kết nối với Google Apps Script)
+        // ==========================================================
         function sendChatMessage() {
             if (isStreaming) return;
             const inputElem = document.getElementById("fox-chat-input");
             const message = inputElem.value.trim();
             if (!message) return;
 
+            // Lấy thông số tần số thực tế trên dao động ký để nạp vào prompt cho AI
             const freqVal = (typeof lockedFrequency !== 'undefined' && lockedFrequency > 0) ? lockedFrequency.toFixed(1) + " Hz" : ((typeof detectedFrequency !== 'undefined' && detectedFrequency > 0) ? detectedFrequency.toFixed(1) + " Hz" : "440.0 Hz");
             const thongTinHeThong = `[THÔNG SỐ THỜI GIAN THỰC DAO ĐỘNG KÝ: Tần số đo = ${freqVal}]`;
+            
+            // Nối thông số và câu hỏi để AI có bối cảnh
             const messageToAI = thongTinHeThong + "\nCâu hỏi của HS: " + message;
 
             const chatContent = document.getElementById("fox-chat-content");
@@ -2334,49 +2340,56 @@
             userRow.innerHTML = `<div class="fox-msg-bubble">${formatFoxMarkdown(message)}</div>`;
             chatContent.appendChild(userRow);
 
+            // Reset ô nhập liệu
             inputElem.value = "";
             updateSendButtonState();
             chatContent.scrollTop = chatContent.scrollHeight;
 
-            // Hiển thị trạng thái đang phân tích âm thanh
+            // Hiển thị trạng thái đang phân tích âm thanh (Loading)
             const loadingId = showThinkingIndicator();
             let isResponded = false;
 
-            // Timeout dự phòng 4 giây
+            // Timeout dự phòng được TĂNG LÊN 15 GIÂY (Vì AI Gemini + Ghi Sheet mất khoảng 4-8s)
             const timer = setTimeout(() => {
                 if (!isResponded) {
                     isResponded = true;
                     const loadingEl = document.getElementById(loadingId);
                     if (loadingEl) loadingEl.remove();
-
+                    // Nếu quá 15s AI không trả lời kịp, dùng kiến thức dự phòng có sẵn
                     streamBotMessage(getLocalFallbackAnswer(message));
                 }
-            }, 4000);
+            }, 15000);
 
-            // Gửi tới Google Apps Script API
-            fetch(`${GAS_URL}?action=chat&message=${encodeURIComponent(messageToAI)}`, { method: 'GET', mode: 'cors' })
-                .then(res => res.text())
-                .then(text => {
+            // Fetch tới Google Apps Script (Nhớ thay thế GAS_URL bằng link mới xuất bản)
+            fetch(`${GAS_URL}?action=chat&message=${encodeURIComponent(messageToAI)}`)
+                .then(res => {
+                    if (!res.ok) throw new Error("Network response was not ok");
+                    return res.json(); // Backend trả về JSON nên Frontend dùng res.json()
+                })
+                .then(data => {
                     if (!isResponded) {
                         isResponded = true;
                         clearTimeout(timer);
                         const loadingEl = document.getElementById(loadingId);
                         if (loadingEl) loadingEl.remove();
 
-                        if (text && !text.includes("high demand") && !text.includes("Error") && text.trim().length > 0) {
-                            streamBotMessage(text);
+                        // Kiểm tra status từ JSON trả về
+                        if (data && data.status === "success" && data.reply && data.reply.trim().length > 0) {
+                            streamBotMessage(data.reply); // Chạy hiệu ứng gõ phím từ nội dung AI
                         } else {
+                            // Nếu JSON báo lỗi (status: error), dùng fallback
                             streamBotMessage(getLocalFallbackAnswer(message));
                         }
                     }
                 })
                 .catch(err => {
+                    // Lỗi mạng hoặc server sập
                     if (!isResponded) {
                         isResponded = true;
                         clearTimeout(timer);
                         const loadingEl = document.getElementById(loadingId);
                         if (loadingEl) loadingEl.remove();
-
+                        console.error("Lỗi kết nối AI:", err);
                         streamBotMessage(getLocalFallbackAnswer(message));
                     }
                 });
