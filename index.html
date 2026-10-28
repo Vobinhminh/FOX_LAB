@@ -392,8 +392,7 @@
                        .replace(/\$([^$]+)\$/g, '<span class="fox-math">$1</span>')
                        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
                        .replace(/`([^`]+)`/g, '<code>$1</code>')
-                       .replace(/
-/g, '<br>');
+                       .replace(/\n/g, '<br>');
         }
 
         const foxChatInput = document.getElementById("fox-chat-input"), foxSendBtn = document.getElementById("foxSendBtn");
@@ -455,8 +454,7 @@
             foxChatInput.value = ""; updateSendButtonState(); chatContent.scrollTop = chatContent.scrollHeight;
             
             const loadingId = showThinkingIndicator(); let responded = false;
-            fetch(`${GAS_URL}?action=chat&message=${encodeURIComponent(`[Tần số: ${lockedFrequency.toFixed(1)} Hz] 
-HS hỏi: ` + msg)}`)
+            fetch(`${GAS_URL}?action=chat&message=${encodeURIComponent(`[Tần số: ${lockedFrequency.toFixed(1)} Hz] \nHS hỏi: ` + msg)}`)
                 .then(r => r.text())
                 .then(text => {
                     if (!responded) { responded = true; document.getElementById(loadingId)?.remove(); (text && text.trim().length > 0 && !text.includes("Error") && !text.includes("html")) ? streamBotMessage(text) : streamBotMessage(getLocalFallbackAnswer()); }
@@ -464,6 +462,7 @@ HS hỏi: ` + msg)}`)
                     if (!responded) { responded = true; document.getElementById(loadingId)?.remove(); streamBotMessage(getLocalFallbackAnswer()); }
                 });
             
+            // Thời gian chờ AI lên đến 20 giây (20000ms)
             setTimeout(() => { if (!responded) { responded = true; document.getElementById(loadingId)?.remove(); streamBotMessage(getLocalFallbackAnswer()); } }, 20000);
         }
     </script>
