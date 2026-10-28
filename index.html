@@ -40,6 +40,8 @@
         
         .info-panel { font-weight: 600; font-size: 13.5px; color: #d93025; background: #fff; padding: 7px 12px; border-radius: 6px; border: 1px solid #ccc; width: 100%; text-align: center; box-sizing: border-box; display: block; min-height: 34px; }
         .info-badge { display: inline-block; padding: 1px 7px; margin: 0 4px; border-radius: 4px; background-color: rgba(40,167,69,0.15); color: #1e7e34; border: 1px solid rgba(40,167,69,0.35); }
+        .channel-tag-a { display: inline-block; padding: 1px 7px; margin: 0 3px; border-radius: 4px; color: #dc3545; background-color: rgba(220,53,69,0.12); }
+        .channel-tag-b { display: inline-block; padding: 1px 7px; margin: 0 3px; border-radius: 4px; color: #0d6efd; background-color: rgba(13,110,253,0.12); }
         
         canvas { flex-grow: 1; width: 100%; height: 0; display: block; cursor: crosshair; touch-action: none; }
 
@@ -103,6 +105,7 @@
         
         .fox-copy-btn { margin-top: 6px; display: flex; align-items: center; gap: 4px; font-size: 11px; background: rgba(255,255,255,0.05); color: #94a3b8; border: 1px solid rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 6px; cursor: pointer; transition: 0.2s; float: right; width: fit-content; box-shadow: none;}
         .fox-copy-btn:hover { background: rgba(255,255,255,0.15); color: #f8fafc; }
+        .fox-copy-btn svg { width: 12px; height: 12px; }
         
         .fox-math { font-family: var(--fox-font-mono); font-style: italic; color: #38bdf8; background: rgba(56,189,248,0.12); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
         .fox-cursor { display: inline-block; width: 7px; height: 14px; background: var(--fox-cyan); border-radius: 1px; margin-left: 3px; vertical-align: -2px; animation: foxCursorPulse 0.8s infinite; }
@@ -116,11 +119,12 @@
 
         .fox-suggestions-bar { padding: 8px 16px 4px; display: flex; gap: 6px; overflow-x: auto; flex-shrink: 0; scrollbar-width: none; }
         .fox-suggestions-bar::-webkit-scrollbar { display: none; }
-        .fox-chip { background: rgba(30,41,59,0.7); border: 1px solid rgba(255,255,255,0.1); color: #cbd5e1; font-size: 12px; padding: 6px 12px; border-radius: 14px; cursor: pointer; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; width: auto; box-shadow: none;}
+        .fox-chip { background: rgba(30,41,59,0.7); border: 1px solid rgba(255,255,255,0.1); color: #cbd5e1; font-size: 12px; padding: 6px 12px; border-radius: 14px; cursor: pointer; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; width: auto; box-shadow: none; border: 1px solid rgba(255,255,255,0.1);}
         .fox-chip:hover { background: rgba(249,115,22,0.2); color: #ffedd5; }
         
         .fox-input-container { padding: 10px 14px 12px; background: rgba(15,23,42,0.95); border-top: 1px solid var(--fox-border-subtle); display: flex; flex-direction: column; gap: 6px; }
         .fox-input-box { display: flex; align-items: center; background: rgba(30,41,59,0.75); border: 1px solid rgba(255,255,255,0.12); border-radius: 22px; padding: 4px 6px 4px 14px; }
+        .fox-input-box:focus-within { border-color: var(--fox-primary); }
         #fox-chat-input { flex: 1; background: transparent; border: none; color: #f8fafc; font-size: 13.5px; outline: none; }
         .fox-send-btn { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #f97316, #ea580c); color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; border: none; padding: 0; }
         .fox-send-btn:disabled { background: rgba(255,255,255,0.1) !important; color: #64748b !important; cursor: not-allowed; }
@@ -137,19 +141,10 @@
         <div class="controls-wrapper">
             <div class="settings-row" id="settingsRow">
                 <select id="channelModeSelect" style="display:none"><option value="1" selected>1 nguồn âm</option><option value="2">2 nguồn âm</option></select>
-                <select id="modeSelect" style="display:none"><option value="auto" selected>Khảo sát tự dừng</option><option value="continuous">Khảo sát liên tục</option></select>
-                <select id="displaySelect" style="display:none"><option value="time" selected>Sóng Thời Gian</option><option value="fft">Phổ Tần Số FFT</option></select>
-                
+                <select id="modeSelect" style="display:none"><option value="auto" selected>Khảo sát tần số (Tự dừng)</option><option value="continuous">Khảo sát liên tục</option></select>
                 <div class="settings-dropdown" id="settingsDropdown">
                     <div class="settings-dropdown-toggle" id="settingsToggle"><span id="settingsLabel">Cài đặt chung</span><span class="dropdown-arrow">▼</span></div>
                     <div class="settings-dropdown-menu" id="settingsMenu">
-                        <div class="settings-group" id="groupDisplay">
-                            <div class="settings-group-header" data-group="display"><span>Kiểu đồ thị</span><span class="group-arrow">›</span></div>
-                            <div class="settings-group-items">
-                                <div class="settings-item active" data-target="displaySelect" data-value="time"><span>Sóng (Thời gian)</span><span class="item-check">✓</span></div>
-                                <div class="settings-item" data-target="displaySelect" data-value="fft"><span>Phổ Tần số (FFT)</span><span class="item-check">✓</span></div>
-                            </div>
-                        </div>
                         <div class="settings-group" id="groupChannelMode">
                             <div class="settings-group-header" data-group="channelMode"><span>Chế độ nguồn âm</span><span class="group-arrow">›</span></div>
                             <div class="settings-group-items">
@@ -183,13 +178,13 @@
             <div class="info-panel" id="infoText">Đang chờ khởi động thiết bị Micro...</div>
         </div>
         <div class="qr-panel" id="qrPanel">
-            <img id="qrImage" src="" alt="QR Code"><span class="scan-title">FOX_LAB</span>
+            <img id="qrImage" src="" alt="QR Code"><span class="scan-title">FOX_Lab</span>
         </div>
     </div>
 
     <canvas id="oscilloscope"></canvas>
 
-    <!-- SVG CON CÁO -->
+    <!-- SVG CON CÁO CỰC NGẦU (Đã fix lỗi mất màu trên iOS/Safari) -->
     <svg aria-hidden="true" style="position: absolute; width: 0; height: 0; overflow: hidden;" version="1.1" xmlns="http://www.w3.org/2000/svg">
         <defs>
             <linearGradient id="foxAmberGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff7a30"/><stop offset="100%" stop-color="#e04006"/></linearGradient>
@@ -227,6 +222,7 @@
                 <span class="fox-trigger-icon fox-trigger-close-icon"><svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span>
             </button>
         </div>
+
         <div id="fox-chat-box">
             <div class="fox-chat-header">
                 <div class="fox-header-left">
@@ -241,17 +237,20 @@
                     <button onclick="toggleChat()"><svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
                 </div>
             </div>
+
             <div id="fox-chat-content">
                 <div class="fox-msg-row fox-msg-bot">
                     <div class="fox-msg-avatar"><svg viewBox="0 0 100 100" fill="none" style="width:100%;height:100%;"><use href="#foxCyberIcon"/></svg></div>
-                    <div class="fox-msg-bubble">Chào em! Thầy là <strong>FOX-Lab AI</strong>. Chế độ Phân tích Phổ FFT đã được kích hoạt, em có thể khảo sát sự giao thoa và âm sắc nhạc cụ rồi nhé!</div>
+                    <div class="fox-msg-bubble">Chào em! Thầy là <strong>FOX-Lab AI</strong>. Em có thể hỏi thầy bất kỳ kiến thức nào về biên độ, chu kỳ và tần số sóng âm nhé!</div>
                 </div>
             </div>
+
             <div class="fox-suggestions-bar">
-                <button class="fox-chip" onclick="quickAsk('Phổ FFT là gì?')"><span>Phổ FFT là gì?</span></button>
-                <button class="fox-chip" onclick="quickAsk('Họa âm là gì?')"><span>Họa âm là gì?</span></button>
-                <button class="fox-chip" onclick="quickAsk('Tần số đo hiện tại?')"><span>Đo tần số</span></button>
+                <button class="fox-chip" onclick="quickAsk('Tần số đo hiện tại là bao nhiêu Hz?')"><span>Tần số đo hiện tại?</span></button>
+                <button class="fox-chip" onclick="quickAsk('Dao động ký dùng để làm gì?')"><span>Dao động ký là gì?</span></button>
+                <button class="fox-chip" onclick="quickAsk('Cách khóa sóng và tự dừng khảo sát?')"><span>Cách khóa sóng?</span></button>
             </div>
+
             <div class="fox-input-container">
                 <div class="fox-input-box">
                     <input type="text" id="fox-chat-input" placeholder="Hỏi FOX-Lab về dao động ký..." autocomplete="off">
@@ -267,22 +266,17 @@
     <!-- CODE LOGIC -->
     <script>
         const qrImage = document.getElementById('qrImage');
-        const channelModeSelect = document.getElementById('channelModeSelect'), modeSelect = document.getElementById('modeSelect'), speedSelect = document.getElementById('speedSelect'), displaySelect = document.getElementById('displaySelect');
+        const channelModeSelect = document.getElementById('channelModeSelect'), modeSelect = document.getElementById('modeSelect'), speedSelect = document.getElementById('speedSelect');
         const micSelectA = document.getElementById('micSelectA'), micSelectB = document.getElementById('micSelectB');
         const btnStartA = document.getElementById('btnStartA'), btnStartB = document.getElementById('btnStartB');
         const pauseButton = document.getElementById('pauseButton'), resetButton = document.getElementById('resetButton'), saveButton = document.getElementById('saveButton'), fullscreenButton = document.getElementById('fullscreenButton');
         const infoText = document.getElementById('infoText'), canvas = document.getElementById('oscilloscope'), canvasCtx = canvas.getContext('2d');
-        const settingsDropdown = document.getElementById('settingsDropdown'), settingsToggle = document.getElementById('settingsToggle'), settingsMenu = document.getElementById('settingsMenu');
+        const settingsDropdown = document.getElementById('settingsDropdown'), settingsToggle = document.getElementById('settingsToggle'), settingsMenu = document.getElementById('settingsMenu'), settingsLabel = document.getElementById('settingsLabel');
 
-        let audioCtx, isPaused = true, isContinuousMode = false, stopTimer, lockedFrequency = 440, isUserZoomed = false;
-        let totalTimeOnScreen = 5 * (1.0 / 440), currentZoomY = 2.0;
+        let audioCtx, isPaused = true, isContinuousMode = false, stopTimer, detectedFrequency = 0, lockedFrequency = 440, lastCorrelateTime = 0, isUserZoomed = false;
+        let totalTimeOnScreen = 5 * (1.0 / 440), currentZoomY = 2.0, targetFPS = 60, lastDrawTime = performance.now();
         const BUFFER_SECONDS = 10;
-        
-        // Cấu hình Channel đã bổ sung thêm analyser và fftData cho tính năng FFT
-        const channelConfig = { 
-            A: { stream: null, source: null, processor: null, analyser: null, active: false, index: 0, data: null, fftData: null, color: '#dc3545' }, 
-            B: { stream: null, source: null, processor: null, analyser: null, active: false, index: 0, data: null, fftData: null, color: '#0d6efd' } 
-        };
+        const channelConfig = { A: { stream: null, source: null, processor: null, active: false, index: 0, data: null, color: '#dc3545' }, B: { stream: null, source: null, processor: null, active: false, index: 0, data: null, color: '#0d6efd' } };
         let sampleRate = 48000;
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -299,24 +293,16 @@
         }));
 
         function resetSettingsDropdown() {
-            settingsMenu.querySelectorAll('.settings-item').forEach(s => { const val = s.dataset.value; (val === '1' || val === 'auto' || val === 'time') ? s.classList.add('active') : s.classList.remove('active'); });
+            settingsMenu.querySelectorAll('.settings-item').forEach(s => { const val = s.dataset.value; (val === '1' || val === 'auto') ? s.classList.add('active') : s.classList.remove('active'); });
             settingsMenu.querySelectorAll('.settings-group').forEach(g => g.classList.remove('expanded')); settingsDropdown.classList.remove('open');
         }
 
         function getActiveChannelMode() { return channelModeSelect.value || '1'; }
-        
-        function stopAudioChannel(chId) { 
-            const cfg = channelConfig[chId]; if (!cfg) return; 
-            if (cfg.stream) cfg.stream.getTracks().forEach(t => t.stop()); 
-            if (cfg.source) cfg.source.disconnect(); 
-            if (cfg.processor) cfg.processor.disconnect(); 
-            if (cfg.analyser) cfg.analyser.disconnect();
-            cfg.active = false; cfg.index = 0; cfg.analyser = null;
-        }
+        function stopAudioChannel(chId) { const cfg = channelConfig[chId]; if (!cfg) return; if (cfg.stream) cfg.stream.getTracks().forEach(t => t.stop()); if (cfg.source) cfg.source.disconnect(); if (cfg.processor) cfg.processor.disconnect(); cfg.active = false; cfg.index = 0; }
 
-        modeSelect.addEventListener('change', e => { isContinuousMode = e.target.value === 'continuous'; clearTimeout(stopTimer); speedSelect.style.display = isContinuousMode ? 'block' : 'none'; if (!isContinuousMode && !isPaused) triggerAutoStop(); });
+        speedSelect.addEventListener('change', e => targetFPS = e.target.value === 'slow' ? 15 : 60);
+        modeSelect.addEventListener('change', e => { isContinuousMode = e.target.value === 'continuous'; clearTimeout(stopTimer); speedSelect.style.display = isContinuousMode ? 'block' : 'none'; targetFPS = isContinuousMode ? (speedSelect.value === 'slow' ? 15 : 60) : 60; if (!isContinuousMode && !isPaused) triggerAutoStop(); });
         channelModeSelect.addEventListener('change', () => { if (getActiveChannelMode() === '1') { stopAudioChannel('B'); } updateUIState(); drawFrame(); });
-        displaySelect.addEventListener('change', () => { drawFrame(); }); // Cập nhật ngay khi đổi kiểu đồ thị
 
         btnStartA.addEventListener('click', async () => { channelConfig.A.active ? (stopAudioChannel('A'), updateUIState(), drawFrame()) : await initAudioChannel('A', micSelectA.value); });
         btnStartB.addEventListener('click', async () => { channelConfig.B.active ? (stopAudioChannel('B'), updateUIState(), drawFrame()) : await initAudioChannel('B', micSelectB.value); });
@@ -325,13 +311,7 @@
 
         function resizeCanvas() { const dpr = window.devicePixelRatio || 1; canvas.width = (canvas.clientWidth || window.innerWidth) * dpr; canvas.height = (canvas.clientHeight || window.innerHeight - 160) * dpr; canvasCtx.setTransform(dpr, 0, 0, dpr, 0, 0); drawFrame(); }
         window.addEventListener('resize', resizeCanvas);
-        
-        canvas.addEventListener('wheel', e => { 
-            e.preventDefault(); if (!isPaused) return; isUserZoomed = true; 
-            if (e.deltaY > 0) { totalTimeOnScreen *= 1.1; currentZoomY /= 1.1; } else { totalTimeOnScreen /= 1.1; currentZoomY *= 1.1; } 
-            totalTimeOnScreen = Math.max(0.002, Math.min(totalTimeOnScreen, 2.4)); currentZoomY = Math.max(0.5, Math.min(currentZoomY, 10.0)); if (isPaused) drawFrame(); 
-        }, { passive: false });
-        
+        canvas.addEventListener('wheel', e => { e.preventDefault(); if (!isPaused) return; isUserZoomed = true; if (e.deltaY > 0) { totalTimeOnScreen *= 1.1; currentZoomY /= 1.1; } else { totalTimeOnScreen /= 1.1; currentZoomY *= 1.1; } totalTimeOnScreen = Math.max(0.002, Math.min(totalTimeOnScreen, 2.4)); currentZoomY = Math.max(0.5, Math.min(currentZoomY, 10.0)); if (isPaused) drawFrame(); }, { passive: false });
         fullscreenButton.addEventListener('click', () => { let elem = document.documentElement; if (!document.fullscreenElement) elem.requestFullscreen().catch(()=>{}); else document.exitFullscreen(); });
         document.addEventListener('fullscreenchange', () => fullscreenButton.textContent = document.fullscreenElement ? "Thu nhỏ" : "Toàn màn hình");
 
@@ -354,107 +334,44 @@
             const cfg = channelConfig[chId]; stopAudioChannel(chId);
             try {
                 cfg.stream = await navigator.mediaDevices.getUserMedia({ audio: devId ? { deviceId: { exact: devId } } : true });
-                cfg.source = audioCtx.createMediaStreamSource(cfg.stream); 
-                
-                // Khởi tạo AnalyserNode cho tính toán FFT
-                cfg.analyser = audioCtx.createAnalyser();
-                cfg.analyser.fftSize = 4096; // Độ phân giải FFT cao
-                cfg.fftData = new Uint8Array(cfg.analyser.frequencyBinCount);
-                cfg.source.connect(cfg.analyser);
-
-                // Khởi tạo ProcessorNode cho Đồ thị thời gian
-                cfg.processor = audioCtx.createScriptProcessor(4096, 1, 1);
+                cfg.source = audioCtx.createMediaStreamSource(cfg.stream); cfg.processor = audioCtx.createScriptProcessor(4096, 1, 1);
                 cfg.processor.onaudioprocess = e => { if (!isPaused && cfg.active) { let input = e.inputBuffer.getChannelData(0); for (let i = 0; i < input.length; i++) { cfg.data[cfg.index % cfg.data.length] = input[i]; cfg.index++; } } };
-                cfg.source.connect(cfg.processor); cfg.processor.connect(audioCtx.destination); 
-                
-                cfg.active = true;
+                cfg.source.connect(cfg.processor); cfg.processor.connect(audioCtx.destination); cfg.active = true;
                 if (micSelectA.options.length <= 1) await populateMics();
                 updateUIState(); if (isPaused) drawFrame();
             } catch (err) { alert(`Không thể truy cập Micro ở Kênh ${chId}.`); }
         }
 
-        function triggerAutoStop() { clearTimeout(stopTimer); if (!isPaused && !isContinuousMode) stopTimer = setTimeout(() => { isPaused = true; pauseButton.textContent = "Đo / Dừng"; pauseButton.style.backgroundColor = "#28a745"; infoText.innerHTML = "Đã quét xong. Ấn <span class='info-badge'>Đo / Dừng</span> để xem kết quả FFT hoặc Sóng"; drawFrame(); }, 2000); }
+        function triggerAutoStop() { clearTimeout(stopTimer); if (!isPaused && !isContinuousMode) stopTimer = setTimeout(() => { isPaused = true; pauseButton.textContent = "Đo / Dừng"; pauseButton.style.backgroundColor = "#28a745"; infoText.innerHTML = "Đã quét xong. Ấn <span class='info-badge'>Đo / Dừng</span> để tiếp tục"; drawFrame(); }, 2000); }
         
         pauseButton.addEventListener('click', () => {
             if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
-            if (isPaused) { isPaused = false; channelConfig.A.index = channelConfig.B.index = 0; isUserZoomed = false; pauseButton.textContent = "Đang đo..."; pauseButton.style.backgroundColor = "#dc3545"; draw(); triggerAutoStop(); }
+            if (isPaused) { isPaused = false; channelConfig.A.index = channelConfig.B.index = 0; isUserZoomed = false; pauseButton.textContent = "Đang đo..."; pauseButton.style.backgroundColor = "#dc3545"; lastDrawTime = performance.now(); draw(); triggerAutoStop(); }
             else { isPaused = true; clearTimeout(stopTimer); pauseButton.textContent = "Đo / Dừng"; pauseButton.style.backgroundColor = "#28a745"; drawFrame(); }
         });
-        
-        resetButton.addEventListener('click', () => { isPaused = true; clearTimeout(stopTimer); pauseButton.textContent = "Đo / Dừng"; pauseButton.style.backgroundColor = "#28a745"; stopAudioChannel('A'); stopAudioChannel('B'); channelModeSelect.value = "1"; modeSelect.value = "auto"; displaySelect.value = "time"; isContinuousMode = false; speedSelect.style.display = 'none'; resetSettingsDropdown(); isUserZoomed = false; updateUIState(); drawFrame(true); });
-        saveButton.addEventListener('click', () => { const a = document.createElement('a'); a.download = `DoThi_FOX_Lab.png`; a.href = canvas.toDataURL('image/png'); a.click(); });
+        resetButton.addEventListener('click', () => { isPaused = true; clearTimeout(stopTimer); pauseButton.textContent = "Đo / Dừng"; pauseButton.style.backgroundColor = "#28a745"; stopAudioChannel('A'); stopAudioChannel('B'); channelModeSelect.value = "1"; modeSelect.value = "auto"; isContinuousMode = false; speedSelect.style.display = 'none'; resetSettingsDropdown(); isUserZoomed = false; updateUIState(); drawFrame(true); });
+        saveButton.addEventListener('click', () => { const a = document.createElement('a'); a.download = `DoThi_SongAm.png`; a.href = canvas.toDataURL('image/png'); a.click(); });
 
         function drawFrame(isReset = false) {
-            const w = canvas.clientWidth || canvas.width, h = canvas.clientHeight || canvas.height; 
-            canvasCtx.fillStyle = '#e6f7ff'; canvasCtx.fillRect(0, 0, w, h);
+            const w = canvas.clientWidth || canvas.width, h = canvas.clientHeight || canvas.height; canvasCtx.fillStyle = '#e6f7ff'; canvasCtx.fillRect(0, 0, w, h);
             if (!audioCtx && isReset) return;
-            
-            const isFFT = (displaySelect.value === 'fft');
-
-            // Vẽ lưới đồ thị cơ bản
             canvasCtx.strokeStyle = '#b3e0ff'; canvasCtx.lineWidth = 1; canvasCtx.beginPath();
             for (let i = 0; i <= 10; i++) { canvasCtx.moveTo(i * (w/10), 0); canvasCtx.lineTo(i * (w/10), h); }
             for (let i = 0; i <= 8; i++) { canvasCtx.moveTo(0, i * (h/8)); canvasCtx.lineTo(w, i * (h/8)); } canvasCtx.stroke();
-            
-            // Vẽ trục tọa độ
-            if (!isFFT) {
-                // Trục của Đồ thị thời gian
-                canvasCtx.strokeStyle = '#000'; canvasCtx.lineWidth = 2; canvasCtx.beginPath(); canvasCtx.moveTo(0, h/2); canvasCtx.lineTo(w, h/2); canvasCtx.moveTo(w/2, 0); canvasCtx.lineTo(w/2, h); canvasCtx.stroke();
-            } else {
-                // Trục ngang và nhãn tần số cho Đồ thị FFT
-                canvasCtx.strokeStyle = '#000'; canvasCtx.lineWidth = 2; canvasCtx.beginPath(); canvasCtx.moveTo(0, h); canvasCtx.lineTo(w, h); canvasCtx.stroke(); 
-                canvasCtx.fillStyle = '#0056b3'; canvasCtx.font = 'bold 11px Inter, sans-serif'; canvasCtx.textAlign = 'center';
-                const targetFreq = 4000; // Giới hạn hiển thị đến 4000Hz
-                for(let f = 500; f <= targetFreq; f += 500) {
-                    const x = (f / targetFreq) * w;
-                    canvasCtx.fillText(f + 'Hz', x, h - 8);
-                    // Đường gióng mờ
-                    canvasCtx.strokeStyle = 'rgba(0,0,0,0.1)'; canvasCtx.beginPath(); canvasCtx.moveTo(x, 0); canvasCtx.lineTo(x, h); canvasCtx.stroke();
-                }
-            }
-
+            canvasCtx.strokeStyle = '#000'; canvasCtx.lineWidth = 2; canvasCtx.beginPath(); canvasCtx.moveTo(0, h/2); canvasCtx.lineTo(w, h/2); canvasCtx.moveTo(w/2, 0); canvasCtx.lineTo(w/2, h); canvasCtx.stroke();
             if (!isUserZoomed) totalTimeOnScreen = Math.max(0.002, Math.min(5 * (1.0 / (lockedFrequency > 0 ? lockedFrequency : 440)), 2.4));
             
             if (audioCtx && !isReset) {
                 ['A', 'B'].forEach(ch => {
                     const cfg = channelConfig[ch]; if (getActiveChannelMode() === '1' && ch === 'B') return;
-                    if (cfg.active) {
-                        if (!isFFT && cfg.index > 0 && cfg.data) {
-                            // VẼ ĐỒ THỊ THỜI GIAN
-                            const len = cfg.data.length, step = Math.max(1, Math.floor((totalTimeOnScreen * sampleRate)/(w*2)));
-                            canvasCtx.strokeStyle = cfg.color; canvasCtx.lineWidth = 2; canvasCtx.beginPath();
-                            for (let i = 0, x = 0; x < w && i < len; i += step, x += w/(totalTimeOnScreen * sampleRate)*step) {
-                                let y = (cfg.data[((cfg.index - Math.floor(totalTimeOnScreen * sampleRate) + i) % len + len) % len] * -1.0) * currentZoomY * (h/2) + (h/2);
-                                x === 0 ? canvasCtx.moveTo(x, y) : canvasCtx.lineTo(x, y);
-                            }
-                            canvasCtx.stroke();
-                        } else if (isFFT && cfg.analyser && cfg.fftData) {
-                            // VẼ PHỔ TẦN SỐ (FFT)
-                            if (!isPaused) cfg.analyser.getByteFrequencyData(cfg.fftData);
-                            
-                            canvasCtx.strokeStyle = cfg.color;
-                            canvasCtx.fillStyle = cfg.color + '40'; // Màu nền bán trong suốt
-                            canvasCtx.lineWidth = 2;
-                            canvasCtx.beginPath();
-                            
-                            const maxFreq = audioCtx.sampleRate / 2;
-                            const targetFreq = 4000; 
-                            const binsToShow = Math.min(cfg.fftData.length, Math.floor((targetFreq / maxFreq) * cfg.fftData.length));
-                            const sliceWidth = w / binsToShow;
-                            let x = 0;
-                            
-                            canvasCtx.moveTo(0, h);
-                            for (let i = 0; i < binsToShow; i++) {
-                                const v = cfg.fftData[i] / 255.0; 
-                                const y = h - (v * h * 0.9); // Đỉnh sóng tối đa chiếm 90% chiều cao
-                                canvasCtx.lineTo(x, y);
-                                x += sliceWidth;
-                            }
-                            canvasCtx.lineTo(x, h);
-                            canvasCtx.lineTo(0, h);
-                            canvasCtx.fill();
-                            canvasCtx.stroke();
+                    if (cfg.active && cfg.index > 0 && cfg.data) {
+                        const len = cfg.data.length, step = Math.max(1, Math.floor((totalTimeOnScreen * sampleRate)/(w*2)));
+                        canvasCtx.strokeStyle = cfg.color; canvasCtx.beginPath();
+                        for (let i = 0, x = 0; x < w && i < len; i += step, x += w/(totalTimeOnScreen * sampleRate)*step) {
+                            let y = (cfg.data[((cfg.index - Math.floor(totalTimeOnScreen * sampleRate) + i) % len + len) % len] * -1.0) * currentZoomY * (h/2) + (h/2);
+                            x === 0 ? canvasCtx.moveTo(x, y) : canvasCtx.lineTo(x, y);
                         }
+                        canvasCtx.stroke();
                     }
                 });
             }
@@ -462,12 +379,13 @@
         function draw() { if (isPaused) return; requestAnimationFrame(draw); drawFrame(); }
 
         // ==========================================================
-        // TÍCH HỢP CHATBOT AI VỚI LINK API
+        // TÍCH HỢP CHATBOT AI VỚI LINK API MỚI CỦA BẠN
         // ==========================================================
         const GAS_URL = "https://script.google.com/macros/s/AKfycbyX_0CGrpId37bQwoWjCvJ5NkforieJC4rJNe7lTRHFdo8WiZCp6KTO3LiHHBanKj79Tg/exec";
         let isStreaming = false;
 
         function toggleChat() { const widget = document.getElementById("fox-chat-widget"); if (widget.classList.toggle("open")) { setTimeout(() => document.getElementById("fox-chat-input")?.focus(), 150); } }
+        function updateFoxLiveFrequency(freq) { if (freq > 0) { const f = freq.toFixed(1) + " Hz"; document.getElementById("foxLiveFreqTag").textContent = f; document.getElementById("foxStatusText").textContent = `Trực tuyến • ${f}`; } }
         
         function formatFoxMarkdown(text) {
             return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
@@ -526,7 +444,7 @@
             typeToken();
         }
 
-        function getLocalFallbackAnswer() { return `Lỗi kết nối. Tần số thiết bị: ${lockedFrequency.toFixed(1)} Hz. Hãy ấn Gửi lại nhé!`; }
+        function getLocalFallbackAnswer() { return `Tần số đo hiện tại là ${lockedFrequency.toFixed(1)} Hz. Xin lỗi em, hệ thống AI tạm thời đang quá tải, hãy ấn Gửi lại nhé!`; }
 
         function sendChatMessage() {
             if (isStreaming) return;
@@ -536,13 +454,15 @@
             foxChatInput.value = ""; updateSendButtonState(); chatContent.scrollTop = chatContent.scrollHeight;
             
             const loadingId = showThinkingIndicator(); let responded = false;
-            fetch(`${GAS_URL}?action=chat&message=${encodeURIComponent(`[Chế độ: ${displaySelect.value.toUpperCase()} - Tần số: ${lockedFrequency.toFixed(1)} Hz] \nHS hỏi: ` + msg)}`)
+            fetch(`${GAS_URL}?action=chat&message=${encodeURIComponent(`[Tần số: ${lockedFrequency.toFixed(1)} Hz] \nHS hỏi: ` + msg)}`)
                 .then(r => r.text())
                 .then(text => {
                     if (!responded) { responded = true; document.getElementById(loadingId)?.remove(); (text && text.trim().length > 0 && !text.includes("Error") && !text.includes("html")) ? streamBotMessage(text) : streamBotMessage(getLocalFallbackAnswer()); }
                 }).catch(() => {
                     if (!responded) { responded = true; document.getElementById(loadingId)?.remove(); streamBotMessage(getLocalFallbackAnswer()); }
                 });
+            
+            // Thời gian chờ AI lên đến 20 giây (20000ms)
             setTimeout(() => { if (!responded) { responded = true; document.getElementById(loadingId)?.remove(); streamBotMessage(getLocalFallbackAnswer()); } }, 20000);
         }
     </script>
