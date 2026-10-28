@@ -19,14 +19,11 @@
         html, body { margin: 0; padding: 0; width: 100%; height: 100%; background-color: #e6f7ff; font-family: 'Be Vietnam Pro', 'Inter', sans-serif; overflow: hidden; display: flex; flex-direction: column; }
         button, input, select, textarea { font-family: inherit; }
         
-        /* TỐI ƯU KHÔNG GIAN THANH ĐIỀU KHIỂN (TOP BAR) */
         .top-bar { display: flex; background-color: #f0f4f8; border-bottom: 2px solid #ccc; z-index: 10; padding: 6px 8px; gap: 8px; align-items: stretch; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .controls-wrapper { display: flex; flex-direction: column; flex-grow: 1; gap: 6px; }
         .settings-row { display: flex; gap: 6px; width: 100%; align-items: center; }
         
-        /* LƯỚI NÚT BẤM THÔNG MINH - Tự động co giãn */
         .btn-group { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 6px; width: 100%; transition: 0.3s ease; }
-        
         .custom-select { padding: 5px 8px; font-size: 12px; font-weight: bold; color: #0056b3; border-radius: 6px; border: 1px solid #ccc; background-color: #fff; flex: 1; cursor: pointer; box-shadow: inset 0 1px 2px rgba(0,0,0,0.05); white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }
         
         .qr-panel { display: flex; flex-direction: column; align-items: center; justify-content: center; background: #fff; border: 1px solid #ccc; border-radius: 6px; padding: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); width: 85px; flex-shrink: 0; }
@@ -59,17 +56,15 @@
         .settings-item:hover { background-color: #f1f8ff; }
         .settings-item.active { background-color: #cce5ff; font-weight: 700; }
         
-        /* BỐ CỤC SIÊU GỌN CHO ĐIỆN THOẠI */
         @media (max-width: 700px) { 
             .top-bar { padding: 6px; gap: 4px; flex-direction: column; } 
-            .qr-panel { display: none; } /* Ẩn QR trên mobile để tiết kiệm diện tích */
+            .qr-panel { display: none; } 
             .btn-group { grid-template-columns: repeat(auto-fit, minmax(70px, 1fr)); gap: 4px; }
             button { font-size: 11px; padding: 7px 2px; }
             .info-panel { font-size: 11.5px; padding: 4px; }
             .settings-row { gap: 4px; }
         }
 
-        /* WIDGET CHATBOT AI */
         :root { --fox-font: 'Be Vietnam Pro', 'Inter', sans-serif; --fox-font-mono: 'JetBrains Mono', monospace; --fox-primary: #f97316; --fox-cyan: #38bdf8; --fox-bg-glass: rgba(15, 23, 42, 0.94); --fox-surface-elevated: rgba(30, 41, 59, 0.85); --fox-border-subtle: rgba(255, 255, 255, 0.08); --fox-text-secondary: #94a3b8; --fox-text-muted: #64748b; }
         #fox-chat-widget { position: fixed; bottom: 20px; right: 20px; z-index: 99999; font-family: var(--fox-font); user-select: none; }
         
@@ -148,7 +143,6 @@
 <body>
     <div class="top-bar">
         <div class="controls-wrapper">
-            <!-- HÀNG 1: Menu Cài đặt & Chọn Nguồn Micro -->
             <div class="settings-row" id="micSetupRow">
                 <div class="settings-dropdown" id="settingsDropdown">
                     <div class="settings-dropdown-toggle" id="settingsToggle"><span id="settingsLabel">⚙️ Cài đặt</span><span class="dropdown-arrow">▼</span></div>
@@ -182,11 +176,9 @@
                 <select id="displaySelect" style="display:none"><option value="time" selected>Thời gian</option><option value="fft">FFT</option></select>
                 
                 <select id="micSelectA" class="custom-select" style="border-color: #dc3545; color: #dc3545;"><option value="">-- K. A: Tải --</option></select>
-                <!-- Nguồn B sẽ được ẨN ĐI hoàn toàn bằng JavaScript khi ở chế độ 1 nguồn âm -->
                 <select id="micSelectB" class="custom-select" style="border-color: #0d6efd; color: #0d6efd; display: none;"><option value="">-- K. B: Tải --</option></select>
             </div>
             
-            <!-- HÀNG 2: Các nút điều khiển động (Sẽ tự co giãn Layout lưới) -->
             <div class="btn-group" id="btnGroup">
                 <button id="btnStartA" class="channel-btn">Kênh A</button>
                 <button id="btnStartB" class="channel-btn" style="display: none;">Kênh B</button>
@@ -205,7 +197,6 @@
 
     <canvas id="oscilloscope"></canvas>
 
-    <!-- SVG CON CÁO ĐÃ ẨN -->
     <svg aria-hidden="true" style="position: absolute; width: 0; height: 0; overflow: hidden;" version="1.1" xmlns="http://www.w3.org/2000/svg">
         <defs>
             <linearGradient id="foxAmberGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff7a30"/><stop offset="100%" stop-color="#e04006"/></linearGradient>
@@ -260,7 +251,7 @@
             <div id="fox-chat-content">
                 <div class="fox-msg-row fox-msg-bot">
                     <div class="fox-msg-avatar"><svg viewBox="0 0 100 100" fill="none" style="width:100%;height:100%;"><use href="#foxCyberIcon"/></svg></div>
-                    <div class="fox-msg-bubble">Chào em! Thầy là <strong>FOX-Lab AI</strong>. Chế độ Phân tích Phổ FFT đã được kích hoạt, em có thể khảo sát sự giao thoa và âm sắc nhạc cụ rồi nhé!</div>
+                    <div class="fox-msg-bubble">Chào em! Thầy là <strong>FOX-Lab AI</strong>. Đã khôi phục đầy đủ trục tọa độ thời gian và biên độ chuẩn KHKT cho em rồi nhé!</div>
                 </div>
             </div>
             <div class="fox-suggestions-bar">
@@ -280,7 +271,6 @@
         </div>
     </div>
 
-    <!-- CODE LOGIC -->
     <script>
         const qrImage = document.getElementById('qrImage');
         const channelModeSelect = document.getElementById('channelModeSelect'), modeSelect = document.getElementById('modeSelect'), displaySelect = document.getElementById('displaySelect');
@@ -302,7 +292,7 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             if (qrImage) qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(window.location.href.startsWith('file') ? 'https://github.com/TenCuaThay/DaoDongKy' : window.location.href)}`;
-            updateUIState(); // Khởi tạo layout lưới ban đầu
+            updateUIState();
             resizeCanvas();
         });
 
@@ -332,7 +322,6 @@
 
         modeSelect.addEventListener('change', e => { isContinuousMode = e.target.value === 'continuous'; clearTimeout(stopTimer); if (!isContinuousMode && !isPaused) triggerAutoStop(); });
         
-        // TÍNH NĂNG TỐI ƯU KHÔNG GIAN: Khi chuyển chế độ Nguồn Âm
         channelModeSelect.addEventListener('change', () => { 
             if (getActiveChannelMode() === '1') { stopAudioChannel('B'); } 
             updateUIState(); 
@@ -364,15 +353,11 @@
             audioInputs.forEach((d, i) => { micSelectA.innerHTML += `<option value="${d.deviceId}">K.A: ${d.label || 'Mic ' + (i+1)}</option>`; micSelectB.innerHTML += `<option value="${d.deviceId}">K.B: ${d.label || 'Mic ' + (i+1)}</option>`; });
         }
 
-        // TỐI ƯU HIỂN THỊ LOGIC: Tự động ẩn/hiện Box Kênh B và xếp lại lưới Button
         function updateUIState() {
             const isSingle = getActiveChannelMode() === '1';
-            
-            // 1. Ẩn/Hiện Kênh B để tiết kiệm 50% hàng 1
             micSelectB.style.display = isSingle ? 'none' : 'block';
             btnStartB.style.display = isSingle ? 'none' : 'block';
             
-            // 2. Định dạng màu sắc và Text
             btnStartA.textContent = channelConfig.A.active ? "K.A (Đang đo)" : "Kênh A"; btnStartA.style.backgroundColor = channelConfig.A.active ? "#28a745" : "#6c757d";
             btnStartB.textContent = channelConfig.B.active ? "K.B (Đang đo)" : "Kênh B"; btnStartB.style.backgroundColor = channelConfig.B.active ? "#28a745" : "#6c757d";
             
@@ -422,13 +407,40 @@
             
             const isFFT = (displaySelect.value === 'fft');
 
+            // 1. Vẽ lưới ca-rô
             canvasCtx.strokeStyle = '#b3e0ff'; canvasCtx.lineWidth = 1; canvasCtx.beginPath();
             for (let i = 0; i <= 10; i++) { canvasCtx.moveTo(i * (w/10), 0); canvasCtx.lineTo(i * (w/10), h); }
             for (let i = 0; i <= 8; i++) { canvasCtx.moveTo(0, i * (h/8)); canvasCtx.lineTo(w, i * (h/8)); } canvasCtx.stroke();
             
             if (!isFFT) {
-                canvasCtx.strokeStyle = '#000'; canvasCtx.lineWidth = 2; canvasCtx.beginPath(); canvasCtx.moveTo(0, h/2); canvasCtx.lineTo(w, h/2); canvasCtx.moveTo(w/2, 0); canvasCtx.lineTo(w/2, h); canvasCtx.stroke();
+                // 2. TRỤC TỌA ĐỘ VÀ NHÃN TRONG CHẾ ĐỘ SÓNG (THỜI GIAN)
+                canvasCtx.strokeStyle = '#333'; canvasCtx.lineWidth = 1.5; canvasCtx.beginPath(); 
+                canvasCtx.moveTo(0, h/2); canvasCtx.lineTo(w, h/2); // Trục hoành t
+                canvasCtx.moveTo(w/2, 0); canvasCtx.lineTo(w/2, h); // Trục tung A
+                canvasCtx.stroke();
+
+                // Mũi tên
+                canvasCtx.fillStyle = '#333';
+                canvasCtx.beginPath(); canvasCtx.moveTo(w - 8, h/2 - 4); canvasCtx.lineTo(w, h/2); canvasCtx.lineTo(w - 8, h/2 + 4); canvasCtx.fill();
+                canvasCtx.beginPath(); canvasCtx.moveTo(w/2 - 4, 8); canvasCtx.lineTo(w/2, 0); canvasCtx.lineTo(w/2 + 4, 8); canvasCtx.fill();
+
+                // Nhãn tên trục
+                canvasCtx.fillStyle = '#0056b3';
+                canvasCtx.font = 'bold 11px Inter, sans-serif';
+                canvasCtx.textAlign = 'right';
+                canvasCtx.fillText("t (Thời gian)", w - 12, h/2 - 6);
+                canvasCtx.textAlign = 'left';
+                canvasCtx.fillText("Biên độ (+A)", w/2 + 6, 15);
+
+                // Thông số Time/Div và Zoom Y
+                const timePerDivMs = (totalTimeOnScreen / 10) * 1000;
+                canvasCtx.font = 'bold 10.5px JetBrains Mono, monospace';
+                canvasCtx.fillStyle = '#d93025';
+                canvasCtx.fillText(`Time/Div: ${timePerDivMs < 1 ? timePerDivMs.toFixed(2) : timePerDivMs.toFixed(1)} ms`, 8, 18);
+                canvasCtx.fillText(`Zoom Y: ${currentZoomY.toFixed(1)}x`, 8, 34);
+
             } else {
+                // TRỤC TỌA ĐỘ CHẾ ĐỘ FFT
                 canvasCtx.strokeStyle = '#000'; canvasCtx.lineWidth = 2; canvasCtx.beginPath(); canvasCtx.moveTo(0, h); canvasCtx.lineTo(w, h); canvasCtx.stroke(); 
                 canvasCtx.fillStyle = '#0056b3'; canvasCtx.font = 'bold 11px Inter, sans-serif'; canvasCtx.textAlign = 'center';
                 const targetFreq = 4000; 
@@ -471,9 +483,6 @@
         }
         function draw() { if (isPaused) return; requestAnimationFrame(draw); drawFrame(); }
 
-        // ==========================================================
-        // TÍCH HỢP CHATBOT AI VỚI LINK API
-        // ==========================================================
         const GAS_URL = "https://script.google.com/macros/s/AKfycbyX_0CGrpId37bQwoWjCvJ5NkforieJC4rJNe7lTRHFdo8WiZCp6KTO3LiHHBanKj79Tg/exec";
         let isStreaming = false;
 
