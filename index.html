@@ -1176,7 +1176,7 @@
 
         <div class="qr-panel" id="qrPanel">
             <img id="qrImage" src="" alt="QR Code">
-            <span class="scan-title">Dao động ký</span>
+            <span class="scan-title">FOX-LAB</span>
         </div>
     </div>
 
@@ -1373,7 +1373,7 @@
             const qrImage = document.getElementById('qrImage');
             if (qrImage) {
                 let currentUrl = window.location.href;
-                if (currentUrl.startsWith('file://')) currentUrl = 'https://github.com/TenCuaThay/FOX_LAB';
+                if (currentUrl.startsWith('file://')) currentUrl = 'https://github.com/TenCuaThay/DaoDongKy';
                 qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(currentUrl)}`;
             }
             resizeCanvas();
@@ -2120,6 +2120,8 @@
         // ==========================================================
         // TRỢ LÝ ẢO THÔNG MINH FOX-LAB AI (CHATGPT STREAMING SPEC)
         // ==========================================================
+        
+        // Link Web App Google Apps Script của bạn
         const GAS_URL = "https://script.google.com/macros/s/AKfycbyX_0CGrpId37bQwoWjCvJ5NkforieJC4rJNe7lTRHFdo8WiZCp6KTO3LiHHBanKj79Tg/exec";
         
         let isStreaming = false;
@@ -2153,18 +2155,13 @@
                 .replace(/&/g, "&amp;")
                 .replace(/</g, "&lt;")
                 .replace(/>/g, "&gt;");
-            // Công thức Toán / Vật lý dạng $T = 1/f$ hoặc $f$
             clean = clean.replace(/\$([^$]+)\$/g, '<span class="fox-math">$1</span>');
-            // **in đậm**
             clean = clean.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-            // `code`
             clean = clean.replace(/`([^`]+)`/g, '<code>$1</code>');
-            // Xuống dòng
             clean = clean.replace(/\n/g, '<br>');
             return clean;
         }
 
-        // Kiểm soát trạng thái nút Gửi
         const foxChatInput = document.getElementById("fox-chat-input");
         const foxSendBtn = document.getElementById("foxSendBtn");
 
@@ -2184,7 +2181,6 @@
             });
         }
 
-        // Bấm chọn câu hỏi nhanh từ chip gợi ý
         function quickAsk(question) {
             if (isStreaming) return;
             if (foxChatInput) {
@@ -2194,7 +2190,6 @@
             }
         }
 
-        // Làm mới lịch sử trò chuyện
         function clearChatHistory() {
             if (isStreaming) return;
             const chatContent = document.getElementById("fox-chat-content");
@@ -2213,7 +2208,6 @@
             chatContent.scrollTop = 0;
         }
 
-        // Hiệu ứng "Đang suy nghĩ" (Thinking state) với bộ cân bằng sóng âm
         function showThinkingIndicator() {
             const chatContent = document.getElementById("fox-chat-content");
             const thinkId = "thinking-" + Date.now();
@@ -2244,7 +2238,6 @@
             return thinkId;
         }
 
-        // HIỆU ỨNG CHỮ CHẠY (TYPEWRITER STREAMING SPEC CỦA CHATGPT)
         function streamBotMessage(fullText, onComplete) {
             isStreaming = true;
             updateSendButtonState();
@@ -2272,7 +2265,6 @@
             chatContent.appendChild(row);
             chatContent.scrollTop = chatContent.scrollHeight;
 
-            // Tách từ để chữ chạy mượt mà tự nhiên như token stream
             const tokens = fullText.split(/(\s+)/);
             let idx = 0;
             let accumulated = "";
@@ -2283,8 +2275,6 @@
                     idx++;
                     textSpan.innerHTML = formatFoxMarkdown(accumulated);
                     chatContent.scrollTop = chatContent.scrollHeight;
-
-                    // Tốc độ truyền chữ ChatGPT tự nhiên (18ms mỗi từ)
                     setTimeout(typeToken, 18);
                 } else {
                     cursor.remove();
@@ -2298,7 +2288,7 @@
             typeToken();
         }
 
-        // Mô hình tri thức dự phòng chuẩn xác về Vật lý & Dao động ký
+        // Mô hình tri thức dự phòng (Đã sửa lỗi nhận diện từ khóa)
         function getLocalFallbackAnswer(query) {
             const q = query.toLowerCase();
             const curFreq = (typeof lockedFrequency !== 'undefined' && lockedFrequency > 0) ? lockedFrequency.toFixed(1) : ((typeof detectedFrequency !== 'undefined' && detectedFrequency > 0) ? detectedFrequency.toFixed(1) : "440.0");
@@ -2309,62 +2299,50 @@
                 return `**Dao động ký (Oscilloscope)** là thiết bị biểu diễn đồ thị dao động của tín hiệu điện/sóng âm theo thời gian. Nó giúp ta xác định trực quan **Biên độ** (độ lớn cực đại), **Chu kỳ** ($T$), và **Tần số** ($f$) trong các bài thực hành Vật lý 11.`;
             } else if (q.includes("khóa") || q.includes("dừng") || q.includes("auto")) {
                 return `Ở chế độ **Khảo sát tần số (Tự dừng)**, hệ thống sẽ tự động bắt đồng bộ pha và dừng sau 2 giây để đóng băng đồ thị. Em có thể dùng chuột cuộn hoặc 2 ngón tay chụm (Pinch) trên canvas để phóng to/thu nhỏ đồ thị và đếm ô lưới thời gian chính xác!`;
-            } else if (q.includes("kênh") || q.includes("channel") || q.includes("a") || q.includes("b")) {
+            } else if (q.includes("kênh a") || q.includes("kênh b") || q.includes("channel")) {
                 return `Hệ thống hỗ trợ 2 kênh đo độc lập: **Kênh A (Màu đỏ)** và **Kênh B (Màu xanh)**. Khi chọn thiết lập *2 Nguồn âm*, em có thể gắn 2 micro khác nhau để đo độ lệch pha hoặc so sánh âm sắc của 2 nguồn phát song song.`;
             } else {
-                return `Thầy FOX-Lab đã ghi nhận câu hỏi của em! Để đo sóng âm đạt kết quả tốt nhất, em hãy bật Micro (Kênh A hoặc B), bấm nút **"Đo / Dừng"**, phát âm thanh đều đặn và quan sát các vạch chia thời gian **t (ms)** trên màn hình dao động ký nhé!`;
+                return `Thầy FOX-Lab AI đang tạm thời mất kết nối với máy chủ AI. Bạn hãy kiểm tra lại đường link Google Apps Script (GAS_URL) hoặc quyền triển khai (Anyone) nhé!`;
             }
         }
 
-        // ==========================================================
-        // Gửi câu hỏi đến Trợ lý AI (Đã tối ưu kết nối với Google Apps Script)
-        // ==========================================================
         function sendChatMessage() {
             if (isStreaming) return;
             const inputElem = document.getElementById("fox-chat-input");
             const message = inputElem.value.trim();
             if (!message) return;
 
-            // Lấy thông số tần số thực tế trên dao động ký để nạp vào prompt cho AI
             const freqVal = (typeof lockedFrequency !== 'undefined' && lockedFrequency > 0) ? lockedFrequency.toFixed(1) + " Hz" : ((typeof detectedFrequency !== 'undefined' && detectedFrequency > 0) ? detectedFrequency.toFixed(1) + " Hz" : "440.0 Hz");
             const thongTinHeThong = `[THÔNG SỐ THỜI GIAN THỰC DAO ĐỘNG KÝ: Tần số đo = ${freqVal}]`;
-            
-            // Nối thông số và câu hỏi để AI có bối cảnh
             const messageToAI = thongTinHeThong + "\nCâu hỏi của HS: " + message;
 
             const chatContent = document.getElementById("fox-chat-content");
 
-            // Hiển thị bong bóng tin nhắn của học sinh với animation
             const userRow = document.createElement("div");
             userRow.className = "fox-msg-row fox-msg-user";
             userRow.innerHTML = `<div class="fox-msg-bubble">${formatFoxMarkdown(message)}</div>`;
             chatContent.appendChild(userRow);
 
-            // Reset ô nhập liệu
             inputElem.value = "";
             updateSendButtonState();
             chatContent.scrollTop = chatContent.scrollHeight;
 
-            // Hiển thị trạng thái đang phân tích âm thanh (Loading)
             const loadingId = showThinkingIndicator();
             let isResponded = false;
 
-            // Timeout dự phòng được TĂNG LÊN 15 GIÂY (Vì AI Gemini + Ghi Sheet mất khoảng 4-8s)
             const timer = setTimeout(() => {
                 if (!isResponded) {
                     isResponded = true;
                     const loadingEl = document.getElementById(loadingId);
                     if (loadingEl) loadingEl.remove();
-                    // Nếu quá 15s AI không trả lời kịp, dùng kiến thức dự phòng có sẵn
                     streamBotMessage(getLocalFallbackAnswer(message));
                 }
             }, 15000);
 
-            // Fetch tới Google Apps Script (Nhớ thay thế GAS_URL bằng link mới xuất bản)
             fetch(`${GAS_URL}?action=chat&message=${encodeURIComponent(messageToAI)}`)
                 .then(res => {
                     if (!res.ok) throw new Error("Network response was not ok");
-                    return res.json(); // Backend trả về JSON nên Frontend dùng res.json()
+                    return res.json();
                 })
                 .then(data => {
                     if (!isResponded) {
@@ -2373,17 +2351,14 @@
                         const loadingEl = document.getElementById(loadingId);
                         if (loadingEl) loadingEl.remove();
 
-                        // Kiểm tra status từ JSON trả về
                         if (data && data.status === "success" && data.reply && data.reply.trim().length > 0) {
-                            streamBotMessage(data.reply); // Chạy hiệu ứng gõ phím từ nội dung AI
+                            streamBotMessage(data.reply);
                         } else {
-                            // Nếu JSON báo lỗi (status: error), dùng fallback
                             streamBotMessage(getLocalFallbackAnswer(message));
                         }
                     }
                 })
                 .catch(err => {
-                    // Lỗi mạng hoặc server sập
                     if (!isResponded) {
                         isResponded = true;
                         clearTimeout(timer);
