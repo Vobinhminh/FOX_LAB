@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Dao động ký (Oscilloscope) - Sóng âm</title>
     <link rel="icon" type="image/png" href="./icon-512.png">
     <link rel="apple-touch-icon" href="./icon-512.png">
@@ -17,11 +17,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
     <style>
         html, body {
-            margin: 0; padding: 0; width: 100%; height: 100%;
+            margin: 0; padding: 0; width: 100%; height: 100%; height: 100dvh;
             background-color: #e6f7ff;
             font-family: 'Be Vietnam Pro', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
             -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
-            text-rendering: optimizeLegibility; overflow: hidden;
+            text-rendering: optimizeLegibility; overflow: hidden; position: fixed;
         }
 
         button, input, select, textarea { font-family: inherit; }
@@ -29,31 +29,31 @@
 
         .top-bar {
             display: flex; background-color: #f0f4f8; border-bottom: 3px solid #000;
-            z-index: 10; padding: 8px; gap: 8px; align-items: stretch;
+            z-index: 10; padding: 6px 8px; gap: 6px; align-items: stretch; flex-shrink: 0;
         }
 
-        .controls-wrapper { display: flex; flex-direction: column; flex-grow: 1; gap: 8px; }
+        .controls-wrapper { display: flex; flex-direction: column; flex-grow: 1; gap: 6px; }
         .settings-row { display: flex; gap: 6px; width: 100%; }
 
-        .btn-group { display: flex; flex-wrap: wrap; gap: 6px; width: 100%; }
-        .btn-group button { flex: 1 1 calc(14.28% - 6px); min-width: 90px; }
+        .btn-group { display: flex; flex-wrap: wrap; gap: 5px; width: 100%; }
+        .btn-group button { flex: 1 1 calc(14.28% - 5px); min-width: 85px; padding: 6px 2px; font-size: 12.5px; }
 
         @media (max-width: 900px) { 
-            .btn-group button { flex: 1 1 calc(25% - 6px); } 
+            .btn-group button { flex: 1 1 calc(25% - 5px); } 
             .qr-panel { display: none !important; }
         }
         @media (max-width: 700px) {
             .top-bar { padding: 4px; gap: 4px; }
-            .controls-wrapper { padding: 4px; }
-            .btn-group button { flex: 1 1 calc(33.33% - 6px); }
+            .controls-wrapper { padding: 2px; gap: 4px; }
+            .btn-group button { flex: 1 1 calc(33.33% - 5px); font-size: 12px; padding: 5px 2px; }
         }
         @media (max-width: 450px) {
-            .btn-group button { flex: 1 1 calc(50% - 6px); }
-            .settings-row { flex-direction: column; }
+            .btn-group button { flex: 1 1 calc(50% - 5px); }
+            .settings-row { flex-direction: column; gap: 4px; }
         }
 
         .custom-select {
-            padding: 6px 8px; font-size: 13px; font-weight: bold; color: #0056b3;
+            padding: 5px 8px; font-size: 12.5px; font-weight: bold; color: #0056b3;
             border-radius: 6px; border: 1px solid #ccc; background-color: #fff;
             width: 100%; cursor: pointer; outline: none; box-sizing: border-box;
             box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
@@ -68,18 +68,18 @@
         .qr-panel .scan-title { font-size: 9px; font-weight: bold; color: #d93025; margin-top: 4px; line-height: 1; white-space: nowrap; }
 
         .info-panel {
-            font-weight: 600; font-size: 13.5px; color: #d93025; background: #fff;
-            padding: 7px 12px; border-radius: 6px; border: 1px solid #ccc; width: 100%;
-            text-align: center; box-sizing: border-box; display: block; line-height: 1.45; min-height: 34px; letter-spacing: 0.2px;
+            font-weight: 600; font-size: 13px; color: #d93025; background: #fff;
+            padding: 5px 10px; border-radius: 6px; border: 1px solid #ccc; width: 100%;
+            text-align: center; box-sizing: border-box; display: block; line-height: 1.4; min-height: 30px;
         }
 
-        .info-badge, .channel-tag-a, .channel-tag-b { display: inline-block; padding: 1px 7px; margin: 0 4px; border-radius: 4px; font-weight: 700; }
+        .info-badge, .channel-tag-a, .channel-tag-b { display: inline-block; padding: 1px 6px; margin: 0 3px; border-radius: 4px; font-weight: 700; }
         .info-badge { background-color: rgba(40, 167, 69, 0.15); color: #1e7e34; border: 1px solid rgba(40, 167, 69, 0.35); }
-        .channel-tag-a { color: #dc3545; background-color: rgba(220, 53, 69, 0.12); margin: 0 3px; }
-        .channel-tag-b { color: #0d6efd; background-color: rgba(13, 110, 253, 0.12); margin: 0 3px; }
+        .channel-tag-a { color: #dc3545; background-color: rgba(220, 53, 69, 0.12); }
+        .channel-tag-b { color: #0d6efd; background-color: rgba(13, 110, 253, 0.12); }
 
         button {
-            padding: 8px 4px; font-size: 13px; font-weight: bold; cursor: pointer;
+            font-size: 13px; font-weight: bold; cursor: pointer;
             background-color: #007bff; color: white; border: none; border-radius: 6px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.2s, filter 0.2s;
             width: 100%; box-sizing: border-box;
@@ -94,11 +94,11 @@
         #fullscreenButton { background-color: #6c757d; }
         #fftButton { background-color: #6f42c1; }
 
-        canvas { flex-grow: 1; width: 100%; height: 0; display: block; cursor: crosshair; touch-action: none; }
+        canvas { flex-grow: 1; width: 100%; height: 100%; display: block; cursor: crosshair; touch-action: none; }
 
         .settings-dropdown { position: relative; flex: 1; }
         .settings-dropdown-toggle {
-            padding: 6px 8px; font-size: 13px; font-weight: bold; color: #0056b3;
+            padding: 5px 8px; font-size: 12.5px; font-weight: bold; color: #0056b3;
             border-radius: 6px; border: 1px solid #ccc; background-color: #fff; cursor: pointer;
             box-sizing: border-box; box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
             display: flex; align-items: center; justify-content: space-between; user-select: none;
@@ -132,37 +132,38 @@
            MODAL FFT (PHÂN TÍCH PHỔ)
            ========================================================== */
         #fftModalOverlay {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh;
             background: rgba(0, 0, 0, 0.6); z-index: 100000; display: none;
             align-items: center; justify-content: center; backdrop-filter: blur(3px);
+            padding: 10px; box-sizing: border-box;
         }
         #fftModal {
-            background: #fff; width: 96%; max-width: 800px; border-radius: 12px;
+            background: #fff; width: 100%; max-width: 760px; max-height: 90dvh; border-radius: 12px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3); display: flex; flex-direction: column; overflow: hidden;
         }
         .fft-header {
-            background: #6f42c1; color: #fff; padding: 12px 16px; font-weight: bold;
-            display: flex; justify-content: space-between; align-items: center;
+            background: #6f42c1; color: #fff; padding: 10px 14px; font-weight: bold; font-size: 14px;
+            display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
         }
         .fft-close-btn {
             background: transparent; border: none; color: #fff; font-size: 20px; font-weight: bold;
             cursor: pointer; padding: 0; line-height: 1; width: auto; box-shadow: none;
         }
         .fft-controls {
-            padding: 12px 16px; background: #f8f9fa; border-bottom: 1px solid #ddd;
-            display: flex; gap: 10px; align-items: center; flex-wrap: wrap; justify-content: center;
+            padding: 10px 14px; background: #f8f9fa; border-bottom: 1px solid #ddd;
+            display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: center; flex-shrink: 0;
         }
-        .fft-controls label { font-weight:600; font-size:13.5px; }
+        .fft-controls label { font-weight: 600; font-size: 13px; }
         .fft-controls input {
-            padding: 6px 10px; border: 1px solid #ccc; border-radius: 6px; font-weight: bold; color: #d93025; width: 90px; text-align: center; background: #fff;
+            padding: 5px 8px; border: 1px solid #ccc; border-radius: 6px; font-weight: bold; color: #d93025; width: 80px; text-align: center; background: #fff; font-size: 13px;
         }
-        .fft-controls button { width: auto; padding: 7px 14px; }
+        .fft-controls button { width: auto; padding: 6px 12px; font-size: 12.5px; }
         .btn-fft-action { background-color: #28a745; }
         .btn-fft-close { background-color: #6c757d; }
 
-        .fft-canvas-container { padding: 16px; background: #eef1f5; width: 100%; box-sizing: border-box; display: flex; justify-content: center; overflow-x: auto; }
-        #fftDisplayCanvas { background: #fff; border: 1px solid #bbb; border-radius: 6px; max-width: 100%; height: 300px; }
-        .fft-note { padding: 8px 16px 12px 16px; font-size: 12px; color: #666; font-style: italic; background: #f8f9fa; text-align: center; }
+        .fft-canvas-container { padding: 12px; background: #eef1f5; width: 100%; box-sizing: border-box; display: flex; justify-content: center; overflow-x: auto; flex-grow: 1; }
+        #fftDisplayCanvas { background: #fff; border: 1px solid #bbb; border-radius: 6px; width: 100%; max-width: 720px; height: 260px; }
+        .fft-note { padding: 8px 14px; font-size: 11.5px; color: #666; font-style: italic; background: #f8f9fa; text-align: center; flex-shrink: 0; }
 
         /* ==========================================================
            FOX-LAB AI CHATBOT WIDGET
@@ -175,97 +176,97 @@
             --fox-border-subtle: rgba(255, 255, 255, 0.08); --fox-text-secondary: #94a3b8; --fox-text-muted: #64748b;
         }
 
-        #fox-chat-widget { position: fixed; bottom: 24px; right: 24px; z-index: 99999; font-family: var(--fox-font); user-select: none; }
+        #fox-chat-widget { position: fixed; bottom: 20px; right: 20px; z-index: 99999; font-family: var(--fox-font); user-select: none; }
         .fox-trigger-wrapper { position: relative; display: flex; align-items: center; justify-content: center; }
         .fox-ping-ring { position: absolute; width: 100%; height: 100%; border-radius: 50%; background: rgba(249, 115, 22, 0.4); animation: foxPulsePing 3s infinite; pointer-events: none; z-index: 1; }
         @keyframes foxPulsePing { 0% { transform: scale(0.95); opacity: 0.8; } 70%, 100% { transform: scale(1.65); opacity: 0; } }
 
         #fox-chat-trigger {
-            position: relative; z-index: 2; width: 58px; height: 58px; border-radius: 50%; background: linear-gradient(135deg, #ff7849 0%, #ea580c 100%);
-            border: 1px solid rgba(255, 255, 255, 0.25); box-shadow: 0 10px 25px -4px rgba(234, 88, 12, 0.5), 0 0 20px rgba(249, 115, 22, 0.35);
+            position: relative; z-index: 2; width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg, #ff7849 0%, #ea580c 100%);
+            border: 1px solid rgba(255, 255, 255, 0.25); box-shadow: 0 10px 25px -4px rgba(234, 88, 12, 0.5);
             cursor: pointer; display: flex; align-items: center; justify-content: center; color: #fff; transition: transform 0.3s; outline: none;
         }
         #fox-chat-trigger:hover { transform: scale(1.08) translateY(-2px); }
-        .fox-trigger-icon { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; }
+        .fox-trigger-icon { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; }
         .fox-trigger-icon svg { width: 100%; height: 100%; display: block; }
-        .fox-trigger-close-icon { display: none; width: 24px; height: 24px; }
+        .fox-trigger-close-icon { display: none; width: 22px; height: 22px; }
         #fox-chat-widget.open #fox-chat-trigger { background: linear-gradient(135deg, #334155 0%, #1e293b 100%); border-color: rgba(255, 255, 255, 0.2); }
         #fox-chat-widget.open .fox-ping-ring, #fox-chat-widget.open .fox-trigger-fox-icon { display: none; }
         #fox-chat-widget.open .fox-trigger-close-icon { display: flex; transform: rotate(90deg); }
         .fox-trigger-tooltip {
-            position: absolute; right: 70px; background: rgba(15, 23, 42, 0.92); color: #f8fafc; font-size: 12px; font-weight: 600; padding: 6px 12px;
+            position: absolute; right: 65px; background: rgba(15, 23, 42, 0.92); color: #f8fafc; font-size: 12px; font-weight: 600; padding: 6px 12px;
             border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.12); opacity: 0; transform: translateX(8px); transition: all 0.25s ease; white-space: nowrap; pointer-events: none;
         }
         .fox-trigger-wrapper:hover .fox-trigger-tooltip { opacity: 1; transform: translateX(0); }
         #fox-chat-widget.open .fox-trigger-tooltip { display: none; }
         
         #fox-chat-box {
-            position: absolute; bottom: 72px; right: 0; width: 380px; height: 560px; max-height: calc(100vh - 110px); max-width: calc(100vw - 32px);
+            position: absolute; bottom: 65px; right: 0; width: 360px; height: 500px; max-height: calc(100dvh - 90px); max-width: calc(100vw - 24px);
             background: var(--fox-bg-glass); backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%);
-            border: 1px solid var(--fox-border-subtle); border-radius: 20px; box-shadow: 0 24px 60px -10px rgba(0, 0, 0, 0.7); display: flex; flex-direction: column; overflow: hidden;
+            border: 1px solid var(--fox-border-subtle); border-radius: 18px; box-shadow: 0 24px 60px -10px rgba(0, 0, 0, 0.7); display: flex; flex-direction: column; overflow: hidden;
             transform-origin: bottom right; transform: scale(0.9) translateY(20px); opacity: 0; visibility: hidden; pointer-events: none; transition: all 0.32s; z-index: 10;
         }
         #fox-chat-widget.open #fox-chat-box { transform: scale(1) translateY(0); opacity: 1; visibility: visible; pointer-events: auto; }
         
-        .fox-chat-header { padding: 12px 16px; background: rgba(30, 41, 59, 0.65); border-bottom: 1px solid var(--fox-border-subtle); display: flex; align-items: center; justify-content: space-between; }
-        .fox-header-left { display: flex; align-items: center; gap: 10px; }
-        .fox-avatar-container { width: 36px; height: 36px; border-radius: 10px; border: 1px solid rgba(249, 115, 22, 0.45); background: linear-gradient(135deg, rgba(249, 115, 22, 0.22), rgba(56, 189, 248, 0.12)); display: flex; align-items: center; justify-content: center; padding: 2px; flex-shrink: 0; box-sizing: border-box; }
+        .fox-chat-header { padding: 10px 14px; background: rgba(30, 41, 59, 0.65); border-bottom: 1px solid var(--fox-border-subtle); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+        .fox-header-left { display: flex; align-items: center; gap: 8px; }
+        .fox-avatar-container { width: 32px; height: 32px; border-radius: 8px; border: 1px solid rgba(249, 115, 22, 0.45); background: linear-gradient(135deg, rgba(249, 115, 22, 0.22), rgba(56, 189, 248, 0.12)); display: flex; align-items: center; justify-content: center; padding: 2px; flex-shrink: 0; box-sizing: border-box; }
         .fox-header-info { display: flex; flex-direction: column; gap: 1px; }
-        .fox-header-title { font-size: 14.5px; font-weight: 700; color: #f8fafc; display: flex; align-items: center; gap: 6px; }
-        .fox-header-badge { font-size: 9.5px; font-weight: 700; padding: 1.5px 6px; border-radius: 10px; background: rgba(249, 115, 22, 0.2); color: #ff9d66; border: 1px solid rgba(249, 115, 22, 0.35); }
-        .fox-header-status { font-size: 11px; color: var(--fox-text-secondary); display: flex; align-items: center; gap: 5px; }
-        .fox-status-dot { width: 7px; height: 7px; border-radius: 50%; background: #22c55e; animation: statusPulse 2s infinite ease-in-out; }
+        .fox-header-title { font-size: 14px; font-weight: 700; color: #f8fafc; display: flex; align-items: center; gap: 6px; }
+        .fox-header-badge { font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 8px; background: rgba(249, 115, 22, 0.2); color: #ff9d66; border: 1px solid rgba(249, 115, 22, 0.35); }
+        .fox-header-status { font-size: 10.5px; color: var(--fox-text-secondary); display: flex; align-items: center; gap: 4px; }
+        .fox-status-dot { width: 6px; height: 6px; border-radius: 50%; background: #22c55e; animation: statusPulse 2s infinite ease-in-out; }
         @keyframes statusPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
         .fox-header-actions { display: flex; gap: 4px; }
-        .fox-btn-icon { width: 30px; height: 30px; border-radius: 8px; background: transparent; border: none; color: var(--fox-text-secondary); display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; box-shadow: none;}
+        .fox-btn-icon { width: 28px; height: 28px; border-radius: 6px; background: transparent; border: none; color: var(--fox-text-secondary); display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; box-shadow: none;}
         .fox-btn-icon:hover { background: rgba(255, 255, 255, 0.1); color: #f8fafc; }
-        .fox-btn-icon svg { width: 16px; height: 16px; stroke-width: 2; }
+        .fox-btn-icon svg { width: 15px; height: 15px; stroke-width: 2; }
         
-        #fox-chat-content { flex: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; user-select: text; scroll-behavior: smooth; }
-        #fox-chat-content::-webkit-scrollbar { width: 5px; }
+        #fox-chat-content { flex: 1; padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; user-select: text; scroll-behavior: smooth; }
+        #fox-chat-content::-webkit-scrollbar { width: 4px; }
         #fox-chat-content::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 4px; }
-        .fox-msg-row { display: flex; gap: 10px; max-width: 100%; animation: foxMsgFadeIn 0.25s ease forwards; }
-        @keyframes foxMsgFadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        .fox-msg-row { display: flex; gap: 8px; max-width: 100%; animation: foxMsgFadeIn 0.25s ease forwards; }
+        @keyframes foxMsgFadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
         .fox-msg-user { justify-content: flex-end; }
         .fox-msg-bot { justify-content: flex-start; }
-        .fox-msg-avatar { width: 28px; height: 28px; border-radius: 8px; background: rgba(30, 41, 59, 0.9); border: 1px solid rgba(249, 115, 22, 0.35); display: flex; align-items: center; justify-content: center; flex-shrink: 0; padding: 2px; }
-        .fox-msg-group { display: flex; flex-direction: column; max-width: 85%; gap: 4px; }
+        .fox-msg-avatar { width: 26px; height: 26px; border-radius: 6px; background: rgba(30, 41, 59, 0.9); border: 1px solid rgba(249, 115, 22, 0.35); display: flex; align-items: center; justify-content: center; flex-shrink: 0; padding: 2px; }
+        .fox-msg-group { display: flex; flex-direction: column; max-width: 85%; gap: 3px; }
         .fox-msg-user .fox-msg-group { align-items: flex-end; }
         .fox-msg-bot .fox-msg-group { align-items: flex-start; }
-        .fox-msg-bubble { padding: 11px 15px; border-radius: 16px; font-size: 13.5px; line-height: 1.6; word-wrap: break-word; max-width: 100%; box-sizing: border-box; }
-        .fox-msg-user .fox-msg-bubble { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); color: #ffffff; border-bottom-right-radius: 4px; font-weight: 500; }
-        .fox-msg-bot .fox-msg-bubble { background: var(--fox-surface-elevated); color: #f1f5f9; border: 1px solid var(--fox-border-subtle); border-top-left-radius: 4px; }
+        .fox-msg-bubble { padding: 10px 13px; border-radius: 14px; font-size: 13px; line-height: 1.5; word-wrap: break-word; max-width: 100%; box-sizing: border-box; }
+        .fox-msg-user .fox-msg-bubble { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); color: #ffffff; border-bottom-right-radius: 3px; font-weight: 500; }
+        .fox-msg-bot .fox-msg-bubble { background: var(--fox-surface-elevated); color: #f1f5f9; border: 1px solid var(--fox-border-subtle); border-top-left-radius: 3px; }
         .fox-msg-bot .fox-msg-bubble b, .fox-msg-bot .fox-msg-bubble strong { color: #38bdf8; font-weight: 600; }
-        .fox-msg-bot .fox-msg-bubble code { background: rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.12); padding: 2px 6px; border-radius: 4px; font-family: var(--fox-font-mono); color: #fed7aa; }
-        .fox-math { font-family: var(--fox-font-mono)!important; font-style: italic; color: #38bdf8; background: rgba(56,189,248,0.12); padding: 1px 6px; border-radius: 4px; font-size: 13px; margin: 0 2px; }
+        .fox-msg-bot .fox-msg-bubble code { background: rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.12); padding: 2px 5px; border-radius: 4px; font-family: var(--fox-font-mono); color: #fed7aa; }
+        .fox-math { font-family: var(--fox-font-mono)!important; font-style: italic; color: #38bdf8; background: rgba(56,189,248,0.12); padding: 1px 5px; border-radius: 4px; font-size: 12.5px; margin: 0 2px; }
         
-        .fox-msg-actions { display: flex; gap: 8px; opacity: 0; transition: opacity 0.2s; }
+        .fox-msg-actions { display: flex; gap: 6px; opacity: 0; transition: opacity 0.2s; }
         .fox-msg-row:hover .fox-msg-actions { opacity: 1; }
-        .fox-msg-action-btn { background: none; border: none; color: var(--fox-text-muted); cursor: pointer; font-size: 11px; display: flex; align-items: center; gap: 4px; padding: 2px 6px; border-radius: 4px; transition: all 0.2s; font-family: var(--fox-font); box-shadow: none; }
+        .fox-msg-action-btn { background: none; border: none; color: var(--fox-text-muted); cursor: pointer; font-size: 10.5px; display: flex; align-items: center; gap: 3px; padding: 2px 5px; border-radius: 4px; transition: all 0.2s; font-family: var(--fox-font); box-shadow: none; }
         .fox-msg-action-btn:hover { color: var(--fox-cyan); background: rgba(255, 255, 255, 0.1); box-shadow: none; }
         
-        .fox-cursor { display: inline-block; width: 7px; height: 14px; background: var(--fox-cyan); margin-left: 3px; vertical-align: -2px; animation: foxCursorPulse 0.8s infinite; }
+        .fox-cursor { display: inline-block; width: 6px; height: 13px; background: var(--fox-cyan); margin-left: 3px; vertical-align: -2px; animation: foxCursorPulse 0.8s infinite; }
         @keyframes foxCursorPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.1; } }
-        .fox-thinking-wrapper { display: flex; align-items: center; gap: 8px; color: var(--fox-text-secondary); font-size: 12.5px; }
-        .fox-wave-equalizer { display: flex; gap: 3px; height: 16px; align-items: center; }
+        .fox-thinking-wrapper { display: flex; align-items: center; gap: 8px; color: var(--fox-text-secondary); font-size: 12px; }
+        .fox-wave-equalizer { display: flex; gap: 3px; height: 14px; align-items: center; }
         .fox-wave-bar { width: 3px; background: var(--fox-cyan); border-radius: 2px; animation: foxWavePulse 1s ease-in-out infinite; }
-        .fox-wave-bar:nth-child(1) { height: 6px; } .fox-wave-bar:nth-child(2) { height: 14px; animation-delay: 0.15s; } .fox-wave-bar:nth-child(3) { height: 8px; animation-delay: 0.3s; } .fox-wave-bar:nth-child(4) { height: 16px; animation-delay: 0.45s; }
+        .fox-wave-bar:nth-child(1) { height: 5px; } .fox-wave-bar:nth-child(2) { height: 12px; animation-delay: 0.15s; } .fox-wave-bar:nth-child(3) { height: 7px; animation-delay: 0.3s; } .fox-wave-bar:nth-child(4) { height: 14px; animation-delay: 0.45s; }
         @keyframes foxWavePulse { 0%, 100% { transform: scaleY(0.4); opacity: 0.5; } 50% { transform: scaleY(1.2); opacity: 1; } }
         .fox-shimmer-text { background: linear-gradient(90deg, #94a3b8 0%, #f8fafc 50%, #94a3b8 100%); background-size: 200% 100%; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: foxShimmer 2s infinite linear; }
         @keyframes foxShimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
         
-        .fox-input-container { padding: 10px 14px 12px 14px; background: rgba(15, 23, 42, 0.95); border-top: 1px solid var(--fox-border-subtle); display: flex; flex-direction: column; gap: 6px; }
-        .fox-input-box { display: flex; align-items: center; background: rgba(30, 41, 59, 0.75); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 22px; padding: 4px 6px 4px 14px; }
+        .fox-input-container { padding: 10px 12px; background: rgba(15, 23, 42, 0.95); border-top: 1px solid var(--fox-border-subtle); display: flex; flex-direction: column; gap: 5px; flex-shrink: 0; }
+        .fox-input-box { display: flex; align-items: center; background: rgba(30, 41, 59, 0.75); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 20px; padding: 3px 5px 3px 12px; }
         .fox-input-box:focus-within { border-color: var(--fox-primary); box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.22); background: rgba(30, 41, 59, 0.95); }
-        #fox-chat-input { flex: 1; background: transparent; border: none; color: #f8fafc; font-size: 13.5px; outline: none; padding: 6px 0; }
-        #fox-chat-input::placeholder { color: var(--fox-text-muted); font-size: 13px; }
-        .fox-send-btn { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); border: none; color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; box-shadow: none; }
+        #fox-chat-input { flex: 1; background: transparent; border: none; color: #f8fafc; font-size: 13px; outline: none; padding: 5px 0; }
+        #fox-chat-input::placeholder { color: var(--fox-text-muted); font-size: 12.5px; }
+        .fox-send-btn { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); border: none; color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; box-shadow: none; }
         .fox-send-btn:hover:not(:disabled) { transform: scale(1.08); filter: brightness(1.1); box-shadow: none; }
         .fox-send-btn:disabled { background: rgba(255, 255, 255, 0.1) !important; color: #64748b !important; cursor: not-allowed; }
-        .fox-send-btn svg { width: 15px; height: 15px; margin-left: 2px; }
-        .fox-footer-meta { font-size: 10px; color: var(--fox-text-muted); text-align: center; display: flex; align-items: center; justify-content: center; gap: 4px; }
+        .fox-send-btn svg { width: 14px; height: 14px; margin-left: 2px; }
+        .fox-footer-meta { font-size: 9.5px; color: var(--fox-text-muted); text-align: center; display: flex; align-items: center; justify-content: center; gap: 4px; }
         .fox-freq-tag { color: var(--fox-cyan); font-weight: 600; }
-        @media (max-width: 600px) { #fox-chat-widget { bottom: 16px; right: 16px; } #fox-chat-box { width: calc(100vw - 32px); height: calc(100vh - 100px); max-height: 540px; bottom: 68px; } }
+        @media (max-width: 600px) { #fox-chat-widget { bottom: 16px; right: 16px; } #fox-chat-box { width: calc(100vw - 20px); height: calc(100dvh - 80px); bottom: 62px; } }
     </style>
 </head>
 
@@ -342,10 +343,10 @@
                 <button class="btn-fft-close" onclick="closeFFTModal()">Đóng</button>
             </div>
             <div class="fft-canvas-container">
-                <canvas id="fftDisplayCanvas" width="760" height="300"></canvas>
+                <canvas id="fftDisplayCanvas" width="720" height="260"></canvas>
             </div>
             <div class="fft-note">
-                * Trục ngang: Tần số (Hz) | Trục dọc: Biên độ. Các cột màu đỏ biểu thị dải họa âm (f0, 2f0, 3f0...) của sóng đang khảo sát.
+                * Trục ngang: Tần số (Hz) | Trục dọc: Biên độ. Các cột màu đỏ biểu thị dải họa âm (f0, 2f0, 3f0...).
             </div>
         </div>
     </div>
@@ -865,7 +866,10 @@
             freqInput.value = (lockedFrequency > 0) ? Math.round(lockedFrequency) : 440;
             processAndDrawFFT();
         }
-        function closeFFTModal() { document.getElementById('fftModalOverlay').style.display = 'none'; }
+        function closeFFTModal() { 
+            document.getElementById('fftModalOverlay').style.display = 'none'; 
+            setTimeout(resizeCanvas, 50);
+        }
         fftButton.addEventListener('click', openFFTModal);
 
         function processAndDrawFFT() {
