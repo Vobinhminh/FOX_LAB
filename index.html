@@ -757,19 +757,32 @@
             }
         });
 
-        // Nút "Làm mới": Kích hoạt hệ thống VÀ giữ nguyên các tùy chọn cấu hình đang chọn
+        // Nút "Làm mới": Kích hoạt hệ thống VÀ giữ nguyên MỌI TÙY CHỌN (kể cả Micro đang chạy)
         resetButton.addEventListener('click', () => {
             isInitialized = true;
-            isPaused = true; clearTimeout(stopTimer); pauseButton.textContent = "Đo / Dừng"; pauseButton.style.backgroundColor = "#28a745";
-            if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
-            stopAudioChannel('A'); stopAudioChannel('B');
+            isPaused = true; 
+            clearTimeout(stopTimer); 
+            pauseButton.textContent = "Đo / Dừng"; 
+            pauseButton.style.backgroundColor = "#28a745";
             
-            // GIỮ NGUYÊN các tùy chọn đã cấu hình (channelModeSelect, modeSelect, speedSelect, settingsDropdown)
-            // Không đưa chế độ nguồn âm / chức năng khảo sát về lại mặc định
+            if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+            
+            // CHỈ reset bộ đệm dữ liệu màn hình, KHÔNG tắt (stop) kết nối Micro.
+            if (channelConfig.A.data) { channelConfig.A.data.fill(0); channelConfig.A.index = 0; }
+            if (channelConfig.B.data) { channelConfig.B.data.fill(0); channelConfig.B.index = 0; }
+            
+            // Giữ nguyên thiết lập thả xuống (1 nguồn/2 nguồn, liên tục/tự dừng, danh sách mic)
             isContinuousMode = (modeSelect.value === 'continuous');
             
-            isUserZoomed = false; detectedFrequency = 0; lockedFrequency = 440; totalTimeOnScreen = 5 * (1.0 / 440); currentZoomY = 2.0;
-            updateUIState(); drawFrame(true);
+            // Xóa sạch trục thời gian/zoom về gốc
+            isUserZoomed = false; 
+            detectedFrequency = 0; 
+            lockedFrequency = 440; 
+            totalTimeOnScreen = 5 * (1.0 / 440); 
+            currentZoomY = 2.0;
+            
+            updateUIState(); 
+            drawFrame(true);
         });
         
         saveButton.addEventListener('click', () => { if (!isInitialized) return; const link = document.createElement('a'); link.download = `DoThi_SongAm.png`; link.href = canvas.toDataURL('image/png'); link.click(); });
