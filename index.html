@@ -128,9 +128,7 @@
         .settings-item.active { background-color: #cce5ff; font-weight: 700; }
         .settings-item.active .item-check { display: inline-block; }
 
-        /* ==========================================================
-           MODAL FFT FULL MÀN HÌNH (SPECTRUM)
-           ========================================================== */
+        /* MODAL FFT FULL MÀN HÌNH */
         #fftModalOverlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh;
             background: rgba(0, 0, 0, 0.75); z-index: 100000; display: none;
@@ -166,9 +164,7 @@
         #fftDisplayCanvas { background: #fff; border: 1px solid #bbb; border-radius: 8px; width: 100%; height: 100%; display: block; }
         .fft-note { padding: 10px 16px; font-size: 12px; color: #555; font-style: italic; background: #f8f9fa; text-align: center; flex-shrink: 0; border-top: 1px solid #ddd; }
 
-        /* ==========================================================
-           FOX-LAB AI CHATBOT WIDGET
-           ========================================================== */
+        /* FOX-LAB AI CHATBOT WIDGET */
         :root {
             --fox-font: 'Be Vietnam Pro', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             --fox-font-mono: 'JetBrains Mono', 'Consolas', monospace;
@@ -310,16 +306,16 @@
 
             <!-- Khối nút bấm -->
             <div class="btn-group">
-                <button id="btnStartA" class="channel-btn">Kênh A (Khóa)</button>
-                <button id="btnStartB" class="channel-btn">Kênh B (Khóa)</button>
+                <button id="btnStartA" class="channel-btn" disabled>Kênh A (Khóa)</button>
+                <button id="btnStartB" class="channel-btn" disabled>Kênh B (Khóa)</button>
                 <button id="pauseButton" disabled>Đo / Dừng</button>
-                <button id="resetButton" disabled>Làm mới</button>
+                <button id="resetButton">Làm mới</button>
                 <button id="saveButton" disabled>Chụp ảnh</button>
                 <button id="fullscreenButton">Toàn màn hình</button>
                 <button id="fftButton" disabled>Phân tích FFT</button>
             </div>
 
-            <div class="info-panel" id="infoText">Đang chờ khởi động thiết bị Micro...</div>
+            <div class="info-panel" id="infoText">Hệ thống chưa được kích hoạt. Nhấn <span class='info-badge'>Làm mới</span> để bắt đầu sử dụng.</div>
         </div>
 
         <!-- Mã QR chỉ hiển thị trên máy tính -->
@@ -446,6 +442,8 @@
                 qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(currentUrl)}`;
             }
             resizeCanvas();
+            updateUIState();
+            drawFrame(true);
         });
 
         const btnStartA = document.getElementById('btnStartA'), btnStartB = document.getElementById('btnStartB');
@@ -459,6 +457,9 @@
         const canvas = document.getElementById('oscilloscope'), canvasCtx = canvas.getContext('2d');
         const settingsDropdown = document.getElementById('settingsDropdown'), settingsToggle = document.getElementById('settingsToggle');
         const settingsMenu = document.getElementById('settingsMenu'), settingsLabel = document.getElementById('settingsLabel');
+
+        // Biến kiểm soát trạng thái kích hoạt ứng dụng sau khi Tải lại / Tắt nguồn / Chuyển trang
+        let isInitialized = false;
 
         settingsToggle.addEventListener('click', (e) => { e.stopPropagation(); settingsDropdown.classList.toggle('open'); });
         document.addEventListener('click', (e) => { if (!settingsDropdown.contains(e.target)) settingsDropdown.classList.remove('open'); });
@@ -477,11 +478,6 @@
                 settingsLabel.textContent = 'Cài đặt chung'; settingsDropdown.classList.remove('open');
             });
         });
-        function resetSettingsDropdown() {
-            settingsLabel.textContent = 'Cài đặt chung';
-            settingsMenu.querySelectorAll('.settings-item').forEach(s => { const val = s.dataset.value; if (val === '1' || val === 'auto') s.classList.add('active'); else s.classList.remove('active'); });
-            settingsMenu.querySelectorAll('.settings-group').forEach(g => g.classList.remove('expanded')); settingsDropdown.classList.remove('open');
-        }
 
         let audioCtx;
         const BUFFER_SECONDS = 10;
@@ -508,6 +504,7 @@
         }
 
         function updateFFTButtonState() {
+            if (!isInitialized) { fftButton.disabled = true; return; }
             const activeChannels = (channelConfig.A.active ? 1 : 0) + (channelConfig.B.active ? 1 : 0);
             if (isPaused && activeChannels === 1 && getActiveChannelMode() === '1') {
                 fftButton.disabled = false;
@@ -516,12 +513,21 @@
             }
         }
 
+        // Tắt thiết bị và yêu cầu Reset lại khi chuyển trang/tab khác hoặc ẩn ứng dụng
         document.addEventListener('visibilitychange', () => {
-            if (document.hidden && !isPaused) {
-                isPaused = true; clearTimeout(stopTimer); pauseButton.textContent = "Đo / Dừng"; pauseButton.style.backgroundColor = "#28a745";
-                infoText.textContent = "Hệ thống tạm nghỉ. Bấm Đo / Dừng để tiếp tục."; infoText.style.color = "#d93025"; updateFFTButtonState();
+            if (document.hidden) {
+                isPaused = true; clearTimeout(stopTimer);
+                stopAudioChannel('A'); stopAudioChannel('B');
+                isInitialized = false;
+                pauseButton.textContent = "Đo / Dừng"; pauseButton.style.backgroundColor = "#28a745";
+                updateUIState(); drawFrame(true);
             }
         });
+        window.addEventListener('pagehide', () => {
+            stopAudioChannel('A'); stopAudioChannel('B');
+            isInitialized = false;
+        });
+
         speedSelect.addEventListener('change', (e) => { targetFPS = (e.target.value === 'slow') ? 15 : 60; });
         modeSelect.addEventListener('change', (e) => {
             isContinuousMode = (e.target.value === 'continuous'); clearTimeout(stopTimer);
@@ -537,8 +543,16 @@
             updateUIState(); drawFrame();
         });
 
-        btnStartA.addEventListener('click', async () => { if (channelConfig.A.active) { stopAudioChannel('A'); updateUIState(); drawFrame(); } else { await initAudioChannel('A', micSelectA.value || null); } });
-        btnStartB.addEventListener('click', async () => { if (channelConfig.B.active) { stopAudioChannel('B'); updateUIState(); drawFrame(); } else { await initAudioChannel('B', micSelectB.value || null); } });
+        btnStartA.addEventListener('click', async () => { 
+            if (!isInitialized) return;
+            if (channelConfig.A.active) { stopAudioChannel('A'); updateUIState(); drawFrame(); } 
+            else { await initAudioChannel('A', micSelectA.value || null); } 
+        });
+        btnStartB.addEventListener('click', async () => { 
+            if (!isInitialized) return;
+            if (channelConfig.B.active) { stopAudioChannel('B'); updateUIState(); drawFrame(); } 
+            else { await initAudioChannel('B', micSelectB.value || null); } 
+        });
         micSelectA.addEventListener('change', (e) => { if (channelConfig.A.active) initAudioChannel('A', e.target.value); });
         micSelectB.addEventListener('change', (e) => { if (channelConfig.B.active) initAudioChannel('B', e.target.value); });
 
@@ -653,23 +667,37 @@
         }
 
         function updateUIState() {
+            if (!isInitialized) {
+                btnStartA.disabled = true; btnStartB.disabled = true;
+                btnStartA.textContent = "Kênh A (Khóa)"; btnStartA.style.backgroundColor = "#6c757d";
+                btnStartB.textContent = "Kênh B (Khóa)"; btnStartB.style.backgroundColor = "#6c757d";
+                pauseButton.disabled = true; saveButton.disabled = true; fftButton.disabled = true;
+                resetButton.disabled = false;
+                infoText.innerHTML = "Hệ thống chưa được kích hoạt. Nhấn <span class='info-badge'>Làm mới</span> để bắt đầu sử dụng.";
+                infoText.style.color = "#d93025";
+                return;
+            }
+
             if (channelConfig.A.active) { btnStartA.textContent = "Kênh A (Hoạt động)"; btnStartA.style.backgroundColor = "#28a745"; }
-            else { btnStartA.textContent = "Kênh A (Khóa)"; btnStartA.style.backgroundColor = "#6c757d"; } btnStartA.disabled = false;
+            else { btnStartA.textContent = "Kênh A (Khóa)"; btnStartA.style.backgroundColor = "#6c757d"; } 
+            btnStartA.disabled = false;
             
             if (channelConfig.B.active) { btnStartB.textContent = "Kênh B (Hoạt động)"; btnStartB.style.backgroundColor = "#28a745"; }
-            else { btnStartB.textContent = "Kênh B (Khóa)"; btnStartB.style.backgroundColor = "#6c757d"; } btnStartB.disabled = false;
+            else { btnStartB.textContent = "Kênh B (Khóa)"; btnStartB.style.backgroundColor = "#6c757d"; } 
+            btnStartB.disabled = false;
             
             if (channelConfig.A.active || channelConfig.B.active) {
                 pauseButton.disabled = false; resetButton.disabled = false; saveButton.disabled = false;
                 if (isPaused) { infoText.innerHTML = "Đã kết nối. Bấm <span class='info-badge'>Đo / Dừng</span> để khảo sát."; infoText.style.color = "#007bff"; }
             } else {
-                pauseButton.disabled = true; resetButton.disabled = true; saveButton.disabled = true;
-                infoText.innerHTML = "Nhấn vào <span class='info-badge'>Kênh A</span> hoặc <span class='info-badge'>Kênh B</span> để thu sóng âm."; infoText.style.color = "#d93025";
+                pauseButton.disabled = true; resetButton.disabled = false; saveButton.disabled = true;
+                infoText.innerHTML = "Nhấn vào <span class='info-badge'>Kênh A</span> hoặc <span class='info-badge'>Kênh B</span> để thu sóng âm."; infoText.style.color = "#007bff";
             }
             updateFFTButtonState();
         }
 
         async function initAudioChannel(channelId, deviceId = null) {
+            if (!isInitialized) return;
             if (getActiveChannelMode() === '1') stopAudioChannel((channelId === 'A') ? 'B' : 'A');
             if (!audioCtx) { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); sampleRate = audioCtx.sampleRate; channelConfig.A.data = new Float32Array(sampleRate * BUFFER_SECONDS); channelConfig.B.data = new Float32Array(sampleRate * BUFFER_SECONDS); }
             stopAudioChannel(channelId);
@@ -711,6 +739,7 @@
         }
 
         pauseButton.addEventListener('click', () => {
+            if (!isInitialized) return;
             if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
             if (isPaused) {
                 isPaused = false;
@@ -728,16 +757,22 @@
             }
         });
 
+        // Nút "Làm mới": Kích hoạt hệ thống VÀ giữ nguyên các tùy chọn cấu hình đang chọn
         resetButton.addEventListener('click', () => {
+            isInitialized = true;
             isPaused = true; clearTimeout(stopTimer); pauseButton.textContent = "Đo / Dừng"; pauseButton.style.backgroundColor = "#28a745";
             if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
             stopAudioChannel('A'); stopAudioChannel('B');
-            channelModeSelect.value = "1"; modeSelect.value = "auto"; isContinuousMode = false;
-            speedSelect.style.display = 'none'; speedSelect.value = "fast"; targetFPS = 60; resetSettingsDropdown();
+            
+            // GIỮ NGUYÊN các tùy chọn đã cấu hình (channelModeSelect, modeSelect, speedSelect, settingsDropdown)
+            // Không đưa chế độ nguồn âm / chức năng khảo sát về lại mặc định
+            isContinuousMode = (modeSelect.value === 'continuous');
+            
             isUserZoomed = false; detectedFrequency = 0; lockedFrequency = 440; totalTimeOnScreen = 5 * (1.0 / 440); currentZoomY = 2.0;
             updateUIState(); drawFrame(true);
         });
-        saveButton.addEventListener('click', () => { const link = document.createElement('a'); link.download = `DoThi_SongAm.png`; link.href = canvas.toDataURL('image/png'); link.click(); });
+        
+        saveButton.addEventListener('click', () => { if (!isInitialized) return; const link = document.createElement('a'); link.download = `DoThi_SongAm.png`; link.href = canvas.toDataURL('image/png'); link.click(); });
 
         function drawFrame(isReset = false) {
             const width = canvas.clientWidth || canvas.width, height = canvas.clientHeight || canvas.height;
@@ -834,9 +869,7 @@
             if (elapsed > interval) { lastDrawTime = timestamp - (elapsed % interval); drawFrame(); }
         }
 
-        // ==========================================================
-        // THUẬT TOÁN FFT & XỬ LÝ ĐỒ THỊ 5 HỌA ÂM (FULL MÀN HÌNH - TRỤC TẦN SỐ Ở ĐÁY)
-        // ==========================================================
+        /* THUẬT TOÁN FFT & XỬ LÝ ĐỒ THỊ 5 HỌA ÂM */
         function computeFFT(realArray) {
             let n = realArray.length, p = 1; while(p < n) p *= 2;
             let x = new Float32Array(p); x.set(realArray); let y = new Float32Array(p);
@@ -862,6 +895,7 @@
         }
 
         function openFFTModal() {
+            if (!isInitialized) return;
             document.getElementById('fftModalOverlay').style.display = 'flex';
             let freqInput = document.getElementById('fftTargetFreq');
             freqInput.value = (lockedFrequency > 0) ? Math.round(lockedFrequency) : 440;
@@ -897,27 +931,22 @@
             let maxBin = Math.floor((maxDrawFreq / sampleRate) * N);
             let maxMag = 0.001; for(let i=1; i<maxBin; i++) { if(magnitudes[i] > maxMag) maxMag = magnitudes[i]; }
 
-            const chartBottom = ch - 35; // Dành khoảng trống dưới đáy để vẽ trục tần số
+            const chartBottom = ch - 35;
 
-            // Vẽ lưới tọa độ
             ctx.strokeStyle = '#e8e8e8'; ctx.lineWidth = 1; ctx.beginPath();
             for(let i = 0; i <= 10; i++) { let x = i * (cw / 10); ctx.moveTo(x, 0); ctx.lineTo(x, chartBottom); }
             for(let i = 0; i <= 6; i++) { let y = i * (chartBottom / 6); ctx.moveTo(0, y); ctx.lineTo(cw, y); }
             ctx.stroke();
 
-            // Trục hoành (Trục tần số) nằm ngay dưới đáy biểu đồ
             ctx.strokeStyle = '#333'; ctx.lineWidth = 2; ctx.beginPath();
             ctx.moveTo(0, chartBottom); ctx.lineTo(cw, chartBottom); ctx.stroke();
             
-            // Vẽ các vạch chia và nhãn tần số ở ĐÁY biểu đồ
             ctx.fillStyle = '#1e293b'; ctx.font = 'bold 12.5px "Be Vietnam Pro", sans-serif'; ctx.textAlign = 'center';
             for(let i = 1; i <= 5; i++) { 
                 let fVal = Math.round(i * baseFreq);
                 let xPos = (fVal / maxDrawFreq) * cw;
                 if (xPos < cw - 25) {
-                    // Vẽ nhãn tần số (Hz) ở đáy
                     ctx.fillText(fVal + " Hz", xPos, chartBottom + 18);
-                    // Vẽ vạch ticks
                     ctx.strokeStyle = '#0056b3'; ctx.lineWidth = 2; ctx.beginPath();
                     ctx.moveTo(xPos, chartBottom); ctx.lineTo(xPos, chartBottom + 6); ctx.stroke();
                 }
@@ -935,7 +964,6 @@
                     ctx.fillStyle = isHarmonic ? '#dc3545' : '#38bdf8';
                     ctx.fillRect(x - (binWidth > 2 ? binWidth/2 : 0), chartBottom - barHeight, Math.max(2, binWidth), barHeight);
                     
-                    // Hiển thị tên H1, H2, H3, H4, H5 ở đỉnh cột
                     if (isHarmonic && barHeight > 15 && mag > magnitudes[i-1] && mag > magnitudes[i+1]) {
                         ctx.fillStyle = '#dc3545'; ctx.font = 'bold 12.5px "Be Vietnam Pro", sans-serif'; 
                         ctx.fillText("H" + harmonicNum, x, chartBottom - barHeight - 6);
@@ -944,9 +972,7 @@
             }
         }
 
-        // ==========================================================
-        // TRỢ LÝ ẢO THÔNG MINH FOX-LAB AI 
-        // ==========================================================
+        /* TRỢ LÝ ẢO THÔNG MINH FOX-LAB AI */
         const GAS_URL = "https://script.google.com/macros/s/AKfycbyStGo5ETWCHq3UxtQEWIFL-R2mpEHdeYuX53EgfPf8LtG2Dfe4Dbk1-i59hf8LcY2bdg/exec";
         let isStreaming = false;
         function toggleChat() {
@@ -1022,7 +1048,8 @@
 
         function getLocalFallbackAnswer(query) {
             const q = query.toLowerCase(), curFreq = (typeof lockedFrequency !== 'undefined' && lockedFrequency > 0) ? lockedFrequency.toFixed(1) : ((typeof detectedFrequency !== 'undefined' && detectedFrequency > 0) ? detectedFrequency.toFixed(1) : "440.0");
-            if (q.includes("tần số") || q.includes("hz")) return `Tần số sóng âm hiện tại trên dao động ký đang đo được khoảng **${curFreq} Hz**. Em có thể thay đổi âm lượng hoặc nguồn phát để quan sát sự biến thiên của chu kỳ $T = 1/f$ nhé!`;
+            if (q.includes("giao thoa")) return `**Giao thoa sóng** là hiện tượng hai sóng kết hợp khi gặp nhau trong không gian thì tăng cường lẫn nhau (tạo thành vân cực đại) hoặc triệt tiêu lẫn nhau (tạo thành vân cực tiểu) tại các vị trí cố định.`;
+            else if (q.includes("tần số") || q.includes("hz")) return `Tần số sóng âm hiện tại trên dao động ký đang đo được khoảng **${curFreq} Hz**. Em có thể thay đổi âm lượng hoặc nguồn phát để quan sát sự biến thiên của chu kỳ $T = 1/f$ nhé!`;
             else if (q.includes("chức năng") || q.includes("dao động ký") || q.includes("làm gì")) return `**Dao động ký (Oscilloscope)** là thiết bị biểu diễn đồ thị dao động của tín hiệu điện/sóng âm theo thời gian. Nó giúp ta xác định trực quan **Biên độ**, **Chu kỳ** ($T$), và **Tần số** ($f$) trong Vật lý 11.`;
             else if (q.includes("khóa") || q.includes("dừng") || q.includes("auto")) return `Ở chế độ **Khảo sát tần số (Tự dừng)**, hệ thống tự động bắt đồng bộ pha và dừng sau 2 giây. Ngoài ra sau khi dừng ở chế độ 1 nguồn âm, em có thể bấm **Phân tích FFT** để khảo sát Họa âm nhé!`;
             else if (q.includes("kênh a") || q.includes("kênh b") || q.includes("channel")) return `Hệ thống hỗ trợ 2 kênh đo độc lập: **Kênh A (Màu đỏ)** và **Kênh B (Màu xanh)**. Khi chọn *2 Nguồn âm*, em có thể gắn 2 micro khác nhau để đo độ lệch pha hoặc so sánh âm sắc.`;
