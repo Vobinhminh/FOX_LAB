@@ -8,7 +8,7 @@
     <link rel="icon" type="image/png" href="./icon-512.png">
     <link rel="apple-touch-icon" href="./icon-512.png">
     <link rel="manifest" href="./manifest.json">
-    <meta name="theme-color" content="#f97316">
+    <meta name="theme-color" content="#1e293b">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
@@ -28,8 +28,9 @@
         body { display: flex; flex-direction: column; }
 
         .top-bar {
-            display: flex; background-color: #f0f4f8; border-bottom: 3px solid #000;
+            display: flex; background-color: #f0f4f8; border-bottom: 3px solid #0f172a;
             z-index: 10; padding: 6px 8px; gap: 8px; align-items: stretch; flex-shrink: 0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
 
         .controls-wrapper { display: flex; flex-direction: column; flex-grow: 1; gap: 6px; }
@@ -42,20 +43,22 @@
         
         /* CARD GỘP KÊNH & MICRO */
         .channel-card {
-            display: flex; flex: 1 1 250px; background: #fff; border: 1px solid #ccc;
+            display: flex; flex: 1 1 250px; background: #fff; border: 1px solid #cbd5e1;
             border-radius: 6px; overflow: hidden; align-items: stretch;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05); height: 32px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05); height: 34px;
         }
         .channel-card button { 
-            border-radius: 0; width: 110px; font-size: 12.5px; flex-shrink: 0; 
-            box-shadow: none; border-right: 1px solid #ccc; border-top: none; border-bottom: none; border-left: none;
+            border-radius: 0; width: 110px; font-size: 13px; flex-shrink: 0; text-shadow: 0 1px 1px rgba(0,0,0,0.2);
+            box-shadow: none; border-right: 1px solid rgba(255,255,255,0.2); border-top: none; border-bottom: none; border-left: none;
         }
         .channel-card select { 
-            flex-grow: 1; border: none; border-radius: 0; background: transparent; 
+            flex-grow: 1; border: none; border-radius: 0; background: #f8fafc; 
             padding: 0 8px; font-size: 12.5px; font-weight: 700; cursor: pointer; text-overflow: ellipsis; white-space: nowrap;
         }
-        .channel-a-indicator { border-left: 4px solid #dc3545; }
-        .channel-b-indicator { border-left: 4px solid #0d6efd; }
+        .channel-card select:focus { background: #fff; }
+        
+        .channel-a-indicator { border-left: 4px solid #ef4444; }
+        .channel-b-indicator { border-left: 4px solid #3b82f6; }
 
         @media (max-width: 700px) {
             .top-bar { padding: 4px; gap: 4px; }
@@ -63,116 +66,128 @@
         }
         @media (max-width: 480px) {
             .toolbar-row > * { flex: 1 1 calc(33.33% - 6px); min-width: 80px; padding: 6px 2px; }
-            .channel-card { flex: 1 1 100%; } /* Gập khối Kênh A, Kênh B xuống hàng trên điện thoại dọc */
+            .channel-card { flex: 1 1 100%; height: 32px; } /* Gập khối Kênh A, Kênh B xuống hàng */
         }
 
         .qr-panel {
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            background: #fff; border: 1px solid #ccc; border-radius: 6px; padding: 6px;
-            box-sizing: border-box; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); width: 94px; flex-shrink: 0;
+            background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px;
+            box-sizing: border-box; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); width: 94px; flex-shrink: 0;
         }
-        .qr-panel img { width: 65px; height: 65px; border: 1px solid #eee; }
-        .qr-panel .scan-title { font-size: 9px; font-weight: bold; color: #d93025; margin-top: 4px; line-height: 1; white-space: nowrap; }
+        .qr-panel img { width: 65px; height: 65px; border: 1px solid #f1f5f9; }
+        .qr-panel .scan-title { font-size: 9px; font-weight: bold; color: #ef4444; margin-top: 4px; line-height: 1; white-space: nowrap; }
         @media (max-width: 900px) { .qr-panel { display: none !important; } }
 
         .info-panel {
-            font-weight: 600; font-size: 13px; color: #d93025; background: #fff;
-            padding: 4px 10px; border-radius: 6px; border: 1px solid #ccc; width: 100%;
+            font-weight: 600; font-size: 13px; color: #dc2626; background: #fff;
+            padding: 4px 10px; border-radius: 6px; border: 1px solid #cbd5e1; width: 100%;
             text-align: center; box-sizing: border-box; display: block; line-height: 1.4; min-height: 26px;
         }
         .info-badge, .channel-tag-a, .channel-tag-b { display: inline-block; padding: 1px 6px; margin: 0 3px; border-radius: 4px; font-weight: 700; }
-        .info-badge { background-color: rgba(40, 167, 69, 0.15); color: #1e7e34; border: 1px solid rgba(40, 167, 69, 0.35); }
-        .channel-tag-a { color: #dc3545; background-color: rgba(220, 53, 69, 0.12); }
-        .channel-tag-b { color: #0d6efd; background-color: rgba(13, 110, 253, 0.12); }
+        .info-badge { background-color: rgba(16, 185, 129, 0.15); color: #059669; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .channel-tag-a { color: #ef4444; background-color: rgba(239, 68, 68, 0.12); }
+        .channel-tag-b { color: #3b82f6; background-color: rgba(59, 130, 246, 0.12); }
 
+        /* BẢNG MÀU NÚT BẤM KHOA HỌC (SCIENTIFIC GRADIENTS) */
         button {
-            font-size: 13px; font-weight: bold; cursor: pointer;
-            background-color: #007bff; color: white; border: none; border-radius: 6px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.2s, filter 0.2s;
-            box-sizing: border-box; padding: 6px 4px; margin: 0;
+            font-size: 13px; font-weight: bold; cursor: pointer; color: white;
+            border: 1px solid rgba(0,0,0,0.1); border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255,255,255,0.2); 
+            transition: all 0.2s; box-sizing: border-box; padding: 6px 4px; margin: 0;
+            text-shadow: 0 1px 1px rgba(0,0,0,0.3);
         }
-        button:hover:not(:disabled) { filter: brightness(0.9); }
-        button:disabled { background-color: #999 !important; cursor: not-allowed; box-shadow: none; color: #ddd; }
+        button:hover:not(:disabled) { filter: brightness(1.1); transform: translateY(-1px); box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
+        button:active:not(:disabled) { transform: translateY(1px); box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+        button:disabled { background: linear-gradient(180deg, #94a3b8, #64748b) !important; cursor: not-allowed; box-shadow: none; color: #e2e8f0; border-color: #64748b; text-shadow: none; }
         
-        .channel-btn { background-color: #6c757d; }
-        #pauseButton { background-color: #28a745; }
-        #resetButton { background-color: #fd7e14; }
-        #saveButton { background-color: #17a2b8; }
-        #fullscreenButton { background-color: #6c757d; }
-        #btnAnalysis { background-color: #6f42c1; } /* Mặc định màu Tím FFT */
+        /* CÁC MÀU RIÊNG CHO TỪNG NÚT */
+        .btn-green { background: linear-gradient(180deg, #34d399, #10b981); } /* Xanh lá */
+        .btn-red { background: linear-gradient(180deg, #f87171, #ef4444); } /* Đỏ */
+        .btn-orange { background: linear-gradient(180deg, #fbbf24, #f59e0b); } /* Cam */
+        .btn-purple { background: linear-gradient(180deg, #a78bfa, #8b5cf6); } /* Tím FFT */
+        .btn-pink { background: linear-gradient(180deg, #f472b6, #ec4899); } /* Hồng 2 Nguồn */
+        .btn-teal { background: linear-gradient(180deg, #2dd4bf, #14b8a6); } /* Teal */
+        .btn-slate { background: linear-gradient(180deg, #94a3b8, #64748b); } /* Xám */
+        .btn-blue { background: linear-gradient(180deg, #60a5fa, #3b82f6); } /* Xanh dương */
 
         canvas { flex-grow: 1; width: 100%; height: 100%; display: block; cursor: crosshair; touch-action: none; }
 
         /* SETTINGS DROPDOWN */
         .settings-dropdown { position: relative; display: flex; flex: 1 1 0; }
         .settings-dropdown-toggle {
-            padding: 5px 8px; font-size: 12.5px; font-weight: bold; color: #0056b3;
-            border-radius: 6px; border: 1px solid #ccc; background-color: #fff; cursor: pointer;
-            box-sizing: border-box; box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1); width: 100%;
+            padding: 5px 8px; font-size: 12.5px; font-weight: bold; color: #1e293b;
+            border-radius: 6px; border: 1px solid #cbd5e1; background: linear-gradient(180deg, #ffffff, #f1f5f9); 
+            cursor: pointer; box-sizing: border-box; box-shadow: 0 1px 2px rgba(0,0,0,0.05); width: 100%;
             display: flex; align-items: center; justify-content: space-between; user-select: none;
         }
+        .settings-dropdown-toggle:hover { background: #fff; border-color: #94a3b8; }
         .settings-dropdown-menu {
-            display: none; position: absolute; top: calc(100% + 3px); left: 0;
-            min-width: max(100%, 280px); z-index: 200; background: #fff; border: 1px solid #bbb;
-            border-radius: 6px; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18); overflow: hidden;
+            display: none; position: absolute; top: calc(100% + 4px); left: 0;
+            min-width: max(100%, 280px); z-index: 200; background: #fff; border: 1px solid #cbd5e1;
+            border-radius: 8px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2); overflow: hidden;
         }
         .settings-dropdown.open .settings-dropdown-menu { display: block; }
         .settings-group-header {
-            padding: 8px 12px; font-size: 13px; font-weight: 600; color: #333; cursor: pointer;
-            display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #eee;
+            padding: 10px 12px; font-size: 13px; font-weight: 600; color: #0f172a; cursor: pointer;
+            display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #f1f5f9; background: #f8fafc;
         }
-        .settings-group-header:hover { background-color: #eef6ff; }
-        .settings-group.expanded > .settings-group-header { background-color: #e8f0fe; border-bottom: 1px solid #ddd; }
-        .group-arrow { font-size: 12px; transition: transform 0.2s ease; color: #999; }
-        .settings-group.expanded > .settings-group-header .group-arrow { transform: rotate(90deg); color: #0056b3; }
+        .settings-group-header:hover { background-color: #e2e8f0; }
+        .settings-group.expanded > .settings-group-header { background-color: #e0f2fe; border-bottom: 1px solid #bae6fd; color: #0369a1; }
+        .group-arrow { font-size: 12px; transition: transform 0.2s ease; color: #94a3b8; }
+        .settings-group.expanded > .settings-group-header .group-arrow { transform: rotate(90deg); color: #0369a1; }
         .settings-group-items { display: none; }
         .settings-group.expanded > .settings-group-items { display: block; }
         .settings-item {
-            padding: 8px 14px 8px 24px; font-size: 13px; color: #0056b3; cursor: pointer;
-            border-bottom: 1px solid #f0f0f0; display: flex; align-items: center; justify-content: flex-start; gap: 8px; user-select: none;
+            padding: 10px 14px 10px 24px; font-size: 13px; color: #334155; cursor: pointer;
+            border-bottom: 1px solid #f8fafc; display: flex; align-items: center; justify-content: flex-start; gap: 8px; user-select: none; transition: background 0.2s;
         }
-        .settings-item:hover { background-color: #d4edff; }
-        .settings-item .item-check { display: none; color: #28a745; font-weight: bold; font-size: 15px; margin-left: 2px; }
-        .settings-item.active { background-color: #cce5ff; font-weight: 700; }
+        .settings-item:hover { background-color: #f1f5f9; }
+        .settings-item .item-check { display: none; color: #10b981; font-weight: bold; font-size: 15px; margin-left: 2px; }
+        .settings-item.active { background-color: #f0fdf4; font-weight: 700; color: #059669; }
         .settings-item.active .item-check { display: inline-block; }
 
         /* MODALS FULL MÀN HÌNH */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh;
-            background: rgba(0, 0, 0, 0.85); z-index: 100000; display: none;
+            background: rgba(15, 23, 42, 0.9); z-index: 100000; display: none;
             align-items: center; justify-content: center; backdrop-filter: blur(5px);
             padding: 0; box-sizing: border-box;
         }
         .modal-content {
-            background: #fff; width: 100vw; height: 100dvh; max-width: 100vw; max-height: 100dvh;
+            background: #f8fafc; width: 100vw; height: 100dvh; max-width: 100vw; max-height: 100dvh;
             border-radius: 0; box-shadow: none; display: flex; flex-direction: column; overflow: hidden;
             box-sizing: border-box;
         }
         .modal-header {
-            color: #fff; padding: 12px 16px; font-weight: bold; font-size: 15px;
+            color: #fff; padding: 12px 16px; font-weight: bold; font-size: 15px; text-shadow: 0 1px 2px rgba(0,0,0,0.3);
             display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
         }
         .modal-close-btn {
-            background: transparent; border: none; color: #fff; font-size: 24px; font-weight: bold;
-            cursor: pointer; padding: 0; line-height: 1; width: auto; box-shadow: none;
+            background: transparent; border: none; color: #fff; font-size: 26px; font-weight: bold;
+            cursor: pointer; padding: 0; line-height: 1; width: auto; box-shadow: none; text-shadow: none;
         }
+        .modal-close-btn:hover { transform: scale(1.2); filter: none; }
         .modal-controls {
-            padding: 10px 16px; background: #f8f9fa; border-bottom: 1px solid #ddd;
+            padding: 10px 16px; background: #fff; border-bottom: 1px solid #cbd5e1;
             display: flex; gap: 10px; align-items: center; flex-wrap: wrap; justify-content: center; flex-shrink: 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
         }
         .modal-controls input {
-            padding: 6px 8px; border: 1px solid #ccc; border-radius: 6px; font-weight: bold; 
-            color: #d93025; width: 80px; text-align: center; background: #fff; font-size: 13.5px;
+            padding: 6px 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-weight: bold; 
+            color: #ef4444; width: 80px; text-align: center; background: #f8fafc; font-size: 13.5px;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
         }
-        .modal-controls button { width: auto; padding: 7px 14px; font-size: 13px; }
+        .modal-controls input:focus { border-color: #3b82f6; background: #fff; }
+        .modal-controls button { width: auto; padding: 7px 16px; font-size: 13px; }
         
         .fft-canvas-container { padding: 12px 16px; background: #eef1f5; width: 100%; box-sizing: border-box; display: flex; justify-content: center; align-items: center; overflow: hidden; flex-grow: 1; }
-        .modal-display-canvas { background: #fff; border: 1px solid #bbb; border-radius: 8px; width: 100%; height: 100%; display: block; }
-        .fft-note { padding: 10px 16px; font-size: 12px; color: #555; font-style: italic; background: #f8f9fa; text-align: center; flex-shrink: 0; border-top: 1px solid #ddd; }
+        .modal-display-canvas { background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; width: 100%; height: 100%; display: block; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .fft-note { padding: 10px 16px; font-size: 12px; color: #64748b; font-style: italic; background: #fff; text-align: center; flex-shrink: 0; border-top: 1px solid #cbd5e1; }
 
         /* MÀU RIÊNG CHO TỪNG MODAL */
-        #fftModal .modal-header { background: #6f42c1; }
-        #twoSourceModal .modal-header { background: #d63384; }
+        #fftModal .modal-header { background: linear-gradient(90deg, #8b5cf6, #6366f1); }
+        #twoSourceModal .modal-header { background: linear-gradient(90deg, #ec4899, #d946ef); }
 
         /* FOX-LAB AI CHATBOT WIDGET */
         :root {
@@ -280,15 +295,16 @@
 <body>
     <div class="top-bar">
         <div class="controls-wrapper">
-            <!-- Ẩn các Select config logic để giữ nguyên cấu trúc JS -->
+            <!-- Các cấu hình ẩn chứa giá trị xử lý logic -->
             <select id="channelModeSelect" style="display:none"><option value="1" selected>1 nguồn âm</option><option value="2">2 nguồn âm</option></select>
             <select id="modeSelect" style="display:none"><option value="auto" selected>Khảo sát tần số (Tự dừng)</option><option value="continuous">Khảo sát liên tục</option></select>
+            <select id="speedSelect" style="display:none"><option value="fast" selected>Nhanh</option><option value="slow">Chậm</option></select>
             
             <!-- HÀNG 1: CÁC NÚT ĐIỀU KHIỂN CHUNG -->
             <div class="toolbar-row">
                 <div class="settings-dropdown" id="settingsDropdown">
                     <div class="settings-dropdown-toggle" id="settingsToggle">
-                        <span id="settingsLabel">Cài đặt chung</span><span class="dropdown-arrow">▼</span>
+                        <span id="settingsLabel">⚙️ Cài đặt chung</span><span class="dropdown-arrow">▼</span>
                     </div>
                     <div class="settings-dropdown-menu" id="settingsMenu">
                         <div class="settings-group" id="groupChannelMode">
@@ -305,34 +321,42 @@
                                 <div class="settings-item" data-target="modeSelect" data-value="continuous"><span>Khảo sát liên tục</span><span class="item-check">✓</span></div>
                             </div>
                         </div>
+                        <!-- Cài đặt Tốc độ quét (Bị ẩn khi ở chế độ Tự dừng) -->
+                        <div class="settings-group" id="groupSpeed" style="display: none;">
+                            <div class="settings-group-header" data-group="speed"><span>Tốc độ quét</span><span class="group-arrow">›</span></div>
+                            <div class="settings-group-items">
+                                <div class="settings-item active" data-target="speedSelect" data-value="fast"><span>Quét: Nhanh</span><span class="item-check">✓</span></div>
+                                <div class="settings-item" data-target="speedSelect" data-value="slow"><span>Quét: Chậm</span><span class="item-check">✓</span></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <select id="speedSelect" class="custom-select" style="display: none; background: #fff;"><option value="fast" selected>Quét: Nhanh</option><option value="slow">Quét: Chậm</option></select>
-                <button id="pauseButton" disabled>Đo / Dừng</button>
-                <button id="resetButton">Làm mới</button>
-                <button id="btnAnalysis" disabled>Phân tích</button>
-                <button id="saveButton" disabled>Chụp ảnh</button>
-                <button id="fullscreenButton">Mở rộng</button>
+                
+                <button id="pauseButton" class="btn-green" disabled>Đo / Dừng</button>
+                <button id="resetButton" class="btn-orange">Làm mới</button>
+                <button id="btnAnalysis" class="btn-slate" disabled>Phân tích</button>
+                <button id="saveButton" class="btn-teal" disabled>Chụp ảnh</button>
+                <button id="fullscreenButton" class="btn-slate">Mở rộng</button>
             </div>
 
             <!-- HÀNG 2: THIẾT LẬP KÊNH & MICRO (GỘP THÀNH CARD) -->
             <div class="channel-row">
                 <div class="channel-card channel-a-indicator">
-                    <button id="btnStartA" class="channel-btn" disabled>Kênh A (Khóa)</button>
-                    <select id="micSelectA" style="color: #dc3545;"><option value="">-- Kênh A: Chờ tải thiết bị --</option></select>
+                    <button id="btnStartA" class="btn-slate" disabled>Kênh A (Khóa)</button>
+                    <select id="micSelectA" style="color: #dc2626;"><option value="">-- Kênh A: Chờ tải thiết bị --</option></select>
                 </div>
                 <!-- Card Kênh B mặc định ẩn, chỉ hiện khi chọn 2 Nguồn âm -->
                 <div class="channel-card channel-b-indicator" id="cardChannelB" style="display:none;">
-                    <button id="btnStartB" class="channel-btn" disabled>Kênh B (Khóa)</button>
-                    <select id="micSelectB" style="color: #0d6efd;"><option value="">-- Kênh B: Chờ tải thiết bị --</option></select>
+                    <button id="btnStartB" class="btn-slate" disabled>Kênh B (Khóa)</button>
+                    <select id="micSelectB" style="color: #2563eb;"><option value="">-- Kênh B: Chờ tải thiết bị --</option></select>
                 </div>
             </div>
 
             <!-- HÀNG 3: TRẠNG THÁI -->
-            <div class="info-panel" id="infoText">Đang tải cấu hình...</div>
+            <div class="info-panel" id="infoText">Đang tải hệ thống phân tích...</div>
         </div>
 
-        <!-- Mã QR chỉ hiển thị trên máy tính -->
+        <!-- Mã QR -->
         <div class="qr-panel" id="qrPanel">
             <img id="qrImage" src="" alt="QR Code"><span class="scan-title">FOX-LAB</span>
         </div>
@@ -350,11 +374,11 @@
             <div class="modal-controls">
                 <label style="font-weight: 600; font-size: 13.5px;">Tần số cơ bản (f0):</label>
                 <input type="number" id="fftTargetFreq" value="440" min="20" max="5000" oninput="processAndDrawFFT()"> <span style="font-weight: 600; font-size: 13.5px;">Hz</span>
-                <button style="background-color: #28a745;" onclick="processAndDrawFFT()">Quét Họa âm</button>
-                <button style="background-color: #6c757d;" onclick="closeFFTModal()">Đóng / Quay lại</button>
+                <button class="btn-green" onclick="processAndDrawFFT()">Quét Họa âm</button>
+                <button class="btn-slate" onclick="closeFFTModal()">Đóng / Quay lại</button>
             </div>
             <div class="fft-canvas-container">
-                <canvas id="fftDisplayCanvas" class="modal-display-canvas" width="900" height="400"></canvas>
+                <canvas id="fftDisplayCanvas" class="modal-display-canvas"></canvas>
             </div>
             <div class="fft-note">
                 * Trục ngang hiển thị tần số (Hz) ở dưới đáy biểu đồ | Trục dọc hiển thị biên độ. Tối ưu cho 5 bậc họa âm ($f_0, 2f_0, 3f_0, 4f_0, 5f_0$).
@@ -371,21 +395,21 @@
             </div>
             <div class="modal-controls" style="flex-direction: column; gap: 8px;">
                 <div style="display:flex; gap:15px; flex-wrap:wrap; justify-content:center; width:100%; font-size: 13.5px;">
-                    <div style="color: #dc3545; font-weight:bold;">
-                        Kênh A: f = <input type="number" id="tsFreqA" oninput="updateTSFromFreq('A')" style="color:#dc3545;"> Hz
-                        &nbsp;|&nbsp; T = <input type="number" id="tsPerA" oninput="updateTSFromPer('A')" style="color:#dc3545;"> ms
+                    <div style="color: #dc2626; font-weight:bold;">
+                        Kênh A: f = <input type="number" id="tsFreqA" oninput="updateTSFromFreq('A')" style="color:#dc2626;"> Hz
+                        &nbsp;|&nbsp; T = <input type="number" id="tsPerA" oninput="updateTSFromPer('A')" style="color:#dc2626;"> ms
                     </div>
-                    <div style="color: #0d6efd; font-weight:bold;">
-                        Kênh B: f = <input type="number" id="tsFreqB" oninput="updateTSFromFreq('B')" style="color:#0d6efd;"> Hz
-                        &nbsp;|&nbsp; T = <input type="number" id="tsPerB" oninput="updateTSFromPer('B')" style="color:#0d6efd;"> ms
+                    <div style="color: #2563eb; font-weight:bold;">
+                        Kênh B: f = <input type="number" id="tsFreqB" oninput="updateTSFromFreq('B')" style="color:#2563eb;"> Hz
+                        &nbsp;|&nbsp; T = <input type="number" id="tsPerB" oninput="updateTSFromPer('B')" style="color:#2563eb;"> ms
                     </div>
                 </div>
                 <div style="display:flex; gap:15px; align-items:center; flex-wrap:wrap; justify-content:center;">
-                    <span style="font-weight:bold; background:#e8f0fe; padding:6px 12px; border-radius:6px; border:1px solid #b6d4fe; color:#052c65; font-size: 13px;">
-                        Độ lệch pha (Δφ): <span id="tsPhaseDiff" style="color:#d93025; font-size:15px;">0.00</span> rad (<span id="tsPhaseDeg" style="color:#d93025; font-size:15px;">0</span>°)
+                    <span style="font-weight:bold; background:#e0f2fe; padding:6px 12px; border-radius:6px; border:1px solid #bae6fd; color:#0369a1; font-size: 13px;">
+                        Độ lệch pha (Δφ): <span id="tsPhaseDiff" style="color:#ef4444; font-size:15px;">0.00</span> rad (<span id="tsPhaseDeg" style="color:#ef4444; font-size:15px;">0</span>°)
                     </span>
-                    <button style="background-color: #198754;" id="btnSynthesize" onclick="toggleSynthesis()">Tổng hợp 2 dao động</button>
-                    <button style="background-color: #6c757d;" onclick="closeTwoSourceModal()">Đóng / Quay lại</button>
+                    <button class="btn-green" id="btnSynthesize" onclick="toggleSynthesis()">Tổng hợp 2 dao động</button>
+                    <button class="btn-slate" onclick="closeTwoSourceModal()">Đóng / Quay lại</button>
                 </div>
             </div>
             <div class="fft-canvas-container" id="tsContainer">
@@ -487,7 +511,14 @@
                 if (currentUrl.startsWith('file://')) currentUrl = 'https://github.com/TenCuaThay/DaoDongKy';
                 qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(currentUrl)}`;
             }
-            // Khởi tạo thẻ Kênh B dựa theo mặc định (1 Kênh -> Ẩn Kênh B)
+            
+            // Xử lý ẩn/hiện mục Setting "Tốc độ quét" theo chế độ
+            const speedGroup = document.getElementById('groupSpeed');
+            const modeVal = document.getElementById('modeSelect').value;
+            if (modeVal === 'continuous') speedGroup.style.display = 'block';
+            else speedGroup.style.display = 'none';
+
+            // Khởi tạo thẻ Kênh B dựa theo mặc định
             document.getElementById('cardChannelB').style.display = (getActiveChannelMode() === '2') ? 'flex' : 'none';
             resizeCanvas(); updateUIState(); drawFrame(true);
         });
@@ -502,7 +533,7 @@
         const micSelectA = document.getElementById('micSelectA'), micSelectB = document.getElementById('micSelectB');
         const canvas = document.getElementById('oscilloscope'), canvasCtx = canvas.getContext('2d');
         const settingsDropdown = document.getElementById('settingsDropdown'), settingsToggle = document.getElementById('settingsToggle');
-        const settingsMenu = document.getElementById('settingsMenu'), settingsLabel = document.getElementById('settingsLabel');
+        const settingsMenu = document.getElementById('settingsMenu');
 
         let isInitialized = true; 
 
@@ -520,15 +551,19 @@
                 e.stopPropagation(); const targetSelect = document.getElementById(item.dataset.target);
                 item.parentElement.querySelectorAll('.settings-item').forEach(s => s.classList.remove('active'));
                 item.classList.add('active'); targetSelect.value = item.dataset.value; targetSelect.dispatchEvent(new Event('change'));
-                settingsLabel.textContent = 'Cài đặt chung'; settingsDropdown.classList.remove('open');
+                
+                // Nếu không phải chọn Tốc độ quét thì mới đóng menu
+                if(item.dataset.target !== 'speedSelect') {
+                    settingsDropdown.classList.remove('open');
+                }
             });
         });
 
         let audioCtx;
         const BUFFER_SECONDS = 10;
         const channelConfig = {
-            A: { stream: null, source: null, processor: null, filterHP: null, filterLP: null, dummy: null, data: null, index: 0, color: '#dc3545', active: false },
-            B: { stream: null, source: null, processor: null, filterHP: null, filterLP: null, dummy: null, data: null, index: 0, color: '#0d6efd', active: false }
+            A: { stream: null, source: null, processor: null, filterHP: null, filterLP: null, dummy: null, data: null, index: 0, color: '#dc2626', active: false },
+            B: { stream: null, source: null, processor: null, filterHP: null, filterLP: null, dummy: null, data: null, index: 0, color: '#2563eb', active: false }
         };
 
         let sampleRate = 48000, isPaused = true, isContinuousMode = false, stopTimer;
@@ -548,10 +583,10 @@
             cfg.active = false; cfg.index = 0; if (cfg.data) cfg.data.fill(0);
         }
 
-        // Cập nhật Trạng thái Nút Phân tích Gộp chung
         function updateAnalysisButtonState() {
             if (!isInitialized) { 
                 btnAnalysis.disabled = true; 
+                btnAnalysis.className = 'btn-slate';
                 return; 
             }
             const mode = getActiveChannelMode();
@@ -561,24 +596,23 @@
                 if (mode === '1' && channelConfig.A.active) {
                     btnAnalysis.disabled = false;
                     btnAnalysis.textContent = "Phân tích FFT";
-                    btnAnalysis.style.backgroundColor = "#6f42c1"; // Màu tím
+                    btnAnalysis.className = 'btn-purple'; 
                 } else if (mode === '2' && activeChannels === 2) {
                     btnAnalysis.disabled = false;
                     btnAnalysis.textContent = "Phân tích 2 Nguồn";
-                    btnAnalysis.style.backgroundColor = "#d63384"; // Màu hồng
+                    btnAnalysis.className = 'btn-pink'; 
                 } else {
                     btnAnalysis.disabled = true;
-                    btnAnalysis.textContent = "Cần dừng để Phân tích";
-                    btnAnalysis.style.backgroundColor = "#6c757d"; // Màu xám khóa
+                    btnAnalysis.textContent = "Cần dừng để PT";
+                    btnAnalysis.className = 'btn-slate'; 
                 }
             } else {
                 btnAnalysis.disabled = true;
                 btnAnalysis.textContent = "Đang đo...";
-                btnAnalysis.style.backgroundColor = "#6c757d";
+                btnAnalysis.className = 'btn-slate';
             }
         }
 
-        // Nút phân tích Mở Modal tương ứng
         btnAnalysis.addEventListener('click', () => {
             const mode = getActiveChannelMode();
             if (mode === '1') openFFTModal();
@@ -589,9 +623,9 @@
             if (document.hidden) {
                 if (!isPaused) {
                     isPaused = true; clearTimeout(stopTimer);
-                    pauseButton.textContent = "Đo / Dừng"; pauseButton.style.backgroundColor = "#28a745";
+                    pauseButton.textContent = "Đo / Dừng"; pauseButton.className = "btn-green";
                     infoText.innerHTML = "Đã tạm dừng do chuyển ứng dụng. Đồ thị được giữ nguyên.";
-                    infoText.style.color = "#d93025";
+                    infoText.style.color = "#ea580c";
                     updateUIState(); drawFrame(); 
                 }
             }
@@ -601,15 +635,26 @@
         speedSelect.addEventListener('change', (e) => { targetFPS = (e.target.value === 'slow') ? 15 : 60; });
         modeSelect.addEventListener('change', (e) => {
             isContinuousMode = (e.target.value === 'continuous'); clearTimeout(stopTimer);
-            if (isContinuousMode) { speedSelect.style.display = 'block'; targetFPS = (speedSelect.value === 'slow') ? 15 : 60; }
-            else { speedSelect.style.display = 'none'; targetFPS = 60; speedSelect.value = "fast"; if (!isPaused) triggerAutoStop(); }
+            const speedGroup = document.getElementById('groupSpeed');
+            if (isContinuousMode) { 
+                speedGroup.style.display = 'block'; 
+                targetFPS = (speedSelect.value === 'slow') ? 15 : 60; 
+            } else { 
+                speedGroup.style.display = 'none'; 
+                targetFPS = 60; 
+                // Cập nhật lại list item check mark
+                speedSelect.value = "fast"; 
+                document.querySelectorAll('#groupSpeed .settings-item').forEach(el => el.classList.remove('active'));
+                document.querySelector('#groupSpeed .settings-item[data-value="fast"]').classList.add('active');
+                if (!isPaused) triggerAutoStop(); 
+            }
         });
         
         channelModeSelect.addEventListener('change', () => {
             const mode = getActiveChannelMode();
             if (mode === '1') {
                 document.getElementById('cardChannelB').style.display = 'none';
-                stopAudioChannel('B'); // Tắt lập tức Kênh B nếu chuyển về 1 Kênh
+                stopAudioChannel('B');
             } else {
                 document.getElementById('cardChannelB').style.display = 'flex';
             }
@@ -717,12 +762,12 @@
             return 0;
         }
 
-        function drawLabelWithPill(text, x, y, align = 'center', baseline = 'top', textColor = '#000000') {
-            canvasCtx.save(); canvasCtx.font = '600 13px "Segoe UI", Roboto, Arial, sans-serif'; canvasCtx.textAlign = align; canvasCtx.textBaseline = baseline;
+        function drawLabelWithPill(text, x, y, align = 'center', baseline = 'top', textColor = '#1e293b') {
+            canvasCtx.save(); canvasCtx.font = '600 13px "Inter", "Segoe UI", sans-serif'; canvasCtx.textAlign = align; canvasCtx.textBaseline = baseline;
             const metrics = canvasCtx.measureText(text), padX = 4, padY = 2, textW = metrics.width, textH = 14;
             let boxX = x - padX; if (align === 'center') boxX = x - textW / 2 - padX; else if (align === 'right') boxX = x - textW - padX;
             let boxY = y - padY; if (baseline === 'middle') boxY = y - textH / 2 - padY; else if (baseline === 'bottom') boxY = y - textH - padY;
-            canvasCtx.fillStyle = 'rgba(230, 247, 255, 0.88)'; canvasCtx.fillRect(boxX, boxY, textW + padX * 2, textH + padY * 2);
+            canvasCtx.fillStyle = 'rgba(241, 245, 249, 0.9)'; canvasCtx.fillRect(boxX, boxY, textW + padX * 2, textH + padY * 2);
             canvasCtx.fillStyle = textColor; canvasCtx.fillText(text, x, y); canvasCtx.restore();
         }
 
@@ -742,30 +787,30 @@
         function updateUIState() {
             if (!isInitialized) {
                 btnStartA.disabled = true; btnStartB.disabled = true;
-                btnStartA.textContent = "Kênh A (Khóa)"; btnStartA.style.backgroundColor = "#6c757d";
-                btnStartB.textContent = "Kênh B (Khóa)"; btnStartB.style.backgroundColor = "#6c757d";
+                btnStartA.textContent = "Kênh A (Khóa)"; btnStartA.className = "btn-slate";
+                btnStartB.textContent = "Kênh B (Khóa)"; btnStartB.className = "btn-slate";
                 pauseButton.disabled = true; saveButton.disabled = true; 
-                btnAnalysis.disabled = true; btnAnalysis.textContent = "Phân tích (Khóa)"; btnAnalysis.style.backgroundColor = "#6c757d";
                 resetButton.disabled = false;
                 infoText.innerHTML = "Đã khóa an toàn. Nhấn <span class='info-badge'>Làm mới</span> để kích hoạt.";
-                infoText.style.color = "#d93025";
+                infoText.style.color = "#dc2626";
+                updateAnalysisButtonState();
                 return;
             }
 
-            if (channelConfig.A.active) { btnStartA.textContent = "Kênh A (Hoạt động)"; btnStartA.style.backgroundColor = "#28a745"; }
-            else { btnStartA.textContent = "Kênh A (Khóa)"; btnStartA.style.backgroundColor = "#6c757d"; } 
+            if (channelConfig.A.active) { btnStartA.textContent = "Kênh A (Hoạt động)"; btnStartA.className = "btn-red"; }
+            else { btnStartA.textContent = "Kênh A (Khóa)"; btnStartA.className = "btn-slate"; } 
             btnStartA.disabled = false;
             
-            if (channelConfig.B.active) { btnStartB.textContent = "Kênh B (Hoạt động)"; btnStartB.style.backgroundColor = "#28a745"; }
-            else { btnStartB.textContent = "Kênh B (Khóa)"; btnStartB.style.backgroundColor = "#6c757d"; } 
+            if (channelConfig.B.active) { btnStartB.textContent = "Kênh B (Hoạt động)"; btnStartB.className = "btn-blue"; }
+            else { btnStartB.textContent = "Kênh B (Khóa)"; btnStartB.className = "btn-slate"; } 
             btnStartB.disabled = false;
             
             if (channelConfig.A.active || channelConfig.B.active) {
                 pauseButton.disabled = false; resetButton.disabled = false; saveButton.disabled = false;
-                if (isPaused) { infoText.innerHTML = "Đã kết nối. Bấm <span class='info-badge'>Đo / Dừng</span> để khảo sát."; infoText.style.color = "#007bff"; }
+                if (isPaused) { infoText.innerHTML = "Đã kết nối. Bấm <span class='info-badge'>Đo / Dừng</span> để khảo sát."; infoText.style.color = "#0284c7"; }
             } else {
                 pauseButton.disabled = true; resetButton.disabled = false; saveButton.disabled = true;
-                infoText.innerHTML = "Nhấn vào nút <span class='info-badge'>Kênh A</span> hoặc <span class='info-badge'>Kênh B</span> để bật mic."; infoText.style.color = "#007bff";
+                infoText.innerHTML = "Nhấn vào nút <span class='info-badge'>Kênh A</span> hoặc <span class='info-badge'>Kênh B</span> để bật mic."; infoText.style.color = "#0284c7";
             }
             updateAnalysisButtonState();
         }
@@ -804,9 +849,9 @@
             if (!isPaused && !isContinuousMode) {
                 stopTimer = setTimeout(() => {
                     if (!isPaused) {
-                        isPaused = true; pauseButton.textContent = "Đo / Dừng"; pauseButton.style.backgroundColor = "#28a745";
+                        isPaused = true; pauseButton.textContent = "Đo / Dừng"; pauseButton.className = "btn-green";
                         infoText.innerHTML = "Đã khóa sóng &mdash; Chọn các Công cụ Phân tích hoặc ấn Đo để tiếp tục";
-                        infoText.style.color = "#d93025"; updateAnalysisButtonState(); drawFrame();
+                        infoText.style.color = "#dc2626"; updateAnalysisButtonState(); drawFrame();
                     }
                 }, 2000);
             }
@@ -820,14 +865,14 @@
                 channelConfig.A.index = 0; if (channelConfig.A.data) channelConfig.A.data.fill(0);
                 channelConfig.B.index = 0; if (channelConfig.B.data) channelConfig.B.data.fill(0);
                 isUserZoomed = false; detectedFrequency = 0; lockedFrequency = 440; totalTimeOnScreen = 5 * (1.0 / lockedFrequency);
-                pauseButton.textContent = "Đang đo..."; pauseButton.style.backgroundColor = "#dc3545";
+                pauseButton.textContent = "Đang đo..."; pauseButton.className = "btn-red";
                 let text = "Đang quét tín hiệu: "; if (channelConfig.A.active) text += "<span class='channel-tag-a'>Kênh A (Đỏ)</span>";
                 if (channelConfig.A.active && channelConfig.B.active) text += " &amp; "; if (channelConfig.B.active) text += "<span class='channel-tag-b'>Kênh B (Xanh)</span>";
                 infoText.innerHTML = text; lastDrawTime = performance.now(); updateAnalysisButtonState(); draw(); triggerAutoStop();
             } else {
-                isPaused = true; clearTimeout(stopTimer); pauseButton.textContent = "Đo / Dừng"; pauseButton.style.backgroundColor = "#28a745";
-                infoText.innerHTML = isContinuousMode ? "Đã tạm dừng vẽ đồ thị &mdash; Ấn <span class='info-badge'>Đo / Dừng</span> để tiếp tục" : "Đã khóa sóng &mdash; Có thể thực hiện Phân tích ngay lúc này";
-                infoText.style.color = "#d93025"; updateAnalysisButtonState(); drawFrame();
+                isPaused = true; clearTimeout(stopTimer); pauseButton.textContent = "Đo / Dừng"; pauseButton.className = "btn-green";
+                infoText.innerHTML = isContinuousMode ? "Đã tạm dừng vẽ &mdash; Ấn <span class='info-badge'>Đo / Dừng</span> để tiếp tục" : "Đã khóa sóng &mdash; Có thể thực hiện Phân tích ngay lúc này";
+                infoText.style.color = "#dc2626"; updateAnalysisButtonState(); drawFrame();
             }
         });
 
@@ -837,7 +882,7 @@
             isPaused = true; 
             clearTimeout(stopTimer); 
             pauseButton.textContent = "Đo / Dừng"; 
-            pauseButton.style.backgroundColor = "#28a745";
+            pauseButton.className = "btn-green";
             
             if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
             
@@ -881,13 +926,13 @@
             }
             if (!isUserZoomed) totalTimeOnScreen = Math.max(0.002, Math.min(5 * (1.0 / ((lockedFrequency > 0) ? lockedFrequency : 440)), 2.4));
             const zoomY = currentZoomY;
-            canvasCtx.strokeStyle = '#b3e0ff'; canvasCtx.lineWidth = 1;
+            canvasCtx.strokeStyle = '#bae6fd'; canvasCtx.lineWidth = 1;
             const stepGridX = width / 10, stepGridY = height / 8;
             canvasCtx.beginPath();
             for (let i = 0; i <= 10; i++) { canvasCtx.moveTo(i * stepGridX, 0); canvasCtx.lineTo(i * stepGridX, height); }
             for (let i = 0; i <= 8; i++) { canvasCtx.moveTo(0, i * stepGridY); canvasCtx.lineTo(width, i * stepGridY); }
             canvasCtx.stroke();
-            canvasCtx.lineWidth = 2; canvasCtx.strokeStyle = '#000000'; canvasCtx.beginPath();
+            canvasCtx.lineWidth = 2; canvasCtx.strokeStyle = '#334155'; canvasCtx.beginPath();
             canvasCtx.moveTo(0, height / 2); canvasCtx.lineTo(width, height / 2);
             canvasCtx.moveTo(width / 2, 0); canvasCtx.lineTo(width / 2, height);
             const tickSize = 5;
@@ -1010,20 +1055,20 @@
             let maxMag = 0.001; for(let i=1; i<maxBin; i++) { if(magnitudes[i] > maxMag) maxMag = magnitudes[i]; }
 
             const chartBottom = ch - 35;
-            ctx.strokeStyle = '#e8e8e8'; ctx.lineWidth = 1; ctx.beginPath();
+            ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 1; ctx.beginPath();
             for(let i = 0; i <= 10; i++) { let x = i * (cw / 10); ctx.moveTo(x, 0); ctx.lineTo(x, chartBottom); }
             for(let i = 0; i <= 6; i++) { let y = i * (chartBottom / 6); ctx.moveTo(0, y); ctx.lineTo(cw, y); }
             ctx.stroke();
 
-            ctx.strokeStyle = '#333'; ctx.lineWidth = 2; ctx.beginPath();
+            ctx.strokeStyle = '#334155'; ctx.lineWidth = 2; ctx.beginPath();
             ctx.moveTo(0, chartBottom); ctx.lineTo(cw, chartBottom); ctx.stroke();
             
-            ctx.fillStyle = '#1e293b'; ctx.font = 'bold 12.5px "Be Vietnam Pro", sans-serif'; ctx.textAlign = 'center';
+            ctx.fillStyle = '#0f172a'; ctx.font = 'bold 12.5px "Be Vietnam Pro", sans-serif'; ctx.textAlign = 'center';
             for(let i = 1; i <= 5; i++) { 
                 let fVal = Math.round(i * baseFreq), xPos = (fVal / maxDrawFreq) * cw;
                 if (xPos < cw - 25) {
                     ctx.fillText(fVal + " Hz", xPos, chartBottom + 18);
-                    ctx.strokeStyle = '#0056b3'; ctx.lineWidth = 2; ctx.beginPath();
+                    ctx.strokeStyle = '#3b82f6'; ctx.lineWidth = 2; ctx.beginPath();
                     ctx.moveTo(xPos, chartBottom); ctx.lineTo(xPos, chartBottom + 6); ctx.stroke();
                 }
             }
@@ -1035,10 +1080,10 @@
                 let mag = magnitudes[i], barHeight = (mag / maxMag) * (chartBottom - 30), x = i * binWidth;
                 
                 if(barHeight > 1) {
-                    ctx.fillStyle = isHarmonic ? '#dc3545' : '#38bdf8';
+                    ctx.fillStyle = isHarmonic ? '#ef4444' : '#38bdf8';
                     ctx.fillRect(x - (binWidth > 2 ? binWidth/2 : 0), chartBottom - barHeight, Math.max(2, binWidth), barHeight);
                     if (isHarmonic && barHeight > 15 && mag > magnitudes[i-1] && mag > magnitudes[i+1]) {
-                        ctx.fillStyle = '#dc3545'; ctx.font = 'bold 12.5px "Be Vietnam Pro", sans-serif'; 
+                        ctx.fillStyle = '#ef4444'; ctx.font = 'bold 12.5px "Be Vietnam Pro", sans-serif'; 
                         ctx.fillText("H" + harmonicNum, x, chartBottom - barHeight - 6);
                     }
                 }
@@ -1065,6 +1110,7 @@
 
             isSynthesized = false;
             document.getElementById('btnSynthesize').textContent = "Tổng hợp 2 dao động";
+            document.getElementById('btnSynthesize').className = "btn-green";
             calculatePhaseAndDraw();
         }
 
@@ -1085,7 +1131,14 @@
         }
         function toggleSynthesis() {
             isSynthesized = !isSynthesized;
-            document.getElementById('btnSynthesize').textContent = isSynthesized ? "Tắt đồ thị Tổng hợp" : "Tổng hợp 2 dao động";
+            let btn = document.getElementById('btnSynthesize');
+            if (isSynthesized) {
+                btn.textContent = "Tắt đồ thị Tổng hợp";
+                btn.className = "btn-orange";
+            } else {
+                btn.textContent = "Tổng hợp 2 dao động";
+                btn.className = "btn-green";
+            }
             calculatePhaseAndDraw();
         }
 
@@ -1116,16 +1169,51 @@
             return -1;
         }
 
-        function drawModalSignal(ctx, arr, w, h, yOffset, color, label) {
-            if(arr.length === 0) return;
-            ctx.save(); ctx.beginPath(); ctx.rect(0, yOffset, w, h); ctx.clip();
+        // HÀM VẼ ĐỒ THỊ NHỎ TRONG MODAL VỚI LƯỚI TOẠ ĐỘ
+        function drawModalSignal(ctx, arr, boxX, boxY, boxW, boxH, color, title, isLarge = false) {
+            if(!arr || arr.length === 0) return;
             
-            ctx.strokeStyle = '#e0e0e0'; ctx.lineWidth = 1;
-            ctx.beginPath(); ctx.moveTo(0, yOffset + h/2); ctx.lineTo(w, yOffset + h/2); ctx.stroke();
+            ctx.save();
+            ctx.beginPath();
+            ctx.rect(boxX, boxY, boxW, boxH);
+            ctx.clip(); // Giới hạn khu vực vẽ
             
-            ctx.strokeStyle = color; ctx.lineWidth = 2.5; ctx.lineJoin = 'round'; ctx.beginPath();
-            let step = Math.max(1, Math.floor(arr.length / (w * 2))), sliceWidth = (w / arr.length) * step;
-            let x = 0, hasMoved = false;
+            // 1. Vẽ lưới (Lưới ngang 10 ô, Dọc 8 ô)
+            ctx.strokeStyle = '#bae6fd'; // Xanh dương nhạt
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            let stepX = boxW / 10;
+            let stepY = boxH / 8;
+            for (let i = 0; i <= 10; i++) { ctx.moveTo(boxX + i * stepX, boxY); ctx.lineTo(boxX + i * stepX, boxY + boxH); }
+            for (let i = 0; i <= 8; i++) { ctx.moveTo(boxX, boxY + i * stepY); ctx.lineTo(boxX + boxW, boxY + i * stepY); }
+            ctx.stroke();
+
+            // 2. Vẽ 2 trục chính (X, Y center)
+            ctx.strokeStyle = '#334155'; // Đen xám
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            // Trục X (giữa nằm ngang)
+            ctx.moveTo(boxX, boxY + boxH / 2); ctx.lineTo(boxX + boxW, boxY + boxH / 2);
+            // Trục Y (giữa nằm dọc)
+            ctx.moveTo(boxX + boxW / 2, boxY); ctx.lineTo(boxX + boxW / 2, boxY + boxH);
+            // Thêm tick (vạch chia)
+            const tick = 4;
+            for (let i = 0; i <= 10; i++) { ctx.moveTo(boxX + i * stepX, boxY + boxH/2 - tick); ctx.lineTo(boxX + i * stepX, boxY + boxH/2 + tick); }
+            for (let i = 0; i <= 8; i++) { ctx.moveTo(boxX + boxW/2 - tick, boxY + i * stepY); ctx.lineTo(boxX + boxW/2 + tick, boxY + i * stepY); }
+            ctx.stroke();
+            
+            // 3. Vẽ Sóng Âm
+            ctx.strokeStyle = color; 
+            ctx.lineWidth = 2.5; 
+            ctx.lineJoin = 'round'; 
+            ctx.beginPath();
+            
+            let step = Math.max(1, Math.floor(arr.length / (boxW * 2))), sliceWidth = (boxW / arr.length) * step;
+            let x = boxX, hasMoved = false;
+            
+            // Hệ số scale trục Y (Tương tự đồ thị ngoài màn hình chính)
+            let graphCenterY = boxY + boxH / 2;
+            let graphDrawHeight = boxH / 2.2;
             
             for(let i=0; i<arr.length; i+=step) {
                 let v = arr[i];
@@ -1134,26 +1222,49 @@
                     for(let j=1; j<step && i+j<arr.length; j++) {
                         let tv = arr[i+j]; if(tv < min) min = tv; if(tv > max) max = tv;
                     }
-                    let y1 = yOffset + h/2 - (min * currentZoomY * h/2.2);
-                    let y2 = yOffset + h/2 - (max * currentZoomY * h/2.2);
+                    let y1 = graphCenterY - (min * currentZoomY * graphDrawHeight);
+                    let y2 = graphCenterY - (max * currentZoomY * graphDrawHeight);
                     if(!hasMoved) { ctx.moveTo(x, y1); hasMoved = true; } else { ctx.lineTo(x, y1); }
                     ctx.lineTo(x, y2);
                 } else {
-                    let y = yOffset + h/2 - (v * currentZoomY * h/2.2);
+                    let y = graphCenterY - (v * currentZoomY * graphDrawHeight);
                     if(!hasMoved) { ctx.moveTo(x, y); hasMoved = true; } else { ctx.lineTo(x, y); }
                 }
-                x += sliceWidth; if(x > w) break;
+                x += sliceWidth; if(x > boxX + boxW) break;
             }
             ctx.stroke();
             
-            ctx.fillStyle = '#fff'; ctx.fillRect(8, yOffset + 8, ctx.measureText(label).width + 12, 22);
-            ctx.fillStyle = color; ctx.font = 'bold 13px "Be Vietnam Pro", sans-serif'; ctx.fillText(label, 14, yOffset + 24);
+            // 4. Vẽ Title Pill (Nhãn đồ thị)
+            ctx.font = 'bold 13px "Be Vietnam Pro", sans-serif';
+            let tWidth = ctx.measureText(title).width;
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.85)'; 
+            ctx.fillRect(boxX + 6, boxY + 6, tWidth + 12, 24);
+            ctx.fillStyle = color; 
+            ctx.fillText(title, boxX + 12, boxY + 22);
+
+            // Gắn thêm nhãn trục nếu là biểu đồ lớn
+            if(isLarge) {
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+                ctx.fillRect(boxX + boxW - 55, graphCenterY - 25, 45, 20);
+                ctx.fillStyle = '#1e293b'; ctx.font = '600 12px "Inter", sans-serif';
+                ctx.fillText("t (ms)", boxX + boxW - 50, graphCenterY - 10);
+            }
+
+            // Vẽ viền khung
+            ctx.strokeStyle = '#94a3b8';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(boxX, boxY, boxW, boxH);
+            
             ctx.restore();
         }
 
         function calculatePhaseAndDraw() {
             const canv = document.getElementById('twoSourceCanvas'), ctx = canv.getContext('2d');
-            const cw = canv.width, ch = canv.height; ctx.clearRect(0, 0, cw, ch);
+            const cw = canv.width, ch = canv.height; 
+            
+            // Fill màu nền trắng cho cả canvas
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, cw, ch);
             
             const samplesNeeded = Math.floor(totalTimeOnScreen * sampleRate);
             let sharedOffset = findZeroCrossingOffset(channelConfig.A, channelConfig.A.index, samplesNeeded);
@@ -1183,23 +1294,24 @@
                 document.getElementById('tsPhaseDiff').textContent = "0.00";
                 document.getElementById('tsPhaseDeg').textContent = "0";
             }
-
-            let sections = isSynthesized ? 3 : 2;
-            let secH = ch / sections;
             
-            ctx.strokeStyle = '#b3e0ff'; ctx.lineWidth = 1;
-            for(let i=1; i<sections; i++) {
-                ctx.beginPath(); ctx.moveTo(0, i*secH); ctx.lineTo(cw, i*secH);
-                ctx.strokeStyle = '#000'; ctx.lineWidth = 2; ctx.stroke();
-            }
-            
-            drawModalSignal(ctx, dataA, cw, secH, 0, '#dc3545', 'Biên độ Kênh A (Đỏ)');
-            drawModalSignal(ctx, dataB, cw, secH, secH, '#0d6efd', 'Biên độ Kênh B (Xanh)');
-            
-            if(isSynthesized) {
+            if (!isSynthesized) {
+                // Layout 1: Cắt đôi theo chiều dọc
+                let halfH = ch / 2;
+                drawModalSignal(ctx, dataA, 0, 0, cw, halfH, '#ef4444', 'Kênh A (Đỏ)', true);
+                drawModalSignal(ctx, dataB, 0, halfH, cw, halfH, '#3b82f6', 'Kênh B (Xanh)', true);
+            } else {
+                // Layout 2: Thu nhỏ A và B ở nửa trên, Tổng hợp ở nửa dưới
+                let topH = ch * 0.45; // Chiếm 45% phía trên
+                let halfW = cw / 2;
+                let bottomH = ch - topH; // Chiếm 55% phía dưới
+                
+                drawModalSignal(ctx, dataA, 0, 0, halfW, topH, '#ef4444', 'Kênh A (Đỏ)', false);
+                drawModalSignal(ctx, dataB, halfW, 0, halfW, topH, '#3b82f6', 'Kênh B (Xanh)', false);
+                
                 let dataSum = new Float32Array(samplesNeeded);
                 for(let i=0; i<samplesNeeded; i++) dataSum[i] = dataA[i] + dataB[i];
-                drawModalSignal(ctx, dataSum, cw, secH, secH*2, '#198754', 'Đồ thị Tổng hợp (A + B)');
+                drawModalSignal(ctx, dataSum, 0, topH, cw, bottomH, '#10b981', 'Đồ thị Tổng hợp: (A + B)', true);
             }
         }
 
