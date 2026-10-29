@@ -1041,7 +1041,7 @@
                     </div></div>`;
             chatContent.appendChild(userRow); inputElem.value = ""; updateSendButtonState(); chatContent.scrollTop = chatContent.scrollHeight;
             const loadingId = showThinkingIndicator(); let isResponded = false;
-            const timer = setTimeout(() => { if (!isResponded) { isResponded = true; const loadingEl = document.getElementById(loadingId); if (loadingEl) loadingEl.remove(); streamBotMessage(getLocalFallbackAnswer(message)); } }, 15000);
+            const timer = setTimeout(() => { if (!isResponded) { isResponded = true; const loadingEl = document.getElementById(loadingId); if (loadingEl) loadingEl.remove(); streamBotMessage(getLocalFallbackAnswer(message)); } }, 40000);
             fetch(`${GAS_URL}?action=chat&message=${encodeURIComponent(messageToAI)}`)
                 .then(res => { if (!res.ok) throw new Error("Network response was not ok"); return res.json(); })
                 .then(data => {
