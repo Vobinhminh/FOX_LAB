@@ -35,15 +35,16 @@
         .controls-wrapper { display: flex; flex-direction: column; flex-grow: 1; gap: 8px; }
         .settings-row { display: flex; gap: 6px; width: 100%; }
 
-        /* Giao diện nút bấm Flexbox tự động co giãn 100% */
         .btn-group { display: flex; flex-wrap: wrap; gap: 6px; width: 100%; }
         .btn-group button { flex: 1 1 calc(14.28% - 6px); min-width: 90px; }
 
-        @media (max-width: 900px) { .btn-group button { flex: 1 1 calc(25% - 6px); } }
+        @media (max-width: 900px) { 
+            .btn-group button { flex: 1 1 calc(25% - 6px); } 
+            .qr-panel { display: none !important; }
+        }
         @media (max-width: 700px) {
             .top-bar { padding: 4px; gap: 4px; }
             .controls-wrapper { padding: 4px; }
-            .qr-panel { display: none; }
             .btn-group button { flex: 1 1 calc(33.33% - 6px); }
         }
         @media (max-width: 450px) {
@@ -91,7 +92,7 @@
         #resetButton { background-color: #fd7e14; }
         #saveButton { background-color: #17a2b8; }
         #fullscreenButton { background-color: #6c757d; }
-        #fftButton { background-color: #6f42c1; } /* Nút FFT màu tím */
+        #fftButton { background-color: #6f42c1; }
 
         canvas { flex-grow: 1; width: 100%; height: 0; display: block; cursor: crosshair; touch-action: none; }
 
@@ -153,9 +154,12 @@
         }
         .fft-controls label { font-weight:600; font-size:13.5px; }
         .fft-controls input {
-            padding: 6px 10px; border: 1px solid #ccc; border-radius: 6px; font-weight: bold; color: #d93025; width: 80px; text-align: center;
+            padding: 6px 10px; border: 1px solid #ccc; border-radius: 6px; font-weight: bold; color: #d93025; width: 90px; text-align: center; background: #fff;
         }
-        .fft-controls button { width: auto; background-color: #28a745; padding: 7px 16px; }
+        .fft-controls button { width: auto; padding: 7px 14px; }
+        .btn-fft-action { background-color: #28a745; }
+        .btn-fft-close { background-color: #6c757d; }
+
         .fft-canvas-container { padding: 16px; background: #eef1f5; width: 100%; box-sizing: border-box; display: flex; justify-content: center; overflow-x: auto; }
         #fftDisplayCanvas { background: #fff; border: 1px solid #bbb; border-radius: 6px; max-width: 100%; height: 300px; }
         .fft-note { padding: 8px 16px 12px 16px; font-size: 12px; color: #666; font-style: italic; background: #f8f9fa; text-align: center; }
@@ -235,7 +239,6 @@
         .fox-msg-bot .fox-msg-bubble code { background: rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.12); padding: 2px 6px; border-radius: 4px; font-family: var(--fox-font-mono); color: #fed7aa; }
         .fox-math { font-family: var(--fox-font-mono)!important; font-style: italic; color: #38bdf8; background: rgba(56,189,248,0.12); padding: 1px 6px; border-radius: 4px; font-size: 13px; margin: 0 2px; }
         
-        /* Copy / Reload Actions */
         .fox-msg-actions { display: flex; gap: 8px; opacity: 0; transition: opacity 0.2s; }
         .fox-msg-row:hover .fox-msg-actions { opacity: 1; }
         .fox-msg-action-btn { background: none; border: none; color: var(--fox-text-muted); cursor: pointer; font-size: 11px; display: flex; align-items: center; gap: 4px; padding: 2px 6px; border-radius: 4px; transition: all 0.2s; font-family: var(--fox-font); box-shadow: none; }
@@ -303,7 +306,7 @@
                 <select id="micSelectB" class="custom-select" style="flex: 1; border-color: #0d6efd; color: #0d6efd;"><option value="">-- Kênh B: Đang chờ tải thiết bị --</option></select>
             </div>
 
-            <!-- Khối nút bấm đã được nâng cấp Flexbox Responsive -->
+            <!-- Khối nút bấm -->
             <div class="btn-group">
                 <button id="btnStartA" class="channel-btn">Kênh A (Khóa)</button>
                 <button id="btnStartB" class="channel-btn">Kênh B (Khóa)</button>
@@ -317,6 +320,7 @@
             <div class="info-panel" id="infoText">Đang chờ khởi động thiết bị Micro...</div>
         </div>
 
+        <!-- Mã QR chỉ hiển thị trên máy tính -->
         <div class="qr-panel" id="qrPanel">
             <img id="qrImage" src="" alt="QR Code"><span class="scan-title">FOX-LAB</span>
         </div>
@@ -325,22 +329,23 @@
     <canvas id="oscilloscope"></canvas>
 
     <!-- FFT MODAL OVERLAY -->
-    <div id="fftModalOverlay">
-        <div id="fftModal">
+    <div id="fftModalOverlay" onclick="closeFFTModal()">
+        <div id="fftModal" onclick="event.stopPropagation()">
             <div class="fft-header">
                 <span>Phân tích Họa âm (Spectrum)</span>
                 <button class="fft-close-btn" onclick="closeFFTModal()">×</button>
             </div>
             <div class="fft-controls">
-                <label>Tần số cơ bản ($f_0$):</label>
+                <label>Tần số cơ bản (f0):</label>
                 <input type="number" id="fftTargetFreq" value="440" min="20" max="5000"> <span>Hz</span>
-                <button onclick="processAndDrawFFT()">Quét đồ thị Họa âm</button>
+                <button class="btn-fft-action" onclick="processAndDrawFFT()">Quét Họa âm</button>
+                <button class="btn-fft-close" onclick="closeFFTModal()">Đóng</button>
             </div>
             <div class="fft-canvas-container">
                 <canvas id="fftDisplayCanvas" width="760" height="300"></canvas>
             </div>
             <div class="fft-note">
-                * Trục ngang: Tần số (Hz) | Trục dọc: Biên độ. Các cột màu đỏ biểu thị dải họa âm ($f_0, 2f_0, 3f_0...$) của sóng đang khảo sát.
+                * Trục ngang: Tần số (Hz) | Trục dọc: Biên độ. Các cột màu đỏ biểu thị dải họa âm (f0, 2f0, 3f0...) của sóng đang khảo sát.
             </div>
         </div>
     </div>
@@ -500,7 +505,6 @@
             cfg.active = false; cfg.index = 0; if (cfg.data) cfg.data.fill(0);
         }
 
-        // --- Cập nhật nút FFT ---
         function updateFFTButtonState() {
             const activeChannels = (channelConfig.A.active ? 1 : 0) + (channelConfig.B.active ? 1 : 0);
             if (isPaused && activeChannels === 1 && getActiveChannelMode() === '1') {
