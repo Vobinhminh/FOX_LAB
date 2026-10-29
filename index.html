@@ -16,1079 +16,316 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
     <style>
-        html,
-        body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
+        html, body {
+            margin: 0; padding: 0; width: 100%; height: 100%;
             background-color: #e6f7ff;
             font-family: 'Be Vietnam Pro', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            text-rendering: optimizeLegibility;
-            overflow: hidden;
+            -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility; overflow: hidden;
         }
 
-        button, input, select, textarea {
-            font-family: inherit;
-        }
-
-        body {
-            display: flex;
-            flex-direction: column;
-        }
+        button, input, select, textarea { font-family: inherit; }
+        body { display: flex; flex-direction: column; }
 
         .top-bar {
-            display: flex;
-            background-color: #f0f4f8;
-            border-bottom: 3px solid #000;
-            z-index: 10;
-            padding: 8px;
-            gap: 8px;
-            align-items: stretch;
+            display: flex; background-color: #f0f4f8; border-bottom: 3px solid #000;
+            z-index: 10; padding: 8px; gap: 8px; align-items: stretch;
         }
 
         .controls-wrapper {
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
-            gap: 8px;
+            display: flex; flex-direction: column; flex-grow: 1; gap: 8px;
         }
 
-        .settings-row {
-            display: flex;
-            gap: 6px;
-            width: 100%;
-        }
+        .settings-row { display: flex; gap: 6px; width: 100%; }
 
         .btn-group {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 6px;
-            width: 100%;
+            display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; width: 100%;
         }
 
         .custom-select {
-            padding: 6px 8px;
-            font-size: 13px;
-            font-weight: bold;
-            color: #0056b3;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-            background-color: #fff;
-            width: 100%;
-            cursor: pointer;
-            outline: none;
-            box-sizing: border-box;
+            padding: 6px 8px; font-size: 13px; font-weight: bold; color: #0056b3;
+            border-radius: 6px; border: 1px solid #ccc; background-color: #fff;
+            width: 100%; cursor: pointer; outline: none; box-sizing: border-box;
             box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
         }
 
         .qr-panel {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background: #fff;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            padding: 6px;
-            box-sizing: border-box;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            width: 94px;
-            flex-shrink: 0;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            background: #fff; border: 1px solid #ccc; border-radius: 6px; padding: 6px;
+            box-sizing: border-box; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); width: 94px; flex-shrink: 0;
         }
 
-        .qr-panel img {
-            width: 65px;
-            height: 65px;
-            border: 1px solid #eee;
-        }
+        .qr-panel img { width: 65px; height: 65px; border: 1px solid #eee; }
 
         .qr-panel .scan-title {
-            font-size: 9px;
-            font-weight: bold;
-            color: #d93025;
-            margin-top: 4px;
-            line-height: 1;
-            white-space: nowrap;
+            font-size: 9px; font-weight: bold; color: #d93025; margin-top: 4px;
+            line-height: 1; white-space: nowrap;
         }
 
         @media (max-width: 800px) {
-            .top-bar {
-                padding: 0;
-                gap: 0;
-            }
-
-            .controls-wrapper {
-                padding: 8px;
-            }
-
-            .qr-panel {
-                display: none;
-            }
-
-            .btn-group {
-                grid-template-columns: repeat(3, 1fr);
-            }
+            .top-bar { padding: 0; gap: 0; }
+            .controls-wrapper { padding: 8px; }
+            .qr-panel { display: none; }
+            .btn-group { grid-template-columns: repeat(3, 1fr); }
         }
 
         @media (max-width: 500px) {
-            .btn-group {
-                grid-template-columns: 1fr 1fr;
-            }
-
-            #fullscreenButton {
-                grid-column: span 2;
-            }
-
-            .settings-row {
-                flex-direction: column;
-            }
+            .btn-group { grid-template-columns: 1fr 1fr; }
+            #fullscreenButton { grid-column: span 2; }
+            .settings-row { flex-direction: column; }
         }
 
         .info-panel {
-            font-weight: 600;
-            font-size: 13.5px;
-            color: #d93025;
-            background: #fff;
-            padding: 7px 12px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-            width: 100%;
-            text-align: center;
-            box-sizing: border-box;
-            display: block;
-            line-height: 1.45;
-            min-height: 34px;
-            letter-spacing: 0.2px;
+            font-weight: 600; font-size: 13.5px; color: #d93025; background: #fff;
+            padding: 7px 12px; border-radius: 6px; border: 1px solid #ccc; width: 100%;
+            text-align: center; box-sizing: border-box; display: block; line-height: 1.45;
+            min-height: 34px; letter-spacing: 0.2px;
         }
 
-        .info-badge {
-            display: inline-block;
-            padding: 1px 7px;
-            margin: 0 4px;
-            border-radius: 4px;
-            font-weight: 700;
-            background-color: rgba(40, 167, 69, 0.15);
-            color: #1e7e34;
-            border: 1px solid rgba(40, 167, 69, 0.35);
+        .info-badge, .channel-tag-a, .channel-tag-b {
+            display: inline-block; padding: 1px 7px; margin: 0 4px; border-radius: 4px; font-weight: 700;
         }
-
-        .channel-tag-a {
-            display: inline-block;
-            padding: 1px 7px;
-            margin: 0 3px;
-            border-radius: 4px;
-            font-weight: 700;
-            color: #dc3545;
-            background-color: rgba(220, 53, 69, 0.12);
-        }
-
-        .channel-tag-b {
-            display: inline-block;
-            padding: 1px 7px;
-            margin: 0 3px;
-            border-radius: 4px;
-            font-weight: 700;
-            color: #0d6efd;
-            background-color: rgba(13, 110, 253, 0.12);
-        }
+        .info-badge { background-color: rgba(40, 167, 69, 0.15); color: #1e7e34; border: 1px solid rgba(40, 167, 69, 0.35); }
+        .channel-tag-a { color: #dc3545; background-color: rgba(220, 53, 69, 0.12); margin: 0 3px; }
+        .channel-tag-b { color: #0d6efd; background-color: rgba(13, 110, 253, 0.12); margin: 0 3px; }
 
         button {
-            padding: 8px 4px;
-            font-size: 13px;
-            font-weight: bold;
-            cursor: pointer;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-            transition: background-color 0.2s;
-            width: 100%;
-            box-sizing: border-box;
+            padding: 8px 4px; font-size: 13px; font-weight: bold; cursor: pointer;
+            background-color: #007bff; color: white; border: none; border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.2s;
+            width: 100%; box-sizing: border-box;
         }
 
-        button:hover {
-            background-color: #0056b3;
-        }
+        button:hover { background-color: #0056b3; }
+        button:disabled { background-color: #999 !important; cursor: not-allowed; box-shadow: none; color: #ddd; }
+        .channel-btn { background-color: #6c757d; }
+        .channel-btn:hover { filter: brightness(0.92); }
+        #pauseButton { background-color: #28a745; }
+        #resetButton { background-color: #fd7e14; }
+        #saveButton { background-color: #17a2b8; }
+        #fullscreenButton { background-color: #6c757d; }
+        #pauseButton:hover, #resetButton:hover, #saveButton:hover, #fullscreenButton:hover { filter: brightness(0.9); }
 
-        button:disabled {
-            background-color: #999 !important;
-            cursor: not-allowed;
-            box-shadow: none;
-            color: #ddd;
-        }
+        canvas { flex-grow: 1; width: 100%; height: 0; display: block; cursor: crosshair; touch-action: none; }
 
-        .channel-btn {
-            background-color: #6c757d;
-        }
-
-        .channel-btn:hover {
-            filter: brightness(0.92);
-        }
-
-        #pauseButton {
-            background-color: #28a745;
-        }
-
-        #resetButton {
-            background-color: #fd7e14;
-        }
-
-        #saveButton {
-            background-color: #17a2b8;
-        }
-
-        #fullscreenButton {
-            background-color: #6c757d;
-        }
-
-        #pauseButton:hover,
-        #resetButton:hover,
-        #saveButton:hover,
-        #fullscreenButton:hover {
-            filter: brightness(0.9);
-        }
-
-        canvas {
-            flex-grow: 1;
-            width: 100%;
-            height: 0;
-            display: block;
-            cursor: crosshair;
-            touch-action: none;
-        }
-
-        .settings-dropdown {
-            position: relative;
-            flex: 1;
-        }
-
+        .settings-dropdown { position: relative; flex: 1; }
         .settings-dropdown-toggle {
-            padding: 6px 8px;
-            font-size: 13px;
-            font-weight: bold;
-            color: #0056b3;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-            background-color: #fff;
-            cursor: pointer;
-            box-sizing: border-box;
-            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            user-select: none;
+            padding: 6px 8px; font-size: 13px; font-weight: bold; color: #0056b3;
+            border-radius: 6px; border: 1px solid #ccc; background-color: #fff; cursor: pointer;
+            box-sizing: border-box; box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+            display: flex; align-items: center; justify-content: space-between; user-select: none;
         }
-
-        .settings-dropdown-toggle:hover {
-            border-color: #80b3e6;
-        }
-
-        .dropdown-arrow {
-            font-size: 9px;
-            margin-left: 8px;
-            transition: transform 0.2s ease;
-            opacity: 0.55;
-        }
-
-        .settings-dropdown.open .dropdown-arrow {
-            transform: rotate(180deg);
-        }
+        .settings-dropdown-toggle:hover { border-color: #80b3e6; }
+        .dropdown-arrow { font-size: 9px; margin-left: 8px; transition: transform 0.2s ease; opacity: 0.55; }
+        .settings-dropdown.open .dropdown-arrow { transform: rotate(180deg); }
 
         .settings-dropdown-menu {
-            display: none;
-            position: absolute;
-            top: calc(100% + 3px);
-            left: 0;
-            min-width: max(100%, 280px);
-            z-index: 200;
-            background: #fff;
-            border: 1px solid #bbb;
-            border-radius: 6px;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
-            overflow: hidden;
+            display: none; position: absolute; top: calc(100% + 3px); left: 0;
+            min-width: max(100%, 280px); z-index: 200; background: #fff; border: 1px solid #bbb;
+            border-radius: 6px; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18); overflow: hidden;
         }
-
-        .settings-dropdown.open .settings-dropdown-menu {
-            display: block;
-        }
-
+        .settings-dropdown.open .settings-dropdown-menu { display: block; }
         .settings-group-header {
-            padding: 8px 12px;
-            font-size: 13px;
-            font-weight: 600;
-            color: #333;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px solid #eee;
+            padding: 8px 12px; font-size: 13px; font-weight: 600; color: #333; cursor: pointer;
+            display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #eee;
         }
-
-        .settings-group-header:hover {
-            background-color: #eef6ff;
-        }
-
-        .settings-group:last-child>.settings-group-header {
-            border-bottom: none;
-        }
-
-        .settings-group.expanded>.settings-group-header {
-            background-color: #e8f0fe;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .group-arrow {
-            font-size: 12px;
-            transition: transform 0.2s ease;
-            color: #999;
-        }
-
-        .settings-group.expanded>.settings-group-header .group-arrow {
-            transform: rotate(90deg);
-            color: #0056b3;
-        }
-
-        .settings-group-items {
-            display: none;
-        }
-
-        .settings-group.expanded>.settings-group-items {
-            display: block;
-        }
-
+        .settings-group-header:hover { background-color: #eef6ff; }
+        .settings-group:last-child > .settings-group-header { border-bottom: none; }
+        .settings-group.expanded > .settings-group-header { background-color: #e8f0fe; border-bottom: 1px solid #ddd; }
+        .group-arrow { font-size: 12px; transition: transform 0.2s ease; color: #999; }
+        .settings-group.expanded > .settings-group-header .group-arrow { transform: rotate(90deg); color: #0056b3; }
+        .settings-group-items { display: none; }
+        .settings-group.expanded > .settings-group-items { display: block; }
         .settings-item {
-            padding: 8px 14px 8px 24px;
-            font-size: 13px;
-            color: #0056b3;
-            cursor: pointer;
-            border-bottom: 1px solid #f0f0f0;
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            gap: 8px;
-            user-select: none;
-            transition: background 0.15s ease;
+            padding: 8px 14px 8px 24px; font-size: 13px; color: #0056b3; cursor: pointer;
+            border-bottom: 1px solid #f0f0f0; display: flex; align-items: center; justify-content: flex-start;
+            gap: 8px; user-select: none; transition: background 0.15s ease;
         }
-
-        .settings-item:last-child {
-            border-bottom: none;
-        }
-
-        .settings-item:hover {
-            background-color: #d4edff;
-        }
-
-        .settings-item .item-check {
-            display: none;
-            color: #28a745;
-            font-weight: bold;
-            font-size: 15px;
-            margin-left: 2px;
-        }
-
-        .settings-item.active {
-            background-color: #cce5ff;
-            font-weight: 700;
-        }
-
-        .settings-item.active .item-check {
-            display: inline-block;
-        }
+        .settings-item:last-child { border-bottom: none; }
+        .settings-item:hover { background-color: #d4edff; }
+        .settings-item .item-check { display: none; color: #28a745; font-weight: bold; font-size: 15px; margin-left: 2px; }
+        .settings-item.active { background-color: #cce5ff; font-weight: 700; }
+        .settings-item.active .item-check { display: inline-block; }
 
         /* ==========================================================
-           FOX-LAB AI CHATBOT WIDGET (UI/UX PRO MAX & IMPECCABLE SPEC)
+           FOX-LAB AI CHATBOT WIDGET
            ========================================================== */
         :root {
             --fox-font: 'Be Vietnam Pro', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             --fox-font-mono: 'JetBrains Mono', 'Consolas', monospace;
             --fox-primary: #f97316;
-            --fox-primary-glow: rgba(249, 115, 22, 0.35);
             --fox-cyan: #38bdf8;
-            --fox-cyan-glow: rgba(56, 189, 248, 0.4);
             --fox-bg-glass: rgba(15, 23, 42, 0.94);
             --fox-surface-elevated: rgba(30, 41, 59, 0.85);
             --fox-border-subtle: rgba(255, 255, 255, 0.08);
-            --fox-border-focus: rgba(249, 115, 22, 0.6);
-            --fox-text-primary: #f8fafc;
             --fox-text-secondary: #94a3b8;
             --fox-text-muted: #64748b;
         }
 
         #fox-chat-widget {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            z-index: 99999;
-            font-family: var(--fox-font);
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            text-rendering: optimizeLegibility;
-            user-select: none;
+            position: fixed; bottom: 24px; right: 24px; z-index: 99999;
+            font-family: var(--fox-font); user-select: none;
         }
 
-        /* Floating Trigger Button */
-        .fox-trigger-wrapper {
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+        .fox-trigger-wrapper { position: relative; display: flex; align-items: center; justify-content: center; }
 
         .fox-ping-ring {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            background: rgba(249, 115, 22, 0.4);
-            animation: foxPulsePing 3s cubic-bezier(0, 0, 0.2, 1) infinite;
-            pointer-events: none;
-            z-index: 1;
+            position: absolute; width: 100%; height: 100%; border-radius: 50%;
+            background: rgba(249, 115, 22, 0.4); animation: foxPulsePing 3s cubic-bezier(0,0,0.2,1) infinite; pointer-events: none; z-index: 1;
         }
-
-        @keyframes foxPulsePing {
-            0% {
-                transform: scale(0.95);
-                opacity: 0.8;
-            }
-            70%, 100% {
-                transform: scale(1.65);
-                opacity: 0;
-            }
-        }
+        @keyframes foxPulsePing { 0% { transform: scale(0.95); opacity: 0.8; } 70%, 100% { transform: scale(1.65); opacity: 0; } }
 
         #fox-chat-trigger {
-            position: relative;
-            z-index: 2;
-            width: 58px;
-            height: 58px;
-            border-radius: 50%;
+            position: relative; z-index: 2; width: 58px; height: 58px; border-radius: 50%;
             background: linear-gradient(135deg, #ff7849 0%, #ea580c 100%);
             border: 1px solid rgba(255, 255, 255, 0.25);
             box-shadow: 0 10px 25px -4px rgba(234, 88, 12, 0.5), 0 0 20px rgba(249, 115, 22, 0.35);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0;
-            color: #fff;
-            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease, background 0.3s ease;
-            outline: none;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            color: #fff; transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); outline: none;
         }
+        #fox-chat-trigger:hover { transform: scale(1.08) translateY(-2px); }
+        #fox-chat-trigger:active { transform: scale(0.95); }
 
-        #fox-chat-trigger:hover {
-            transform: scale(1.08) translateY(-2px);
-            box-shadow: 0 14px 30px -4px rgba(234, 88, 12, 0.65), 0 0 28px rgba(249, 115, 22, 0.5);
-        }
-
-        #fox-chat-trigger:active {
-            transform: scale(0.95);
-        }
-
-        .fox-trigger-icon {
-            width: 36px;
-            height: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
-        }
-
-        .fox-trigger-icon svg {
-            width: 100%;
-            height: 100%;
-            display: block;
-        }
-
-        .fox-trigger-close-icon {
-            display: none;
-            width: 24px;
-            height: 24px;
-        }
+        .fox-trigger-icon { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; }
+        .fox-trigger-icon svg { width: 100%; height: 100%; display: block; }
+        .fox-trigger-close-icon { display: none; width: 24px; height: 24px; }
 
         #fox-chat-widget.open #fox-chat-trigger {
             background: linear-gradient(135deg, #334155 0%, #1e293b 100%);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 12px rgba(255, 255, 255, 0.1);
             border-color: rgba(255, 255, 255, 0.2);
         }
+        #fox-chat-widget.open .fox-ping-ring, #fox-chat-widget.open .fox-trigger-fox-icon { display: none; }
+        #fox-chat-widget.open .fox-trigger-close-icon { display: flex; transform: rotate(90deg); }
 
-        #fox-chat-widget.open .fox-ping-ring {
-            display: none;
-        }
-
-        #fox-chat-widget.open .fox-trigger-fox-icon {
-            display: none;
-        }
-
-        #fox-chat-widget.open .fox-trigger-close-icon {
-            display: flex;
-            transform: rotate(90deg);
-            animation: iconSpinIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-
-        @keyframes iconSpinIn {
-            from { transform: rotate(0deg) scale(0.7); opacity: 0; }
-            to { transform: rotate(90deg) scale(1); opacity: 1; }
-        }
-
-        /* Tooltip */
         .fox-trigger-tooltip {
-            position: absolute;
-            right: 70px;
-            background: rgba(15, 23, 42, 0.92);
-            color: #f8fafc;
-            font-size: 12px;
-            font-weight: 600;
-            padding: 6px 12px;
-            border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
-            white-space: nowrap;
-            pointer-events: none;
-            opacity: 0;
-            transform: translateX(8px);
-            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-            display: flex;
-            align-items: center;
-            gap: 6px;
+            position: absolute; right: 70px; background: rgba(15, 23, 42, 0.92); color: #f8fafc;
+            font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.12);
+            opacity: 0; transform: translateX(8px); transition: all 0.25s ease; white-space: nowrap; pointer-events: none;
         }
-
         .fox-trigger-tooltip::after {
-            content: '';
-            position: absolute;
-            right: -5px;
-            top: 50%;
-            transform: translateY(-50%);
-            border-width: 5px 0 5px 5px;
-            border-style: solid;
-            border-color: transparent transparent transparent rgba(15, 23, 42, 0.92);
+            content: ''; position: absolute; right: -5px; top: 50%; transform: translateY(-50%);
+            border-width: 5px 0 5px 5px; border-style: solid; border-color: transparent transparent transparent rgba(15, 23, 42, 0.92);
         }
+        .fox-trigger-wrapper:hover .fox-trigger-tooltip { opacity: 1; transform: translateX(0); }
+        #fox-chat-widget.open .fox-trigger-tooltip { display: none; }
 
-        .fox-trigger-wrapper:hover .fox-trigger-tooltip {
-            opacity: 1;
-            transform: translateX(0);
-        }
-
-        #fox-chat-widget.open .fox-trigger-tooltip {
-            display: none;
-        }
-
-        /* Chat Popover Window (ChatGPT Spec) */
         #fox-chat-box {
-            position: absolute;
-            bottom: 72px;
-            right: 0;
-            width: 380px;
-            height: 560px;
-            max-height: calc(100vh - 110px);
-            max-width: calc(100vw - 32px);
-            background: var(--fox-bg-glass);
-            backdrop-filter: blur(24px) saturate(180%);
-            -webkit-backdrop-filter: blur(24px) saturate(180%);
-            border: 1px solid var(--fox-border-subtle);
-            border-radius: 20px;
-            box-shadow: 0 24px 60px -10px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(249, 115, 22, 0.18), 0 0 35px rgba(249, 115, 22, 0.08);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            transform-origin: bottom right;
-            transform: scale(0.9) translateY(20px);
-            opacity: 0;
-            visibility: hidden;
-            pointer-events: none;
-            transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.24s ease, visibility 0.32s ease;
-            z-index: 10;
+            position: absolute; bottom: 72px; right: 0; width: 380px; height: 560px;
+            max-height: calc(100vh - 110px); max-width: calc(100vw - 32px); background: var(--fox-bg-glass);
+            backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%);
+            border: 1px solid var(--fox-border-subtle); border-radius: 20px;
+            box-shadow: 0 24px 60px -10px rgba(0, 0, 0, 0.7); display: flex; flex-direction: column; overflow: hidden;
+            transform-origin: bottom right; transform: scale(0.9) translateY(20px); opacity: 0; visibility: hidden; pointer-events: none;
+            transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.24s ease, visibility 0.32s ease; z-index: 10;
         }
+        #fox-chat-widget.open #fox-chat-box { transform: scale(1) translateY(0); opacity: 1; visibility: visible; pointer-events: auto; }
 
-        #fox-chat-widget.open #fox-chat-box {
-            transform: scale(1) translateY(0);
-            opacity: 1;
-            visibility: visible;
-            pointer-events: auto;
-        }
-
-        /* Chat Header */
         .fox-chat-header {
-            padding: 12px 16px;
-            background: rgba(30, 41, 59, 0.65);
-            border-bottom: 1px solid var(--fox-border-subtle);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: relative;
+            padding: 12px 16px; background: rgba(30, 41, 59, 0.65); border-bottom: 1px solid var(--fox-border-subtle);
+            display: flex; align-items: center; justify-content: space-between;
         }
-
-        .fox-header-left {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
+        .fox-header-left { display: flex; align-items: center; gap: 10px; }
         .fox-avatar-container {
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
+            width: 36px; height: 36px; border-radius: 10px; border: 1px solid rgba(249, 115, 22, 0.45);
             background: linear-gradient(135deg, rgba(249, 115, 22, 0.22), rgba(56, 189, 248, 0.12));
-            border: 1px solid rgba(249, 115, 22, 0.45);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 0 12px rgba(249, 115, 22, 0.25);
-            flex-shrink: 0;
-            padding: 2px;
-            box-sizing: border-box;
+            display: flex; align-items: center; justify-content: center; padding: 2px; flex-shrink: 0; box-sizing: border-box;
         }
-
-        .fox-header-info {
-            display: flex;
-            flex-direction: column;
-            gap: 1px;
-        }
-
-        .fox-header-title {
-            font-size: 14.5px;
-            font-weight: 700;
-            color: #f8fafc;
-            letter-spacing: -0.2px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
+        .fox-header-info { display: flex; flex-direction: column; gap: 1px; }
+        .fox-header-title { font-size: 14.5px; font-weight: 700; color: #f8fafc; display: flex; align-items: center; gap: 6px; }
         .fox-header-badge {
-            font-size: 9.5px;
-            font-weight: 700;
-            padding: 1.5px 6px;
-            border-radius: 10px;
-            background: rgba(249, 115, 22, 0.2);
-            color: #ff9d66;
-            border: 1px solid rgba(249, 115, 22, 0.35);
-            letter-spacing: 0.3px;
-            text-transform: uppercase;
+            font-size: 9.5px; font-weight: 700; padding: 1.5px 6px; border-radius: 10px;
+            background: rgba(249, 115, 22, 0.2); color: #ff9d66; border: 1px solid rgba(249, 115, 22, 0.35);
         }
+        .fox-header-status { font-size: 11px; color: var(--fox-text-secondary); display: flex; align-items: center; gap: 5px; }
+        .fox-status-dot { width: 7px; height: 7px; border-radius: 50%; background: #22c55e; animation: statusPulse 2s infinite ease-in-out; }
+        @keyframes statusPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
 
-        .fox-header-status {
-            font-size: 11px;
-            color: var(--fox-text-secondary);
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .fox-status-dot {
-            width: 7px;
-            height: 7px;
-            border-radius: 50%;
-            background: #22c55e;
-            box-shadow: 0 0 8px #22c55e;
-            animation: statusPulse 2s infinite ease-in-out;
-        }
-
-        @keyframes statusPulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.6; transform: scale(0.9); }
-        }
-
-        .fox-header-actions {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
+        .fox-header-actions { display: flex; gap: 4px; }
         .fox-btn-icon {
-            width: 30px;
-            height: 30px;
-            border-radius: 8px;
-            background: transparent;
-            border: none;
-            color: var(--fox-text-secondary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            padding: 0;
-            box-shadow: none;
+            width: 30px; height: 30px; border-radius: 8px; background: transparent; border: none;
+            color: var(--fox-text-secondary); display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0;
         }
+        .fox-btn-icon:hover { background: rgba(255, 255, 255, 0.1); color: #f8fafc; }
+        .fox-btn-icon svg { width: 16px; height: 16px; stroke-width: 2; }
 
-        .fox-btn-icon:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: #f8fafc;
-        }
-
-        .fox-btn-icon:active {
-            transform: scale(0.92);
-        }
-
-        .fox-btn-icon svg {
-            width: 16px;
-            height: 16px;
-            stroke-width: 2;
-        }
-
-        /* Message Conversation Area */
         #fox-chat-content {
-            flex: 1;
-            padding: 16px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-            background: transparent;
-            scroll-behavior: smooth;
-            user-select: text;
+            flex: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; user-select: text; scroll-behavior: smooth;
         }
+        #fox-chat-content::-webkit-scrollbar { width: 5px; }
+        #fox-chat-content::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 4px; }
 
-        #fox-chat-content::-webkit-scrollbar {
-            width: 5px;
-        }
+        .fox-msg-row { display: flex; gap: 10px; max-width: 100%; animation: foxMsgFadeIn 0.25s ease forwards; }
+        @keyframes foxMsgFadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
-        #fox-chat-content::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        #fox-chat-content::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 4px;
-        }
-
-        #fox-chat-content::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 255, 255, 0.25);
-        }
-
-        /* Message Rows */
-        .fox-msg-row {
-            display: flex;
-            gap: 10px;
-            max-width: 100%;
-            animation: foxMsgFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-
-        @keyframes foxMsgFadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .fox-msg-user {
-            justify-content: flex-end;
-        }
-
-        .fox-msg-bot {
-            justify-content: flex-start;
-        }
+        .fox-msg-user { justify-content: flex-end; }
+        .fox-msg-bot { justify-content: flex-start; }
 
         .fox-msg-avatar {
-            width: 28px;
-            height: 28px;
-            border-radius: 8px;
-            background: rgba(30, 41, 59, 0.9);
-            border: 1px solid rgba(249, 115, 22, 0.35);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            padding: 2px;
-            box-sizing: border-box;
-            margin-top: 2px;
+            width: 28px; height: 28px; border-radius: 8px; background: rgba(30, 41, 59, 0.9);
+            border: 1px solid rgba(249, 115, 22, 0.35); display: flex; align-items: center; justify-content: center; flex-shrink: 0; padding: 2px;
         }
+
+        /* Group container for bubble + action buttons */
+        .fox-msg-group { display: flex; flex-direction: column; max-width: 85%; gap: 4px; }
+        .fox-msg-user .fox-msg-group { align-items: flex-end; }
+        .fox-msg-bot .fox-msg-group { align-items: flex-start; }
 
         .fox-msg-bubble {
-            padding: 11px 15px;
-            border-radius: 16px;
-            font-size: 13.5px;
-            line-height: 1.6;
-            word-wrap: break-word;
-            max-width: 85%;
-            box-sizing: border-box;
-            letter-spacing: -0.01em;
-            font-family: inherit;
+            padding: 11px 15px; border-radius: 16px; font-size: 13.5px; line-height: 1.6;
+            word-wrap: break-word; max-width: 100%; box-sizing: border-box; letter-spacing: -0.01em;
         }
-
         .fox-msg-user .fox-msg-bubble {
-            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
-            color: #ffffff;
-            border-bottom-right-radius: 4px;
-            box-shadow: 0 4px 14px rgba(234, 88, 12, 0.25);
-            font-weight: 500;
+            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); color: #ffffff;
+            border-bottom-right-radius: 4px; font-weight: 500;
         }
-
         .fox-msg-bot .fox-msg-bubble {
-            background: var(--fox-surface-elevated);
-            color: #f1f5f9;
-            border: 1px solid var(--fox-border-subtle);
-            border-top-left-radius: 4px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            background: var(--fox-surface-elevated); color: #f1f5f9;
+            border: 1px solid var(--fox-border-subtle); border-top-left-radius: 4px;
         }
+        .fox-msg-bot .fox-msg-bubble b, .fox-msg-bot .fox-msg-bubble strong { color: #38bdf8; font-weight: 600; }
+        .fox-msg-bot .fox-msg-bubble code { background: rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.12); padding: 2px 6px; border-radius: 4px; font-family: var(--fox-font-mono); color: #fed7aa; }
+        .fox-math { font-family: var(--fox-font-mono)!important; font-style: italic; color: #38bdf8; background: rgba(56,189,248,0.12); padding: 1px 6px; border-radius: 4px; font-size: 13px; margin: 0 2px; }
 
-        .fox-msg-bot .fox-msg-bubble b,
-        .fox-msg-bot .fox-msg-bubble strong {
-            color: #38bdf8;
-            font-weight: 600;
+        /* Action Buttons styling (Copy & Reload) */
+        .fox-msg-actions {
+            display: flex; gap: 8px; opacity: 0; transition: opacity 0.2s;
         }
-
-        .fox-msg-bot .fox-msg-bubble code {
-            background: rgba(0, 0, 0, 0.35);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-family: var(--fox-font-mono);
-            font-size: 12.5px;
-            color: #fed7aa;
+        .fox-msg-row:hover .fox-msg-actions { opacity: 1; }
+        
+        .fox-msg-action-btn {
+            background: none; border: none; color: var(--fox-text-muted); cursor: pointer; font-size: 11px;
+            display: flex; align-items: center; gap: 4px; padding: 2px 6px; border-radius: 4px; transition: all 0.2s; font-family: var(--fox-font);
         }
+        .fox-msg-action-btn:hover { color: var(--fox-cyan); background: rgba(255, 255, 255, 0.1); }
 
-        /* Biểu thức Toán / Vật lý */
-        .fox-math {
-            font-family: var(--fox-font-mono) !important;
-            font-style: italic;
-            font-weight: 600;
-            color: #38bdf8;
-            background: rgba(56, 189, 248, 0.12);
-            padding: 1px 6px;
-            border-radius: 4px;
-            font-size: 13px;
-            border: 1px solid rgba(56, 189, 248, 0.25);
-            letter-spacing: 0.2px;
-            display: inline-block;
-            margin: 0 2px;
-            vertical-align: baseline;
-        }
+        .fox-cursor { display: inline-block; width: 7px; height: 14px; background: var(--fox-cyan); margin-left: 3px; vertical-align: -2px; animation: foxCursorPulse 0.8s infinite; }
+        @keyframes foxCursorPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.1; } }
 
-        /* Streaming Cursor (ChatGPT Typewriter effect) */
-        .fox-cursor {
-            display: inline-block;
-            width: 7px;
-            height: 14px;
-            background: var(--fox-cyan);
-            border-radius: 1px;
-            margin-left: 3px;
-            vertical-align: -2px;
-            box-shadow: 0 0 8px var(--fox-cyan);
-            animation: foxCursorPulse 0.8s infinite;
-        }
+        .fox-thinking-wrapper { display: flex; align-items: center; gap: 8px; color: var(--fox-text-secondary); font-size: 12.5px; }
+        .fox-wave-equalizer { display: flex; gap: 3px; height: 16px; align-items: center; }
+        .fox-wave-bar { width: 3px; background: var(--fox-cyan); border-radius: 2px; animation: foxWavePulse 1s ease-in-out infinite; }
+        .fox-wave-bar:nth-child(1) { height: 6px; } .fox-wave-bar:nth-child(2) { height: 14px; animation-delay: 0.15s; }
+        .fox-wave-bar:nth-child(3) { height: 8px; animation-delay: 0.3s; } .fox-wave-bar:nth-child(4) { height: 16px; animation-delay: 0.45s; }
+        @keyframes foxWavePulse { 0%, 100% { transform: scaleY(0.4); opacity: 0.5; } 50% { transform: scaleY(1.2); opacity: 1; } }
+        .fox-shimmer-text { background: linear-gradient(90deg, #94a3b8 0%, #f8fafc 50%, #94a3b8 100%); background-size: 200% 100%; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: foxShimmer 2s infinite linear; }
+        @keyframes foxShimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
-        @keyframes foxCursorPulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.1; }
-        }
+        .fox-input-container { padding: 10px 14px 12px 14px; background: rgba(15, 23, 42, 0.95); border-top: 1px solid var(--fox-border-subtle); display: flex; flex-direction: column; gap: 6px; }
+        .fox-input-box { display: flex; align-items: center; background: rgba(30, 41, 59, 0.75); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 22px; padding: 4px 6px 4px 14px; }
+        .fox-input-box:focus-within { border-color: var(--fox-primary); box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.22); background: rgba(30, 41, 59, 0.95); }
+        #fox-chat-input { flex: 1; background: transparent; border: none; color: #f8fafc; font-size: 13.5px; outline: none; padding: 6px 0; }
+        #fox-chat-input::placeholder { color: var(--fox-text-muted); font-size: 13px; }
+        .fox-send-btn { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); border: none; color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
+        .fox-send-btn:hover:not(:disabled) { transform: scale(1.08); filter: brightness(1.1); }
+        .fox-send-btn:disabled { background: rgba(255, 255, 255, 0.1) !important; color: #64748b !important; cursor: not-allowed; }
+        .fox-send-btn svg { width: 15px; height: 15px; margin-left: 2px; }
 
-        /* Thinking State (Acoustic Equalizer Animation) */
-        .fox-thinking-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--fox-text-secondary);
-            font-size: 12.5px;
-        }
-
-        .fox-wave-equalizer {
-            display: flex;
-            align-items: center;
-            gap: 3px;
-            height: 16px;
-        }
-
-        .fox-wave-bar {
-            width: 3px;
-            background: var(--fox-cyan);
-            border-radius: 2px;
-            box-shadow: 0 0 6px var(--fox-cyan);
-            animation: foxWavePulse 1s ease-in-out infinite;
-        }
-
-        .fox-wave-bar:nth-child(1) { height: 6px; animation-delay: 0.0s; }
-        .fox-wave-bar:nth-child(2) { height: 14px; animation-delay: 0.15s; }
-        .fox-wave-bar:nth-child(3) { height: 8px; animation-delay: 0.3s; }
-        .fox-wave-bar:nth-child(4) { height: 16px; animation-delay: 0.45s; }
-
-        @keyframes foxWavePulse {
-            0%, 100% { transform: scaleY(0.4); opacity: 0.5; }
-            50% { transform: scaleY(1.2); opacity: 1; }
-        }
-
-        .fox-shimmer-text {
-            background: linear-gradient(90deg, #94a3b8 0%, #f8fafc 50%, #94a3b8 100%);
-            background-size: 200% 100%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: foxShimmer 2s infinite linear;
-            font-style: italic;
-        }
-
-        @keyframes foxShimmer {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
-
-        /* Quick Suggestions Chips */
-        .fox-suggestions-bar {
-            padding: 8px 16px 4px 16px;
-            display: flex;
-            gap: 6px;
-            overflow-x: auto;
-            flex-shrink: 0;
-            scrollbar-width: none;
-        }
-
-        .fox-suggestions-bar::-webkit-scrollbar {
-            display: none;
-        }
-
-        .fox-chip {
-            background: rgba(30, 41, 59, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #cbd5e1;
-            font-size: 12px;
-            font-weight: 500;
-            padding: 6px 12px;
-            border-radius: 14px;
-            cursor: pointer;
-            white-space: nowrap;
-            transition: all 0.2s ease;
-            box-shadow: none;
-            width: auto;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            font-family: inherit;
-            line-height: 1;
-        }
-
-        .fox-chip svg {
-            width: 14px;
-            height: 14px;
-            stroke-width: 2.2;
-            color: var(--fox-cyan);
-            flex-shrink: 0;
-        }
-
-        .fox-chip:hover {
-            background: rgba(249, 115, 22, 0.2);
-            border-color: rgba(249, 115, 22, 0.45);
-            color: #ffedd5;
-            transform: translateY(-1px);
-        }
-
-        .fox-chip:hover svg {
-            color: #ffedd5;
-        }
-
-        .fox-chip:active {
-            transform: scale(0.96);
-        }
-
-        /* Input Bar */
-        .fox-input-container {
-            padding: 10px 14px 12px 14px;
-            background: rgba(15, 23, 42, 0.95);
-            border-top: 1px solid var(--fox-border-subtle);
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .fox-input-box {
-            display: flex;
-            align-items: center;
-            background: rgba(30, 41, 59, 0.75);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 22px;
-            padding: 4px 6px 4px 14px;
-            transition: border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
-        }
-
-        .fox-input-box:focus-within {
-            border-color: var(--fox-primary);
-            box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.22);
-            background: rgba(30, 41, 59, 0.95);
-        }
-
-        #fox-chat-input {
-            flex: 1;
-            background: transparent;
-            border: none;
-            color: #f8fafc;
-            font-size: 13.5px;
-            font-family: inherit;
-            outline: none;
-            padding: 6px 0;
-        }
-
-        #fox-chat-input::placeholder {
-            color: var(--fox-text-muted);
-            font-size: 13px;
-        }
-
-        .fox-send-btn {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
-            border: none;
-            color: #fff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-            padding: 0;
-            box-shadow: 0 2px 8px rgba(234, 88, 12, 0.35);
-            flex-shrink: 0;
-        }
-
-        .fox-send-btn:hover:not(:disabled) {
-            transform: scale(1.08);
-            box-shadow: 0 4px 12px rgba(234, 88, 12, 0.5);
-            filter: brightness(1.1);
-        }
-
-        .fox-send-btn:active:not(:disabled) {
-            transform: scale(0.92);
-        }
-
-        .fox-send-btn:disabled {
-            background: rgba(255, 255, 255, 0.1) !important;
-            color: #64748b !important;
-            box-shadow: none !important;
-            cursor: not-allowed;
-        }
-
-        .fox-send-btn svg {
-            width: 15px;
-            height: 15px;
-            margin-left: 2px;
-        }
-
-        .fox-footer-meta {
-            font-size: 10px;
-            color: var(--fox-text-muted);
-            text-align: center;
-            letter-spacing: 0.2px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 4px;
-        }
-
-        .fox-freq-tag {
-            color: var(--fox-cyan);
-            font-weight: 600;
-        }
+        .fox-footer-meta { font-size: 10px; color: var(--fox-text-muted); text-align: center; display: flex; align-items: center; justify-content: center; gap: 4px; }
+        .fox-freq-tag { color: var(--fox-cyan); font-weight: 600; }
 
         @media (max-width: 600px) {
-            #fox-chat-widget {
-                bottom: 16px;
-                right: 16px;
-            }
-
-            #fox-chat-box {
-                width: calc(100vw - 32px);
-                height: calc(100vh - 100px);
-                max-height: 540px;
-                bottom: 68px;
-            }
+            #fox-chat-widget { bottom: 16px; right: 16px; }
+            #fox-chat-box { width: calc(100vw - 32px); height: calc(100vh - 100px); max-height: 540px; bottom: 68px; }
         }
     </style>
 </head>
@@ -1097,69 +334,37 @@
     <div class="top-bar">
         <div class="controls-wrapper">
             <div class="settings-row" id="settingsRow">
-                <select id="channelModeSelect" style="display:none">
-                    <option value="1" selected>1 nguồn âm</option>
-                    <option value="2">2 nguồn âm</option>
-                </select>
-                <select id="modeSelect" style="display:none">
-                    <option value="auto" selected>Khảo sát tần số (Tự dừng)</option>
-                    <option value="continuous">Khảo sát liên tục</option>
-                </select>
+                <select id="channelModeSelect" style="display:none"><option value="1" selected>1 nguồn âm</option><option value="2">2 nguồn âm</option></select>
+                <select id="modeSelect" style="display:none"><option value="auto" selected>Khảo sát tần số (Tự dừng)</option><option value="continuous">Khảo sát liên tục</option></select>
 
                 <div class="settings-dropdown" id="settingsDropdown">
                     <div class="settings-dropdown-toggle" id="settingsToggle">
-                        <span id="settingsLabel">Cài đặt chung</span>
-                        <span class="dropdown-arrow">▼</span>
+                        <span id="settingsLabel">Cài đặt chung</span><span class="dropdown-arrow">▼</span>
                     </div>
                     <div class="settings-dropdown-menu" id="settingsMenu">
                         <div class="settings-group" id="groupChannelMode">
-                            <div class="settings-group-header" data-group="channelMode">
-                                <span>Chế độ nguồn âm</span>
-                                <span class="group-arrow">›</span>
-                            </div>
+                            <div class="settings-group-header" data-group="channelMode"><span>Chế độ nguồn âm</span><span class="group-arrow">›</span></div>
                             <div class="settings-group-items">
-                                <div class="settings-item active" data-target="channelModeSelect" data-value="1">
-                                    <span>1 nguồn âm</span>
-                                    <span class="item-check">✓</span>
-                                </div>
-                                <div class="settings-item" data-target="channelModeSelect" data-value="2">
-                                    <span>2 nguồn âm</span>
-                                    <span class="item-check">✓</span>
-                                </div>
+                                <div class="settings-item active" data-target="channelModeSelect" data-value="1"><span>1 nguồn âm</span><span class="item-check">✓</span></div>
+                                <div class="settings-item" data-target="channelModeSelect" data-value="2"><span>2 nguồn âm</span><span class="item-check">✓</span></div>
                             </div>
                         </div>
                         <div class="settings-group" id="groupMode">
-                            <div class="settings-group-header" data-group="mode">
-                                <span>Chức năng khảo sát</span>
-                                <span class="group-arrow">›</span>
-                            </div>
+                            <div class="settings-group-header" data-group="mode"><span>Chức năng khảo sát</span><span class="group-arrow">›</span></div>
                             <div class="settings-group-items">
-                                <div class="settings-item active" data-target="modeSelect" data-value="auto">
-                                    <span>Khảo sát tần số (Tự dừng)</span>
-                                    <span class="item-check">✓</span>
-                                </div>
-                                <div class="settings-item" data-target="modeSelect" data-value="continuous">
-                                    <span>Khảo sát liên tục</span>
-                                    <span class="item-check">✓</span>
-                                </div>
+                                <div class="settings-item active" data-target="modeSelect" data-value="auto"><span>Khảo sát tần số (Tự dừng)</span><span class="item-check">✓</span></div>
+                                <div class="settings-item" data-target="modeSelect" data-value="continuous"><span>Khảo sát liên tục</span><span class="item-check">✓</span></div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <select id="speedSelect" class="custom-select" style="display: none; flex: 0.7;">
-                    <option value="fast" selected>Tốc độ quét : Nhanh</option>
-                    <option value="slow">Tốc độ quét : Chậm</option>
-                </select>
+                <select id="speedSelect" class="custom-select" style="display: none; flex: 0.7;"><option value="fast" selected>Tốc độ quét : Nhanh</option><option value="slow">Tốc độ quét : Chậm</option></select>
             </div>
 
             <div class="settings-row" id="micSetupRow">
-                <select id="micSelectA" class="custom-select" style="flex: 1; border-color: #dc3545; color: #dc3545;">
-                    <option value="">-- Kênh A: Đang chờ tải thiết bị --</option>
-                </select>
-                <select id="micSelectB" class="custom-select" style="flex: 1; border-color: #0d6efd; color: #0d6efd;">
-                    <option value="">-- Kênh B: Đang chờ tải thiết bị --</option>
-                </select>
+                <select id="micSelectA" class="custom-select" style="flex: 1; border-color: #dc3545; color: #dc3545;"><option value="">-- Kênh A: Đang chờ tải thiết bị --</option></select>
+                <select id="micSelectB" class="custom-select" style="flex: 1; border-color: #0d6efd; color: #0d6efd;"><option value="">-- Kênh B: Đang chờ tải thiết bị --</option></select>
             </div>
 
             <div class="btn-group">
@@ -1175,8 +380,7 @@
         </div>
 
         <div class="qr-panel" id="qrPanel">
-            <img id="qrImage" src="" alt="QR Code">
-            <span class="scan-title">FOX-LAB</span>
+            <img id="qrImage" src="" alt="QR Code"><span class="scan-title">FOX-LAB</span>
         </div>
     </div>
 
@@ -1185,180 +389,91 @@
     <!-- SVG ASSETS FOR SCIENTIFIC CYBER FOX -->
     <svg style="display:none;" xmlns="http://www.w3.org/2000/svg">
         <defs>
-            <linearGradient id="foxAmberGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#ff7a30"/>
-                <stop offset="100%" stop-color="#e04006"/>
-            </linearGradient>
-            <linearGradient id="foxAmberDark" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#d4380d"/>
-                <stop offset="100%" stop-color="#9a2503"/>
-            </linearGradient>
-            <linearGradient id="foxSteel" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#1e293b"/>
-                <stop offset="100%" stop-color="#0f172a"/>
-            </linearGradient>
-            <linearGradient id="foxBeam" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stop-color="#00f2fe"/>
-                <stop offset="50%" stop-color="#38bdf8"/>
-                <stop offset="100%" stop-color="#00f2fe"/>
-            </linearGradient>
+            <linearGradient id="foxAmberGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff7a30"/><stop offset="100%" stop-color="#e04006"/></linearGradient>
+            <linearGradient id="foxAmberDark" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#d4380d"/><stop offset="100%" stop-color="#9a2503"/></linearGradient>
+            <linearGradient id="foxSteel" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1e293b"/><stop offset="100%" stop-color="#0f172a"/></linearGradient>
+            <linearGradient id="foxBeam" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#00f2fe"/><stop offset="50%" stop-color="#38bdf8"/><stop offset="100%" stop-color="#00f2fe"/></linearGradient>
             <symbol id="foxCyberIcon" viewBox="0 0 100 100">
-                <!-- Left Ear Outer -->
                 <polygon points="22,12 10,48 36,40" fill="url(#foxAmberGrad)"/>
-                <!-- Left Ear Inner Acoustic Sensor -->
                 <polygon points="23,19 16,44 32,38" fill="url(#foxSteel)"/>
                 <path d="M 19 36 Q 23 32 28 34" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round" opacity="0.85"/>
                 <path d="M 21 28 Q 24 25 27 27" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round" opacity="0.65"/>
-
-                <!-- Right Ear Outer -->
                 <polygon points="78,12 64,40 90,48" fill="url(#foxAmberGrad)"/>
-                <!-- Right Ear Inner Acoustic Sensor -->
                 <polygon points="77,19 68,38 84,44" fill="url(#foxSteel)"/>
                 <path d="M 81 36 Q 77 32 72 34" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round" opacity="0.85"/>
                 <path d="M 79 28 Q 76 25 73 27" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round" opacity="0.65"/>
-
-                <!-- Forehead / Crown Facets -->
                 <polygon points="50,22 36,40 50,46" fill="#ff8f4a"/>
                 <polygon points="50,22 50,46 64,40" fill="url(#foxAmberGrad)"/>
-                
-                <!-- Outer Cheeks (Aerodynamic Facets) -->
                 <polygon points="36,40 10,48 20,68 38,58" fill="url(#foxAmberDark)"/>
                 <polygon points="64,40 38,58 50,46" fill="#e04006"/>
                 <polygon points="64,40 50,46 62,58" fill="#d4380d"/>
                 <polygon points="64,40 90,48 80,68 62,58" fill="url(#foxAmberDark)"/>
-                
-                <!-- Cheek Tech Silver Flares -->
                 <polygon points="20,68 12,74 26,76 34,68" fill="#e2e8f0"/>
                 <polygon points="80,68 88,74 74,76 66,68" fill="#cbd5e1"/>
-
-                <!-- Snout / Muzzle -->
                 <polygon points="38,58 50,46 50,78 36,68" fill="#ff7a30"/>
                 <polygon points="62,58 50,46 50,78 64,68" fill="#e04006"/>
                 <polygon points="50,78 36,68 44,88 50,88" fill="#f8fafc"/>
                 <polygon points="50,78 64,68 56,88 50,88" fill="#e2e8f0"/>
-
-                <!-- Cyber Nose Sensor -->
                 <polygon points="50,88 45,82 55,82" fill="#0f172a"/>
                 <circle cx="50" cy="84" r="1.3" fill="#38bdf8"/>
-
-                <!-- Oscilloscope High-Tech Visor Band -->
                 <polygon points="25,48 50,54 75,48 71,59 50,65 29,59" fill="#090d16" stroke="rgba(56,189,248,0.5)" stroke-width="0.9"/>
-                
-                <!-- Active Oscilloscope Sine Wave Signal inside Visor -->
                 <path d="M 27 54 Q 32 46, 37 54 T 47 54 T 57 54 T 67 54 L 73 54" fill="none" stroke="url(#foxBeam)" stroke-width="2" stroke-linecap="round"/>
-                <!-- Harmonic Frequency Nodes -->
-                <circle cx="34.5" cy="48" r="1.5" fill="#ffffff"/>
-                <circle cx="44.5" cy="60" r="1.5" fill="#ffffff"/>
-                <circle cx="54.5" cy="48" r="1.5" fill="#ffffff"/>
-                <circle cx="64.5" cy="60" r="1.5" fill="#ffffff"/>
+                <circle cx="34.5" cy="48" r="1.5" fill="#ffffff"/><circle cx="44.5" cy="60" r="1.5" fill="#ffffff"/><circle cx="54.5" cy="48" r="1.5" fill="#ffffff"/><circle cx="64.5" cy="60" r="1.5" fill="#ffffff"/>
             </symbol>
         </defs>
     </svg>
 
-    <!-- KHUNG CHATBOT THÔNG MINH FOX-LAB AI (CHATGPT SPEC & SCIENTIFIC CYBER FOX) -->
+    <!-- FOX-LAB AI WIDGET (No Suggestions, Added Copy & Reload) -->
     <div id="fox-chat-widget">
-        <!-- Nút kích hoạt cửa sổ chat nổi -->
         <div class="fox-trigger-wrapper">
             <div class="fox-ping-ring"></div>
-            <div class="fox-trigger-tooltip">
-                <span>Hỏi Trợ lý FOX-Lab AI</span>
-            </div>
+            <div class="fox-trigger-tooltip"><span>Hỏi Trợ lý FOX-Lab AI</span></div>
             <button id="fox-chat-trigger" onclick="toggleChat()" aria-label="Mở Trợ lý FOX-Lab AI">
-                <span class="fox-trigger-icon fox-trigger-fox-icon">
-                    <svg viewBox="0 0 100 100" fill="none" style="width:100%;height:100%;">
-                        <use href="#foxCyberIcon"/>
-                    </svg>
-                </span>
-                <span class="fox-trigger-icon fox-trigger-close-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                    </svg>
-                </span>
+                <span class="fox-trigger-icon fox-trigger-fox-icon"><svg viewBox="0 0 100 100" fill="none" style="width:100%;height:100%;"><use href="#foxCyberIcon"/></svg></span>
+                <span class="fox-trigger-icon fox-trigger-close-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span>
             </button>
         </div>
 
-        <!-- Cửa sổ Chatbot dạng Glassmorphism (ChatGPT Experience) -->
         <div id="fox-chat-box" role="dialog" aria-modal="true" aria-label="Cửa sổ Trợ lý ảo FOX-Lab">
-            <!-- Header -->
             <div class="fox-chat-header">
                 <div class="fox-header-left">
-                    <div class="fox-avatar-container">
-                        <svg viewBox="0 0 100 100" fill="none" style="width:100%;height:100%;">
-                            <use href="#foxCyberIcon"/>
-                        </svg>
-                    </div>
+                    <div class="fox-avatar-container"><svg viewBox="0 0 100 100" fill="none" style="width:100%;height:100%;"><use href="#foxCyberIcon"/></svg></div>
                     <div class="fox-header-info">
-                        <div class="fox-header-title">
-                            FOX-Lab AI
-                            <span class="fox-header-badge">VẬT LÝ 11</span>
-                        </div>
-                        <div class="fox-header-status">
-                            <span class="fox-status-dot"></span>
-                            <span id="foxStatusText">Trực tuyến • Sóng âm</span>
-                        </div>
+                        <div class="fox-header-title">FOX-Lab AI<span class="fox-header-badge">VẬT LÝ 11</span></div>
+                        <div class="fox-header-status"><span class="fox-status-dot"></span><span id="foxStatusText">Trực tuyến • Sóng âm</span></div>
                     </div>
                 </div>
                 <div class="fox-header-actions">
                     <button class="fox-btn-icon" onclick="clearChatHistory()" title="Làm mới cuộc trò chuyện" aria-label="Xóa tin nhắn">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
-                            <path d="M3 3v5h5"/>
-                        </svg>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
                     </button>
                     <button class="fox-btn-icon" onclick="toggleChat()" title="Thu nhỏ cửa sổ" aria-label="Đóng chat">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <line x1="18" y1="6" x2="6" y2="18"></line>
-                            <line x1="6" y1="6" x2="18" y2="18"></line>
-                        </svg>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                     </button>
                 </div>
             </div>
 
-            <!-- Nội dung trò chuyện -->
             <div id="fox-chat-content">
-                <!-- Tin nhắn chào mừng ban đầu -->
                 <div class="fox-msg-row fox-msg-bot">
-                    <div class="fox-msg-avatar">
-                        <svg viewBox="0 0 100 100" fill="none" style="width:100%;height:100%;">
-                            <use href="#foxCyberIcon"/>
-                        </svg>
-                    </div>
-                    <div class="fox-msg-bubble">
-                        Chào em! Thầy là <strong>FOX-Lab AI</strong> – Trợ lý thông minh phân tích dao động ký và sóng âm. Em có thể bật Micro để đo âm thanh thực tế, hoặc hỏi thầy bất kỳ kiến thức nào về biên độ, chu kỳ và tần số nhé!
+                    <div class="fox-msg-avatar"><svg viewBox="0 0 100 100" fill="none" style="width:100%;height:100%;"><use href="#foxCyberIcon"/></svg></div>
+                    <div class="fox-msg-group">
+                        <div class="fox-msg-bubble">Chào em! Thầy là <strong>FOX-Lab AI</strong> – Trợ lý thông minh phân tích dao động ký và sóng âm. Em có thể bật Micro để đo âm thanh thực tế, hoặc hỏi thầy bất kỳ kiến thức nào về biên độ, chu kỳ và tần số nhé!</div>
+                        <div class="fox-msg-actions">
+                            <button class="fox-msg-action-btn" onclick="copyText(this, encodeURIComponent('Chào em! Thầy là FOX-Lab AI – Trợ lý thông minh phân tích dao động ký và sóng âm. Em có thể bật Micro để đo âm thanh thực tế, hoặc hỏi thầy bất kỳ kiến thức nào về biên độ, chu kỳ và tần số nhé!').replace(/'/g, '%27'))">
+                                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Copy
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Gợi ý câu hỏi nhanh (Prompt Chips với SVG Icons) -->
-            <div class="fox-suggestions-bar" id="foxSuggestions">
-                <button class="fox-chip" onclick="quickAsk('Tần số đo hiện tại là bao nhiêu Hz?')">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 12h4l3-8 4 16 3-8h6"/></svg>
-                    <span>Tần số đo hiện tại?</span>
-                </button>
-                <button class="fox-chip" onclick="quickAsk('Dao động ký dùng để làm gì trong Vật lý?')">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M6 10l3-3 3 6 3-3 3 3"/><path d="M8 21h8"/><path d="M12 17v4"/></svg>
-                    <span>Dao động ký là gì?</span>
-                </button>
-                <button class="fox-chip" onclick="quickAsk('Cách khóa sóng và tự dừng khảo sát?')">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><line x1="22" y1="12" x2="18" y2="12"/><line x1="6" y1="12" x2="2" y2="12"/><line x1="12" y1="6" x2="12" y2="2"/><line x1="12" y1="22" x2="12" y2="18"/></svg>
-                    <span>Cách khóa sóng?</span>
-                </button>
-                <button class="fox-chip" onclick="quickAsk('So sánh Kênh A và Kênh B thế nào?')">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 3h5v5"/><path d="M4 20L21 3"/><path d="M21 16v5h-5"/><path d="M15 15l6 6"/><path d="M4 4l5 5"/></svg>
-                    <span>So sánh 2 kênh?</span>
-                </button>
-            </div>
+            <!-- Removed foxSuggestions entirely -->
 
-            <!-- Khung nhập tin nhắn -->
             <div class="fox-input-container">
                 <div class="fox-input-box">
                     <input type="text" id="fox-chat-input" placeholder="Hỏi FOX-Lab về dao động ký, tần số..." autocomplete="off">
                     <button class="fox-send-btn" id="foxSendBtn" onclick="sendChatMessage()" aria-label="Gửi câu hỏi" disabled>
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="22" y1="2" x2="11" y2="13"></line>
-                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                        </svg>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
                     </button>
                 </div>
                 <div class="fox-footer-meta">
@@ -1379,45 +494,25 @@
             resizeCanvas();
         });
 
-        const btnStartA = document.getElementById('btnStartA');
-        const btnStartB = document.getElementById('btnStartB');
-        const pauseButton = document.getElementById('pauseButton');
-        const resetButton = document.getElementById('resetButton');
-        const saveButton = document.getElementById('saveButton');
-        const fullscreenButton = document.getElementById('fullscreenButton');
+        const btnStartA = document.getElementById('btnStartA'), btnStartB = document.getElementById('btnStartB');
+        const pauseButton = document.getElementById('pauseButton'), resetButton = document.getElementById('resetButton');
+        const saveButton = document.getElementById('saveButton'), fullscreenButton = document.getElementById('fullscreenButton');
         const infoText = document.getElementById('infoText');
 
-        const channelModeSelect = document.getElementById('channelModeSelect');
-        const modeSelect = document.getElementById('modeSelect');
-        const speedSelect = document.getElementById('speedSelect');
+        const channelModeSelect = document.getElementById('channelModeSelect'), modeSelect = document.getElementById('modeSelect'), speedSelect = document.getElementById('speedSelect');
+        const micSelectA = document.getElementById('micSelectA'), micSelectB = document.getElementById('micSelectB');
+        const canvas = document.getElementById('oscilloscope'), canvasCtx = canvas.getContext('2d');
+        const settingsDropdown = document.getElementById('settingsDropdown'), settingsToggle = document.getElementById('settingsToggle');
+        const settingsMenu = document.getElementById('settingsMenu'), settingsLabel = document.getElementById('settingsLabel');
 
-        const micSelectA = document.getElementById('micSelectA');
-        const micSelectB = document.getElementById('micSelectB');
-
-        const canvas = document.getElementById('oscilloscope');
-        const canvasCtx = canvas.getContext('2d');
-
-        const settingsDropdown = document.getElementById('settingsDropdown');
-        const settingsToggle = document.getElementById('settingsToggle');
-        const settingsMenu = document.getElementById('settingsMenu');
-        const settingsLabel = document.getElementById('settingsLabel');
-
-        settingsToggle.addEventListener('click', (e) => {
-            e.stopPropagation();
-            settingsDropdown.classList.toggle('open');
-        });
-
-        document.addEventListener('click', (e) => {
-            if (!settingsDropdown.contains(e.target)) settingsDropdown.classList.remove('open');
-        });
+        settingsToggle.addEventListener('click', (e) => { e.stopPropagation(); settingsDropdown.classList.toggle('open'); });
+        document.addEventListener('click', (e) => { if (!settingsDropdown.contains(e.target)) settingsDropdown.classList.remove('open'); });
 
         settingsMenu.querySelectorAll('.settings-group-header').forEach(header => {
             header.addEventListener('click', (e) => {
                 e.stopPropagation();
                 const group = header.parentElement;
-                settingsMenu.querySelectorAll('.settings-group').forEach(g => {
-                    if (g !== group) g.classList.remove('expanded');
-                });
+                settingsMenu.querySelectorAll('.settings-group').forEach(g => { if (g !== group) g.classList.remove('expanded'); });
                 group.classList.toggle('expanded');
             });
         });
@@ -1439,11 +534,7 @@
             settingsLabel.textContent = 'Cài đặt chung';
             settingsMenu.querySelectorAll('.settings-item').forEach(s => {
                 const val = s.dataset.value;
-                if (val === '1' || val === 'auto') {
-                    s.classList.add('active');
-                } else {
-                    s.classList.remove('active');
-                }
+                if (val === '1' || val === 'auto') s.classList.add('active'); else s.classList.remove('active');
             });
             settingsMenu.querySelectorAll('.settings-group').forEach(g => g.classList.remove('expanded'));
             settingsDropdown.classList.remove('open');
@@ -1456,121 +547,66 @@
             B: { stream: null, source: null, processor: null, filterHP: null, filterLP: null, dummy: null, data: null, index: 0, color: '#0d6efd', active: false }
         };
 
-        let sampleRate = 48000;
-        let isPaused = true;
-        let isContinuousMode = false;
-        let stopTimer;
-        let detectedFrequency = 0;
-        let lockedFrequency = 440;
-        let lastCorrelateTime = 0;
-        let isUserZoomed = false;
+        let sampleRate = 48000, isPaused = true, isContinuousMode = false, stopTimer;
+        let detectedFrequency = 0, lockedFrequency = 440, lastCorrelateTime = 0, isUserZoomed = false;
+        let totalTimeOnScreen = 5 * (1.0 / 440), currentZoomY = 2.0, targetFPS = 60, lastDrawTime = performance.now();
 
-        let totalTimeOnScreen = 5 * (1.0 / 440);
-        let currentZoomY = 2.0;
-        let targetFPS = 60;
-        let lastDrawTime = performance.now();
-
-        function getActiveChannelMode() {
-            return channelModeSelect.value || '1';
-        }
+        function getActiveChannelMode() { return channelModeSelect.value || '1'; }
 
         function stopAudioChannel(channelId) {
             const cfg = channelConfig[channelId];
             if (!cfg) return;
-            if (cfg.stream) {
-                cfg.stream.getTracks().forEach(track => track.stop());
-                cfg.stream = null;
-            }
+            if (cfg.stream) { cfg.stream.getTracks().forEach(track => track.stop()); cfg.stream = null; }
             if (cfg.source) { try { cfg.source.disconnect(); } catch (e) { } cfg.source = null; }
             if (cfg.filterHP) { try { cfg.filterHP.disconnect(); } catch (e) { } cfg.filterHP = null; }
             if (cfg.filterLP) { try { cfg.filterLP.disconnect(); } catch (e) { } cfg.filterLP = null; }
-            if (cfg.processor) {
-                cfg.processor.onaudioprocess = null;
-                try { cfg.processor.disconnect(); } catch (e) { }
-                cfg.processor = null;
-            }
+            if (cfg.processor) { cfg.processor.onaudioprocess = null; try { cfg.processor.disconnect(); } catch (e) { } cfg.processor = null; }
             if (cfg.dummy) { try { cfg.dummy.disconnect(); } catch (e) { } cfg.dummy = null; }
-            cfg.active = false;
-            cfg.index = 0;
-            if (cfg.data) cfg.data.fill(0);
+            cfg.active = false; cfg.index = 0; if (cfg.data) cfg.data.fill(0);
         }
 
         document.addEventListener('visibilitychange', () => {
             if (document.hidden && !isPaused) {
-                isPaused = true;
-                clearTimeout(stopTimer);
-                pauseButton.textContent = "Đo / Dừng";
-                pauseButton.style.backgroundColor = "#28a745";
-                infoText.textContent = "Hệ thống tạm nghỉ do ẩn trang. Bấm Đo / Dừng để tiếp tục.";
-                infoText.style.color = "#d93025";
+                isPaused = true; clearTimeout(stopTimer);
+                pauseButton.textContent = "Đo / Dừng"; pauseButton.style.backgroundColor = "#28a745";
+                infoText.textContent = "Hệ thống tạm nghỉ do ẩn trang. Bấm Đo / Dừng để tiếp tục."; infoText.style.color = "#d93025";
             }
         });
 
-        speedSelect.addEventListener('change', (e) => {
-            targetFPS = (e.target.value === 'slow') ? 15 : 60;
-        });
+        speedSelect.addEventListener('change', (e) => { targetFPS = (e.target.value === 'slow') ? 15 : 60; });
 
         modeSelect.addEventListener('change', (e) => {
-            isContinuousMode = (e.target.value === 'continuous');
-            clearTimeout(stopTimer);
-            if (isContinuousMode) {
-                speedSelect.style.display = 'block';
-                targetFPS = (speedSelect.value === 'slow') ? 15 : 60;
-            } else {
-                speedSelect.style.display = 'none';
-                targetFPS = 60;
-                speedSelect.value = "fast";
-                if (!isPaused) {
-                    triggerAutoStop();
-                }
-            }
+            isContinuousMode = (e.target.value === 'continuous'); clearTimeout(stopTimer);
+            if (isContinuousMode) { speedSelect.style.display = 'block'; targetFPS = (speedSelect.value === 'slow') ? 15 : 60; }
+            else { speedSelect.style.display = 'none'; targetFPS = 60; speedSelect.value = "fast"; if (!isPaused) triggerAutoStop(); }
         });
 
         channelModeSelect.addEventListener('change', () => {
             if (getActiveChannelMode() === '1') {
-                if (channelConfig.A.active && channelConfig.B.active) {
-                    stopAudioChannel('B');
-                } else if (channelConfig.A.active) {
-                    stopAudioChannel('B');
-                } else if (channelConfig.B.active) {
-                    stopAudioChannel('A');
-                }
+                if (channelConfig.A.active && channelConfig.B.active) stopAudioChannel('B');
+                else if (channelConfig.A.active) stopAudioChannel('B');
+                else if (channelConfig.B.active) stopAudioChannel('A');
             }
-            updateUIState();
-            drawFrame();
+            updateUIState(); drawFrame();
         });
 
         btnStartA.addEventListener('click', async () => {
-            if (channelConfig.A.active) {
-                stopAudioChannel('A');
-                updateUIState();
-                drawFrame();
-            } else {
-                await initAudioChannel('A', micSelectA.value || null);
-            }
+            if (channelConfig.A.active) { stopAudioChannel('A'); updateUIState(); drawFrame(); }
+            else { await initAudioChannel('A', micSelectA.value || null); }
         });
 
         btnStartB.addEventListener('click', async () => {
-            if (channelConfig.B.active) {
-                stopAudioChannel('B');
-                updateUIState();
-                drawFrame();
-            } else {
-                await initAudioChannel('B', micSelectB.value || null);
-            }
+            if (channelConfig.B.active) { stopAudioChannel('B'); updateUIState(); drawFrame(); }
+            else { await initAudioChannel('B', micSelectB.value || null); }
         });
 
         micSelectA.addEventListener('change', (e) => { if (channelConfig.A.active) initAudioChannel('A', e.target.value); });
         micSelectB.addEventListener('change', (e) => { if (channelConfig.B.active) initAudioChannel('B', e.target.value); });
 
         function resizeCanvas() {
-            const dpr = window.devicePixelRatio || 1;
-            const cssWidth = canvas.clientWidth || window.innerWidth;
-            const cssHeight = canvas.clientHeight || (window.innerHeight - 160);
-            canvas.width = Math.round(cssWidth * dpr);
-            canvas.height = Math.round(cssHeight * dpr);
-            canvasCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
-            drawFrame();
+            const dpr = window.devicePixelRatio || 1, cssWidth = canvas.clientWidth || window.innerWidth, cssHeight = canvas.clientHeight || (window.innerHeight - 160);
+            canvas.width = Math.round(cssWidth * dpr); canvas.height = Math.round(cssHeight * dpr);
+            canvasCtx.setTransform(dpr, 0, 0, dpr, 0, 0); drawFrame();
         }
         window.addEventListener('resize', resizeCanvas);
 
@@ -1578,18 +614,15 @@
         canvas.addEventListener('touchstart', (e) => {
             if (e.touches.length === 2) {
                 e.preventDefault(); if (!isPaused) return;
-                let dx = Math.max(Math.abs(e.touches[0].clientX - e.touches[1].clientX), 10);
-                let dy = Math.max(Math.abs(e.touches[0].clientY - e.touches[1].clientY), 10);
-                initialPinchDistX = dx; initialPinchDistY = dy;
-                startDuration = totalTimeOnScreen; startZoomY = currentZoomY;
+                let dx = Math.max(Math.abs(e.touches[0].clientX - e.touches[1].clientX), 10), dy = Math.max(Math.abs(e.touches[0].clientY - e.touches[1].clientY), 10);
+                initialPinchDistX = dx; initialPinchDistY = dy; startDuration = totalTimeOnScreen; startZoomY = currentZoomY;
             }
         }, { passive: false });
 
         canvas.addEventListener('touchmove', (e) => {
             if (e.touches.length === 2) {
                 e.preventDefault(); if (!isPaused) return;
-                let dx = Math.max(Math.abs(e.touches[0].clientX - e.touches[1].clientX), 10);
-                let dy = Math.max(Math.abs(e.touches[0].clientY - e.touches[1].clientY), 10);
+                let dx = Math.max(Math.abs(e.touches[0].clientX - e.touches[1].clientX), 10), dy = Math.max(Math.abs(e.touches[0].clientY - e.touches[1].clientY), 10);
                 isUserZoomed = true;
                 totalTimeOnScreen = Math.max(0.002, Math.min(startDuration * (initialPinchDistX / dx), 2.4));
                 currentZoomY = Math.max(0.5, Math.min(startZoomY * (dy / initialPinchDistY), 10.0));
@@ -1600,16 +633,13 @@
         canvas.addEventListener('wheel', (e) => {
             e.preventDefault(); if (!isPaused) return;
             isUserZoomed = true;
-            if (e.deltaY > 0) { totalTimeOnScreen *= 1.1; currentZoomY /= 1.1; }
-            else { totalTimeOnScreen /= 1.1; currentZoomY *= 1.1; }
-            totalTimeOnScreen = Math.max(0.002, Math.min(totalTimeOnScreen, 2.4));
-            currentZoomY = Math.max(0.5, Math.min(currentZoomY, 10.0));
+            if (e.deltaY > 0) { totalTimeOnScreen *= 1.1; currentZoomY /= 1.1; } else { totalTimeOnScreen /= 1.1; currentZoomY *= 1.1; }
+            totalTimeOnScreen = Math.max(0.002, Math.min(totalTimeOnScreen, 2.4)); currentZoomY = Math.max(0.5, Math.min(currentZoomY, 10.0));
             if (isPaused) drawFrame();
         }, { passive: false });
 
         fullscreenButton.addEventListener('click', () => {
-            let elem = document.documentElement;
-            let isFullscreen = document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
+            let elem = document.documentElement; let isFullscreen = document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
             if (!isFullscreen) {
                 if (elem.requestFullscreen) elem.requestFullscreen().catch(() => alert("Vui lòng xoay ngang điện thoại để trải nghiệm tốt nhất!"));
                 else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
@@ -1623,8 +653,7 @@
 
         function updateFullscreenButton() {
             let isFullscreen = document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
-            fullscreenButton.textContent = !isFullscreen ? "Toàn màn hình" : "Thu nhỏ";
-            setTimeout(resizeCanvas, 100);
+            fullscreenButton.textContent = !isFullscreen ? "Toàn màn hình" : "Thu nhỏ"; setTimeout(resizeCanvas, 100);
         }
         document.addEventListener('fullscreenchange', updateFullscreenButton);
         document.addEventListener('webkitfullscreenchange', updateFullscreenButton);
@@ -1632,35 +661,18 @@
         function autoCorrelate(buffer, sampleRate) {
             let SIZE = buffer.length, sumSq = 0;
             for (let i = 0; i < SIZE; i++) sumSq += buffer[i] * buffer[i];
-            let rootMeanSq = Math.sqrt(sumSq / SIZE);
-            if (rootMeanSq < 0.02) return -1;
-
-            let c = new Float32Array(SIZE);
-            let halfSize = Math.floor(SIZE / 2);
-            for (let i = 0; i < halfSize; i++) {
-                let sum = 0;
-                for (let j = 0; j < SIZE - i; j++) {
-                    sum += buffer[j] * buffer[j + i];
-                }
-                c[i] = sum;
-            }
-
-            let d = 0;
-            while (d < halfSize - 1 && c[d] > c[d + 1]) d++;
+            let rootMeanSq = Math.sqrt(sumSq / SIZE); if (rootMeanSq < 0.02) return -1;
+            let c = new Float32Array(SIZE), halfSize = Math.floor(SIZE / 2);
+            for (let i = 0; i < halfSize; i++) { let sum = 0; for (let j = 0; j < SIZE - i; j++) { sum += buffer[j] * buffer[j + i]; } c[i] = sum; }
+            let d = 0; while (d < halfSize - 1 && c[d] > c[d + 1]) d++;
             let maxval = -1, maxpos = -1;
-            for (let i = d; i < halfSize; i++) {
-                if (c[i] > maxval) { maxval = c[i]; maxpos = i; }
-            }
+            for (let i = d; i < halfSize; i++) { if (c[i] > maxval) { maxval = c[i]; maxpos = i; } }
             if (maxpos <= 0 || maxval < c[0] * 0.3) return -1;
-
             let truePos = maxpos;
             if (maxpos > 0 && maxpos < halfSize - 1) {
-                let x1 = c[maxpos - 1], x2 = c[maxpos], x3 = c[maxpos + 1];
-                let a = (x1 + x3 - 2 * x2) / 2;
-                let b = (x3 - x1) / 2;
+                let x1 = c[maxpos - 1], x2 = c[maxpos], x3 = c[maxpos + 1], a = (x1 + x3 - 2 * x2) / 2, b = (x3 - x1) / 2;
                 if (a < 0) truePos = maxpos - b / (2 * a);
             }
-
             let freq = sampleRate / truePos;
             if (freq < 100 || freq > 1500) return -1;
             return freq;
@@ -1668,190 +680,101 @@
 
         function findZeroCrossingOffset(cfg, currentIndex, samplesNeeded) {
             if (!cfg || !cfg.active || !cfg.data || currentIndex <= 0) return 0;
-            const len = cfg.data.length;
-            const maxAvailable = Math.min(currentIndex, len - 4096);
+            const len = cfg.data.length, maxAvailable = Math.min(currentIndex, len - 4096);
             if (maxAvailable <= samplesNeeded + 4) return 0;
-
-            const maxSearchWindow = Math.min(
-                maxAvailable - samplesNeeded - 2,
-                Math.max(512, Math.floor(sampleRate / 60))
-            );
+            const maxSearchWindow = Math.min(maxAvailable - samplesNeeded - 2, Math.max(512, Math.floor(sampleRate / 60)));
             if (maxSearchWindow <= 4) return 0;
-
             const baseEnd = currentIndex - samplesNeeded;
-
             let peak = 0;
             for (let k = 0; k < maxSearchWindow; k += 2) {
-                let idx = ((baseEnd - k) % len + len) % len;
-                let absVal = Math.abs(cfg.data[idx]);
+                let idx = ((baseEnd - k) % len + len) % len, absVal = Math.abs(cfg.data[idx]);
                 if (absVal > peak) peak = absVal;
             }
             if (peak < 0.008) return 0;
-
             const hysteresis = peak * 0.1;
-
             for (let offset = 1; offset < maxSearchWindow - 4; offset++) {
-                let iCurr = ((baseEnd - offset) % len + len) % len;
-                let iPrev = ((baseEnd - offset - 1) % len + len) % len;
-                let vPrev = cfg.data[iPrev];
-                let vCurr = cfg.data[iCurr];
-
+                let iCurr = ((baseEnd - offset) % len + len) % len, iPrev = ((baseEnd - offset - 1) % len + len) % len, vPrev = cfg.data[iPrev], vCurr = cfg.data[iCurr];
                 if (vPrev <= 0 && vCurr > 0) {
                     let iBack = ((baseEnd - offset - 4) % len + len) % len;
-                    if (cfg.data[iBack] < -hysteresis || (vCurr - vPrev) > peak * 0.02) {
-                        return offset;
-                    }
+                    if (cfg.data[iBack] < -hysteresis || (vCurr - vPrev) > peak * 0.02) return offset;
                 }
             }
             return 0;
         }
 
         function drawLabelWithPill(text, x, y, align = 'center', baseline = 'top', textColor = '#000000') {
-            canvasCtx.save();
-            canvasCtx.font = '600 13px "Segoe UI", Roboto, Arial, sans-serif';
-            canvasCtx.textAlign = align;
-            canvasCtx.textBaseline = baseline;
-
-            const metrics = canvasCtx.measureText(text);
-            const padX = 4, padY = 2;
-            const textW = metrics.width;
-            const textH = 14;
-
-            let boxX = x - padX;
-            if (align === 'center') boxX = x - textW / 2 - padX;
-            else if (align === 'right') boxX = x - textW - padX;
-
-            let boxY = y - padY;
-            if (baseline === 'middle') boxY = y - textH / 2 - padY;
-            else if (baseline === 'bottom') boxY = y - textH - padY;
-
-            canvasCtx.fillStyle = 'rgba(230, 247, 255, 0.88)';
-            canvasCtx.fillRect(boxX, boxY, textW + padX * 2, textH + padY * 2);
-
-            canvasCtx.fillStyle = textColor;
-            canvasCtx.fillText(text, x, y);
-            canvasCtx.restore();
+            canvasCtx.save(); canvasCtx.font = '600 13px "Segoe UI", Roboto, Arial, sans-serif'; canvasCtx.textAlign = align; canvasCtx.textBaseline = baseline;
+            const metrics = canvasCtx.measureText(text), padX = 4, padY = 2, textW = metrics.width, textH = 14;
+            let boxX = x - padX; if (align === 'center') boxX = x - textW / 2 - padX; else if (align === 'right') boxX = x - textW - padX;
+            let boxY = y - padY; if (baseline === 'middle') boxY = y - textH / 2 - padY; else if (baseline === 'bottom') boxY = y - textH - padY;
+            canvasCtx.fillStyle = 'rgba(230, 247, 255, 0.88)'; canvasCtx.fillRect(boxX, boxY, textW + padX * 2, textH + padY * 2);
+            canvasCtx.fillStyle = textColor; canvasCtx.fillText(text, x, y); canvasCtx.restore();
         }
 
         async function populateMics() {
-            const devices = await navigator.mediaDevices.enumerateDevices();
-            const audioInputs = devices.filter(device => device.kind === 'audioinput');
-
+            const devices = await navigator.mediaDevices.enumerateDevices(), audioInputs = devices.filter(device => device.kind === 'audioinput');
             let valA = micSelectA.value, valB = micSelectB.value;
-            micSelectA.innerHTML = '<option value="">-- Kênh A: Mặc định hệ thống --</option>';
-            micSelectB.innerHTML = '<option value="">-- Kênh B: Mặc định hệ thống --</option>';
-
+            micSelectA.innerHTML = '<option value="">-- Kênh A: Mặc định hệ thống --</option>'; micSelectB.innerHTML = '<option value="">-- Kênh B: Mặc định hệ thống --</option>';
             audioInputs.forEach((device, index) => {
                 let optA = document.createElement('option'); optA.value = device.deviceId; optA.text = `A: ${device.label || 'Microphone ' + (index + 1)}`;
                 let optB = document.createElement('option'); optB.value = device.deviceId; optB.text = `B: ${device.label || 'Microphone ' + (index + 1)}`;
                 micSelectA.appendChild(optA); micSelectB.appendChild(optB);
             });
-
             if (audioInputs.length > 1) micSelectB.selectedIndex = 2;
-            if (valA) micSelectA.value = valA;
-            if (valB) micSelectB.value = valB;
+            if (valA) micSelectA.value = valA; if (valB) micSelectB.value = valB;
         }
 
         function updateUIState() {
-            let mode = getActiveChannelMode();
-
-            if (channelConfig.A.active) {
-                btnStartA.textContent = "Kênh A (Hoạt động)";
-                btnStartA.style.backgroundColor = "#28a745";
-            } else {
-                btnStartA.textContent = "Kênh A (Đã Khóa)";
-                btnStartA.style.backgroundColor = "#6c757d";
-            }
-            btnStartA.disabled = false;
-
-            if (channelConfig.B.active) {
-                btnStartB.textContent = "Kênh B (Hoạt động)";
-                btnStartB.style.backgroundColor = "#28a745";
-            } else {
-                btnStartB.textContent = "Kênh B (Đã Khóa)";
-                btnStartB.style.backgroundColor = "#6c757d";
-            }
-            btnStartB.disabled = false;
-
+            if (channelConfig.A.active) { btnStartA.textContent = "Kênh A (Hoạt động)"; btnStartA.style.backgroundColor = "#28a745"; }
+            else { btnStartA.textContent = "Kênh A (Đã Khóa)"; btnStartA.style.backgroundColor = "#6c757d"; } btnStartA.disabled = false;
+            
+            if (channelConfig.B.active) { btnStartB.textContent = "Kênh B (Hoạt động)"; btnStartB.style.backgroundColor = "#28a745"; }
+            else { btnStartB.textContent = "Kênh B (Đã Khóa)"; btnStartB.style.backgroundColor = "#6c757d"; } btnStartB.disabled = false;
+            
             if (channelConfig.A.active || channelConfig.B.active) {
-                pauseButton.disabled = false;
-                resetButton.disabled = false;
-                saveButton.disabled = false;
-                if (isPaused) {
-                    infoText.innerHTML = "Đã kết nối thành công. Bấm <span class='info-badge'>Đo / Dừng</span> để bắt đầu vẽ đồ thị.";
-                    infoText.style.color = "#007bff";
-                }
+                pauseButton.disabled = false; resetButton.disabled = false; saveButton.disabled = false;
+                if (isPaused) { infoText.innerHTML = "Đã kết nối thành công. Bấm <span class='info-badge'>Đo / Dừng</span> để bắt đầu vẽ đồ thị."; infoText.style.color = "#007bff"; }
             } else {
-                pauseButton.disabled = true;
-                resetButton.disabled = true;
-                saveButton.disabled = true;
-                infoText.innerHTML = "Nhấn vào <span class='info-badge'>Kênh A</span> hoặc <span class='info-badge'>Kênh B</span> để mở thu sóng âm.";
-                infoText.style.color = "#d93025";
+                pauseButton.disabled = true; resetButton.disabled = true; saveButton.disabled = true;
+                infoText.innerHTML = "Nhấn vào <span class='info-badge'>Kênh A</span> hoặc <span class='info-badge'>Kênh B</span> để mở thu sóng âm."; infoText.style.color = "#d93025";
             }
         }
 
         async function initAudioChannel(channelId, deviceId = null) {
-            if (getActiveChannelMode() === '1') {
-                const otherChannel = (channelId === 'A') ? 'B' : 'A';
-                stopAudioChannel(otherChannel);
-            }
-
+            if (getActiveChannelMode() === '1') stopAudioChannel((channelId === 'A') ? 'B' : 'A');
             if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                sampleRate = audioCtx.sampleRate;
-                channelConfig.A.data = new Float32Array(sampleRate * BUFFER_SECONDS);
-                channelConfig.B.data = new Float32Array(sampleRate * BUFFER_SECONDS);
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)(); sampleRate = audioCtx.sampleRate;
+                channelConfig.A.data = new Float32Array(sampleRate * BUFFER_SECONDS); channelConfig.B.data = new Float32Array(sampleRate * BUFFER_SECONDS);
             }
-
             stopAudioChannel(channelId);
             const cfg = channelConfig[channelId];
-            if (!cfg.data || cfg.data.length !== sampleRate * BUFFER_SECONDS) {
-                cfg.data = new Float32Array(sampleRate * BUFFER_SECONDS);
-            }
-
+            if (!cfg.data || cfg.data.length !== sampleRate * BUFFER_SECONDS) cfg.data = new Float32Array(sampleRate * BUFFER_SECONDS);
             const constraints = { audio: deviceId ? { deviceId: { exact: deviceId } } : true };
             try {
                 cfg.stream = await navigator.mediaDevices.getUserMedia(constraints);
                 cfg.source = audioCtx.createMediaStreamSource(cfg.stream);
-
                 cfg.filterHP = audioCtx.createBiquadFilter(); cfg.filterHP.frequency.value = 80; cfg.filterHP.type = 'highpass';
                 cfg.filterLP = audioCtx.createBiquadFilter(); cfg.filterLP.frequency.value = 3000; cfg.filterLP.type = 'lowpass';
-
                 cfg.processor = audioCtx.createScriptProcessor(4096, 1, 1);
                 cfg.processor.onaudioprocess = function (e) {
                     if (!isPaused && cfg.active) {
-                        let input = e.inputBuffer.getChannelData(0);
-                        const len = cfg.data.length;
-                        for (let i = 0; i < input.length; i++) {
-                            cfg.data[cfg.index % len] = input[i];
-                            cfg.index++;
-                        }
+                        let input = e.inputBuffer.getChannelData(0), len = cfg.data.length;
+                        for (let i = 0; i < input.length; i++) { cfg.data[cfg.index % len] = input[i]; cfg.index++; }
                     }
                 };
                 cfg.dummy = audioCtx.createGain(); cfg.dummy.gain.value = 0;
-
-                cfg.source.connect(cfg.filterHP); cfg.filterHP.connect(cfg.filterLP);
-                cfg.filterLP.connect(cfg.processor); cfg.processor.connect(cfg.dummy); cfg.dummy.connect(audioCtx.destination);
-
+                cfg.source.connect(cfg.filterHP); cfg.filterHP.connect(cfg.filterLP); cfg.filterLP.connect(cfg.processor); cfg.processor.connect(cfg.dummy); cfg.dummy.connect(audioCtx.destination);
                 cfg.active = true;
-
                 if (micSelectA.options.length <= 1) await populateMics();
-
                 updateUIState();
-
-                if (isPaused) {
-                    resizeCanvas();
-                    drawFrame(true);
-                } else {
+                if (isPaused) { resizeCanvas(); drawFrame(true); } else {
                     let text = "Đang thu liên tục: ";
                     if (channelConfig.A.active) text += "<span class='channel-tag-a'>Kênh A (Đỏ)</span>";
                     if (channelConfig.A.active && channelConfig.B.active) text += " &amp; ";
                     if (channelConfig.B.active) text += "<span class='channel-tag-b'>Kênh B (Xanh)</span>";
                     infoText.innerHTML = text;
                 }
-            } catch (err) {
-                alert(`Không thể truy cập Micro ở Kênh ${channelId}. Vui lòng kiểm tra quyền thiết bị!`);
-            }
+            } catch (err) { alert(`Không thể truy cập Micro ở Kênh ${channelId}. Vui lòng kiểm tra quyền thiết bị!`); }
         }
 
         function triggerAutoStop() {
@@ -1859,12 +782,9 @@
             if (!isPaused && !isContinuousMode) {
                 stopTimer = setTimeout(() => {
                     if (!isPaused) {
-                        isPaused = true;
-                        pauseButton.textContent = "Đo / Dừng";
-                        pauseButton.style.backgroundColor = "#28a745";
+                        isPaused = true; pauseButton.textContent = "Đo / Dừng"; pauseButton.style.backgroundColor = "#28a745";
                         infoText.innerHTML = "Đã quét xong &mdash; Ấn <span class='info-badge'>Đo / Dừng</span> để tiếp tục";
-                        infoText.style.color = "#d93025";
-                        drawFrame();
+                        infoText.style.color = "#d93025"; drawFrame();
                     }
                 }, 2000);
             }
@@ -1872,152 +792,84 @@
 
         pauseButton.addEventListener('click', () => {
             if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
-
             if (isPaused) {
                 isPaused = false;
                 channelConfig.A.index = 0; if (channelConfig.A.data) channelConfig.A.data.fill(0);
                 channelConfig.B.index = 0; if (channelConfig.B.data) channelConfig.B.data.fill(0);
-                isUserZoomed = false;
-                detectedFrequency = 0;
-                lockedFrequency = 440;
-                totalTimeOnScreen = 5 * (1.0 / lockedFrequency);
-
-                pauseButton.textContent = "Đang đo...";
-                pauseButton.style.backgroundColor = "#dc3545";
-
+                isUserZoomed = false; detectedFrequency = 0; lockedFrequency = 440; totalTimeOnScreen = 5 * (1.0 / lockedFrequency);
+                pauseButton.textContent = "Đang đo..."; pauseButton.style.backgroundColor = "#dc3545";
                 let text = "Đang quét tín hiệu: ";
                 if (channelConfig.A.active) text += "<span class='channel-tag-a'>Kênh A (Đỏ)</span>";
                 if (channelConfig.A.active && channelConfig.B.active) text += " &amp; ";
                 if (channelConfig.B.active) text += "<span class='channel-tag-b'>Kênh B (Xanh)</span>";
                 infoText.innerHTML = text;
-
-                lastDrawTime = performance.now();
-                draw();
-                triggerAutoStop();
+                lastDrawTime = performance.now(); draw(); triggerAutoStop();
             } else {
-                isPaused = true; clearTimeout(stopTimer);
-                pauseButton.textContent = "Đo / Dừng";
-                pauseButton.style.backgroundColor = "#28a745";
-                infoText.innerHTML = isContinuousMode
-                    ? "Đã tạm dừng vẽ đồ thị &mdash; Ấn <span class='info-badge'>Đo / Dừng</span> để tiếp tục"
-                    : "Đã quét xong &mdash; Ấn <span class='info-badge'>Đo / Dừng</span> để tiếp tục";
-                infoText.style.color = "#d93025";
-                drawFrame();
+                isPaused = true; clearTimeout(stopTimer); pauseButton.textContent = "Đo / Dừng"; pauseButton.style.backgroundColor = "#28a745";
+                infoText.innerHTML = isContinuousMode ? "Đã tạm dừng vẽ đồ thị &mdash; Ấn <span class='info-badge'>Đo / Dừng</span> để tiếp tục" : "Đã quét xong &mdash; Ấn <span class='info-badge'>Đo / Dừng</span> để tiếp tục";
+                infoText.style.color = "#d93025"; drawFrame();
             }
         });
 
         resetButton.addEventListener('click', () => {
-            isPaused = true; clearTimeout(stopTimer);
-            pauseButton.textContent = "Đo / Dừng"; pauseButton.style.backgroundColor = "#28a745";
+            isPaused = true; clearTimeout(stopTimer); pauseButton.textContent = "Đo / Dừng"; pauseButton.style.backgroundColor = "#28a745";
             if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
-
-            stopAudioChannel('A');
-            stopAudioChannel('B');
-
-            channelModeSelect.value = "1";
-            modeSelect.value = "auto";
-            isContinuousMode = false;
-            speedSelect.style.display = 'none';
-            speedSelect.value = "fast";
-            targetFPS = 60;
+            stopAudioChannel('A'); stopAudioChannel('B');
+            channelModeSelect.value = "1"; modeSelect.value = "auto"; isContinuousMode = false;
+            speedSelect.style.display = 'none'; speedSelect.value = "fast"; targetFPS = 60;
             resetSettingsDropdown();
-
-            isUserZoomed = false;
-            detectedFrequency = 0;
-            lockedFrequency = 440;
-            totalTimeOnScreen = 5 * (1.0 / 440);
-            currentZoomY = 2.0;
-            updateUIState();
-            drawFrame(true);
+            isUserZoomed = false; detectedFrequency = 0; lockedFrequency = 440; totalTimeOnScreen = 5 * (1.0 / 440); currentZoomY = 2.0;
+            updateUIState(); drawFrame(true);
         });
 
         saveButton.addEventListener('click', () => {
-            const link = document.createElement('a');
-            link.download = `DoThi_SongAm.png`; link.href = canvas.toDataURL('image/png'); link.click();
+            const link = document.createElement('a'); link.download = `DoThi_SongAm.png`; link.href = canvas.toDataURL('image/png'); link.click();
         });
 
         function drawFrame(isReset = false) {
-            const width = canvas.clientWidth || canvas.width;
-            const height = canvas.clientHeight || canvas.height;
-
-            canvasCtx.fillStyle = '#e6f7ff';
-            canvasCtx.fillRect(0, 0, width, height);
-
+            const width = canvas.clientWidth || canvas.width, height = canvas.clientHeight || canvas.height;
+            canvasCtx.fillStyle = '#e6f7ff'; canvasCtx.fillRect(0, 0, width, height);
             if (!audioCtx && isReset) return;
-
             if (audioCtx && !isPaused && (channelConfig.A.index > 2048 || channelConfig.B.index > 2048)) {
                 let now = Date.now();
                 if (now - lastCorrelateTime > 300) {
                     let mainCfg = channelConfig.A.active ? channelConfig.A : channelConfig.B;
-                    let currentIdx = mainCfg.index;
-                    if (mainCfg.active && currentIdx > 2048) {
-                        let recentData = new Float32Array(2048);
-                        const len = mainCfg.data.length;
-                        for (let i = 0; i < 2048; i++) {
-                            recentData[i] = mainCfg.data[((currentIdx - 2048 + i) % len + len) % len];
-                        }
+                    if (mainCfg.active && mainCfg.index > 2048) {
+                        let recentData = new Float32Array(2048), len = mainCfg.data.length, currentIdx = mainCfg.index;
+                        for (let i = 0; i < 2048; i++) recentData[i] = mainCfg.data[((currentIdx - 2048 + i) % len + len) % len];
                         let freq = autoCorrelate(recentData, sampleRate);
                         if (freq > 0) {
                             detectedFrequency = (detectedFrequency === 0) ? freq : (detectedFrequency * 0.7 + freq * 0.3);
-                            if (Math.abs(detectedFrequency - lockedFrequency) / lockedFrequency > 0.08) {
-                                lockedFrequency = detectedFrequency;
-                            }
-                            if (typeof updateFoxLiveFrequency === 'function') {
-                                updateFoxLiveFrequency(lockedFrequency || detectedFrequency);
-                            }
+                            if (Math.abs(detectedFrequency - lockedFrequency) / lockedFrequency > 0.08) lockedFrequency = detectedFrequency;
+                            if (typeof updateFoxLiveFrequency === 'function') updateFoxLiveFrequency(lockedFrequency || detectedFrequency);
                         }
                     }
                     lastCorrelateTime = now;
                 }
             }
-
-            if (!isUserZoomed) {
-                let freqForCalc = (lockedFrequency > 0) ? lockedFrequency : 440;
-                totalTimeOnScreen = Math.max(0.002, Math.min(5 * (1.0 / freqForCalc), 2.4));
-            }
-
+            if (!isUserZoomed) totalTimeOnScreen = Math.max(0.002, Math.min(5 * (1.0 / ((lockedFrequency > 0) ? lockedFrequency : 440)), 2.4));
             const zoomY = currentZoomY;
-
-            canvasCtx.strokeStyle = '#b3e0ff';
-            canvasCtx.lineWidth = 1;
+            canvasCtx.strokeStyle = '#b3e0ff'; canvasCtx.lineWidth = 1;
             const stepGridX = width / 10, stepGridY = height / 8;
             canvasCtx.beginPath();
-            for (let i = 0; i <= 10; i++) {
-                canvasCtx.moveTo(i * stepGridX, 0);
-                canvasCtx.lineTo(i * stepGridX, height);
-            }
-            for (let i = 0; i <= 8; i++) {
-                canvasCtx.moveTo(0, i * stepGridY);
-                canvasCtx.lineTo(width, i * stepGridY);
-            }
+            for (let i = 0; i <= 10; i++) { canvasCtx.moveTo(i * stepGridX, 0); canvasCtx.lineTo(i * stepGridX, height); }
+            for (let i = 0; i <= 8; i++) { canvasCtx.moveTo(0, i * stepGridY); canvasCtx.lineTo(width, i * stepGridY); }
             canvasCtx.stroke();
-
-            canvasCtx.lineWidth = 2;
-            canvasCtx.strokeStyle = '#000000';
-            canvasCtx.beginPath();
+            canvasCtx.lineWidth = 2; canvasCtx.strokeStyle = '#000000'; canvasCtx.beginPath();
             canvasCtx.moveTo(0, height / 2); canvasCtx.lineTo(width, height / 2);
             canvasCtx.moveTo(width / 2, 0); canvasCtx.lineTo(width / 2, height);
             const tickSize = 5;
-            for (let i = 0; i <= 10; i++) {
-                canvasCtx.moveTo(i * stepGridX, height / 2 - tickSize);
-                canvasCtx.lineTo(i * stepGridX, height / 2 + tickSize);
-            }
-            for (let i = 0; i <= 8; i++) {
-                canvasCtx.moveTo(width / 2 - tickSize, i * stepGridY);
-                canvasCtx.lineTo(width / 2 + tickSize, i * stepGridY);
-            }
+            for (let i = 0; i <= 10; i++) { canvasCtx.moveTo(i * stepGridX, height / 2 - tickSize); canvasCtx.lineTo(i * stepGridX, height / 2 + tickSize); }
+            for (let i = 0; i <= 8; i++) { canvasCtx.moveTo(width / 2 - tickSize, i * stepGridY); canvasCtx.lineTo(width / 2 + tickSize, i * stepGridY); }
             canvasCtx.stroke();
-
             let timePerGrid = totalTimeOnScreen / 10;
             for (let i = 1; i < 10; i++) {
                 if (i !== 5) {
-                    let ms = (i - 5) * timePerGrid * 1000;
-                    let label = parseFloat(ms.toFixed(2)).toString().replace('.', ',');
+                    let label = parseFloat(((i - 5) * timePerGrid * 1000).toFixed(2)).toString().replace('.', ',');
                     drawLabelWithPill(label, i * stepGridX, height / 2 + 10, 'center', 'top');
                 }
             }
             drawLabelWithPill("t (ms)", width - 10, height / 2 - 26, 'right', 'top');
-
             const maxY = 1.0 / zoomY, valPerStep = (maxY * 2) / 8;
             for (let i = 1; i < 8; i++) {
                 if (i !== 4) {
@@ -2029,119 +881,70 @@
             drawLabelWithPill("Biên độ", width / 2 + 10, 10, 'left', 'top');
 
             if (audioCtx && !isReset) {
-                const samplesNeeded = Math.floor(totalTimeOnScreen * sampleRate);
-                const step = Math.max(1, Math.floor(samplesNeeded / (width * 2)));
-                const sliceWidth = (width / samplesNeeded) * step;
-
+                const samplesNeeded = Math.floor(totalTimeOnScreen * sampleRate), step = Math.max(1, Math.floor(samplesNeeded / (width * 2))), sliceWidth = (width / samplesNeeded) * step;
                 let refCfg = channelConfig.A.active ? channelConfig.A : (channelConfig.B.active ? channelConfig.B : null);
-                let sharedTriggerOffset = 0;
-                if (refCfg && refCfg.index > samplesNeeded) {
-                    sharedTriggerOffset = findZeroCrossingOffset(refCfg, refCfg.index, samplesNeeded);
-                }
+                let sharedTriggerOffset = (refCfg && refCfg.index > samplesNeeded) ? findZeroCrossingOffset(refCfg, refCfg.index, samplesNeeded) : 0;
 
                 ['A', 'B'].forEach(ch => {
                     const cfg = channelConfig[ch];
                     if (getActiveChannelMode() === '1' && ch === 'B' && channelConfig.A.active) return;
-
                     if (cfg.active && cfg.index > 0 && cfg.data) {
-                        const currentIndex = cfg.index;
-                        const len = cfg.data.length;
-
-                        const availableSamples = Math.min(currentIndex, len - 4096);
+                        const len = cfg.data.length, availableSamples = Math.min(cfg.index, len - 4096);
                         if (availableSamples <= 0) return;
-
-                        const triggerOffset = (cfg === refCfg)
-                            ? sharedTriggerOffset
-                            : Math.min(sharedTriggerOffset, Math.max(0, availableSamples - samplesNeeded));
-
-                        const endIndex = currentIndex - triggerOffset;
-                        const startIndex = endIndex - samplesNeeded;
-
-                        canvasCtx.save();
-                        canvasCtx.beginPath();
-                        canvasCtx.rect(0, 0, width, height);
-                        canvasCtx.clip();
-                        canvasCtx.lineWidth = 2.5;
-                        canvasCtx.lineJoin = 'round';
-                        canvasCtx.strokeStyle = cfg.color;
-                        canvasCtx.beginPath();
-
+                        const triggerOffset = (cfg === refCfg) ? sharedTriggerOffset : Math.min(sharedTriggerOffset, Math.max(0, availableSamples - samplesNeeded));
+                        const endIndex = cfg.index - triggerOffset, startIndex = endIndex - samplesNeeded;
+                        canvasCtx.save(); canvasCtx.beginPath(); canvasCtx.rect(0, 0, width, height); canvasCtx.clip();
+                        canvasCtx.lineWidth = 2.5; canvasCtx.lineJoin = 'round'; canvasCtx.strokeStyle = cfg.color; canvasCtx.beginPath();
                         let x = 0, hasMoved = false;
-
                         for (let i = startIndex; i < endIndex; i += step) {
-                            if (i < 0 || i < currentIndex - availableSamples || i >= currentIndex) {
-                                x += sliceWidth;
-                                continue;
-                            }
-                            let bufIdx = ((i % len) + len) % len;
-                            let v = cfg.data[bufIdx];
-
+                            if (i < 0 || i < cfg.index - availableSamples || i >= cfg.index) { x += sliceWidth; continue; }
+                            let bufIdx = ((i % len) + len) % len, v = cfg.data[bufIdx];
                             if (step > 2) {
                                 let maxV = v, minV = v;
                                 for (let j = 1; j < step; j++) {
-                                    if (i + j < endIndex && i + j < currentIndex) {
+                                    if (i + j < endIndex && i + j < cfg.index) {
                                         let tempV = cfg.data[((i + j) % len + len) % len];
-                                        if (tempV > maxV) maxV = tempV;
-                                        if (tempV < minV) minV = tempV;
+                                        if (tempV > maxV) maxV = tempV; if (tempV < minV) minV = tempV;
                                     }
                                 }
                                 let yMin = (minV * -1.0) * zoomY * (height / 2) + (height / 2);
-                                if (!hasMoved) { canvasCtx.moveTo(x, yMin); hasMoved = true; } else { canvasCtx.lineTo(x, yMin); }
-
-                                let yMax = (maxV * -1.0) * zoomY * (height / 2) + (height / 2);
-                                canvasCtx.lineTo(x, yMax);
+                                if (!hasMoved) { canvasCtx.moveTo(x, yMin); hasMoved = true; } else canvasCtx.lineTo(x, yMin);
+                                let yMax = (maxV * -1.0) * zoomY * (height / 2) + (height / 2); canvasCtx.lineTo(x, yMax);
                                 x += sliceWidth;
                             } else {
                                 let y = (v * -1.0) * zoomY * (height / 2) + (height / 2);
-                                if (!hasMoved) { canvasCtx.moveTo(x, y); hasMoved = true; } else { canvasCtx.lineTo(x, y); }
+                                if (!hasMoved) { canvasCtx.moveTo(x, y); hasMoved = true; } else canvasCtx.lineTo(x, y);
                                 x += sliceWidth;
                             }
                             if (x > width) break;
                         }
-                        canvasCtx.stroke();
-                        canvasCtx.restore();
+                        canvasCtx.stroke(); canvasCtx.restore();
                     }
                 });
             }
         }
 
         function draw(timestamp) {
-            if (isPaused) return;
-            requestAnimationFrame(draw);
+            if (isPaused) return; requestAnimationFrame(draw);
             if (!timestamp) timestamp = performance.now();
-            let elapsed = timestamp - lastDrawTime;
-            let interval = 1000 / targetFPS;
-            if (elapsed > interval) {
-                lastDrawTime = timestamp - (elapsed % interval);
-                drawFrame();
-            }
+            let elapsed = timestamp - lastDrawTime, interval = 1000 / targetFPS;
+            if (elapsed > interval) { lastDrawTime = timestamp - (elapsed % interval); drawFrame(); }
         }
 
         // ==========================================================
-        // TRỢ LÝ ẢO THÔNG MINH FOX-LAB AI (CHATGPT STREAMING SPEC)
+        // TRỢ LÝ ẢO THÔNG MINH FOX-LAB AI 
         // ==========================================================
-        
-        // Link Web App Google Apps Script của bạn
-        
         const GAS_URL = "https://script.google.com/macros/s/AKfycbxS_IpPYpRXbDOocQus2f3b8UWUaMDiM2uQnaRw0HMcnGUnWQ_beBChg2fJaNS5WrSE5Q/exec";
-        
         let isStreaming = false;
 
         function toggleChat() {
             const widget = document.getElementById("fox-chat-widget");
             const isOpen = widget.classList.toggle("open");
-            if (isOpen) {
-                const input = document.getElementById("fox-chat-input");
-                setTimeout(() => {
-                    if (input) input.focus();
-                }, 150);
-            }
+            if (isOpen) { const input = document.getElementById("fox-chat-input"); setTimeout(() => { if (input) input.focus(); }, 150); }
         }
 
-        // Cập nhật tần số thời gian thực lên giao diện Chatbot
         function updateFoxLiveFrequency(freq) {
-            const freqTag = document.getElementById("foxLiveFreqTag");
-            const statusText = document.getElementById("foxStatusText");
+            const freqTag = document.getElementById("foxLiveFreqTag"), statusText = document.getElementById("foxStatusText");
             if (freq && freq > 0) {
                 const formatted = freq.toFixed(1) + " Hz";
                 if (freqTag) freqTag.textContent = formatted;
@@ -2149,13 +952,9 @@
             }
         }
 
-        // Định dạng Markdown & Công thức Toán/Lý (In đậm, Code, Math $T=1/f$, Xuống dòng)
         function formatFoxMarkdown(text) {
             if (!text) return "";
-            let clean = text
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;");
+            let clean = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
             clean = clean.replace(/\$([^$]+)\$/g, '<span class="fox-math">$1</span>');
             clean = clean.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
             clean = clean.replace(/`([^`]+)`/g, '<code>$1</code>');
@@ -2163,29 +962,33 @@
             return clean;
         }
 
-        const foxChatInput = document.getElementById("fox-chat-input");
-        const foxSendBtn = document.getElementById("foxSendBtn");
-
+        const foxChatInput = document.getElementById("fox-chat-input"), foxSendBtn = document.getElementById("foxSendBtn");
         function updateSendButtonState() {
             if (!foxChatInput || !foxSendBtn) return;
-            const hasText = foxChatInput.value.trim().length > 0;
-            foxSendBtn.disabled = !hasText || isStreaming;
+            foxSendBtn.disabled = !(foxChatInput.value.trim().length > 0) || isStreaming;
         }
 
         if (foxChatInput) {
             foxChatInput.addEventListener("input", updateSendButtonState);
-            foxChatInput.addEventListener("keypress", function (e) {
-                if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                    sendChatMessage();
-                }
+            foxChatInput.addEventListener("keypress", function (e) { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendChatMessage(); } });
+        }
+
+        // Feature: Copy Message
+        function copyText(btn, encodedText) {
+            const text = decodeURIComponent(encodedText);
+            navigator.clipboard.writeText(text).then(() => {
+                const originalHTML = btn.innerHTML;
+                btn.innerHTML = `<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#22c55e" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg> Đã copy`;
+                setTimeout(() => { btn.innerHTML = originalHTML; }, 2000);
             });
         }
 
-        function quickAsk(question) {
-            if (isStreaming) return;
-            if (foxChatInput) {
-                foxChatInput.value = question;
+        // Feature: Reload/Resend user message
+        function resendMessage(encodedText) {
+            const text = decodeURIComponent(encodedText);
+            if(isStreaming) return;
+            if(foxChatInput) {
+                foxChatInput.value = text;
                 updateSendButtonState();
                 sendChatMessage();
             }
@@ -2196,13 +999,14 @@
             const chatContent = document.getElementById("fox-chat-content");
             chatContent.innerHTML = `
                 <div class="fox-msg-row fox-msg-bot">
-                    <div class="fox-msg-avatar">
-                        <svg viewBox="0 0 100 100" fill="none" style="width:100%;height:100%;">
-                            <use href="#foxCyberIcon"/>
-                        </svg>
-                    </div>
-                    <div class="fox-msg-bubble">
-                        Thầy FOX-Lab đã làm mới cuộc trò chuyện. Em có câu hỏi nào mới về dao động ký hoặc sóng âm không?
+                    <div class="fox-msg-avatar"><svg viewBox="0 0 100 100" fill="none" style="width:100%;height:100%;"><use href="#foxCyberIcon"/></svg></div>
+                    <div class="fox-msg-group">
+                        <div class="fox-msg-bubble">Thầy FOX-Lab đã làm mới cuộc trò chuyện. Em có câu hỏi nào mới về dao động ký hoặc sóng âm không?</div>
+                        <div class="fox-msg-actions">
+                            <button class="fox-msg-action-btn" onclick="copyText(this, encodeURIComponent('Thầy FOX-Lab đã làm mới cuộc trò chuyện. Em có câu hỏi nào mới về dao động ký hoặc sóng âm không?').replace(/'/g, '%27'))">
+                                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Copy
+                            </button>
+                        </div>
                     </div>
                 </div>
             `;
@@ -2210,101 +1014,69 @@
         }
 
         function showThinkingIndicator() {
-            const chatContent = document.getElementById("fox-chat-content");
-            const thinkId = "thinking-" + Date.now();
-            const row = document.createElement("div");
-            row.className = "fox-msg-row fox-msg-bot";
-            row.id = thinkId;
-
+            const chatContent = document.getElementById("fox-chat-content"), thinkId = "thinking-" + Date.now();
+            const row = document.createElement("div"); row.className = "fox-msg-row fox-msg-bot"; row.id = thinkId;
             row.innerHTML = `
-                <div class="fox-msg-avatar">
-                    <svg viewBox="0 0 100 100" fill="none" style="width:100%;height:100%;">
-                        <use href="#foxCyberIcon"/>
-                    </svg>
-                </div>
-                <div class="fox-msg-bubble">
-                    <div class="fox-thinking-wrapper">
-                        <div class="fox-wave-equalizer">
-                            <span class="fox-wave-bar"></span>
-                            <span class="fox-wave-bar"></span>
-                            <span class="fox-wave-bar"></span>
-                            <span class="fox-wave-bar"></span>
+                <div class="fox-msg-avatar"><svg viewBox="0 0 100 100" fill="none" style="width:100%;height:100%;"><use href="#foxCyberIcon"/></svg></div>
+                <div class="fox-msg-group">
+                    <div class="fox-msg-bubble">
+                        <div class="fox-thinking-wrapper">
+                            <div class="fox-wave-equalizer"><span class="fox-wave-bar"></span><span class="fox-wave-bar"></span><span class="fox-wave-bar"></span><span class="fox-wave-bar"></span></div>
+                            <span class="fox-shimmer-text">FOX-Lab đang phân tích sóng âm...</span>
                         </div>
-                        <span class="fox-shimmer-text">FOX-Lab đang phân tích sóng âm...</span>
                     </div>
                 </div>
             `;
-            chatContent.appendChild(row);
-            chatContent.scrollTop = chatContent.scrollHeight;
-            return thinkId;
+            chatContent.appendChild(row); chatContent.scrollTop = chatContent.scrollHeight; return thinkId;
         }
 
         function streamBotMessage(fullText, onComplete) {
-            isStreaming = true;
-            updateSendButtonState();
-
+            isStreaming = true; updateSendButtonState();
             const chatContent = document.getElementById("fox-chat-content");
-
-            const row = document.createElement("div");
-            row.className = "fox-msg-row fox-msg-bot";
-
-            const avatar = document.createElement("div");
-            avatar.className = "fox-msg-avatar";
+            const row = document.createElement("div"); row.className = "fox-msg-row fox-msg-bot";
+            const avatar = document.createElement("div"); avatar.className = "fox-msg-avatar";
             avatar.innerHTML = `<svg viewBox="0 0 100 100" fill="none" style="width:100%;height:100%;"><use href="#foxCyberIcon"/></svg>`;
-
-            const bubble = document.createElement("div");
-            bubble.className = "fox-msg-bubble";
-
+            
+            const group = document.createElement("div"); group.className = "fox-msg-group";
+            const bubble = document.createElement("div"); bubble.className = "fox-msg-bubble";
+            const actions = document.createElement("div"); actions.className = "fox-msg-actions";
             const textSpan = document.createElement("span");
-            const cursor = document.createElement("span");
-            cursor.className = "fox-cursor";
+            const cursor = document.createElement("span"); cursor.className = "fox-cursor";
 
-            bubble.appendChild(textSpan);
-            bubble.appendChild(cursor);
-            row.appendChild(avatar);
-            row.appendChild(bubble);
-            chatContent.appendChild(row);
-            chatContent.scrollTop = chatContent.scrollHeight;
+            bubble.appendChild(textSpan); bubble.appendChild(cursor);
+            group.appendChild(bubble); group.appendChild(actions);
+            row.appendChild(avatar); row.appendChild(group);
+            chatContent.appendChild(row); chatContent.scrollTop = chatContent.scrollHeight;
 
             const tokens = fullText.split(/(\s+)/);
-            let idx = 0;
-            let accumulated = "";
-
+            let idx = 0, accumulated = "";
             function typeToken() {
                 if (idx < tokens.length) {
-                    accumulated += tokens[idx];
-                    idx++;
+                    accumulated += tokens[idx]; idx++;
                     textSpan.innerHTML = formatFoxMarkdown(accumulated);
                     chatContent.scrollTop = chatContent.scrollHeight;
                     setTimeout(typeToken, 18);
                 } else {
-                    cursor.remove();
-                    isStreaming = false;
-                    updateSendButtonState();
+                    cursor.remove(); isStreaming = false; updateSendButtonState();
+                    actions.innerHTML = `
+                        <button class="fox-msg-action-btn" onclick="copyText(this, '${encodeURIComponent(fullText).replace(/'/g, '%27')}')">
+                            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Copy
+                        </button>
+                    `;
                     chatContent.scrollTop = chatContent.scrollHeight;
                     if (onComplete) onComplete();
                 }
             }
-
             typeToken();
         }
 
-        // Mô hình tri thức dự phòng (Đã sửa lỗi nhận diện từ khóa)
         function getLocalFallbackAnswer(query) {
-            const q = query.toLowerCase();
-            const curFreq = (typeof lockedFrequency !== 'undefined' && lockedFrequency > 0) ? lockedFrequency.toFixed(1) : ((typeof detectedFrequency !== 'undefined' && detectedFrequency > 0) ? detectedFrequency.toFixed(1) : "440.0");
-            
-            if (q.includes("tần số") || q.includes("hz")) {
-                return `Tần số sóng âm hiện tại trên dao động ký đang đo được khoảng **${curFreq} Hz**. Em có thể thay đổi âm lượng hoặc nguồn phát (âm thoa, còi, tiếng nói) để quan sát sự biến thiên của chu kỳ $T = 1/f$ nhé!`;
-            } else if (q.includes("chức năng") || q.includes("dao động ký") || q.includes("làm gì")) {
-                return `**Dao động ký (Oscilloscope)** là thiết bị biểu diễn đồ thị dao động của tín hiệu điện/sóng âm theo thời gian. Nó giúp ta xác định trực quan **Biên độ** (độ lớn cực đại), **Chu kỳ** ($T$), và **Tần số** ($f$) trong các bài thực hành Vật lý 11.`;
-            } else if (q.includes("khóa") || q.includes("dừng") || q.includes("auto")) {
-                return `Ở chế độ **Khảo sát tần số (Tự dừng)**, hệ thống sẽ tự động bắt đồng bộ pha và dừng sau 2 giây để đóng băng đồ thị. Em có thể dùng chuột cuộn hoặc 2 ngón tay chụm (Pinch) trên canvas để phóng to/thu nhỏ đồ thị và đếm ô lưới thời gian chính xác!`;
-            } else if (q.includes("kênh a") || q.includes("kênh b") || q.includes("channel")) {
-                return `Hệ thống hỗ trợ 2 kênh đo độc lập: **Kênh A (Màu đỏ)** và **Kênh B (Màu xanh)**. Khi chọn thiết lập *2 Nguồn âm*, em có thể gắn 2 micro khác nhau để đo độ lệch pha hoặc so sánh âm sắc của 2 nguồn phát song song.`;
-            } else {
-                return `Thầy FOX-Lab AI đang tạm thời mất kết nối với máy chủ AI. Bạn hãy kiểm tra lại đường link Google Apps Script (GAS_URL) hoặc quyền triển khai (Anyone) nhé!`;
-            }
+            const q = query.toLowerCase(), curFreq = (typeof lockedFrequency !== 'undefined' && lockedFrequency > 0) ? lockedFrequency.toFixed(1) : ((typeof detectedFrequency !== 'undefined' && detectedFrequency > 0) ? detectedFrequency.toFixed(1) : "440.0");
+            if (q.includes("tần số") || q.includes("hz")) return `Tần số sóng âm hiện tại trên dao động ký đang đo được khoảng **${curFreq} Hz**. Em có thể thay đổi âm lượng hoặc nguồn phát (âm thoa, còi, tiếng nói) để quan sát sự biến thiên của chu kỳ $T = 1/f$ nhé!`;
+            else if (q.includes("chức năng") || q.includes("dao động ký") || q.includes("làm gì")) return `**Dao động ký (Oscilloscope)** là thiết bị biểu diễn đồ thị dao động của tín hiệu điện/sóng âm theo thời gian. Nó giúp ta xác định trực quan **Biên độ** (độ lớn cực đại), **Chu kỳ** ($T$), và **Tần số** ($f$) trong các bài thực hành Vật lý 11.`;
+            else if (q.includes("khóa") || q.includes("dừng") || q.includes("auto")) return `Ở chế độ **Khảo sát tần số (Tự dừng)**, hệ thống sẽ tự động bắt đồng bộ pha và dừng sau 2 giây để đóng băng đồ thị. Em có thể dùng chuột cuộn hoặc 2 ngón tay chụm (Pinch) trên canvas để phóng to/thu nhỏ đồ thị và đếm ô lưới thời gian chính xác!`;
+            else if (q.includes("kênh a") || q.includes("kênh b") || q.includes("channel")) return `Hệ thống hỗ trợ 2 kênh đo độc lập: **Kênh A (Màu đỏ)** và **Kênh B (Màu xanh)**. Khi chọn thiết lập *2 Nguồn âm*, em có thể gắn 2 micro khác nhau để đo độ lệch pha hoặc so sánh âm sắc của 2 nguồn phát song song.`;
+            else return `Thầy FOX-Lab AI đang tạm thời mất kết nối với máy chủ AI. Bạn hãy kiểm tra lại đường link Google Apps Script (GAS_URL) hoặc quyền triển khai (Anyone) nhé!`;
         }
 
         function sendChatMessage() {
@@ -2318,54 +1090,46 @@
             const messageToAI = thongTinHeThong + "\nCâu hỏi của HS: " + message;
 
             const chatContent = document.getElementById("fox-chat-content");
-
-            const userRow = document.createElement("div");
-            userRow.className = "fox-msg-row fox-msg-user";
-            userRow.innerHTML = `<div class="fox-msg-bubble">${formatFoxMarkdown(message)}</div>`;
+            const userRow = document.createElement("div"); userRow.className = "fox-msg-row fox-msg-user";
+            userRow.innerHTML = `
+                <div class="fox-msg-group">
+                    <div class="fox-msg-bubble">${formatFoxMarkdown(message)}</div>
+                    <div class="fox-msg-actions">
+                        <button class="fox-msg-action-btn" onclick="copyText(this, '${encodeURIComponent(message).replace(/'/g, '%27')}')">
+                            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Copy
+                        </button>
+                        <button class="fox-msg-action-btn" onclick="resendMessage('${encodeURIComponent(message).replace(/'/g, '%27')}')">
+                            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg> Tải lại
+                        </button>
+                    </div>
+                </div>
+            `;
             chatContent.appendChild(userRow);
 
-            inputElem.value = "";
-            updateSendButtonState();
-            chatContent.scrollTop = chatContent.scrollHeight;
+            inputElem.value = ""; updateSendButtonState(); chatContent.scrollTop = chatContent.scrollHeight;
 
             const loadingId = showThinkingIndicator();
             let isResponded = false;
 
             const timer = setTimeout(() => {
                 if (!isResponded) {
-                    isResponded = true;
-                    const loadingEl = document.getElementById(loadingId);
-                    if (loadingEl) loadingEl.remove();
+                    isResponded = true; const loadingEl = document.getElementById(loadingId); if (loadingEl) loadingEl.remove();
                     streamBotMessage(getLocalFallbackAnswer(message));
                 }
             }, 15000);
 
             fetch(`${GAS_URL}?action=chat&message=${encodeURIComponent(messageToAI)}`)
-                .then(res => {
-                    if (!res.ok) throw new Error("Network response was not ok");
-                    return res.json();
-                })
+                .then(res => { if (!res.ok) throw new Error("Network response was not ok"); return res.json(); })
                 .then(data => {
                     if (!isResponded) {
-                        isResponded = true;
-                        clearTimeout(timer);
-                        const loadingEl = document.getElementById(loadingId);
-                        if (loadingEl) loadingEl.remove();
-
-                        if (data && data.status === "success" && data.reply && data.reply.trim().length > 0) {
-                            streamBotMessage(data.reply);
-                        } else {
-                            streamBotMessage(getLocalFallbackAnswer(message));
-                        }
+                        isResponded = true; clearTimeout(timer); const loadingEl = document.getElementById(loadingId); if (loadingEl) loadingEl.remove();
+                        if (data && data.status === "success" && data.reply && data.reply.trim().length > 0) streamBotMessage(data.reply);
+                        else streamBotMessage(getLocalFallbackAnswer(message));
                     }
                 })
                 .catch(err => {
                     if (!isResponded) {
-                        isResponded = true;
-                        clearTimeout(timer);
-                        const loadingEl = document.getElementById(loadingId);
-                        if (loadingEl) loadingEl.remove();
-                        console.error("Lỗi kết nối AI:", err);
+                        isResponded = true; clearTimeout(timer); const loadingEl = document.getElementById(loadingId); if (loadingEl) loadingEl.remove();
                         streamBotMessage(getLocalFallbackAnswer(message));
                     }
                 });
