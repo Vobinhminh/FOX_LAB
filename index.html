@@ -762,13 +762,13 @@
             return 0;
         }
 
-        function drawLabelWithPill(text, x, y, align = 'center', baseline = 'top', textColor = '#1e293b') {
-            canvasCtx.save(); canvasCtx.font = '600 13px "Inter", "Segoe UI", sans-serif'; canvasCtx.textAlign = align; canvasCtx.textBaseline = baseline;
-            const metrics = canvasCtx.measureText(text), padX = 4, padY = 2, textW = metrics.width, textH = 14;
+        function drawLabelWithPill(ctx, text, x, y, align = 'center', baseline = 'top', textColor = '#1e293b') {
+            ctx.save(); ctx.font = '600 11.5px "Inter", "Segoe UI", sans-serif'; ctx.textAlign = align; ctx.textBaseline = baseline;
+            const metrics = ctx.measureText(text), padX = 4, padY = 2, textW = metrics.width, textH = 12;
             let boxX = x - padX; if (align === 'center') boxX = x - textW / 2 - padX; else if (align === 'right') boxX = x - textW - padX;
             let boxY = y - padY; if (baseline === 'middle') boxY = y - textH / 2 - padY; else if (baseline === 'bottom') boxY = y - textH - padY;
-            canvasCtx.fillStyle = 'rgba(241, 245, 249, 0.9)'; canvasCtx.fillRect(boxX, boxY, textW + padX * 2, textH + padY * 2);
-            canvasCtx.fillStyle = textColor; canvasCtx.fillText(text, x, y); canvasCtx.restore();
+            ctx.fillStyle = 'rgba(241, 245, 249, 0.85)'; ctx.fillRect(boxX, boxY, textW + padX * 2, textH + padY * 2);
+            ctx.fillStyle = textColor; ctx.fillText(text, x, y); ctx.restore();
         }
 
         async function populateMics() {
@@ -943,18 +943,19 @@
             for (let i = 1; i < 10; i++) {
                 if (i !== 5) {
                     let label = parseFloat(((i - 5) * timePerGrid * 1000).toFixed(2)).toString().replace('.', ',');
-                    drawLabelWithPill(label, i * stepGridX, height / 2 + 10, 'center', 'top');
+                    drawLabelWithPill(canvasCtx, label, i * stepGridX, height / 2 + 10, 'center', 'top');
                 }
             }
-            drawLabelWithPill("t (ms)", width - 10, height / 2 - 26, 'right', 'top');
+            drawLabelWithPill(canvasCtx, "t (ms)", width - 10, height / 2 - 26, 'right', 'top');
             const maxY = 1.0 / zoomY, valPerStep = (maxY * 2) / 8;
             for (let i = 1; i < 8; i++) {
                 if (i !== 4) {
                     let label = parseFloat((maxY - i * valPerStep).toFixed(2)).toString().replace('.', ',');
-                    drawLabelWithPill(label, width / 2 + 10, i * stepGridY, 'left', 'middle');
+                    drawLabelWithPill(canvasCtx, label, width / 2 + 10, i * stepGridY, 'left', 'middle');
                 }
             }
-            drawLabelWithPill("0", width / 2 + 10, height / 2 + 10, 'left', 'top'); drawLabelWithPill("Biên độ", width / 2 + 10, 10, 'left', 'top');
+            drawLabelWithPill(canvasCtx, "0", width / 2 + 10, height / 2 + 10, 'left', 'top'); 
+            drawLabelWithPill(canvasCtx, "Biên độ", width / 2 + 10, 10, 'left', 'top');
 
             if (audioCtx && !isReset) {
                 const samplesNeeded = Math.floor(totalTimeOnScreen * sampleRate), step = Math.max(1, Math.floor(samplesNeeded / (width * 2))), sliceWidth = (width / samplesNeeded) * step;
@@ -1169,17 +1170,17 @@
             return -1;
         }
 
-        // HÀM VẼ ĐỒ THỊ NHỎ TRONG MODAL VỚI LƯỚI TOẠ ĐỘ
-        function drawModalSignal(ctx, arr, boxX, boxY, boxW, boxH, color, title, isLarge = false) {
+        // HÀM VẼ ĐỒ THỊ NHỎ TRONG MODAL VỚI LƯỚI TOẠ ĐỘ VÀ GIÁ TRỊ TRỤC
+        function drawModalSignal(ctx, arr, boxX, boxY, boxW, boxH, color, title) {
             if(!arr || arr.length === 0) return;
             
             ctx.save();
             ctx.beginPath();
             ctx.rect(boxX, boxY, boxW, boxH);
-            ctx.clip(); // Giới hạn khu vực vẽ
+            ctx.clip(); 
             
-            // 1. Vẽ lưới (Lưới ngang 10 ô, Dọc 8 ô)
-            ctx.strokeStyle = '#bae6fd'; // Xanh dương nhạt
+            // 1. Vẽ Lưới Grid (10 cột, 8 hàng)
+            ctx.strokeStyle = '#bae6fd'; 
             ctx.lineWidth = 1;
             ctx.beginPath();
             let stepX = boxW / 10;
@@ -1188,21 +1189,48 @@
             for (let i = 0; i <= 8; i++) { ctx.moveTo(boxX, boxY + i * stepY); ctx.lineTo(boxX + boxW, boxY + i * stepY); }
             ctx.stroke();
 
-            // 2. Vẽ 2 trục chính (X, Y center)
-            ctx.strokeStyle = '#334155'; // Đen xám
+            // 2. Vẽ 2 Trục Toạ độ Chính
+            ctx.strokeStyle = '#334155'; 
             ctx.lineWidth = 2;
             ctx.beginPath();
-            // Trục X (giữa nằm ngang)
-            ctx.moveTo(boxX, boxY + boxH / 2); ctx.lineTo(boxX + boxW, boxY + boxH / 2);
-            // Trục Y (giữa nằm dọc)
+            let graphCenterY = boxY + boxH / 2;
+            ctx.moveTo(boxX, graphCenterY); ctx.lineTo(boxX + boxW, graphCenterY);
             ctx.moveTo(boxX + boxW / 2, boxY); ctx.lineTo(boxX + boxW / 2, boxY + boxH);
-            // Thêm tick (vạch chia)
             const tick = 4;
-            for (let i = 0; i <= 10; i++) { ctx.moveTo(boxX + i * stepX, boxY + boxH/2 - tick); ctx.lineTo(boxX + i * stepX, boxY + boxH/2 + tick); }
+            for (let i = 0; i <= 10; i++) { ctx.moveTo(boxX + i * stepX, graphCenterY - tick); ctx.lineTo(boxX + i * stepX, graphCenterY + tick); }
             for (let i = 0; i <= 8; i++) { ctx.moveTo(boxX + boxW/2 - tick, boxY + i * stepY); ctx.lineTo(boxX + boxW/2 + tick, boxY + i * stepY); }
             ctx.stroke();
             
-            // 3. Vẽ Sóng Âm
+            // Vẽ giá trị thời gian (Trục ngang)
+            let timePerGrid = totalTimeOnScreen / 10;
+            let showAllX = (boxW > 350); // Thông minh: Ẩn bớt số trên thiết bị di động
+            for (let i = 1; i < 10; i++) {
+                if (i !== 5) {
+                    if (!showAllX && i % 2 !== 0) continue; 
+                    let label = parseFloat(((i - 5) * timePerGrid * 1000).toFixed(2)).toString().replace('.', ',');
+                    drawLabelWithPill(ctx, label, boxX + i * stepX, graphCenterY + 8, 'center', 'top');
+                }
+            }
+            drawLabelWithPill(ctx, "t (ms)", boxX + boxW - 8, graphCenterY - 22, 'right', 'top');
+
+            // Vẽ giá trị biên độ (Trục đứng)
+            const maxY = 1.0 / currentZoomY, valPerStep = (maxY * 2) / 8;
+            let showAllY = (boxH > 200); // Ẩn bớt nếu đồ thị quá lùn
+            for (let i = 1; i < 8; i++) {
+                if (i !== 4) {
+                    if (!showAllY && i % 2 !== 0) continue;
+                    let label = parseFloat((maxY - i * valPerStep).toFixed(2)).toString().replace('.', ',');
+                    drawLabelWithPill(ctx, label, boxX + boxW / 2 + 8, boxY + i * stepY, 'left', 'middle');
+                }
+            }
+            drawLabelWithPill(ctx, "0", boxX + boxW / 2 + 8, graphCenterY + 8, 'left', 'top'); 
+            
+            // Chỉ hiện chữ "Biên độ" ở khung đồ thị đủ cao để đỡ vướng
+            if (boxH > 150) {
+                drawLabelWithPill(ctx, "Biên độ", boxX + boxW / 2 + 8, boxY + 8, 'left', 'top');
+            }
+
+            // 3. Vẽ Sóng Âm Thực tế
             ctx.strokeStyle = color; 
             ctx.lineWidth = 2.5; 
             ctx.lineJoin = 'round'; 
@@ -1210,9 +1238,6 @@
             
             let step = Math.max(1, Math.floor(arr.length / (boxW * 2))), sliceWidth = (boxW / arr.length) * step;
             let x = boxX, hasMoved = false;
-            
-            // Hệ số scale trục Y (Tương tự đồ thị ngoài màn hình chính)
-            let graphCenterY = boxY + boxH / 2;
             let graphDrawHeight = boxH / 2.2;
             
             for(let i=0; i<arr.length; i+=step) {
@@ -1234,23 +1259,15 @@
             }
             ctx.stroke();
             
-            // 4. Vẽ Title Pill (Nhãn đồ thị)
+            // 4. Nhãn Tên Đồ thị Góc trái
             ctx.font = 'bold 13px "Be Vietnam Pro", sans-serif';
             let tWidth = ctx.measureText(title).width;
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.85)'; 
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)'; 
             ctx.fillRect(boxX + 6, boxY + 6, tWidth + 12, 24);
             ctx.fillStyle = color; 
             ctx.fillText(title, boxX + 12, boxY + 22);
 
-            // Gắn thêm nhãn trục nếu là biểu đồ lớn
-            if(isLarge) {
-                ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
-                ctx.fillRect(boxX + boxW - 55, graphCenterY - 25, 45, 20);
-                ctx.fillStyle = '#1e293b'; ctx.font = '600 12px "Inter", sans-serif';
-                ctx.fillText("t (ms)", boxX + boxW - 50, graphCenterY - 10);
-            }
-
-            // Vẽ viền khung
+            // Viền khung của đồ thị con
             ctx.strokeStyle = '#94a3b8';
             ctx.lineWidth = 1;
             ctx.strokeRect(boxX, boxY, boxW, boxH);
@@ -1262,7 +1279,6 @@
             const canv = document.getElementById('twoSourceCanvas'), ctx = canv.getContext('2d');
             const cw = canv.width, ch = canv.height; 
             
-            // Fill màu nền trắng cho cả canvas
             ctx.fillStyle = '#ffffff';
             ctx.fillRect(0, 0, cw, ch);
             
@@ -1296,22 +1312,20 @@
             }
             
             if (!isSynthesized) {
-                // Layout 1: Cắt đôi theo chiều dọc
                 let halfH = ch / 2;
-                drawModalSignal(ctx, dataA, 0, 0, cw, halfH, '#ef4444', 'Kênh A (Đỏ)', true);
-                drawModalSignal(ctx, dataB, 0, halfH, cw, halfH, '#3b82f6', 'Kênh B (Xanh)', true);
+                drawModalSignal(ctx, dataA, 0, 0, cw, halfH, '#ef4444', 'Kênh A (Đỏ)');
+                drawModalSignal(ctx, dataB, 0, halfH, cw, halfH, '#3b82f6', 'Kênh B (Xanh)');
             } else {
-                // Layout 2: Thu nhỏ A và B ở nửa trên, Tổng hợp ở nửa dưới
-                let topH = ch * 0.45; // Chiếm 45% phía trên
+                let topH = ch * 0.45; 
                 let halfW = cw / 2;
-                let bottomH = ch - topH; // Chiếm 55% phía dưới
+                let bottomH = ch - topH;
                 
-                drawModalSignal(ctx, dataA, 0, 0, halfW, topH, '#ef4444', 'Kênh A (Đỏ)', false);
-                drawModalSignal(ctx, dataB, halfW, 0, halfW, topH, '#3b82f6', 'Kênh B (Xanh)', false);
+                drawModalSignal(ctx, dataA, 0, 0, halfW, topH, '#ef4444', 'Kênh A (Đỏ)');
+                drawModalSignal(ctx, dataB, halfW, 0, halfW, topH, '#3b82f6', 'Kênh B (Xanh)');
                 
                 let dataSum = new Float32Array(samplesNeeded);
                 for(let i=0; i<samplesNeeded; i++) dataSum[i] = dataA[i] + dataB[i];
-                drawModalSignal(ctx, dataSum, 0, topH, cw, bottomH, '#10b981', 'Đồ thị Tổng hợp: (A + B)', true);
+                drawModalSignal(ctx, dataSum, 0, topH, cw, bottomH, '#10b981', 'Đồ thị Tổng hợp: (A + B)');
             }
         }
 
