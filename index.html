@@ -129,41 +129,42 @@
         .settings-item.active .item-check { display: inline-block; }
 
         /* ==========================================================
-           MODAL FFT (PHÂN TÍCH PHỔ)
+           MODAL FFT FULL MÀN HÌNH (SPECTRUM)
            ========================================================== */
         #fftModalOverlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh;
-            background: rgba(0, 0, 0, 0.6); z-index: 100000; display: none;
-            align-items: center; justify-content: center; backdrop-filter: blur(3px);
-            padding: 10px; box-sizing: border-box;
+            background: rgba(0, 0, 0, 0.75); z-index: 100000; display: none;
+            align-items: center; justify-content: center; backdrop-filter: blur(4px);
+            padding: 0; box-sizing: border-box;
         }
         #fftModal {
-            background: #fff; width: 100%; max-width: 760px; max-height: 90dvh; border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3); display: flex; flex-direction: column; overflow: hidden;
+            background: #fff; width: 100vw; height: 100dvh; max-width: 100vw; max-height: 100dvh;
+            border-radius: 0; box-shadow: none; display: flex; flex-direction: column; overflow: hidden;
+            box-sizing: border-box;
         }
         .fft-header {
-            background: #6f42c1; color: #fff; padding: 10px 14px; font-weight: bold; font-size: 14px;
+            background: #6f42c1; color: #fff; padding: 12px 16px; font-weight: bold; font-size: 15px;
             display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
         }
         .fft-close-btn {
-            background: transparent; border: none; color: #fff; font-size: 20px; font-weight: bold;
+            background: transparent; border: none; color: #fff; font-size: 24px; font-weight: bold;
             cursor: pointer; padding: 0; line-height: 1; width: auto; box-shadow: none;
         }
         .fft-controls {
-            padding: 10px 14px; background: #f8f9fa; border-bottom: 1px solid #ddd;
-            display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: center; flex-shrink: 0;
+            padding: 10px 16px; background: #f8f9fa; border-bottom: 1px solid #ddd;
+            display: flex; gap: 10px; align-items: center; flex-wrap: wrap; justify-content: center; flex-shrink: 0;
         }
-        .fft-controls label { font-weight: 600; font-size: 13px; }
+        .fft-controls label { font-weight: 600; font-size: 13.5px; }
         .fft-controls input {
-            padding: 5px 8px; border: 1px solid #ccc; border-radius: 6px; font-weight: bold; color: #d93025; width: 80px; text-align: center; background: #fff; font-size: 13px;
+            padding: 6px 10px; border: 1px solid #ccc; border-radius: 6px; font-weight: bold; color: #d93025; width: 90px; text-align: center; background: #fff; font-size: 14px;
         }
-        .fft-controls button { width: auto; padding: 6px 12px; font-size: 12.5px; }
+        .fft-controls button { width: auto; padding: 7px 14px; font-size: 13px; }
         .btn-fft-action { background-color: #28a745; }
         .btn-fft-close { background-color: #6c757d; }
 
-        .fft-canvas-container { padding: 12px; background: #eef1f5; width: 100%; box-sizing: border-box; display: flex; justify-content: center; overflow-x: auto; flex-grow: 1; }
-        #fftDisplayCanvas { background: #fff; border: 1px solid #bbb; border-radius: 6px; width: 100%; max-width: 720px; height: 260px; }
-        .fft-note { padding: 8px 14px; font-size: 11.5px; color: #666; font-style: italic; background: #f8f9fa; text-align: center; flex-shrink: 0; }
+        .fft-canvas-container { padding: 12px 16px; background: #eef1f5; width: 100%; box-sizing: border-box; display: flex; justify-content: center; align-items: center; overflow: hidden; flex-grow: 1; }
+        #fftDisplayCanvas { background: #fff; border: 1px solid #bbb; border-radius: 8px; width: 100%; height: 100%; display: block; }
+        .fft-note { padding: 10px 16px; font-size: 12px; color: #555; font-style: italic; background: #f8f9fa; text-align: center; flex-shrink: 0; border-top: 1px solid #ddd; }
 
         /* ==========================================================
            FOX-LAB AI CHATBOT WIDGET
@@ -176,7 +177,7 @@
             --fox-border-subtle: rgba(255, 255, 255, 0.08); --fox-text-secondary: #94a3b8; --fox-text-muted: #64748b;
         }
 
-        #fox-chat-widget { position: fixed; bottom: 20px; right: 20px; z-index: 99999; font-family: var(--fox-font); user-select: none; }
+        #fox-chat-widget { position: fixed; bottom: 20px; right: 20px; z-index: 99998; font-family: var(--fox-font); user-select: none; }
         .fox-trigger-wrapper { position: relative; display: flex; align-items: center; justify-content: center; }
         .fox-ping-ring { position: absolute; width: 100%; height: 100%; border-radius: 50%; background: rgba(249, 115, 22, 0.4); animation: foxPulsePing 3s infinite; pointer-events: none; z-index: 1; }
         @keyframes foxPulsePing { 0% { transform: scale(0.95); opacity: 0.8; } 70%, 100% { transform: scale(1.65); opacity: 0; } }
@@ -329,24 +330,24 @@
 
     <canvas id="oscilloscope"></canvas>
 
-    <!-- FFT MODAL OVERLAY -->
+    <!-- FFT MODAL FULL MÀN HÌNH -->
     <div id="fftModalOverlay" onclick="closeFFTModal()">
         <div id="fftModal" onclick="event.stopPropagation()">
             <div class="fft-header">
-                <span>Phân tích Họa âm (Spectrum)</span>
+                <span>Phân tích Họa âm (Spectrum - 5 Họa âm)</span>
                 <button class="fft-close-btn" onclick="closeFFTModal()">×</button>
             </div>
             <div class="fft-controls">
                 <label>Tần số cơ bản (f0):</label>
                 <input type="number" id="fftTargetFreq" value="440" min="20" max="5000" oninput="processAndDrawFFT()"> <span>Hz</span>
                 <button class="btn-fft-action" onclick="processAndDrawFFT()">Quét Họa âm</button>
-                <button class="btn-fft-close" onclick="closeFFTModal()">Đóng</button>
+                <button class="btn-fft-close" onclick="closeFFTModal()">Đóng / Quay lại</button>
             </div>
             <div class="fft-canvas-container">
-                <canvas id="fftDisplayCanvas" width="720" height="260"></canvas>
+                <canvas id="fftDisplayCanvas" width="900" height="400"></canvas>
             </div>
             <div class="fft-note">
-                * Trục ngang: Tần số (Hz) | Trục dọc: Biên độ. Các cột màu đỏ biểu thị dải họa âm (f0, 2f0, 3f0...).
+                * Trục ngang hiển thị tần số (Hz) ở dưới đáy biểu đồ | Trục dọc hiển thị biên độ. Tối ưu cho 5 bậc họa âm ($f_0, 2f_0, 3f_0, 4f_0, 5f_0$).
             </div>
         </div>
     </div>
@@ -834,7 +835,7 @@
         }
 
         // ==========================================================
-        // THUẬT TOÁN FFT & XỬ LÝ ĐỒ THỊ HỌA ÂM
+        // THUẬT TOÁN FFT & XỬ LÝ ĐỒ THỊ 5 HỌA ÂM (FULL MÀN HÌNH - TRỤC TẦN SỐ Ở ĐÁY)
         // ==========================================================
         function computeFFT(realArray) {
             let n = realArray.length, p = 1; while(p < n) p *= 2;
@@ -864,6 +865,12 @@
             document.getElementById('fftModalOverlay').style.display = 'flex';
             let freqInput = document.getElementById('fftTargetFreq');
             freqInput.value = (lockedFrequency > 0) ? Math.round(lockedFrequency) : 440;
+            
+            const container = document.querySelector('.fft-canvas-container');
+            const canv = document.getElementById('fftDisplayCanvas');
+            canv.width = container.clientWidth - 24;
+            canv.height = container.clientHeight - 24;
+            
             processAndDrawFFT();
         }
         function closeFFTModal() { 
@@ -881,36 +888,57 @@
                 rawData[i] = activeCfg.data[((currentIdx - N + i) % len + len) % len] * multiplier;
             }
             let magnitudes = computeFFT(rawData);
+            
             const fftCanv = document.getElementById('fftDisplayCanvas'), ctx = fftCanv.getContext('2d');
-            const cw = fftCanv.width, ch = fftCanv.height; ctx.clearRect(0,0,cw,ch);
+            const cw = fftCanv.width, ch = fftCanv.height; ctx.clearRect(0, 0, cw, ch);
             
             let baseFreq = parseFloat(document.getElementById('fftTargetFreq').value) || 440;
-            // Tự động thu gọn/giãn dải tần số phù hợp để hiển thị khoảng 11-12 bậc họa âm thật to và rõ ràng
-            let maxDrawFreq = Math.max(1000, baseFreq * 11.5);
+            let maxDrawFreq = baseFreq * 5.8;
             let maxBin = Math.floor((maxDrawFreq / sampleRate) * N);
             let maxMag = 0.001; for(let i=1; i<maxBin; i++) { if(magnitudes[i] > maxMag) maxMag = magnitudes[i]; }
 
-            ctx.strokeStyle = '#ddd'; ctx.lineWidth = 1; ctx.beginPath();
-            for(let i=0; i<=10; i++) { let x = i * (cw / 10); ctx.moveTo(x, 0); ctx.lineTo(x, ch); ctx.moveTo(0, i * (ch / 10)); ctx.lineTo(cw, i * (ch / 10)); }
+            const chartBottom = ch - 35; // Dành khoảng trống dưới đáy để vẽ trục tần số
+
+            // Vẽ lưới tọa độ
+            ctx.strokeStyle = '#e8e8e8'; ctx.lineWidth = 1; ctx.beginPath();
+            for(let i = 0; i <= 10; i++) { let x = i * (cw / 10); ctx.moveTo(x, 0); ctx.lineTo(x, chartBottom); }
+            for(let i = 0; i <= 6; i++) { let y = i * (chartBottom / 6); ctx.moveTo(0, y); ctx.lineTo(cw, y); }
             ctx.stroke();
+
+            // Trục hoành (Trục tần số) nằm ngay dưới đáy biểu đồ
+            ctx.strokeStyle = '#333'; ctx.lineWidth = 2; ctx.beginPath();
+            ctx.moveTo(0, chartBottom); ctx.lineTo(cw, chartBottom); ctx.stroke();
             
-            ctx.fillStyle = '#666'; ctx.font = '11.5px Arial'; ctx.textAlign = 'center';
-            for(let i=1; i<10; i++) { 
-                let f = Math.round(i * (maxDrawFreq / 10)); 
-                ctx.fillText(f + "Hz", i * (cw / 10), ch - 5); 
+            // Vẽ các vạch chia và nhãn tần số ở ĐÁY biểu đồ
+            ctx.fillStyle = '#1e293b'; ctx.font = 'bold 12.5px "Be Vietnam Pro", sans-serif'; ctx.textAlign = 'center';
+            for(let i = 1; i <= 5; i++) { 
+                let fVal = Math.round(i * baseFreq);
+                let xPos = (fVal / maxDrawFreq) * cw;
+                if (xPos < cw - 25) {
+                    // Vẽ nhãn tần số (Hz) ở đáy
+                    ctx.fillText(fVal + " Hz", xPos, chartBottom + 18);
+                    // Vẽ vạch ticks
+                    ctx.strokeStyle = '#0056b3'; ctx.lineWidth = 2; ctx.beginPath();
+                    ctx.moveTo(xPos, chartBottom); ctx.lineTo(xPos, chartBottom + 6); ctx.stroke();
+                }
             }
 
-            const binWidth = cw / maxBin, tolerance = baseFreq * 0.12;
-            for(let i=1; i < maxBin; i++) {
+            const binWidth = cw / maxBin, tolerance = baseFreq * 0.15;
+            for(let i = 1; i < maxBin; i++) {
                 let freq = i * (sampleRate / N), isHarmonic = false, harmonicNum = Math.round(freq / baseFreq);
-                if(harmonicNum > 0 && Math.abs(freq - harmonicNum * baseFreq) < tolerance) isHarmonic = true;
-                let mag = magnitudes[i], barHeight = (mag / maxMag) * (ch - 25), x = i * binWidth;
+                if(harmonicNum >= 1 && harmonicNum <= 5 && Math.abs(freq - harmonicNum * baseFreq) < tolerance) {
+                    isHarmonic = true;
+                }
+                let mag = magnitudes[i], barHeight = (mag / maxMag) * (chartBottom - 30), x = i * binWidth;
                 
                 if(barHeight > 1) {
-                    ctx.fillStyle = isHarmonic ? '#dc3545' : '#88c8f7';
-                    ctx.fillRect(x - (binWidth > 2 ? binWidth/2 : 0), ch - barHeight, Math.max(1.5, binWidth), barHeight);
+                    ctx.fillStyle = isHarmonic ? '#dc3545' : '#38bdf8';
+                    ctx.fillRect(x - (binWidth > 2 ? binWidth/2 : 0), chartBottom - barHeight, Math.max(2, binWidth), barHeight);
+                    
+                    // Hiển thị tên H1, H2, H3, H4, H5 ở đỉnh cột
                     if (isHarmonic && barHeight > 15 && mag > magnitudes[i-1] && mag > magnitudes[i+1]) {
-                        ctx.fillStyle = '#dc3545'; ctx.font = 'bold 11px Arial'; ctx.fillText("H" + harmonicNum, x, ch - barHeight - 4);
+                        ctx.fillStyle = '#dc3545'; ctx.font = 'bold 12.5px "Be Vietnam Pro", sans-serif'; 
+                        ctx.fillText("H" + harmonicNum, x, chartBottom - barHeight - 6);
                     }
                 }
             }
