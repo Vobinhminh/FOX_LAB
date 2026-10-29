@@ -315,7 +315,7 @@
                 <button id="fftButton" disabled>Phân tích FFT</button>
             </div>
 
-            <div class="info-panel" id="infoText">Hệ thống chưa được kích hoạt. Nhấn <span class='info-badge'>Làm mới</span> để bắt đầu sử dụng.</div>
+            <div class="info-panel" id="infoText">Đang tải cấu hình...</div>
         </div>
 
         <!-- Mã QR chỉ hiển thị trên máy tính -->
@@ -458,8 +458,8 @@
         const settingsDropdown = document.getElementById('settingsDropdown'), settingsToggle = document.getElementById('settingsToggle');
         const settingsMenu = document.getElementById('settingsMenu'), settingsLabel = document.getElementById('settingsLabel');
 
-        // Biến kiểm soát trạng thái kích hoạt ứng dụng sau khi Tải lại / Tắt nguồn / Chuyển trang
-        let isInitialized = false;
+        // CHỈNH SỬA Ở ĐÂY: Trạng thái ban đầu luôn mở khóa khi vừa truy cập web
+        let isInitialized = true; 
 
         settingsToggle.addEventListener('click', (e) => { e.stopPropagation(); settingsDropdown.classList.toggle('open'); });
         document.addEventListener('click', (e) => { if (!settingsDropdown.contains(e.target)) settingsDropdown.classList.remove('open'); });
@@ -513,7 +513,7 @@
             }
         }
 
-        // Tắt thiết bị và yêu cầu Reset lại khi chuyển trang/tab khác hoặc ẩn ứng dụng
+        // Tắt thiết bị và khóa an toàn (yêu cầu Làm mới) CHỈ KHI chuyển trang/tắt màn hình
         document.addEventListener('visibilitychange', () => {
             if (document.hidden) {
                 isPaused = true; clearTimeout(stopTimer);
@@ -667,13 +667,14 @@
         }
 
         function updateUIState() {
+            // Hiển thị thông báo khi bị khóa do đổi tab / tắt màn hình
             if (!isInitialized) {
                 btnStartA.disabled = true; btnStartB.disabled = true;
                 btnStartA.textContent = "Kênh A (Khóa)"; btnStartA.style.backgroundColor = "#6c757d";
                 btnStartB.textContent = "Kênh B (Khóa)"; btnStartB.style.backgroundColor = "#6c757d";
                 pauseButton.disabled = true; saveButton.disabled = true; fftButton.disabled = true;
                 resetButton.disabled = false;
-                infoText.innerHTML = "Hệ thống chưa được kích hoạt. Nhấn <span class='info-badge'>Làm mới</span> để bắt đầu sử dụng.";
+                infoText.innerHTML = "Đã tạm khóa do chuyển tab/tắt màn hình. Nhấn <span class='info-badge'>Làm mới</span> để tiếp tục.";
                 infoText.style.color = "#d93025";
                 return;
             }
