@@ -338,7 +338,7 @@
             </div>
             <div class="fft-controls">
                 <label>Tần số cơ bản (f0):</label>
-                <input type="number" id="fftTargetFreq" value="440" min="20" max="5000"> <span>Hz</span>
+                <input type="number" id="fftTargetFreq" value="440" min="20" max="5000" oninput="processAndDrawFFT()"> <span>Hz</span>
                 <button class="btn-fft-action" onclick="processAndDrawFFT()">Quét Họa âm</button>
                 <button class="btn-fft-close" onclick="closeFFTModal()">Đóng</button>
             </div>
@@ -883,15 +883,22 @@
             let magnitudes = computeFFT(rawData);
             const fftCanv = document.getElementById('fftDisplayCanvas'), ctx = fftCanv.getContext('2d');
             const cw = fftCanv.width, ch = fftCanv.height; ctx.clearRect(0,0,cw,ch);
+            
             let baseFreq = parseFloat(document.getElementById('fftTargetFreq').value) || 440;
-            let maxDrawFreq = Math.max(5000, baseFreq * 10), maxBin = Math.floor((maxDrawFreq / sampleRate) * N);
+            // Tự động thu gọn/giãn dải tần số phù hợp để hiển thị khoảng 11-12 bậc họa âm thật to và rõ ràng
+            let maxDrawFreq = Math.max(1000, baseFreq * 11.5);
+            let maxBin = Math.floor((maxDrawFreq / sampleRate) * N);
             let maxMag = 0.001; for(let i=1; i<maxBin; i++) { if(magnitudes[i] > maxMag) maxMag = magnitudes[i]; }
 
             ctx.strokeStyle = '#ddd'; ctx.lineWidth = 1; ctx.beginPath();
             for(let i=0; i<=10; i++) { let x = i * (cw / 10); ctx.moveTo(x, 0); ctx.lineTo(x, ch); ctx.moveTo(0, i * (ch / 10)); ctx.lineTo(cw, i * (ch / 10)); }
             ctx.stroke();
-            ctx.fillStyle = '#666'; ctx.font = '12px Arial'; ctx.textAlign = 'center';
-            for(let i=1; i<10; i++) { let f = Math.round(i * (maxDrawFreq / 10)); ctx.fillText(f + "Hz", i * (cw / 10), ch - 5); }
+            
+            ctx.fillStyle = '#666'; ctx.font = '11.5px Arial'; ctx.textAlign = 'center';
+            for(let i=1; i<10; i++) { 
+                let f = Math.round(i * (maxDrawFreq / 10)); 
+                ctx.fillText(f + "Hz", i * (cw / 10), ch - 5); 
+            }
 
             const binWidth = cw / maxBin, tolerance = baseFreq * 0.12;
             for(let i=1; i < maxBin; i++) {
@@ -901,7 +908,7 @@
                 
                 if(barHeight > 1) {
                     ctx.fillStyle = isHarmonic ? '#dc3545' : '#88c8f7';
-                    ctx.fillRect(x - (binWidth > 2 ? binWidth/2 : 0), ch - barHeight, Math.max(1, binWidth), barHeight);
+                    ctx.fillRect(x - (binWidth > 2 ? binWidth/2 : 0), ch - barHeight, Math.max(1.5, binWidth), barHeight);
                     if (isHarmonic && barHeight > 15 && mag > magnitudes[i-1] && mag > magnitudes[i+1]) {
                         ctx.fillStyle = '#dc3545'; ctx.font = 'bold 11px Arial'; ctx.fillText("H" + harmonicNum, x, ch - barHeight - 4);
                     }
