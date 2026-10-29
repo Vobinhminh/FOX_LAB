@@ -24,39 +24,46 @@
             text-rendering: optimizeLegibility; overflow: hidden; position: fixed;
         }
 
-        button, input, select, textarea { font-family: inherit; }
+        button, input, select, textarea { font-family: inherit; outline: none; }
         body { display: flex; flex-direction: column; }
 
         .top-bar {
             display: flex; background-color: #f0f4f8; border-bottom: 3px solid #000;
-            z-index: 10; padding: 6px 8px; gap: 6px; align-items: stretch; flex-shrink: 0;
+            z-index: 10; padding: 6px 8px; gap: 8px; align-items: stretch; flex-shrink: 0;
         }
 
         .controls-wrapper { display: flex; flex-direction: column; flex-grow: 1; gap: 6px; }
-        .settings-row { display: flex; gap: 6px; width: 100%; }
 
-        .btn-group { display: flex; flex-wrap: wrap; gap: 5px; width: 100%; }
-        .btn-group button { flex: 1 1 calc(12.5% - 5px); min-width: 85px; padding: 6px 2px; font-size: 12.5px; }
-
-        @media (max-width: 900px) { 
-            .btn-group button { flex: 1 1 calc(25% - 5px); } 
-            .qr-panel { display: none !important; }
+        /* TỐI ƯU CÁC DÒNG NÚT BẤM DÀN TRANG (RESPONSIVE) */
+        .toolbar-row { display: flex; flex-wrap: wrap; gap: 6px; width: 100%; align-items: stretch; }
+        .toolbar-row > * { flex: 1 1 calc(16.66% - 6px); min-width: 90px; }
+        
+        .channel-row { display: flex; flex-wrap: wrap; gap: 6px; width: 100%; }
+        
+        /* CARD GỘP KÊNH & MICRO */
+        .channel-card {
+            display: flex; flex: 1 1 250px; background: #fff; border: 1px solid #ccc;
+            border-radius: 6px; overflow: hidden; align-items: stretch;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05); height: 32px;
         }
+        .channel-card button { 
+            border-radius: 0; width: 110px; font-size: 12.5px; flex-shrink: 0; 
+            box-shadow: none; border-right: 1px solid #ccc; border-top: none; border-bottom: none; border-left: none;
+        }
+        .channel-card select { 
+            flex-grow: 1; border: none; border-radius: 0; background: transparent; 
+            padding: 0 8px; font-size: 12.5px; font-weight: 700; cursor: pointer; text-overflow: ellipsis; white-space: nowrap;
+        }
+        .channel-a-indicator { border-left: 4px solid #dc3545; }
+        .channel-b-indicator { border-left: 4px solid #0d6efd; }
+
         @media (max-width: 700px) {
             .top-bar { padding: 4px; gap: 4px; }
-            .controls-wrapper { padding: 2px; gap: 4px; }
-            .btn-group button { flex: 1 1 calc(33.33% - 5px); font-size: 12px; padding: 5px 2px; }
+            .toolbar-row > * { flex: 1 1 calc(33.33% - 6px); font-size: 12px; }
         }
-        @media (max-width: 450px) {
-            .btn-group button { flex: 1 1 calc(50% - 5px); }
-            .settings-row { flex-direction: column; gap: 4px; }
-        }
-
-        .custom-select {
-            padding: 5px 8px; font-size: 12.5px; font-weight: bold; color: #0056b3;
-            border-radius: 6px; border: 1px solid #ccc; background-color: #fff;
-            width: 100%; cursor: pointer; outline: none; box-sizing: border-box;
-            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+        @media (max-width: 480px) {
+            .toolbar-row > * { flex: 1 1 calc(33.33% - 6px); min-width: 80px; padding: 6px 2px; }
+            .channel-card { flex: 1 1 100%; } /* Gập khối Kênh A, Kênh B xuống hàng trên điện thoại dọc */
         }
 
         .qr-panel {
@@ -66,13 +73,13 @@
         }
         .qr-panel img { width: 65px; height: 65px; border: 1px solid #eee; }
         .qr-panel .scan-title { font-size: 9px; font-weight: bold; color: #d93025; margin-top: 4px; line-height: 1; white-space: nowrap; }
+        @media (max-width: 900px) { .qr-panel { display: none !important; } }
 
         .info-panel {
             font-weight: 600; font-size: 13px; color: #d93025; background: #fff;
-            padding: 5px 10px; border-radius: 6px; border: 1px solid #ccc; width: 100%;
-            text-align: center; box-sizing: border-box; display: block; line-height: 1.4; min-height: 30px;
+            padding: 4px 10px; border-radius: 6px; border: 1px solid #ccc; width: 100%;
+            text-align: center; box-sizing: border-box; display: block; line-height: 1.4; min-height: 26px;
         }
-
         .info-badge, .channel-tag-a, .channel-tag-b { display: inline-block; padding: 1px 6px; margin: 0 3px; border-radius: 4px; font-weight: 700; }
         .info-badge { background-color: rgba(40, 167, 69, 0.15); color: #1e7e34; border: 1px solid rgba(40, 167, 69, 0.35); }
         .channel-tag-a { color: #dc3545; background-color: rgba(220, 53, 69, 0.12); }
@@ -82,7 +89,7 @@
             font-size: 13px; font-weight: bold; cursor: pointer;
             background-color: #007bff; color: white; border: none; border-radius: 6px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.2s, filter 0.2s;
-            width: 100%; box-sizing: border-box;
+            box-sizing: border-box; padding: 6px 4px; margin: 0;
         }
         button:hover:not(:disabled) { filter: brightness(0.9); }
         button:disabled { background-color: #999 !important; cursor: not-allowed; box-shadow: none; color: #ddd; }
@@ -92,16 +99,16 @@
         #resetButton { background-color: #fd7e14; }
         #saveButton { background-color: #17a2b8; }
         #fullscreenButton { background-color: #6c757d; }
-        #fftButton { background-color: #6f42c1; }
-        #twoSourceButton { background-color: #d63384; }
+        #btnAnalysis { background-color: #6f42c1; } /* Mặc định màu Tím FFT */
 
         canvas { flex-grow: 1; width: 100%; height: 100%; display: block; cursor: crosshair; touch-action: none; }
 
-        .settings-dropdown { position: relative; flex: 1; }
+        /* SETTINGS DROPDOWN */
+        .settings-dropdown { position: relative; display: flex; flex: 1 1 0; }
         .settings-dropdown-toggle {
             padding: 5px 8px; font-size: 12.5px; font-weight: bold; color: #0056b3;
             border-radius: 6px; border: 1px solid #ccc; background-color: #fff; cursor: pointer;
-            box-sizing: border-box; box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box; box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1); width: 100%;
             display: flex; align-items: center; justify-content: space-between; user-select: none;
         }
         .settings-dropdown-menu {
@@ -273,10 +280,12 @@
 <body>
     <div class="top-bar">
         <div class="controls-wrapper">
-            <div class="settings-row" id="settingsRow">
-                <select id="channelModeSelect" style="display:none"><option value="1" selected>1 nguồn âm</option><option value="2">2 nguồn âm</option></select>
-                <select id="modeSelect" style="display:none"><option value="auto" selected>Khảo sát tần số (Tự dừng)</option><option value="continuous">Khảo sát liên tục</option></select>
-
+            <!-- Ẩn các Select config logic để giữ nguyên cấu trúc JS -->
+            <select id="channelModeSelect" style="display:none"><option value="1" selected>1 nguồn âm</option><option value="2">2 nguồn âm</option></select>
+            <select id="modeSelect" style="display:none"><option value="auto" selected>Khảo sát tần số (Tự dừng)</option><option value="continuous">Khảo sát liên tục</option></select>
+            
+            <!-- HÀNG 1: CÁC NÚT ĐIỀU KHIỂN CHUNG -->
+            <div class="toolbar-row">
                 <div class="settings-dropdown" id="settingsDropdown">
                     <div class="settings-dropdown-toggle" id="settingsToggle">
                         <span id="settingsLabel">Cài đặt chung</span><span class="dropdown-arrow">▼</span>
@@ -298,27 +307,28 @@
                         </div>
                     </div>
                 </div>
-
-                <select id="speedSelect" class="custom-select" style="display: none; flex: 0.7;"><option value="fast" selected>Tốc độ quét : Nhanh</option><option value="slow">Tốc độ quét : Chậm</option></select>
-            </div>
-
-            <div class="settings-row" id="micSetupRow">
-                <select id="micSelectA" class="custom-select" style="flex: 1; border-color: #dc3545; color: #dc3545;"><option value="">-- Kênh A: Đang chờ tải thiết bị --</option></select>
-                <select id="micSelectB" class="custom-select" style="flex: 1; border-color: #0d6efd; color: #0d6efd;"><option value="">-- Kênh B: Đang chờ tải thiết bị --</option></select>
-            </div>
-
-            <!-- Khối nút bấm -->
-            <div class="btn-group">
-                <button id="btnStartA" class="channel-btn" disabled>Kênh A (Khóa)</button>
-                <button id="btnStartB" class="channel-btn" disabled>Kênh B (Khóa)</button>
+                <select id="speedSelect" class="custom-select" style="display: none; background: #fff;"><option value="fast" selected>Quét: Nhanh</option><option value="slow">Quét: Chậm</option></select>
                 <button id="pauseButton" disabled>Đo / Dừng</button>
                 <button id="resetButton">Làm mới</button>
+                <button id="btnAnalysis" disabled>Phân tích</button>
                 <button id="saveButton" disabled>Chụp ảnh</button>
-                <button id="fullscreenButton">Toàn màn hình</button>
-                <button id="fftButton" disabled>Phân tích FFT</button>
-                <button id="twoSourceButton" disabled>Phân tích 2 Nguồn</button>
+                <button id="fullscreenButton">Mở rộng</button>
             </div>
 
+            <!-- HÀNG 2: THIẾT LẬP KÊNH & MICRO (GỘP THÀNH CARD) -->
+            <div class="channel-row">
+                <div class="channel-card channel-a-indicator">
+                    <button id="btnStartA" class="channel-btn" disabled>Kênh A (Khóa)</button>
+                    <select id="micSelectA" style="color: #dc3545;"><option value="">-- Kênh A: Chờ tải thiết bị --</option></select>
+                </div>
+                <!-- Card Kênh B mặc định ẩn, chỉ hiện khi chọn 2 Nguồn âm -->
+                <div class="channel-card channel-b-indicator" id="cardChannelB" style="display:none;">
+                    <button id="btnStartB" class="channel-btn" disabled>Kênh B (Khóa)</button>
+                    <select id="micSelectB" style="color: #0d6efd;"><option value="">-- Kênh B: Chờ tải thiết bị --</option></select>
+                </div>
+            </div>
+
+            <!-- HÀNG 3: TRẠNG THÁI -->
             <div class="info-panel" id="infoText">Đang tải cấu hình...</div>
         </div>
 
@@ -477,15 +487,15 @@
                 if (currentUrl.startsWith('file://')) currentUrl = 'https://github.com/TenCuaThay/DaoDongKy';
                 qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(currentUrl)}`;
             }
-            resizeCanvas();
-            updateUIState();
-            drawFrame(true);
+            // Khởi tạo thẻ Kênh B dựa theo mặc định (1 Kênh -> Ẩn Kênh B)
+            document.getElementById('cardChannelB').style.display = (getActiveChannelMode() === '2') ? 'flex' : 'none';
+            resizeCanvas(); updateUIState(); drawFrame(true);
         });
 
         const btnStartA = document.getElementById('btnStartA'), btnStartB = document.getElementById('btnStartB');
         const pauseButton = document.getElementById('pauseButton'), resetButton = document.getElementById('resetButton');
         const saveButton = document.getElementById('saveButton'), fullscreenButton = document.getElementById('fullscreenButton');
-        const fftButton = document.getElementById('fftButton'), twoSourceButton = document.getElementById('twoSourceButton');
+        const btnAnalysis = document.getElementById('btnAnalysis');
         const infoText = document.getElementById('infoText');
 
         const channelModeSelect = document.getElementById('channelModeSelect'), modeSelect = document.getElementById('modeSelect'), speedSelect = document.getElementById('speedSelect');
@@ -538,30 +548,43 @@
             cfg.active = false; cfg.index = 0; if (cfg.data) cfg.data.fill(0);
         }
 
-        function updateFFTButtonState() {
+        // Cập nhật Trạng thái Nút Phân tích Gộp chung
+        function updateAnalysisButtonState() {
             if (!isInitialized) { 
-                fftButton.disabled = true; 
-                twoSourceButton.disabled = true;
+                btnAnalysis.disabled = true; 
                 return; 
             }
+            const mode = getActiveChannelMode();
             const activeChannels = (channelConfig.A.active ? 1 : 0) + (channelConfig.B.active ? 1 : 0);
             
-            // FFT: Khi tạm dừng và ĐANG CHỌN CHẾ ĐỘ 1 KÊNH
-            if (isPaused && activeChannels === 1 && getActiveChannelMode() === '1') {
-                fftButton.disabled = false;
+            if (isPaused) {
+                if (mode === '1' && channelConfig.A.active) {
+                    btnAnalysis.disabled = false;
+                    btnAnalysis.textContent = "Phân tích FFT";
+                    btnAnalysis.style.backgroundColor = "#6f42c1"; // Màu tím
+                } else if (mode === '2' && activeChannels === 2) {
+                    btnAnalysis.disabled = false;
+                    btnAnalysis.textContent = "Phân tích 2 Nguồn";
+                    btnAnalysis.style.backgroundColor = "#d63384"; // Màu hồng
+                } else {
+                    btnAnalysis.disabled = true;
+                    btnAnalysis.textContent = "Cần dừng để Phân tích";
+                    btnAnalysis.style.backgroundColor = "#6c757d"; // Màu xám khóa
+                }
             } else {
-                fftButton.disabled = true;
-            }
-
-            // Phân tích 2 nguồn: Khi tạm dừng, và CÓ 2 KÊNH ĐANG HOẠT ĐỘNG
-            if (isPaused && activeChannels === 2 && getActiveChannelMode() === '2') {
-                twoSourceButton.disabled = false;
-            } else {
-                twoSourceButton.disabled = true;
+                btnAnalysis.disabled = true;
+                btnAnalysis.textContent = "Đang đo...";
+                btnAnalysis.style.backgroundColor = "#6c757d";
             }
         }
 
-        // TẮT MÀN HÌNH / CHUYỂN APP: KHÔNG xóa dữ liệu, chỉ tạm dừng vẽ
+        // Nút phân tích Mở Modal tương ứng
+        btnAnalysis.addEventListener('click', () => {
+            const mode = getActiveChannelMode();
+            if (mode === '1') openFFTModal();
+            else if (mode === '2') openTwoSourceModal();
+        });
+
         document.addEventListener('visibilitychange', () => {
             if (document.hidden) {
                 if (!isPaused) {
@@ -569,13 +592,11 @@
                     pauseButton.textContent = "Đo / Dừng"; pauseButton.style.backgroundColor = "#28a745";
                     infoText.innerHTML = "Đã tạm dừng do chuyển ứng dụng. Đồ thị được giữ nguyên.";
                     infoText.style.color = "#d93025";
-                    updateUIState(); drawFrame(); // Giữ nguyên hình ảnh đồ thị đang hiển thị
+                    updateUIState(); drawFrame(); 
                 }
             }
         });
-        window.addEventListener('pagehide', () => {
-            // Không stopAudioChannel ở đây để bảo toàn bộ đệm âm thanh khi quay lại
-        });
+        window.addEventListener('pagehide', () => {});
 
         speedSelect.addEventListener('change', (e) => { targetFPS = (e.target.value === 'slow') ? 15 : 60; });
         modeSelect.addEventListener('change', (e) => {
@@ -583,11 +604,14 @@
             if (isContinuousMode) { speedSelect.style.display = 'block'; targetFPS = (speedSelect.value === 'slow') ? 15 : 60; }
             else { speedSelect.style.display = 'none'; targetFPS = 60; speedSelect.value = "fast"; if (!isPaused) triggerAutoStop(); }
         });
+        
         channelModeSelect.addEventListener('change', () => {
-            if (getActiveChannelMode() === '1') {
-                if (channelConfig.A.active && channelConfig.B.active) stopAudioChannel('B');
-                else if (channelConfig.A.active) stopAudioChannel('B');
-                else if (channelConfig.B.active) stopAudioChannel('A');
+            const mode = getActiveChannelMode();
+            if (mode === '1') {
+                document.getElementById('cardChannelB').style.display = 'none';
+                stopAudioChannel('B'); // Tắt lập tức Kênh B nếu chuyển về 1 Kênh
+            } else {
+                document.getElementById('cardChannelB').style.display = 'flex';
             }
             updateUIState(); drawFrame();
         });
@@ -650,7 +674,7 @@
         });
         function updateFullscreenButton() {
             let isFullscreen = document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
-            fullscreenButton.textContent = !isFullscreen ? "Toàn màn hình" : "Thu nhỏ"; setTimeout(resizeCanvas, 100);
+            fullscreenButton.textContent = !isFullscreen ? "Thu nhỏ" : "Mở rộng"; setTimeout(resizeCanvas, 100);
         }
         document.addEventListener('fullscreenchange', updateFullscreenButton);
         document.addEventListener('webkitfullscreenchange', updateFullscreenButton);
@@ -707,8 +731,8 @@
             let valA = micSelectA.value, valB = micSelectB.value;
             micSelectA.innerHTML = '<option value="">-- Kênh A: Mặc định hệ thống --</option>'; micSelectB.innerHTML = '<option value="">-- Kênh B: Mặc định hệ thống --</option>';
             audioInputs.forEach((device, index) => {
-                let optA = document.createElement('option'); optA.value = device.deviceId; optA.text = `A: ${device.label || 'Microphone ' + (index + 1)}`;
-                let optB = document.createElement('option'); optB.value = device.deviceId; optB.text = `B: ${device.label || 'Microphone ' + (index + 1)}`;
+                let optA = document.createElement('option'); optA.value = device.deviceId; optA.text = `Mic ${index + 1}: ${device.label || 'Tự chọn'}`;
+                let optB = document.createElement('option'); optB.value = device.deviceId; optB.text = `Mic ${index + 1}: ${device.label || 'Tự chọn'}`;
                 micSelectA.appendChild(optA); micSelectB.appendChild(optB);
             });
             if (audioInputs.length > 1) micSelectB.selectedIndex = 2;
@@ -720,7 +744,8 @@
                 btnStartA.disabled = true; btnStartB.disabled = true;
                 btnStartA.textContent = "Kênh A (Khóa)"; btnStartA.style.backgroundColor = "#6c757d";
                 btnStartB.textContent = "Kênh B (Khóa)"; btnStartB.style.backgroundColor = "#6c757d";
-                pauseButton.disabled = true; saveButton.disabled = true; fftButton.disabled = true; twoSourceButton.disabled = true;
+                pauseButton.disabled = true; saveButton.disabled = true; 
+                btnAnalysis.disabled = true; btnAnalysis.textContent = "Phân tích (Khóa)"; btnAnalysis.style.backgroundColor = "#6c757d";
                 resetButton.disabled = false;
                 infoText.innerHTML = "Đã khóa an toàn. Nhấn <span class='info-badge'>Làm mới</span> để kích hoạt.";
                 infoText.style.color = "#d93025";
@@ -740,9 +765,9 @@
                 if (isPaused) { infoText.innerHTML = "Đã kết nối. Bấm <span class='info-badge'>Đo / Dừng</span> để khảo sát."; infoText.style.color = "#007bff"; }
             } else {
                 pauseButton.disabled = true; resetButton.disabled = false; saveButton.disabled = true;
-                infoText.innerHTML = "Nhấn vào <span class='info-badge'>Kênh A</span> hoặc <span class='info-badge'>Kênh B</span> để thu sóng âm."; infoText.style.color = "#007bff";
+                infoText.innerHTML = "Nhấn vào nút <span class='info-badge'>Kênh A</span> hoặc <span class='info-badge'>Kênh B</span> để bật mic."; infoText.style.color = "#007bff";
             }
-            updateFFTButtonState();
+            updateAnalysisButtonState();
         }
 
         async function initAudioChannel(channelId, deviceId = null) {
@@ -781,7 +806,7 @@
                     if (!isPaused) {
                         isPaused = true; pauseButton.textContent = "Đo / Dừng"; pauseButton.style.backgroundColor = "#28a745";
                         infoText.innerHTML = "Đã khóa sóng &mdash; Chọn các Công cụ Phân tích hoặc ấn Đo để tiếp tục";
-                        infoText.style.color = "#d93025"; updateFFTButtonState(); drawFrame();
+                        infoText.style.color = "#d93025"; updateAnalysisButtonState(); drawFrame();
                     }
                 }, 2000);
             }
@@ -798,11 +823,11 @@
                 pauseButton.textContent = "Đang đo..."; pauseButton.style.backgroundColor = "#dc3545";
                 let text = "Đang quét tín hiệu: "; if (channelConfig.A.active) text += "<span class='channel-tag-a'>Kênh A (Đỏ)</span>";
                 if (channelConfig.A.active && channelConfig.B.active) text += " &amp; "; if (channelConfig.B.active) text += "<span class='channel-tag-b'>Kênh B (Xanh)</span>";
-                infoText.innerHTML = text; lastDrawTime = performance.now(); updateFFTButtonState(); draw(); triggerAutoStop();
+                infoText.innerHTML = text; lastDrawTime = performance.now(); updateAnalysisButtonState(); draw(); triggerAutoStop();
             } else {
                 isPaused = true; clearTimeout(stopTimer); pauseButton.textContent = "Đo / Dừng"; pauseButton.style.backgroundColor = "#28a745";
                 infoText.innerHTML = isContinuousMode ? "Đã tạm dừng vẽ đồ thị &mdash; Ấn <span class='info-badge'>Đo / Dừng</span> để tiếp tục" : "Đã khóa sóng &mdash; Có thể thực hiện Phân tích ngay lúc này";
-                infoText.style.color = "#d93025"; updateFFTButtonState(); drawFrame();
+                infoText.style.color = "#d93025"; updateAnalysisButtonState(); drawFrame();
             }
         });
 
@@ -966,7 +991,6 @@
         function closeFFTModal() { 
             document.getElementById('fftModalOverlay').style.display = 'none'; setTimeout(resizeCanvas, 50);
         }
-        fftButton.addEventListener('click', openFFTModal);
 
         function processAndDrawFFT() {
             let activeCfg = channelConfig.A.active ? channelConfig.A : channelConfig.B;
@@ -1048,7 +1072,6 @@
             document.getElementById('twoSourceModalOverlay').style.display = 'none'; 
             setTimeout(resizeCanvas, 50);
         }
-        twoSourceButton.addEventListener('click', openTwoSourceModal);
 
         function updateTSFromFreq(ch, redraw=true) {
             let f = parseFloat(document.getElementById('tsFreq' + ch).value);
@@ -1232,7 +1255,7 @@
             const chatContent = document.getElementById("fox-chat-content"), thinkId = "thinking-" + Date.now();
             const row = document.createElement("div"); row.className = "fox-msg-row fox-msg-bot"; row.id = thinkId;
             row.innerHTML = `<div class="fox-msg-avatar"><svg viewBox="0 0 100 100" fill="none" style="width:100%;height:100%;"><use href="#foxCyberIcon"/></svg></div>
-                <div class="fox-msg-group"><div class="fox-msg-bubble"><div class="fox-thinking-wrapper"><div class="fox-wave-equalizer"><span class="fox-wave-bar"></span><span class="fox-wave-bar"></span><span class="fox-wave-bar"></span><span class="fox-wave-bar"></span></div><span class="fox-shimmer-text">FOX-Lab đang phân tích sóng âm...</span></div></div></div>`;
+                <div class="fox-msg-group"><div class="fox-msg-bubble"><div class="fox-thinking-wrapper"><div class="fox-wave-equalizer"><span class="fox-wave-bar"></span><span class="fox-wave-bar"></span><span class="fox-wave-bar"></span><span class="fox-wave-bar"></span></div><span class="fox-shimmer-text">FOX-Lab đang phân tích...</span></div></div></div>`;
             chatContent.appendChild(row); chatContent.scrollTop = chatContent.scrollHeight; return thinkId;
         }
 
@@ -1259,8 +1282,8 @@
             if (q.includes("giao thoa")) return `**Giao thoa sóng** là hiện tượng hai sóng kết hợp khi gặp nhau trong không gian thì tăng cường lẫn nhau (tạo thành vân cực đại) hoặc triệt tiêu lẫn nhau (tạo thành vân cực tiểu) tại các vị trí cố định.`;
             else if (q.includes("tần số") || q.includes("hz")) return `Tần số sóng âm hiện tại trên dao động ký đang đo được khoảng **${curFreq} Hz**. Em có thể thay đổi âm lượng hoặc nguồn phát để quan sát sự biến thiên của chu kỳ $T = 1/f$ nhé!`;
             else if (q.includes("chức năng") || q.includes("dao động ký") || q.includes("làm gì")) return `**Dao động ký (Oscilloscope)** là thiết bị biểu diễn đồ thị dao động của tín hiệu điện/sóng âm theo thời gian. Nó giúp ta xác định trực quan **Biên độ**, **Chu kỳ** ($T$), và **Tần số** ($f$) trong Vật lý 11.`;
-            else if (q.includes("khóa") || q.includes("dừng") || q.includes("auto")) return `Ở chế độ **Khảo sát tần số (Tự dừng)**, hệ thống tự động bắt đồng bộ pha và dừng sau 2 giây. Ngoài ra sau khi dừng ở chế độ 1 nguồn âm, em có thể bấm **Phân tích FFT** để khảo sát Họa âm nhé!`;
-            else if (q.includes("kênh a") || q.includes("kênh b") || q.includes("channel") || q.includes("phân tích 2 nguồn")) return `Hệ thống hỗ trợ 2 kênh đo độc lập: **Kênh A (Màu đỏ)** và **Kênh B (Màu xanh)**. Khi chọn *2 Nguồn âm* và bấm Dừng, em có thể dùng chức năng **Phân tích 2 Nguồn** để so sánh biên độ, tính toán Độ lệch pha $\\Delta\\phi$ và Tổng hợp dao động!`;
+            else if (q.includes("khóa") || q.includes("dừng") || q.includes("auto")) return `Ở chế độ **Khảo sát tần số (Tự dừng)**, hệ thống tự động bắt đồng bộ pha và dừng sau 2 giây. Sau khi dừng, em ấn **Phân tích** để mở công cụ FFT hoặc Hai nguồn nhé.`;
+            else if (q.includes("kênh a") || q.includes("kênh b") || q.includes("channel") || q.includes("phân tích 2 nguồn")) return `Hệ thống hỗ trợ 2 kênh đo độc lập: **Kênh A (Màu đỏ)** và **Kênh B (Màu xanh)**. Khi chọn *2 Nguồn âm* và bấm Dừng, em ấn nút **Phân tích 2 Nguồn** để so sánh biên độ, tính Độ lệch pha $\\Delta\\phi$ và Tổng hợp dao động!`;
             else return `Thầy FOX-Lab AI đang tạm thời mất kết nối với máy chủ AI. Bạn hãy kiểm tra lại đường link Google Apps Script (GAS_URL) nhé!`;
         }
 
