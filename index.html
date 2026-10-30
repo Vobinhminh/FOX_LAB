@@ -208,25 +208,24 @@
         #fox-chat-trigger { position: relative; z-index: 2; width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(135deg, #ff7849 0%, #ea580c 100%); border: 1px solid rgba(255, 255, 255, 0.25); box-shadow: 0 6px 15px -4px rgba(234, 88, 12, 0.5); cursor: pointer; display: flex; align-items: center; justify-content: center; color: #fff; transition: transform 0.3s; }
         #fox-chat-trigger:hover { transform: scale(1.08) translateY(-2px); }
         .fox-trigger-icon { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; }
-        .fox-trigger-icon svg { width: 100%; height: 100%; display: block; }
         .fox-trigger-close-icon { display: none; width: 16px; height: 16px; }
         #fox-chat-widget.open #fox-chat-trigger { background: linear-gradient(135deg, #334155 0%, #1e293b 100%); border-color: rgba(255, 255, 255, 0.2); }
         #fox-chat-widget.open .fox-ping-ring, #fox-chat-widget.open .fox-trigger-fox-icon { display: none; }
         #fox-chat-widget.open .fox-trigger-close-icon { display: flex; transform: rotate(90deg); }
         #fox-chat-box { position: absolute; bottom: 50px; right: 0; width: 320px; height: 420px; max-height: calc(100dvh - 80px); max-width: calc(100vw - 20px); background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.7); display: flex; flex-direction: column; overflow: hidden; transform-origin: bottom right; transform: scale(0.9) translateY(20px); opacity: 0; visibility: hidden; pointer-events: none; transition: all 0.3s; z-index: 10; }
         #fox-chat-widget.open #fox-chat-box { transform: scale(1) translateY(0); opacity: 1; visibility: visible; pointer-events: auto; }
-        .fox-chat-header { padding: 8px 10px; background: rgba(30, 41, 59, 0.8); border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+        .fox-chat-header { padding: 8px 10px; background: rgba(30, 41, 59, 0.8); border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; transition: background 0.3s; }
         .fox-header-left { display: flex; align-items: center; gap: 8px; }
         .fox-avatar-container { width: 26px; height: 26px; border-radius: 6px; border: 1px solid rgba(249, 115, 22, 0.5); background: rgba(249, 115, 22, 0.1); display: flex; align-items: center; justify-content: center; padding: 2px; box-sizing: border-box; }
+        .fox-avatar-container svg, .fox-msg-avatar svg { width: 100%; height: 100%; display: block; }
         .fox-header-info { display: flex; flex-direction: column; gap: 1px; }
-        .fox-header-title { font-size: 12px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 4px; }
-        .fox-header-badge { font-size: 8px; padding: 1px 4px; border-radius: 4px; background: rgba(249, 115, 22, 0.2); color: #ff9d66; border: 1px solid rgba(249, 115, 22, 0.4); }
+        .fox-header-title { font-size: 13px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 4px; transition: color 0.3s; }
         .fox-header-status { font-size: 9px; color: #94a3b8; display: flex; align-items: center; gap: 4px; }
         .fox-status-dot { width: 5px; height: 5px; border-radius: 50%; background: #22c55e; animation: statusPulse 2s infinite ease-in-out; }
         .fox-header-actions { display: flex; gap: 4px; }
-        .fox-btn-icon { width: 22px; height: 22px; border-radius: 4px; background: transparent; border: none; color: #94a3b8; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; }
+        .fox-btn-icon { width: 26px; height: 26px; border-radius: 4px; background: transparent; border: none; color: #94a3b8; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; transition: all 0.2s; }
         .fox-btn-icon:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
-        .fox-btn-icon svg { width: 14px; height: 14px; stroke-width: 2; }
+        .fox-btn-icon svg { width: 15px; height: 15px; stroke-width: 2; }
         #fox-chat-content { flex: 1; padding: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; user-select: text; scroll-behavior: smooth; }
         .fox-msg-row { display: flex; gap: 6px; max-width: 100%; animation: foxMsgFadeIn 0.25s ease forwards; }
         @keyframes foxMsgFadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
@@ -236,18 +235,32 @@
         .fox-msg-group { display: flex; flex-direction: column; max-width: 85%; gap: 2px; }
         .fox-msg-user .fox-msg-group { align-items: flex-end; }
         .fox-msg-bot .fox-msg-group { align-items: flex-start; }
-        .fox-msg-bubble { padding: 6px 10px; border-radius: 8px; font-size: 11.5px; line-height: 1.4; word-wrap: break-word; max-width: 100%; }
+        .fox-msg-bubble { padding: 6px 10px; border-radius: 8px; font-size: 11.5px; line-height: 1.4; word-wrap: break-word; max-width: 100%; transition: background 0.3s, color 0.3s, border 0.3s; }
         .fox-msg-user .fox-msg-bubble { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); color: #ffffff; border-bottom-right-radius: 2px; font-weight: 500; }
         .fox-msg-bot .fox-msg-bubble { background: rgba(30, 41, 59, 0.85); color: #f1f5f9; border: 1px solid rgba(255, 255, 255, 0.1); border-top-left-radius: 2px; }
         .fox-msg-bot .fox-msg-bubble b { color: var(--fox-cyan); font-weight: 600; }
-        .fox-input-container { padding: 8px; background: rgba(15, 23, 42, 0.95); border-top: 1px solid rgba(255, 255, 255, 0.1); display: flex; flex-direction: column; gap: 4px; flex-shrink: 0; }
-        .fox-input-box { display: flex; align-items: center; background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 12px; padding: 2px 4px 2px 8px; }
-        #fox-chat-input { flex: 1; background: transparent; border: none; color: #f8fafc; font-size: 11.5px; outline: none; padding: 4px 0; }
+        .fox-input-container { padding: 8px; background: rgba(15, 23, 42, 0.95); border-top: 1px solid rgba(255, 255, 255, 0.1); display: flex; flex-direction: column; gap: 4px; flex-shrink: 0; transition: background 0.3s, border 0.3s; }
+        .fox-input-box { display: flex; align-items: center; background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 12px; padding: 2px 4px 2px 8px; transition: background 0.3s, border 0.3s; }
+        #fox-chat-input { flex: 1; background: transparent; border: none; color: #f8fafc; font-size: 11.5px; outline: none; padding: 4px 0; transition: color 0.3s; }
         .fox-send-btn { width: 24px; height: 24px; border-radius: 50%; background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); border: none; color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
         .fox-send-btn:disabled { background: rgba(255, 255, 255, 0.1) !important; color: #64748b !important; cursor: not-allowed; }
         .fox-send-btn svg { width: 12px; height: 12px; margin-left: 2px; }
         .fox-footer-meta { font-size: 8px; color: var(--fox-text-muted); text-align: center; }
         .fox-freq-tag { color: var(--fox-cyan); font-weight: 600; }
+
+        /* THEME LIGHT MODE CHO CHATBOX */
+        #fox-chat-box.light-theme { background: rgba(255, 255, 255, 0.95); border: 1px solid rgba(0,0,0,0.1); box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.15); }
+        #fox-chat-box.light-theme .fox-chat-header { background: rgba(241, 245, 249, 0.9); border-bottom: 1px solid #cbd5e1; }
+        #fox-chat-box.light-theme .fox-header-title { color: #0f172a; }
+        #fox-chat-box.light-theme .fox-btn-icon { color: #64748b; }
+        #fox-chat-box.light-theme .fox-btn-icon:hover { background: rgba(0, 0, 0, 0.05); color: #0f172a; }
+        #fox-chat-box.light-theme .fox-msg-bot .fox-msg-bubble { background: #f1f5f9; color: #1e293b; border: 1px solid #e2e8f0; }
+        #fox-chat-box.light-theme .fox-msg-bot .fox-msg-bubble b { color: #0284c7; }
+        #fox-chat-box.light-theme .fox-input-container { background: rgba(248, 250, 252, 0.95); border-top: 1px solid #cbd5e1; }
+        #fox-chat-box.light-theme .fox-input-box { background: #ffffff; border: 1px solid #cbd5e1; }
+        #fox-chat-box.light-theme #fox-chat-input { color: #0f172a; }
+        #fox-chat-box.light-theme .fox-send-btn:disabled { background: #e2e8f0 !important; color: #94a3b8 !important; }
+
         @media (max-width: 600px) { #fox-chat-widget { bottom: 10px; right: 10px; } #fox-chat-box { width: calc(100vw - 20px); height: calc(100dvh - 60px); bottom: 45px; } }
     </style>
 </head>
@@ -384,36 +397,40 @@
         </div>
     </div>
 
-    <!-- SVG ASSETS FOR CYBER FOX -->
-    <svg style="display:none;" xmlns="http://www.w3.org/2000/svg">
-        <defs><symbol id="foxCyberIcon" viewBox="0 0 100 100">
-            <polygon points="22,12 10,48 36,40" fill="#ff7a30"/><polygon points="23,19 16,44 32,38" fill="#1e293b"/><path d="M 19 36 Q 23 32 28 34" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round"/><polygon points="78,12 64,40 90,48" fill="#ff7a30"/><polygon points="77,19 68,38 84,44" fill="#1e293b"/><path d="M 81 36 Q 77 32 72 34" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round"/><polygon points="50,22 36,40 50,46" fill="#ff8f4a"/><polygon points="50,22 50,46 64,40" fill="#ff7a30"/><polygon points="36,40 10,48 20,68 38,58" fill="#d4380d"/><polygon points="64,40 38,58 50,46" fill="#e04006"/><polygon points="64,40 50,46 62,58" fill="#d4380d"/><polygon points="64,40 90,48 80,68 62,58" fill="#d4380d"/><polygon points="20,68 12,74 26,76 34,68" fill="#e2e8f0"/><polygon points="80,68 88,74 74,76 66,68" fill="#cbd5e1"/><polygon points="38,58 50,46 50,78 36,68" fill="#ff7a30"/><polygon points="62,58 50,46 50,78 64,68" fill="#e04006"/><polygon points="50,78 36,68 44,88 50,88" fill="#f8fafc"/><polygon points="50,78 64,68 56,88 50,88" fill="#e2e8f0"/><polygon points="50,88 45,82 55,82" fill="#0f172a"/><polygon points="25,48 50,54 75,48 71,59 50,65 29,59" fill="#090d16" stroke="rgba(56,189,248,0.5)" stroke-width="0.9"/><circle cx="34.5" cy="48" r="1.5" fill="#ffffff"/><circle cx="44.5" cy="60" r="1.5" fill="#ffffff"/><circle cx="54.5" cy="48" r="1.5" fill="#ffffff"/><circle cx="64.5" cy="60" r="1.5" fill="#ffffff"/>
-        </symbol></defs>
-    </svg>
-
     <!-- FOX-LAB AI WIDGET -->
     <div id="fox-chat-widget">
         <div class="fox-trigger-wrapper">
             <div class="fox-ping-ring"></div>
             <button id="fox-chat-trigger" onclick="toggleChat()">
-                <span class="fox-trigger-icon fox-trigger-fox-icon"><svg viewBox="0 0 100 100" fill="none"><use href="#foxCyberIcon"/></svg></span>
+                <span class="fox-trigger-icon fox-trigger-fox-icon">
+                    <svg viewBox="0 0 100 100" fill="none"><polygon points="22,12 10,48 36,40" fill="#ff7a30"/><polygon points="23,19 16,44 32,38" fill="#1e293b"/><path d="M 19 36 Q 23 32 28 34" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round"/><polygon points="78,12 64,40 90,48" fill="#ff7a30"/><polygon points="77,19 68,38 84,44" fill="#1e293b"/><path d="M 81 36 Q 77 32 72 34" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round"/><polygon points="50,22 36,40 50,46" fill="#ff8f4a"/><polygon points="50,22 50,46 64,40" fill="#ff7a30"/><polygon points="36,40 10,48 20,68 38,58" fill="#d4380d"/><polygon points="64,40 38,58 50,46" fill="#e04006"/><polygon points="64,40 50,46 62,58" fill="#d4380d"/><polygon points="64,40 90,48 80,68 62,58" fill="#d4380d"/><polygon points="20,68 12,74 26,76 34,68" fill="#e2e8f0"/><polygon points="80,68 88,74 74,76 66,68" fill="#cbd5e1"/><polygon points="38,58 50,46 50,78 36,68" fill="#ff7a30"/><polygon points="62,58 50,46 50,78 64,68" fill="#e04006"/><polygon points="50,78 36,68 44,88 50,88" fill="#f8fafc"/><polygon points="50,78 64,68 56,88 50,88" fill="#e2e8f0"/><polygon points="50,88 45,82 55,82" fill="#0f172a"/><polygon points="25,48 50,54 75,48 71,59 50,65 29,59" fill="#090d16" stroke="rgba(56,189,248,0.5)" stroke-width="0.9"/><circle cx="34.5" cy="48" r="1.5" fill="#ffffff"/><circle cx="44.5" cy="60" r="1.5" fill="#ffffff"/><circle cx="54.5" cy="48" r="1.5" fill="#ffffff"/><circle cx="64.5" cy="60" r="1.5" fill="#ffffff"/></svg>
+                </span>
                 <span class="fox-trigger-icon fox-trigger-close-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span>
             </button>
         </div>
         <div id="fox-chat-box">
             <div class="fox-chat-header">
                 <div class="fox-header-left">
-                    <div class="fox-avatar-container"><svg viewBox="0 0 100 100" fill="none"><use href="#foxCyberIcon"/></svg></div>
+                    <div class="fox-avatar-container">
+                        <svg viewBox="0 0 100 100" fill="none"><polygon points="22,12 10,48 36,40" fill="#ff7a30"/><polygon points="23,19 16,44 32,38" fill="#1e293b"/><path d="M 19 36 Q 23 32 28 34" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round"/><polygon points="78,12 64,40 90,48" fill="#ff7a30"/><polygon points="77,19 68,38 84,44" fill="#1e293b"/><path d="M 81 36 Q 77 32 72 34" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round"/><polygon points="50,22 36,40 50,46" fill="#ff8f4a"/><polygon points="50,22 50,46 64,40" fill="#ff7a30"/><polygon points="36,40 10,48 20,68 38,58" fill="#d4380d"/><polygon points="64,40 38,58 50,46" fill="#e04006"/><polygon points="64,40 50,46 62,58" fill="#d4380d"/><polygon points="64,40 90,48 80,68 62,58" fill="#d4380d"/><polygon points="20,68 12,74 26,76 34,68" fill="#e2e8f0"/><polygon points="80,68 88,74 74,76 66,68" fill="#cbd5e1"/><polygon points="38,58 50,46 50,78 36,68" fill="#ff7a30"/><polygon points="62,58 50,46 50,78 64,68" fill="#e04006"/><polygon points="50,78 36,68 44,88 50,88" fill="#f8fafc"/><polygon points="50,78 64,68 56,88 50,88" fill="#e2e8f0"/><polygon points="50,88 45,82 55,82" fill="#0f172a"/><polygon points="25,48 50,54 75,48 71,59 50,65 29,59" fill="#090d16" stroke="rgba(56,189,248,0.5)" stroke-width="0.9"/><circle cx="34.5" cy="48" r="1.5" fill="#ffffff"/><circle cx="44.5" cy="60" r="1.5" fill="#ffffff"/><circle cx="54.5" cy="48" r="1.5" fill="#ffffff"/><circle cx="64.5" cy="60" r="1.5" fill="#ffffff"/></svg>
+                    </div>
                     <div class="fox-header-info">
-                        <div class="fox-header-title">FOX-Lab AI<span class="fox-header-badge">VẬT LÝ 11</span></div>
+                        <div class="fox-header-title">FOX-Lab AI</div>
                         <div class="fox-header-status"><span class="fox-status-dot"></span><span id="foxStatusText">Trực tuyến</span></div>
                     </div>
                 </div>
-                <div class="fox-header-actions"><button class="fox-btn-icon" onclick="toggleChat()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></div>
+                <div class="fox-header-actions">
+                    <button class="fox-btn-icon" id="themeToggleBtn" onclick="toggleChatTheme()" title="Đổi giao diện">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    </button>
+                    <button class="fox-btn-icon" onclick="toggleChat()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+                </div>
             </div>
             <div id="fox-chat-content">
                 <div class="fox-msg-row fox-msg-bot">
-                    <div class="fox-msg-avatar"><svg viewBox="0 0 100 100" fill="none"><use href="#foxCyberIcon"/></svg></div>
+                    <div class="fox-msg-avatar">
+                        <svg viewBox="0 0 100 100" fill="none"><polygon points="22,12 10,48 36,40" fill="#ff7a30"/><polygon points="23,19 16,44 32,38" fill="#1e293b"/><path d="M 19 36 Q 23 32 28 34" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round"/><polygon points="78,12 64,40 90,48" fill="#ff7a30"/><polygon points="77,19 68,38 84,44" fill="#1e293b"/><path d="M 81 36 Q 77 32 72 34" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round"/><polygon points="50,22 36,40 50,46" fill="#ff8f4a"/><polygon points="50,22 50,46 64,40" fill="#ff7a30"/><polygon points="36,40 10,48 20,68 38,58" fill="#d4380d"/><polygon points="64,40 38,58 50,46" fill="#e04006"/><polygon points="64,40 50,46 62,58" fill="#d4380d"/><polygon points="64,40 90,48 80,68 62,58" fill="#d4380d"/><polygon points="20,68 12,74 26,76 34,68" fill="#e2e8f0"/><polygon points="80,68 88,74 74,76 66,68" fill="#cbd5e1"/><polygon points="38,58 50,46 50,78 36,68" fill="#ff7a30"/><polygon points="62,58 50,46 50,78 64,68" fill="#e04006"/><polygon points="50,78 36,68 44,88 50,88" fill="#f8fafc"/><polygon points="50,78 64,68 56,88 50,88" fill="#e2e8f0"/><polygon points="50,88 45,82 55,82" fill="#0f172a"/><polygon points="25,48 50,54 75,48 71,59 50,65 29,59" fill="#090d16" stroke="rgba(56,189,248,0.5)" stroke-width="0.9"/><circle cx="34.5" cy="48" r="1.5" fill="#ffffff"/><circle cx="44.5" cy="60" r="1.5" fill="#ffffff"/><circle cx="54.5" cy="48" r="1.5" fill="#ffffff"/><circle cx="64.5" cy="60" r="1.5" fill="#ffffff"/></svg>
+                    </div>
                     <div class="fox-msg-group"><div class="fox-msg-bubble">Chào em! Thầy là <strong>FOX-Lab AI</strong>. Em có câu hỏi nào về dao động ký hoặc bài Sóng âm không?</div></div>
                 </div>
             </div>
@@ -428,16 +445,17 @@
     </div>
 
     <script>
+        // HẰNG SỐ CHỨA MÃ SVG AVATAR ĐỂ TRÁNH LỖI HIỂN THỊ TRÊN ĐIỆN THOẠI
+        const FOX_AVATAR_SVG = `<svg viewBox="0 0 100 100" fill="none"><polygon points="22,12 10,48 36,40" fill="#ff7a30"/><polygon points="23,19 16,44 32,38" fill="#1e293b"/><path d="M 19 36 Q 23 32 28 34" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round"/><polygon points="78,12 64,40 90,48" fill="#ff7a30"/><polygon points="77,19 68,38 84,44" fill="#1e293b"/><path d="M 81 36 Q 77 32 72 34" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round"/><polygon points="50,22 36,40 50,46" fill="#ff8f4a"/><polygon points="50,22 50,46 64,40" fill="#ff7a30"/><polygon points="36,40 10,48 20,68 38,58" fill="#d4380d"/><polygon points="64,40 38,58 50,46" fill="#e04006"/><polygon points="64,40 50,46 62,58" fill="#d4380d"/><polygon points="64,40 90,48 80,68 62,58" fill="#d4380d"/><polygon points="20,68 12,74 26,76 34,68" fill="#e2e8f0"/><polygon points="80,68 88,74 74,76 66,68" fill="#cbd5e1"/><polygon points="38,58 50,46 50,78 36,68" fill="#ff7a30"/><polygon points="62,58 50,46 50,78 64,68" fill="#e04006"/><polygon points="50,78 36,68 44,88 50,88" fill="#f8fafc"/><polygon points="50,78 64,68 56,88 50,88" fill="#e2e8f0"/><polygon points="50,88 45,82 55,82" fill="#0f172a"/><polygon points="25,48 50,54 75,48 71,59 50,65 29,59" fill="#090d16" stroke="rgba(56,189,248,0.5)" stroke-width="0.9"/><circle cx="34.5" cy="48" r="1.5" fill="#ffffff"/><circle cx="44.5" cy="60" r="1.5" fill="#ffffff"/><circle cx="54.5" cy="48" r="1.5" fill="#ffffff"/><circle cx="64.5" cy="60" r="1.5" fill="#ffffff"/></svg>`;
+
         window.addEventListener('DOMContentLoaded', () => {
             const qrImage = document.getElementById('qrImage');
             if (qrImage) {
-                // TÍCH HỢP SMART QR (CHỐNG CACHE TRÌNH DUYỆT ĐIỆN THOẠI)
+                // TÍCH HỢP SMART QR
                 let currentUrl = window.location.href.split('?')[0]; 
                 if (currentUrl.startsWith('file://') || currentUrl.includes('localhost')) {
-                    // LINK GITHUB CỦA PRO ĐỂ QR HOẠT ĐỘNG NGAY CẢ KHI TEST OFFLINE
                     currentUrl = 'https://tencuathay.github.io/DaoDongKy'; 
                 }
-                // Token thời gian để ép smartphone luôn tải trang mới nhất
                 let versionToken = new Date().getTime(); 
                 let smartUrl = `${currentUrl}?v=${versionToken}`;
                 qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(smartUrl)}`;
@@ -971,7 +989,24 @@
 
         /* TRỢ LÝ ẢO THÔNG MINH FOX-LAB AI */
         const GAS_URL = "https://script.google.com/macros/s/AKfycbyStGo5ETWCHq3UxtQEWIFL-R2mpEHdeYuX53EgfPf8LtG2Dfe4Dbk1-i59hf8LcY2bdg/exec"; 
-        
+        let isChatLightMode = false;
+
+        function toggleChatTheme() {
+            const chatBox = document.getElementById('fox-chat-box');
+            const toggleBtn = document.getElementById('themeToggleBtn');
+            isChatLightMode = !isChatLightMode;
+            
+            if (isChatLightMode) {
+                chatBox.classList.add('light-theme');
+                // Biểu tượng Mặt trăng (cho chế độ Dark mode)
+                toggleBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>`;
+            } else {
+                chatBox.classList.remove('light-theme');
+                // Biểu tượng Mặt trời (cho chế độ Light mode)
+                toggleBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>`;
+            }
+        }
+
         function toggleChat() { 
             const widget = document.getElementById("fox-chat-widget"); 
             if(widget.classList.toggle("open")) { setTimeout(() => document.getElementById("fox-chat-input").focus(), 150); } 
@@ -984,19 +1019,15 @@
             } 
         }
 
-        // HÀM DỊCH MARKDOWN & TOÁN HỌC MINI CHO CHATBOX (ĐÃ NÂNG CẤP)
+        // HÀM DỊCH MARKDOWN & TOÁN HỌC MINI CHO CHATBOX
         function parseBotReply(text) {
             if (!text) return "";
             let html = text;
             
-            // 1. Chống lỗi mã HTML đen (XSS)
             html = html.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-            
-            // 2. Xóa các dấu $ và $$ của LaTeX
             html = html.replace(/\$\$/g, "");
             html = html.replace(/\$/g, "");
             
-            // 3. Chuyển đổi các ký hiệu Toán/Lý LaTeX sang Unicode
             html = html.replace(/\\cdot/g, "·");
             html = html.replace(/\\pi/g, "π");
             html = html.replace(/\\Delta/g, "Δ");
@@ -1019,29 +1050,23 @@
             html = html.replace(/\\infty/g, "∞");
             html = html.replace(/\\circ/g, "°");
             
-            // 4. Phân số và Căn bậc
             html = html.replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, "($1)/($2)");
             html = html.replace(/\\sqrt\{([^}]+)\}/g, "√($1)");
 
-            // 5. Định dạng In đậm, In nghiêng của Markdown
             html = html.replace(/\*\*(.*?)\*\*/g, "<b>$1</b>");
             html = html.replace(/\*(.*?)\*/g, "<i>$1</i>");
             
-            // 6. Xử lý Chỉ số dưới: H_1 hoặc H_{1}
             html = html.replace(/_\{([^}]+)\}/g, "<sub>$1</sub>");
             html = html.replace(/_([a-zA-Z0-9]+)/g, "<sub>$1</sub>");
             
-            // 7. Xử lý Chỉ số trên (mũ): x^2 hoặc x^{2}
             html = html.replace(/\^\{([^}]+)\}/g, "<sup>$1</sup>");
             html = html.replace(/\^([a-zA-Z0-9]+)/g, "<sup>$1</sup>");
             
-            // 8. Dọn dẹp nốt dấu \ rác nếu API trả về ngoặc vuông/ngoặc tròn LaTeX (ví dụ: \[ \] \( \))
             html = html.replace(/\\\[/g, "");
             html = html.replace(/\\\]/g, "");
             html = html.replace(/\\\(/g, "");
             html = html.replace(/\\\)/g, "");
 
-            // 9. Xuống dòng (Dịch \n thành thẻ <br>)
             html = html.replace(/\n/g, "<br>");
             
             return html;
@@ -1059,7 +1084,7 @@
             content.scrollTop = content.scrollHeight;
 
             const typingId = 'typing-' + Date.now();
-            content.innerHTML += `<div class="fox-msg-row fox-msg-bot" id="${typingId}"><div class="fox-msg-avatar"><svg viewBox="0 0 100 100" fill="none"><use href="#foxCyberIcon"/></svg></div><div class="fox-msg-group"><div class="fox-msg-bubble" style="color:#94a3b8; font-style:italic;">Đang suy nghĩ...</div></div></div>`;
+            content.innerHTML += `<div class="fox-msg-row fox-msg-bot" id="${typingId}"><div class="fox-msg-avatar">${FOX_AVATAR_SVG}</div><div class="fox-msg-group"><div class="fox-msg-bubble" style="color:#94a3b8; font-style:italic;">Đang suy nghĩ...</div></div></div>`;
             content.scrollTop = content.scrollHeight;
 
             try {
@@ -1073,14 +1098,13 @@
                 const data = await response.json();
                 document.getElementById(typingId).remove();
                 
-                // GỌI HÀM DỊCH MARKDOWN & TOÁN HỌC Ở ĐÂY
                 let rawReply = data.reply || data.message || "Xin lỗi, thầy chưa hiểu ý em.";
                 let formattedReply = parseBotReply(rawReply);
                 
-                content.innerHTML += `<div class="fox-msg-row fox-msg-bot"><div class="fox-msg-avatar"><svg viewBox="0 0 100 100" fill="none"><use href="#foxCyberIcon"/></svg></div><div class="fox-msg-group"><div class="fox-msg-bubble">${formattedReply}</div></div></div>`;
+                content.innerHTML += `<div class="fox-msg-row fox-msg-bot"><div class="fox-msg-avatar">${FOX_AVATAR_SVG}</div><div class="fox-msg-group"><div class="fox-msg-bubble">${formattedReply}</div></div></div>`;
             } catch (error) {
                 document.getElementById(typingId).remove();
-                content.innerHTML += `<div class="fox-msg-row fox-msg-bot"><div class="fox-msg-avatar"><svg viewBox="0 0 100 100" fill="none"><use href="#foxCyberIcon"/></svg></div><div class="fox-msg-group"><div class="fox-msg-bubble" style="color:#ef4444;">Lỗi kết nối API! Pro hãy kiểm tra lại GAS_URL nhé.</div></div></div>`;
+                content.innerHTML += `<div class="fox-msg-row fox-msg-bot"><div class="fox-msg-avatar">${FOX_AVATAR_SVG}</div><div class="fox-msg-group"><div class="fox-msg-bubble" style="color:#ef4444;">Lỗi kết nối API! Pro hãy kiểm tra lại GAS_URL nhé.</div></div></div>`;
             }
             
             btn.disabled = false; content.scrollTop = content.scrollHeight; input.focus();
