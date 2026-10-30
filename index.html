@@ -352,10 +352,7 @@
                 </div>
 
                 <div style="display:flex; gap:6px;">
-                    <!-- THÊM NÚT DỪNG - CHỈ HIỆN Ở CHẾ ĐỘ ĐO LIÊN TỤC -->
                     <button id="btnTsPause" class="btn-orange" onclick="toggleTsPause()" style="display:none;">⏸ Dừng</button>
-                    
-                    <!-- ẨN SẴN NÚT KẾT QUẢ THEO Ý PRO -->
                     <button id="btnTsResult" class="btn-slate" onclick="toggleTsResults()" style="display:none;">📊 Kết quả</button>
                     <button id="btnTsEquation" class="btn-slate" onclick="toggleTsEquations()">∑ Phương trình</button>
                 </div>
@@ -987,7 +984,7 @@
             } 
         }
 
-        // HÀM DỊCH MARKDOWN & TOÁN HỌC MINI CHO CHATBOX
+        // HÀM DỊCH MARKDOWN & TOÁN HỌC MINI CHO CHATBOX (ĐÃ NÂNG CẤP)
         function parseBotReply(text) {
             if (!text) return "";
             let html = text;
@@ -995,22 +992,56 @@
             // 1. Chống lỗi mã HTML đen (XSS)
             html = html.replace(/</g, "&lt;").replace(/>/g, "&gt;");
             
-            // 2. Xóa các dấu $ của LaTeX để các regex bên dưới có thể bắt được
+            // 2. Xóa các dấu $ và $$ của LaTeX
+            html = html.replace(/\$\$/g, "");
             html = html.replace(/\$/g, "");
             
-            // 3. Định dạng In đậm, In nghiêng của Markdown
+            // 3. Chuyển đổi các ký hiệu Toán/Lý LaTeX sang Unicode
+            html = html.replace(/\\cdot/g, "·");
+            html = html.replace(/\\pi/g, "π");
+            html = html.replace(/\\Delta/g, "Δ");
+            html = html.replace(/\\lambda/g, "λ");
+            html = html.replace(/\\omega/g, "ω");
+            html = html.replace(/\\varphi/g, "φ");
+            html = html.replace(/\\phi/g, "φ");
+            html = html.replace(/\\alpha/g, "α");
+            html = html.replace(/\\beta/g, "β");
+            html = html.replace(/\\gamma/g, "γ");
+            html = html.replace(/\\approx/g, "≈");
+            html = html.replace(/\\pm/g, "±");
+            html = html.replace(/\\times/g, "×");
+            html = html.replace(/\\div/g, "÷");
+            html = html.replace(/\\leq?/g, "≤");
+            html = html.replace(/\\geq?/g, "≥");
+            html = html.replace(/\\neq/g, "≠");
+            html = html.replace(/\\rightarrow/g, "→");
+            html = html.replace(/\\Rightarrow/g, "⇒");
+            html = html.replace(/\\infty/g, "∞");
+            html = html.replace(/\\circ/g, "°");
+            
+            // 4. Phân số và Căn bậc
+            html = html.replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, "($1)/($2)");
+            html = html.replace(/\\sqrt\{([^}]+)\}/g, "√($1)");
+
+            // 5. Định dạng In đậm, In nghiêng của Markdown
             html = html.replace(/\*\*(.*?)\*\*/g, "<b>$1</b>");
             html = html.replace(/\*(.*?)\*/g, "<i>$1</i>");
             
-            // 4. Xử lý Chỉ số dưới: H_1 hoặc H_{1}
+            // 6. Xử lý Chỉ số dưới: H_1 hoặc H_{1}
             html = html.replace(/_\{([^}]+)\}/g, "<sub>$1</sub>");
             html = html.replace(/_([a-zA-Z0-9]+)/g, "<sub>$1</sub>");
             
-            // 5. Xử lý Chỉ số trên (mũ): x^2 hoặc x^{2}
+            // 7. Xử lý Chỉ số trên (mũ): x^2 hoặc x^{2}
             html = html.replace(/\^\{([^}]+)\}/g, "<sup>$1</sup>");
             html = html.replace(/\^([a-zA-Z0-9]+)/g, "<sup>$1</sup>");
             
-            // 6. Xuống dòng (Dịch \n thành thẻ <br>)
+            // 8. Dọn dẹp nốt dấu \ rác nếu API trả về ngoặc vuông/ngoặc tròn LaTeX (ví dụ: \[ \] \( \))
+            html = html.replace(/\\\[/g, "");
+            html = html.replace(/\\\]/g, "");
+            html = html.replace(/\\\(/g, "");
+            html = html.replace(/\\\)/g, "");
+
+            // 9. Xuống dòng (Dịch \n thành thẻ <br>)
             html = html.replace(/\n/g, "<br>");
             
             return html;
