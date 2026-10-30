@@ -995,19 +995,22 @@
             // 1. Chống lỗi mã HTML đen (XSS)
             html = html.replace(/</g, "&lt;").replace(/>/g, "&gt;");
             
-            // 2. Định dạng In đậm, In nghiêng của Markdown
+            // 2. Xóa các dấu $ của LaTeX để các regex bên dưới có thể bắt được
+            html = html.replace(/\$/g, "");
+            
+            // 3. Định dạng In đậm, In nghiêng của Markdown
             html = html.replace(/\*\*(.*?)\*\*/g, "<b>$1</b>");
             html = html.replace(/\*(.*?)\*/g, "<i>$1</i>");
             
-            // 3. Xử lý Chỉ số dưới: H_1 hoặc H_{1}
+            // 4. Xử lý Chỉ số dưới: H_1 hoặc H_{1}
             html = html.replace(/_\{([^}]+)\}/g, "<sub>$1</sub>");
             html = html.replace(/_([a-zA-Z0-9]+)/g, "<sub>$1</sub>");
             
-            // 4. Xử lý Chỉ số trên (mũ): x^2 hoặc x^{2}
+            // 5. Xử lý Chỉ số trên (mũ): x^2 hoặc x^{2}
             html = html.replace(/\^\{([^}]+)\}/g, "<sup>$1</sup>");
             html = html.replace(/\^([a-zA-Z0-9]+)/g, "<sup>$1</sup>");
             
-            // 5. Xuống dòng (Dịch \n thành thẻ <br>)
+            // 6. Xuống dòng (Dịch \n thành thẻ <br>)
             html = html.replace(/\n/g, "<br>");
             
             return html;
