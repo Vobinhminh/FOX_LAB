@@ -201,51 +201,56 @@
 
         /* FOX-LAB AI CHATBOT WIDGET */
         :root { --fox-font: 'Be Vietnam Pro', sans-serif; --fox-font-mono: 'JetBrains Mono', monospace; --fox-cyan: #38bdf8; --fox-text-muted: #64748b; }
-        #fox-chat-widget { position: fixed; bottom: 15px; right: 15px; z-index: 99998; font-family: var(--fox-font); user-select: none; }
+        #fox-chat-widget { position: fixed; bottom: 20px; right: 20px; z-index: 99998; font-family: var(--fox-font); user-select: none; }
         .fox-trigger-wrapper { position: relative; display: flex; align-items: center; justify-content: center; }
         .fox-ping-ring { position: absolute; width: 100%; height: 100%; border-radius: 50%; background: rgba(249, 115, 22, 0.4); animation: foxPulsePing 3s infinite; pointer-events: none; z-index: 1; }
         @keyframes foxPulsePing { 0% { transform: scale(0.95); opacity: 0.8; } 70%, 100% { transform: scale(1.65); opacity: 0; } }
-        #fox-chat-trigger { position: relative; z-index: 2; width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(135deg, #ff7849 0%, #ea580c 100%); border: 1px solid rgba(255, 255, 255, 0.25); box-shadow: 0 6px 15px -4px rgba(234, 88, 12, 0.5); cursor: pointer; display: flex; align-items: center; justify-content: center; color: #fff; transition: transform 0.3s; }
+        #fox-chat-trigger { position: relative; z-index: 2; width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, #ff7849 0%, #ea580c 100%); border: 1px solid rgba(255, 255, 255, 0.25); box-shadow: 0 6px 15px -4px rgba(234, 88, 12, 0.5); cursor: pointer; display: flex; align-items: center; justify-content: center; color: #fff; transition: transform 0.3s; }
         #fox-chat-trigger:hover { transform: scale(1.08) translateY(-2px); }
-        .fox-trigger-icon { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; }
-        .fox-trigger-close-icon { display: none; width: 16px; height: 16px; }
+        .fox-trigger-icon { width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; }
+        .fox-trigger-icon svg { width: 100%; height: 100%; display: block; }
+        .fox-trigger-close-icon { display: none; width: 18px; height: 18px; }
         #fox-chat-widget.open #fox-chat-trigger { background: linear-gradient(135deg, #334155 0%, #1e293b 100%); border-color: rgba(255, 255, 255, 0.2); }
         #fox-chat-widget.open .fox-ping-ring, #fox-chat-widget.open .fox-trigger-fox-icon { display: none; }
         #fox-chat-widget.open .fox-trigger-close-icon { display: flex; transform: rotate(90deg); }
-        #fox-chat-box { position: absolute; bottom: 50px; right: 0; width: 320px; height: 420px; max-height: calc(100dvh - 80px); max-width: calc(100vw - 20px); background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.7); display: flex; flex-direction: column; overflow: hidden; transform-origin: bottom right; transform: scale(0.9) translateY(20px); opacity: 0; visibility: hidden; pointer-events: none; transition: all 0.3s; z-index: 10; }
+        
+        #fox-chat-box { position: absolute; bottom: 60px; right: 0; width: 330px; height: 450px; max-height: calc(100dvh - 100px); max-width: calc(100vw - 20px); background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.7); display: flex; flex-direction: column; overflow: hidden; transform-origin: bottom right; transform: scale(0.9) translateY(20px); opacity: 0; visibility: hidden; pointer-events: none; transition: all 0.3s; z-index: 10; }
         #fox-chat-widget.open #fox-chat-box { transform: scale(1) translateY(0); opacity: 1; visibility: visible; pointer-events: auto; }
-        .fox-chat-header { padding: 8px 10px; background: rgba(30, 41, 59, 0.8); border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; transition: background 0.3s; }
+        
+        .fox-chat-header { padding: 10px 12px; background: rgba(30, 41, 59, 0.8); border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; transition: background 0.3s; }
         .fox-header-left { display: flex; align-items: center; gap: 8px; }
-        .fox-avatar-container { width: 26px; height: 26px; border-radius: 6px; border: 1px solid rgba(249, 115, 22, 0.5); background: rgba(249, 115, 22, 0.1); display: flex; align-items: center; justify-content: center; padding: 2px; box-sizing: border-box; }
+        .fox-avatar-container { width: 28px; height: 28px; border-radius: 6px; border: 1px solid rgba(249, 115, 22, 0.5); background: rgba(249, 115, 22, 0.1); display: flex; align-items: center; justify-content: center; padding: 2px; box-sizing: border-box; }
         .fox-avatar-container svg, .fox-msg-avatar svg { width: 100%; height: 100%; display: block; }
         .fox-header-info { display: flex; flex-direction: column; gap: 1px; }
-        .fox-header-title { font-size: 13px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 4px; transition: color 0.3s; }
-        .fox-header-status { font-size: 9px; color: #94a3b8; display: flex; align-items: center; gap: 4px; }
+        .fox-header-title { font-size: 13.5px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 4px; transition: color 0.3s; }
+        .fox-header-status { font-size: 10px; color: #94a3b8; display: flex; align-items: center; gap: 4px; }
         .fox-status-dot { width: 5px; height: 5px; border-radius: 50%; background: #22c55e; animation: statusPulse 2s infinite ease-in-out; }
-        .fox-header-actions { display: flex; gap: 4px; }
+        .fox-header-actions { display: flex; gap: 6px; }
         .fox-btn-icon { width: 26px; height: 26px; border-radius: 4px; background: transparent; border: none; color: #94a3b8; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; transition: all 0.2s; }
         .fox-btn-icon:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
-        .fox-btn-icon svg { width: 15px; height: 15px; stroke-width: 2; }
-        #fox-chat-content { flex: 1; padding: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; user-select: text; scroll-behavior: smooth; }
-        .fox-msg-row { display: flex; gap: 6px; max-width: 100%; animation: foxMsgFadeIn 0.25s ease forwards; }
+        .fox-btn-icon svg { width: 16px; height: 16px; stroke-width: 2; }
+        
+        #fox-chat-content { flex: 1; padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; user-select: text; scroll-behavior: smooth; }
+        .fox-msg-row { display: flex; gap: 8px; max-width: 100%; animation: foxMsgFadeIn 0.25s ease forwards; }
         @keyframes foxMsgFadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
         .fox-msg-user { justify-content: flex-end; }
         .fox-msg-bot { justify-content: flex-start; }
-        .fox-msg-avatar { width: 22px; height: 22px; border-radius: 4px; background: rgba(30, 41, 59, 0.9); border: 1px solid rgba(249, 115, 22, 0.4); display: flex; align-items: center; justify-content: center; flex-shrink: 0; padding: 2px; }
+        .fox-msg-avatar { width: 24px; height: 24px; border-radius: 4px; background: rgba(30, 41, 59, 0.9); border: 1px solid rgba(249, 115, 22, 0.4); display: flex; align-items: center; justify-content: center; flex-shrink: 0; padding: 2px; }
         .fox-msg-group { display: flex; flex-direction: column; max-width: 85%; gap: 2px; }
         .fox-msg-user .fox-msg-group { align-items: flex-end; }
         .fox-msg-bot .fox-msg-group { align-items: flex-start; }
-        .fox-msg-bubble { padding: 6px 10px; border-radius: 8px; font-size: 11.5px; line-height: 1.4; word-wrap: break-word; max-width: 100%; transition: background 0.3s, color 0.3s, border 0.3s; }
+        .fox-msg-bubble { padding: 8px 12px; border-radius: 10px; font-size: 12px; line-height: 1.4; word-wrap: break-word; max-width: 100%; transition: background 0.3s, color 0.3s, border 0.3s; }
         .fox-msg-user .fox-msg-bubble { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); color: #ffffff; border-bottom-right-radius: 2px; font-weight: 500; }
         .fox-msg-bot .fox-msg-bubble { background: rgba(30, 41, 59, 0.85); color: #f1f5f9; border: 1px solid rgba(255, 255, 255, 0.1); border-top-left-radius: 2px; }
         .fox-msg-bot .fox-msg-bubble b { color: var(--fox-cyan); font-weight: 600; }
-        .fox-input-container { padding: 8px; background: rgba(15, 23, 42, 0.95); border-top: 1px solid rgba(255, 255, 255, 0.1); display: flex; flex-direction: column; gap: 4px; flex-shrink: 0; transition: background 0.3s, border 0.3s; }
-        .fox-input-box { display: flex; align-items: center; background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 12px; padding: 2px 4px 2px 8px; transition: background 0.3s, border 0.3s; }
-        #fox-chat-input { flex: 1; background: transparent; border: none; color: #f8fafc; font-size: 11.5px; outline: none; padding: 4px 0; transition: color 0.3s; }
-        .fox-send-btn { width: 24px; height: 24px; border-radius: 50%; background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); border: none; color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
+        
+        .fox-input-container { padding: 10px; background: rgba(15, 23, 42, 0.95); border-top: 1px solid rgba(255, 255, 255, 0.1); display: flex; flex-direction: column; gap: 4px; flex-shrink: 0; transition: background 0.3s, border 0.3s; }
+        .fox-input-box { display: flex; align-items: center; background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 20px; padding: 4px 6px 4px 12px; transition: background 0.3s, border 0.3s; }
+        #fox-chat-input { flex: 1; background: transparent; border: none; color: #f8fafc; font-size: 12px; outline: none; padding: 6px 0; transition: color 0.3s; }
+        .fox-send-btn { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); border: none; color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
         .fox-send-btn:disabled { background: rgba(255, 255, 255, 0.1) !important; color: #64748b !important; cursor: not-allowed; }
         .fox-send-btn svg { width: 12px; height: 12px; margin-left: 2px; }
-        .fox-footer-meta { font-size: 8px; color: var(--fox-text-muted); text-align: center; }
+        .fox-footer-meta { font-size: 9px; color: var(--fox-text-muted); text-align: center; }
         .fox-freq-tag { color: var(--fox-cyan); font-weight: 600; }
 
         /* THEME LIGHT MODE CHO CHATBOX */
@@ -261,7 +266,11 @@
         #fox-chat-box.light-theme #fox-chat-input { color: #0f172a; }
         #fox-chat-box.light-theme .fox-send-btn:disabled { background: #e2e8f0 !important; color: #94a3b8 !important; }
 
-        @media (max-width: 600px) { #fox-chat-widget { bottom: 10px; right: 10px; } #fox-chat-box { width: calc(100vw - 20px); height: calc(100dvh - 60px); bottom: 45px; } }
+        /* BẢN VÁ LỖI HIỂN THỊ TRÊN MOBILE (SAFARI/iOS) */
+        @media (max-width: 600px) { 
+            #fox-chat-widget { bottom: 95px; right: 15px; } 
+            #fox-chat-box { width: calc(100vw - 30px); height: calc(100dvh - 160px); bottom: 55px; } 
+        }
     </style>
 </head>
 
@@ -305,7 +314,6 @@
                 <button id="pauseButton" class="btn-green" disabled>Đo / Dừng</button>
                 <button id="resetButton" class="btn-orange">Làm mới</button>
                 <button id="btnAnalysis" class="btn-slate" disabled>Xử lý nguồn âm</button>
-                <button id="saveButton" class="btn-teal" disabled>Chụp ảnh</button>
                 <button id="fullscreenButton" class="btn-slate">Mở rộng</button>
             </div>
 
@@ -402,8 +410,8 @@
         <div class="fox-trigger-wrapper">
             <div class="fox-ping-ring"></div>
             <button id="fox-chat-trigger" onclick="toggleChat()">
-                <span class="fox-trigger-icon fox-trigger-fox-icon">
-                    <svg viewBox="0 0 100 100" fill="none"><polygon points="22,12 10,48 36,40" fill="#ff7a30"/><polygon points="23,19 16,44 32,38" fill="#1e293b"/><path d="M 19 36 Q 23 32 28 34" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round"/><polygon points="78,12 64,40 90,48" fill="#ff7a30"/><polygon points="77,19 68,38 84,44" fill="#1e293b"/><path d="M 81 36 Q 77 32 72 34" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round"/><polygon points="50,22 36,40 50,46" fill="#ff8f4a"/><polygon points="50,22 50,46 64,40" fill="#ff7a30"/><polygon points="36,40 10,48 20,68 38,58" fill="#d4380d"/><polygon points="64,40 38,58 50,46" fill="#e04006"/><polygon points="64,40 50,46 62,58" fill="#d4380d"/><polygon points="64,40 90,48 80,68 62,58" fill="#d4380d"/><polygon points="20,68 12,74 26,76 34,68" fill="#e2e8f0"/><polygon points="80,68 88,74 74,76 66,68" fill="#cbd5e1"/><polygon points="38,58 50,46 50,78 36,68" fill="#ff7a30"/><polygon points="62,58 50,46 50,78 64,68" fill="#e04006"/><polygon points="50,78 36,68 44,88 50,88" fill="#f8fafc"/><polygon points="50,78 64,68 56,88 50,88" fill="#e2e8f0"/><polygon points="50,88 45,82 55,82" fill="#0f172a"/><polygon points="25,48 50,54 75,48 71,59 50,65 29,59" fill="#090d16" stroke="rgba(56,189,248,0.5)" stroke-width="0.9"/><circle cx="34.5" cy="48" r="1.5" fill="#ffffff"/><circle cx="44.5" cy="60" r="1.5" fill="#ffffff"/><circle cx="54.5" cy="48" r="1.5" fill="#ffffff"/><circle cx="64.5" cy="60" r="1.5" fill="#ffffff"/></svg>
+                <span class="fox-trigger-icon fox-trigger-fox-icon" id="trigger-fox-icon-container">
+                    <!-- Icon Cáo sẽ được render qua JS -->
                 </span>
                 <span class="fox-trigger-icon fox-trigger-close-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span>
             </button>
@@ -411,9 +419,7 @@
         <div id="fox-chat-box">
             <div class="fox-chat-header">
                 <div class="fox-header-left">
-                    <div class="fox-avatar-container">
-                        <svg viewBox="0 0 100 100" fill="none"><polygon points="22,12 10,48 36,40" fill="#ff7a30"/><polygon points="23,19 16,44 32,38" fill="#1e293b"/><path d="M 19 36 Q 23 32 28 34" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round"/><polygon points="78,12 64,40 90,48" fill="#ff7a30"/><polygon points="77,19 68,38 84,44" fill="#1e293b"/><path d="M 81 36 Q 77 32 72 34" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round"/><polygon points="50,22 36,40 50,46" fill="#ff8f4a"/><polygon points="50,22 50,46 64,40" fill="#ff7a30"/><polygon points="36,40 10,48 20,68 38,58" fill="#d4380d"/><polygon points="64,40 38,58 50,46" fill="#e04006"/><polygon points="64,40 50,46 62,58" fill="#d4380d"/><polygon points="64,40 90,48 80,68 62,58" fill="#d4380d"/><polygon points="20,68 12,74 26,76 34,68" fill="#e2e8f0"/><polygon points="80,68 88,74 74,76 66,68" fill="#cbd5e1"/><polygon points="38,58 50,46 50,78 36,68" fill="#ff7a30"/><polygon points="62,58 50,46 50,78 64,68" fill="#e04006"/><polygon points="50,78 36,68 44,88 50,88" fill="#f8fafc"/><polygon points="50,78 64,68 56,88 50,88" fill="#e2e8f0"/><polygon points="50,88 45,82 55,82" fill="#0f172a"/><polygon points="25,48 50,54 75,48 71,59 50,65 29,59" fill="#090d16" stroke="rgba(56,189,248,0.5)" stroke-width="0.9"/><circle cx="34.5" cy="48" r="1.5" fill="#ffffff"/><circle cx="44.5" cy="60" r="1.5" fill="#ffffff"/><circle cx="54.5" cy="48" r="1.5" fill="#ffffff"/><circle cx="64.5" cy="60" r="1.5" fill="#ffffff"/></svg>
-                    </div>
+                    <div class="fox-avatar-container" id="header-fox-icon-container"></div>
                     <div class="fox-header-info">
                         <div class="fox-header-title">FOX-Lab AI</div>
                         <div class="fox-header-status"><span class="fox-status-dot"></span><span id="foxStatusText">Trực tuyến</span></div>
@@ -428,9 +434,7 @@
             </div>
             <div id="fox-chat-content">
                 <div class="fox-msg-row fox-msg-bot">
-                    <div class="fox-msg-avatar">
-                        <svg viewBox="0 0 100 100" fill="none"><polygon points="22,12 10,48 36,40" fill="#ff7a30"/><polygon points="23,19 16,44 32,38" fill="#1e293b"/><path d="M 19 36 Q 23 32 28 34" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round"/><polygon points="78,12 64,40 90,48" fill="#ff7a30"/><polygon points="77,19 68,38 84,44" fill="#1e293b"/><path d="M 81 36 Q 77 32 72 34" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round"/><polygon points="50,22 36,40 50,46" fill="#ff8f4a"/><polygon points="50,22 50,46 64,40" fill="#ff7a30"/><polygon points="36,40 10,48 20,68 38,58" fill="#d4380d"/><polygon points="64,40 38,58 50,46" fill="#e04006"/><polygon points="64,40 50,46 62,58" fill="#d4380d"/><polygon points="64,40 90,48 80,68 62,58" fill="#d4380d"/><polygon points="20,68 12,74 26,76 34,68" fill="#e2e8f0"/><polygon points="80,68 88,74 74,76 66,68" fill="#cbd5e1"/><polygon points="38,58 50,46 50,78 36,68" fill="#ff7a30"/><polygon points="62,58 50,46 50,78 64,68" fill="#e04006"/><polygon points="50,78 36,68 44,88 50,88" fill="#f8fafc"/><polygon points="50,78 64,68 56,88 50,88" fill="#e2e8f0"/><polygon points="50,88 45,82 55,82" fill="#0f172a"/><polygon points="25,48 50,54 75,48 71,59 50,65 29,59" fill="#090d16" stroke="rgba(56,189,248,0.5)" stroke-width="0.9"/><circle cx="34.5" cy="48" r="1.5" fill="#ffffff"/><circle cx="44.5" cy="60" r="1.5" fill="#ffffff"/><circle cx="54.5" cy="48" r="1.5" fill="#ffffff"/><circle cx="64.5" cy="60" r="1.5" fill="#ffffff"/></svg>
-                    </div>
+                    <div class="fox-msg-avatar" id="msg-fox-icon-container"></div>
                     <div class="fox-msg-group"><div class="fox-msg-bubble">Chào em! Thầy là <strong>FOX-Lab AI</strong>. Em có câu hỏi nào về dao động ký hoặc bài Sóng âm không?</div></div>
                 </div>
             </div>
@@ -445,54 +449,45 @@
     </div>
 
     <script>
-        // HẰNG SỐ CHỨA MÃ SVG AVATAR ĐỂ TRÁNH LỖI HIỂN THỊ TRÊN ĐIỆN THOẠI
+        // HẰNG SỐ MÃ SVG AVATAR ĐỂ TRÁNH LỖI HIỂN THỊ TRÊN MỌI TRÌNH DUYỆT (KỂ CẢ SAFARI MOBILE)
         const FOX_AVATAR_SVG = `<svg viewBox="0 0 100 100" fill="none"><polygon points="22,12 10,48 36,40" fill="#ff7a30"/><polygon points="23,19 16,44 32,38" fill="#1e293b"/><path d="M 19 36 Q 23 32 28 34" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round"/><polygon points="78,12 64,40 90,48" fill="#ff7a30"/><polygon points="77,19 68,38 84,44" fill="#1e293b"/><path d="M 81 36 Q 77 32 72 34" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round"/><polygon points="50,22 36,40 50,46" fill="#ff8f4a"/><polygon points="50,22 50,46 64,40" fill="#ff7a30"/><polygon points="36,40 10,48 20,68 38,58" fill="#d4380d"/><polygon points="64,40 38,58 50,46" fill="#e04006"/><polygon points="64,40 50,46 62,58" fill="#d4380d"/><polygon points="64,40 90,48 80,68 62,58" fill="#d4380d"/><polygon points="20,68 12,74 26,76 34,68" fill="#e2e8f0"/><polygon points="80,68 88,74 74,76 66,68" fill="#cbd5e1"/><polygon points="38,58 50,46 50,78 36,68" fill="#ff7a30"/><polygon points="62,58 50,46 50,78 64,68" fill="#e04006"/><polygon points="50,78 36,68 44,88 50,88" fill="#f8fafc"/><polygon points="50,78 64,68 56,88 50,88" fill="#e2e8f0"/><polygon points="50,88 45,82 55,82" fill="#0f172a"/><polygon points="25,48 50,54 75,48 71,59 50,65 29,59" fill="#090d16" stroke="rgba(56,189,248,0.5)" stroke-width="0.9"/><circle cx="34.5" cy="48" r="1.5" fill="#ffffff"/><circle cx="44.5" cy="60" r="1.5" fill="#ffffff"/><circle cx="54.5" cy="48" r="1.5" fill="#ffffff"/><circle cx="64.5" cy="60" r="1.5" fill="#ffffff"/></svg>`;
 
         window.addEventListener('DOMContentLoaded', () => {
+            // Render SVG cho Icon Cáo bằng Javascript để không bị lỗi Shadow DOM của Safari
+            document.getElementById('trigger-fox-icon-container').innerHTML = FOX_AVATAR_SVG;
+            document.getElementById('header-fox-icon-container').innerHTML = FOX_AVATAR_SVG;
+            document.getElementById('msg-fox-icon-container').innerHTML = FOX_AVATAR_SVG;
+
+            // SMART QR CODE
             const qrImage = document.getElementById('qrImage');
             if (qrImage) {
-                // TÍCH HỢP SMART QR
                 let currentUrl = window.location.href.split('?')[0]; 
-                if (currentUrl.startsWith('file://') || currentUrl.includes('localhost')) {
-                    currentUrl = 'https://tencuathay.github.io/DaoDongKy'; 
-                }
-                let versionToken = new Date().getTime(); 
-                let smartUrl = `${currentUrl}?v=${versionToken}`;
-                qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(smartUrl)}`;
+                if (currentUrl.startsWith('file://') || currentUrl.includes('localhost')) currentUrl = 'https://tencuathay.github.io/DaoDongKy'; 
+                qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(currentUrl + '?v=' + Date.now())}`;
             }
 
             const speedGroup = document.getElementById('groupSpeed');
-            const modeVal = document.getElementById('modeSelect').value;
-            if (modeVal === 'continuous') speedGroup.style.display = 'block'; else speedGroup.style.display = 'none';
+            if (document.getElementById('modeSelect').value === 'continuous') speedGroup.style.display = 'block'; else speedGroup.style.display = 'none';
             document.getElementById('cardChannelB').style.display = (getActiveChannelMode() === '2') ? 'flex' : 'none';
+            
             resizeCanvas(); updateUIState(); drawFrame(true);
         });
 
+        // UI KẾT NỐI BIẾN
         const btnStartA = document.getElementById('btnStartA'), btnStartB = document.getElementById('btnStartB');
         const pauseButton = document.getElementById('pauseButton'), resetButton = document.getElementById('resetButton');
-        const saveButton = document.getElementById('saveButton'), fullscreenButton = document.getElementById('fullscreenButton');
         const btnAnalysis = document.getElementById('btnAnalysis'), infoText = document.getElementById('infoText');
         const channelModeSelect = document.getElementById('channelModeSelect'), modeSelect = document.getElementById('modeSelect'), speedSelect = document.getElementById('speedSelect');
         const micSelectA = document.getElementById('micSelectA'), micSelectB = document.getElementById('micSelectB');
         const canvas = document.getElementById('oscilloscope'), canvasCtx = canvas.getContext('2d');
-        const settingsDropdown = document.getElementById('settingsDropdown'), settingsToggle = document.getElementById('settingsToggle'), settingsMenu = document.getElementById('settingsMenu');
+        const settingsDropdown = document.getElementById('settingsDropdown'), settingsMenu = document.getElementById('settingsMenu');
 
-        let isInitialized = true; 
-        
-        let isTwoSourceModalOpen = false;
-        let tsViewMode = 'overlay'; 
-        let isTsPaused = false;
-        let showTsResults = false;
-        let showTsEquations = false;
-        
-        let snapDataA = new Float32Array(0);
-        let snapDataB = new Float32Array(0);
-        let currentCalcFreqA = 440;
-        let currentCalcFreqB = 440;
-        let currentPhaseRad = 0;
-        let currentPhaseDeg = 0;
+        let isInitialized = true, isTwoSourceModalOpen = false, tsViewMode = 'overlay', isTsPaused = false, showTsResults = false, showTsEquations = false;
+        let snapDataA = new Float32Array(0), snapDataB = new Float32Array(0);
+        let currentCalcFreqA = 440, currentCalcFreqB = 440, currentPhaseRad = 0, currentPhaseDeg = 0;
 
-        settingsToggle.addEventListener('click', (e) => { e.stopPropagation(); settingsDropdown.classList.toggle('open'); });
+        // XỬ LÝ MENU CÀI ĐẶT
+        document.getElementById('settingsToggle').addEventListener('click', (e) => { e.stopPropagation(); settingsDropdown.classList.toggle('open'); });
         document.addEventListener('click', (e) => { if (!settingsDropdown.contains(e.target)) settingsDropdown.classList.remove('open'); });
         settingsMenu.querySelectorAll('.settings-group-header').forEach(header => {
             header.addEventListener('click', (e) => {
@@ -510,15 +505,13 @@
             });
         });
 
-        let audioCtx; const BUFFER_SECONDS = 10;
+        // XỬ LÝ ÂM THANH
+        let audioCtx, sampleRate = 48000, isPaused = true, isContinuousMode = false, stopTimer;
         const channelConfig = {
             A: { stream: null, source: null, processor: null, filterHP: null, filterLP: null, dummy: null, data: null, index: 0, color: '#dc2626', active: false },
             B: { stream: null, source: null, processor: null, filterHP: null, filterLP: null, dummy: null, data: null, index: 0, color: '#2563eb', active: false }
         };
-
-        let sampleRate = 48000, isPaused = true, isContinuousMode = false, stopTimer;
-        let detectedFrequency = 0, lockedFrequency = 440, lastCorrelateTime = 0, isUserZoomed = false;
-        let totalTimeOnScreen = 5 * (1.0 / 440), currentZoomY = 2.0, targetFPS = 60, lastDrawTime = performance.now();
+        let detectedFrequency = 0, lockedFrequency = 440, lastCorrelateTime = 0, isUserZoomed = false, totalTimeOnScreen = 5 * (1.0 / 440), currentZoomY = 2.0, targetFPS = 60, lastDrawTime = performance.now();
 
         function getActiveChannelMode() { return channelModeSelect.value || '1'; }
         
@@ -534,25 +527,13 @@
         }
 
         function updateAnalysisButtonState() {
-            if (!isInitialized) { btnAnalysis.disabled = true; btnAnalysis.className = 'btn-slate'; return; }
             const mode = getActiveChannelMode(), activeChannels = (channelConfig.A.active ? 1 : 0) + (channelConfig.B.active ? 1 : 0);
-            if (mode === '2' && activeChannels === 2) {
-                btnAnalysis.disabled = false; btnAnalysis.textContent = "Xử lý nguồn âm"; btnAnalysis.className = 'btn-pink'; 
-            } else if (mode === '1' && channelConfig.A.active) {
-                btnAnalysis.disabled = !isPaused; btnAnalysis.textContent = "Phân tích FFT"; btnAnalysis.className = isPaused ? 'btn-purple' : 'btn-slate';
-            } else {
-                btnAnalysis.disabled = true; btnAnalysis.textContent = "Xử lý nguồn âm"; btnAnalysis.className = 'btn-slate'; 
-            }
+            if (mode === '2' && activeChannels === 2) { btnAnalysis.disabled = false; btnAnalysis.textContent = "Xử lý nguồn âm"; btnAnalysis.className = 'btn-pink'; } 
+            else if (mode === '1' && channelConfig.A.active) { btnAnalysis.disabled = !isPaused; btnAnalysis.textContent = "Phân tích FFT"; btnAnalysis.className = isPaused ? 'btn-purple' : 'btn-slate'; } 
+            else { btnAnalysis.disabled = true; btnAnalysis.textContent = "Xử lý nguồn âm"; btnAnalysis.className = 'btn-slate'; }
         }
 
         btnAnalysis.addEventListener('click', () => { const mode = getActiveChannelMode(); if (mode === '1') openFFTModal(); else if (mode === '2') openTwoSourceModal(); });
-
-        document.addEventListener('visibilitychange', () => {
-            if (document.hidden && !isPaused) {
-                isPaused = true; clearTimeout(stopTimer); pauseButton.textContent = "Đo / Dừng"; pauseButton.className = "btn-green";
-                infoText.innerHTML = "Đã tạm dừng do chuyển ứng dụng."; infoText.style.color = "#ea580c"; updateUIState(); drawFrame(); 
-            }
-        });
 
         speedSelect.addEventListener('change', (e) => { targetFPS = (e.target.value === 'slow') ? 15 : 60; });
         modeSelect.addEventListener('change', (e) => {
@@ -563,36 +544,33 @@
         });
         
         channelModeSelect.addEventListener('change', () => {
-            const mode = getActiveChannelMode();
-            if (mode === '1') { document.getElementById('cardChannelB').style.display = 'none'; stopAudioChannel('B'); } 
+            if (getActiveChannelMode() === '1') { document.getElementById('cardChannelB').style.display = 'none'; stopAudioChannel('B'); } 
             else { document.getElementById('cardChannelB').style.display = 'flex'; }
             updateUIState(); drawFrame();
         });
 
-        btnStartA.addEventListener('click', async () => { if (!isInitialized) return; if (channelConfig.A.active) { stopAudioChannel('A'); updateUIState(); drawFrame(); } else { await initAudioChannel('A', micSelectA.value || null); } });
-        btnStartB.addEventListener('click', async () => { if (!isInitialized) return; if (channelConfig.B.active) { stopAudioChannel('B'); updateUIState(); drawFrame(); } else { await initAudioChannel('B', micSelectB.value || null); } });
+        btnStartA.addEventListener('click', async () => { if (channelConfig.A.active) { stopAudioChannel('A'); updateUIState(); drawFrame(); } else { await initAudioChannel('A', micSelectA.value); } });
+        btnStartB.addEventListener('click', async () => { if (channelConfig.B.active) { stopAudioChannel('B'); updateUIState(); drawFrame(); } else { await initAudioChannel('B', micSelectB.value); } });
         micSelectA.addEventListener('change', (e) => { if (channelConfig.A.active) initAudioChannel('A', e.target.value); });
         micSelectB.addEventListener('change', (e) => { if (channelConfig.B.active) initAudioChannel('B', e.target.value); });
 
         function resizeCanvas() {
-            const dpr = window.devicePixelRatio || 1, cssWidth = canvas.clientWidth || window.innerWidth, cssHeight = canvas.clientHeight || (window.innerHeight - 150);
+            const dpr = window.devicePixelRatio || 1, cssWidth = canvas.clientWidth, cssHeight = canvas.clientHeight;
             canvas.width = Math.round(cssWidth * dpr); canvas.height = Math.round(cssHeight * dpr);
             canvasCtx.setTransform(dpr, 0, 0, dpr, 0, 0); 
-            if(isTwoSourceModalOpen) {
-                const container = document.getElementById('tsContainer'); const canv = document.getElementById('twoSourceCanvas');
-                if(container && canv) { canv.width = container.clientWidth - 12; canv.height = container.clientHeight - 12; }
-            }
+            if(isTwoSourceModalOpen) { const container = document.getElementById('tsContainer'), canv = document.getElementById('twoSourceCanvas'); if(container && canv) { canv.width = container.clientWidth - 12; canv.height = container.clientHeight - 12; } }
             drawFrame();
         }
         window.addEventListener('resize', resizeCanvas);
+        
+        // ĐIỀU CHỈNH CHUỘT VÀ MÀN HÌNH CẢM ỨNG
         let initialPinchDistX = 0, initialPinchDistY = 0, startDuration = totalTimeOnScreen, startZoomY = currentZoomY;
-        canvas.addEventListener('touchstart', (e) => { if (e.touches.length === 2) { e.preventDefault(); if (!isPaused) return; let dx = Math.max(Math.abs(e.touches[0].clientX - e.touches[1].clientX), 10), dy = Math.max(Math.abs(e.touches[0].clientY - e.touches[1].clientY), 10); initialPinchDistX = dx; initialPinchDistY = dy; startDuration = totalTimeOnScreen; startZoomY = currentZoomY; } }, { passive: false });
-        canvas.addEventListener('touchmove', (e) => { if (e.touches.length === 2) { e.preventDefault(); if (!isPaused) return; let dx = Math.max(Math.abs(e.touches[0].clientX - e.touches[1].clientX), 10), dy = Math.max(Math.abs(e.touches[0].clientY - e.touches[1].clientY), 10); isUserZoomed = true; totalTimeOnScreen = Math.max(0.002, Math.min(startDuration * (initialPinchDistX / dx), 2.4)); currentZoomY = Math.max(0.5, Math.min(startZoomY * (dy / initialPinchDistY), 10.0)); if (isPaused) drawFrame(); } }, { passive: false });
-        canvas.addEventListener('wheel', (e) => { e.preventDefault(); if (!isPaused) return; isUserZoomed = true; if (e.deltaY > 0) { totalTimeOnScreen *= 1.1; currentZoomY /= 1.1; } else { totalTimeOnScreen /= 1.1; currentZoomY *= 1.1; } totalTimeOnScreen = Math.max(0.002, Math.min(totalTimeOnScreen, 2.4)); currentZoomY = Math.max(0.5, Math.min(currentZoomY, 10.0)); if (isPaused) drawFrame(); }, { passive: false });
-        fullscreenButton.addEventListener('click', () => { let elem = document.documentElement; let isFullscreen = document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement; if (!isFullscreen) { if (elem.requestFullscreen) elem.requestFullscreen().catch(()=>alert("Lỗi xoay màn hình!")); else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen(); else if (elem.msRequestFullscreen) elem.msRequestFullscreen(); } else { if (document.exitFullscreen) document.exitFullscreen(); else if (document.webkitExitFullscreen) document.webkitExitFullscreen(); else if (document.msExitFullscreen) document.msExitFullscreen(); } });
-        function updateFullscreenButton() { let isFullscreen = document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement; fullscreenButton.textContent = !isFullscreen ? "Thu nhỏ" : "Mở rộng"; setTimeout(resizeCanvas, 100); }
-        document.addEventListener('fullscreenchange', updateFullscreenButton); document.addEventListener('webkitfullscreenchange', updateFullscreenButton);
+        canvas.addEventListener('touchstart', (e) => { if (e.touches.length === 2 && isPaused) { e.preventDefault(); initialPinchDistX = Math.max(Math.abs(e.touches[0].clientX - e.touches[1].clientX), 10); initialPinchDistY = Math.max(Math.abs(e.touches[0].clientY - e.touches[1].clientY), 10); startDuration = totalTimeOnScreen; startZoomY = currentZoomY; } }, { passive: false });
+        canvas.addEventListener('touchmove', (e) => { if (e.touches.length === 2 && isPaused) { e.preventDefault(); let dx = Math.max(Math.abs(e.touches[0].clientX - e.touches[1].clientX), 10), dy = Math.max(Math.abs(e.touches[0].clientY - e.touches[1].clientY), 10); isUserZoomed = true; totalTimeOnScreen = Math.max(0.002, Math.min(startDuration * (initialPinchDistX / dx), 2.4)); currentZoomY = Math.max(0.5, Math.min(startZoomY * (dy / initialPinchDistY), 10.0)); drawFrame(); } }, { passive: false });
+        canvas.addEventListener('wheel', (e) => { if (!isPaused) return; e.preventDefault(); isUserZoomed = true; if (e.deltaY > 0) { totalTimeOnScreen *= 1.1; currentZoomY /= 1.1; } else { totalTimeOnScreen /= 1.1; currentZoomY *= 1.1; } totalTimeOnScreen = Math.max(0.002, Math.min(totalTimeOnScreen, 2.4)); currentZoomY = Math.max(0.5, Math.min(currentZoomY, 10.0)); drawFrame(); }, { passive: false });
+        document.getElementById('fullscreenButton').addEventListener('click', () => { let elem = document.documentElement; if (!document.fullscreenElement) elem.requestFullscreen().catch(()=>{}); else document.exitFullscreen(); });
 
+        // CÁC HÀM TOÁN HỌC (ĐÃ ĐƯỢC PHỤC HỒI ĐẦY ĐỦ)
         function autoCorrelate(buffer, sampleRate) {
             let SIZE = buffer.length, sumSq = 0; for (let i = 0; i < SIZE; i++) sumSq += buffer[i] * buffer[i];
             let rootMeanSq = Math.sqrt(sumSq / SIZE); if (rootMeanSq < 0.02) return -1;
@@ -621,6 +599,14 @@
                 if (vPrev <= 0 && vCurr > 0) { let iBack = ((baseEnd - offset - 4) % len + len) % len; if (cfg.data[iBack] < -hysteresis || (vCurr - vPrev) > peak * 0.02) return offset; }
             }
             return 0;
+        }
+
+        function computeFFT(realArray) {
+            let n = realArray.length, p = 1; while(p < n) p *= 2;
+            let x = new Float32Array(p); x.set(realArray); let y = new Float32Array(p); let j = 0;
+            for (let i = 0; i < p - 1; i++) { if (i < j) { let tx = x[i]; x[i] = x[j]; x[j] = tx; } let m = p >> 1; while (m >= 1 && j >= m) { j -= m; m >>= 1; } j += m; }
+            for (let l = 1; l < p; l <<= 1) { let wk1r = Math.cos(Math.PI / l), wk1i = -Math.sin(Math.PI / l); for (let i = 0; i < p; i += l << 1) { let wr = 1, wi = 0; for (let k = 0; k < l; k++) { let tr = wr * x[i + k + l] - wi * y[i + k + l], ti = wr * y[i + k + l] + wi * x[i + k + l]; x[i + k + l] = x[i + k] - tr; y[i + k + l] = y[i + k] - ti; x[i + k] += tr; y[i + k] += ti; let wtemp = wr; wr = wr * wk1r - wi * wk1i; wi = wtemp * wk1i + wi * wk1r; } } }
+            let magnitudes = new Float32Array(p / 2); for(let i=0; i<p/2; i++) { magnitudes[i] = Math.sqrt(x[i]*x[i] + y[i]*y[i]) / (p/2); } return magnitudes;
         }
 
         function drawLabelWithPill(ctx, text, x, y, align = 'center', baseline = 'top', textColor = '#1e293b') {
@@ -665,36 +651,27 @@
         }
 
         function updateUIState() {
-            if (!isInitialized) {
-                btnStartA.disabled = true; btnStartB.disabled = true; btnStartA.textContent = "Kênh A (Khóa)"; btnStartB.textContent = "Kênh B (Khóa)"; btnStartA.className = "btn-slate"; btnStartB.className = "btn-slate";
-                pauseButton.disabled = true; saveButton.disabled = true; resetButton.disabled = false;
-                infoText.innerHTML = "Đã khóa an toàn. Nhấn <span class='info-badge'>Làm mới</span> để kích hoạt."; infoText.style.color = "#dc2626"; updateAnalysisButtonState(); return;
-            }
             if (channelConfig.A.active) { btnStartA.textContent = "Kênh A (Hoạt động)"; btnStartA.className = "btn-red"; } else { btnStartA.textContent = "Kênh A (Khóa)"; btnStartA.className = "btn-slate"; } btnStartA.disabled = false;
             if (channelConfig.B.active) { btnStartB.textContent = "Kênh B (Hoạt động)"; btnStartB.className = "btn-blue"; } else { btnStartB.textContent = "Kênh B (Khóa)"; btnStartB.className = "btn-slate"; } btnStartB.disabled = false;
-            if (channelConfig.A.active || channelConfig.B.active) { pauseButton.disabled = false; resetButton.disabled = false; saveButton.disabled = false; if (isPaused) { infoText.innerHTML = "Đã kết nối. Bấm <span class='info-badge'>Đo / Dừng</span> để khảo sát."; infoText.style.color = "#0284c7"; } } 
-            else { pauseButton.disabled = true; resetButton.disabled = false; saveButton.disabled = true; infoText.innerHTML = "Nhấn vào <span class='info-badge'>Kênh A</span> hoặc <span class='info-badge'>Kênh B</span> để bật mic."; infoText.style.color = "#0284c7"; }
+            if (channelConfig.A.active || channelConfig.B.active) { pauseButton.disabled = false; resetButton.disabled = false; if (isPaused) { infoText.innerHTML = "Đã kết nối. Bấm <span class='info-badge'>Đo / Dừng</span> để khảo sát."; infoText.style.color = "#0284c7"; } } 
+            else { pauseButton.disabled = true; resetButton.disabled = false; infoText.innerHTML = "Nhấn vào <span class='info-badge'>Kênh A</span> hoặc <span class='info-badge'>Kênh B</span> để bật mic."; infoText.style.color = "#0284c7"; }
             updateAnalysisButtonState();
         }
 
         async function initAudioChannel(channelId, deviceId = null) {
-            if (!isInitialized) return;
             if (getActiveChannelMode() === '1') stopAudioChannel((channelId === 'A') ? 'B' : 'A');
-            if (!audioCtx) { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); sampleRate = audioCtx.sampleRate; channelConfig.A.data = new Float32Array(sampleRate * BUFFER_SECONDS); channelConfig.B.data = new Float32Array(sampleRate * BUFFER_SECONDS); }
+            if (!audioCtx) { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); sampleRate = audioCtx.sampleRate; channelConfig.A.data = new Float32Array(sampleRate * 10); channelConfig.B.data = new Float32Array(sampleRate * 10); }
             stopAudioChannel(channelId); const cfg = channelConfig[channelId];
-            if (!cfg.data || cfg.data.length !== sampleRate * BUFFER_SECONDS) cfg.data = new Float32Array(sampleRate * BUFFER_SECONDS);
-            const constraints = { audio: deviceId ? { deviceId: { exact: deviceId } } : true };
+            if (!cfg.data || cfg.data.length !== sampleRate * 10) cfg.data = new Float32Array(sampleRate * 10);
             try {
-                cfg.stream = await navigator.mediaDevices.getUserMedia(constraints); cfg.source = audioCtx.createMediaStreamSource(cfg.stream);
+                cfg.stream = await navigator.mediaDevices.getUserMedia({ audio: deviceId ? { deviceId: { exact: deviceId } } : true });
+                cfg.source = audioCtx.createMediaStreamSource(cfg.stream);
                 cfg.filterHP = audioCtx.createBiquadFilter(); cfg.filterHP.frequency.value = 80; cfg.filterHP.type = 'highpass';
                 cfg.filterLP = audioCtx.createBiquadFilter(); cfg.filterLP.frequency.value = 3000; cfg.filterLP.type = 'lowpass';
                 cfg.processor = audioCtx.createScriptProcessor(4096, 1, 1);
                 
                 cfg.processor.onaudioprocess = function (e) { 
-                    if (!isPaused && cfg.active && !isTwoSourceModalOpen) { 
-                        let input = e.inputBuffer.getChannelData(0), len = cfg.data.length; 
-                        for (let i = 0; i < input.length; i++) { cfg.data[cfg.index % len] = input[i]; cfg.index++; } 
-                    } else if (!isPaused && cfg.active && isTwoSourceModalOpen && !isTsPaused) { 
+                    if (!isPaused && cfg.active && (!isTwoSourceModalOpen || !isTsPaused)) { 
                         let input = e.inputBuffer.getChannelData(0), len = cfg.data.length; 
                         for (let i = 0; i < input.length; i++) { cfg.data[cfg.index % len] = input[i]; cfg.index++; } 
                     } 
@@ -716,7 +693,7 @@
         }
 
         pauseButton.addEventListener('click', () => {
-            if (!isInitialized) return; if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+            if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
             if (isPaused) {
                 isPaused = false; channelConfig.A.index = 0; if (channelConfig.A.data) channelConfig.A.data.fill(0); channelConfig.B.index = 0; if (channelConfig.B.data) channelConfig.B.data.fill(0);
                 isUserZoomed = false; detectedFrequency = 0; lockedFrequency = 440; totalTimeOnScreen = 5 * (1.0 / lockedFrequency);
@@ -729,12 +706,11 @@
         });
 
         resetButton.addEventListener('click', () => {
-            isInitialized = true; isPaused = true; clearTimeout(stopTimer); pauseButton.textContent = "Đo / Dừng"; pauseButton.className = "btn-green";
+            isPaused = true; clearTimeout(stopTimer); pauseButton.textContent = "Đo / Dừng"; pauseButton.className = "btn-green";
             if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
             if (channelConfig.A.data) { channelConfig.A.data.fill(0); channelConfig.A.index = 0; } if (channelConfig.B.data) { channelConfig.B.data.fill(0); channelConfig.B.index = 0; }
             isContinuousMode = (modeSelect.value === 'continuous'); isUserZoomed = false; detectedFrequency = 0; lockedFrequency = 440; totalTimeOnScreen = 5 * (1.0 / 440); currentZoomY = 2.0; updateUIState(); drawFrame(true);
         });
-        saveButton.addEventListener('click', () => { if (!isInitialized) return; const link = document.createElement('a'); link.download = `DoThi_SongAm.png`; link.href = canvas.toDataURL('image/png'); link.click(); });
 
         function drawFrame(isReset = false) {
             if (audioCtx && !isPaused && (channelConfig.A.index > 2048 || channelConfig.B.index > 2048)) {
@@ -804,61 +780,6 @@
         }
 
         /* --- XỬ LÝ 2 NGUỒN ÂM LIVE --- */
-        function openTwoSourceModal() {
-            if (!isInitialized || !channelConfig.A.active || !channelConfig.B.active) return;
-            document.getElementById('twoSourceModalOverlay').style.display = 'flex';
-            isTwoSourceModalOpen = true; 
-            
-            const btnPause = document.getElementById('btnTsPause');
-            const btnResult = document.getElementById('btnTsResult');
-            
-            showTsResults = false; showTsEquations = false;
-            document.getElementById('hudResults').style.display = 'none'; 
-            document.getElementById('hudEquations').style.display = 'none';
-            btnResult.className = "btn-slate";
-            document.getElementById('btnTsEquation').className = "btn-slate";
-
-            if (isContinuousMode) {
-                isTsPaused = false; btnPause.style.display = "inline-block"; btnPause.innerHTML = "⏸ Dừng"; btnPause.className = "btn-orange"; btnResult.style.display = "none"; 
-            } else {
-                isTsPaused = true; btnPause.style.display = "none"; btnResult.style.display = "inline-block"; 
-                const samplesNeeded = Math.floor(totalTimeOnScreen * sampleRate);
-                let sharedOffset = findZeroCrossingOffset(channelConfig.A, channelConfig.A.index, samplesNeeded);
-                snapDataA = extractWindowData(channelConfig.A, samplesNeeded, sharedOffset);
-                snapDataB = extractWindowData(channelConfig.B, samplesNeeded, sharedOffset);
-            }
-            const container = document.getElementById('tsContainer'), canv = document.getElementById('twoSourceCanvas');
-            canv.width = container.clientWidth - 12; canv.height = container.clientHeight - 12;
-            setTsMode('overlay'); if (isPaused || isTsPaused) calculatePhaseAndDrawLive();
-        }
-
-        function closeTwoSourceModal() { document.getElementById('twoSourceModalOverlay').style.display = 'none'; isTwoSourceModalOpen = false; setTimeout(resizeCanvas, 50); if(isPaused) drawFrame(); }
-
-        function toggleTsPause() {
-            isTsPaused = !isTsPaused;
-            const btnPause = document.getElementById('btnTsPause'), btnResult = document.getElementById('btnTsResult');
-            if (isTsPaused) {
-                btnPause.innerHTML = "▶ Tiếp tục"; btnPause.className = "btn-green"; btnResult.style.display = "inline-block";
-                const samplesNeeded = Math.floor(totalTimeOnScreen * sampleRate);
-                let sharedOffset = findZeroCrossingOffset(channelConfig.A, channelConfig.A.index, samplesNeeded);
-                snapDataA = extractWindowData(channelConfig.A, samplesNeeded, sharedOffset);
-                snapDataB = extractWindowData(channelConfig.B, samplesNeeded, sharedOffset);
-            } else {
-                btnPause.innerHTML = "⏸ Dừng"; btnPause.className = "btn-orange"; btnResult.style.display = "none"; 
-                showTsResults = false; document.getElementById('hudResults').style.display = 'none'; btnResult.className = "btn-slate";
-            }
-            calculatePhaseAndDrawLive();
-        }
-
-        function setTsMode(mode) {
-            tsViewMode = mode;
-            document.getElementById('btnModeOverlay').classList.remove('active-mode'); document.getElementById('btnModeSum').classList.remove('active-mode');
-            if(mode === 'overlay') document.getElementById('btnModeOverlay').classList.add('active-mode'); else document.getElementById('btnModeSum').classList.add('active-mode');
-            if(isPaused || isTsPaused) calculatePhaseAndDrawLive();
-        }
-        function toggleTsResults() { showTsResults = !showTsResults; document.getElementById('btnTsResult').className = showTsResults ? "btn-blue" : "btn-slate"; document.getElementById('hudResults').style.display = showTsResults ? "block" : "none"; if(isPaused || isTsPaused) calculatePhaseAndDrawLive(); }
-        function toggleTsEquations() { showTsEquations = !showTsEquations; document.getElementById('btnTsEquation').className = showTsEquations ? "btn-purple" : "btn-slate"; document.getElementById('hudEquations').style.display = showTsEquations ? "block" : "none"; if(isPaused || isTsPaused) calculatePhaseAndDrawLive(); }
-
         function extractWindowData(cfg, samplesNeeded, triggerOffset) {
             let res = new Float32Array(samplesNeeded); if (!cfg || !cfg.active || !cfg.data) return res;
             let len = cfg.data.length, available = Math.min(cfg.index, len - 4096); if(available <= samplesNeeded) return res;
@@ -892,6 +813,56 @@
             }
             ctx.stroke();
         }
+
+        function openTwoSourceModal() {
+            if (!channelConfig.A.active || !channelConfig.B.active) return;
+            document.getElementById('twoSourceModalOverlay').style.display = 'flex';
+            isTwoSourceModalOpen = true; 
+            const btnPause = document.getElementById('btnTsPause'), btnResult = document.getElementById('btnTsResult');
+            showTsResults = false; showTsEquations = false;
+            document.getElementById('hudResults').style.display = 'none'; 
+            document.getElementById('hudEquations').style.display = 'none';
+            btnResult.className = "btn-slate"; document.getElementById('btnTsEquation').className = "btn-slate";
+
+            if (isContinuousMode) {
+                isTsPaused = false; btnPause.style.display = "inline-block"; btnPause.innerHTML = "⏸ Dừng"; btnPause.className = "btn-orange"; btnResult.style.display = "none"; 
+            } else {
+                isTsPaused = true; btnPause.style.display = "none"; btnResult.style.display = "inline-block"; 
+                const samplesNeeded = Math.floor(totalTimeOnScreen * sampleRate);
+                let sharedOffset = findZeroCrossingOffset(channelConfig.A, channelConfig.A.index, samplesNeeded);
+                snapDataA = extractWindowData(channelConfig.A, samplesNeeded, sharedOffset);
+                snapDataB = extractWindowData(channelConfig.B, samplesNeeded, sharedOffset);
+            }
+            const container = document.getElementById('tsContainer'), canv = document.getElementById('twoSourceCanvas');
+            canv.width = container.clientWidth - 12; canv.height = container.clientHeight - 12;
+            setTsMode('overlay'); if (isPaused || isTsPaused) calculatePhaseAndDrawLive();
+        }
+
+        function closeTwoSourceModal() { document.getElementById('twoSourceModalOverlay').style.display = 'none'; isTwoSourceModalOpen = false; setTimeout(resizeCanvas, 50); if(isPaused) drawFrame(); }
+
+        function toggleTsPause() {
+            isTsPaused = !isTsPaused;
+            const btnPause = document.getElementById('btnTsPause'), btnResult = document.getElementById('btnTsResult');
+            if (isTsPaused) {
+                btnPause.innerHTML = "▶ Tiếp tục"; btnPause.className = "btn-green"; btnResult.style.display = "inline-block";
+                const samplesNeeded = Math.floor(totalTimeOnScreen * sampleRate);
+                let sharedOffset = findZeroCrossingOffset(channelConfig.A, channelConfig.A.index, samplesNeeded);
+                snapDataA = extractWindowData(channelConfig.A, samplesNeeded, sharedOffset); snapDataB = extractWindowData(channelConfig.B, samplesNeeded, sharedOffset);
+            } else {
+                btnPause.innerHTML = "⏸ Dừng"; btnPause.className = "btn-orange"; btnResult.style.display = "none"; 
+                showTsResults = false; document.getElementById('hudResults').style.display = 'none'; btnResult.className = "btn-slate";
+            }
+            calculatePhaseAndDrawLive();
+        }
+
+        function setTsMode(mode) {
+            tsViewMode = mode;
+            document.getElementById('btnModeOverlay').classList.remove('active-mode'); document.getElementById('btnModeSum').classList.remove('active-mode');
+            if(mode === 'overlay') document.getElementById('btnModeOverlay').classList.add('active-mode'); else document.getElementById('btnModeSum').classList.add('active-mode');
+            if(isPaused || isTsPaused) calculatePhaseAndDrawLive();
+        }
+        function toggleTsResults() { showTsResults = !showTsResults; document.getElementById('btnTsResult').className = showTsResults ? "btn-blue" : "btn-slate"; document.getElementById('hudResults').style.display = showTsResults ? "block" : "none"; if(isPaused || isTsPaused) calculatePhaseAndDrawLive(); }
+        function toggleTsEquations() { showTsEquations = !showTsEquations; document.getElementById('btnTsEquation').className = showTsEquations ? "btn-purple" : "btn-slate"; document.getElementById('hudEquations').style.display = showTsEquations ? "block" : "none"; if(isPaused || isTsPaused) calculatePhaseAndDrawLive(); }
 
         function calculatePhaseAndDrawLive() {
             const canv = document.getElementById('twoSourceCanvas'), ctx = canv.getContext('2d'); if(!canv) return;
@@ -944,16 +915,8 @@
         }
 
         /* CHỨC NĂNG FFT TRUYỀN THỐNG */
-        function computeFFT(realArray) {
-            let n = realArray.length, p = 1; while(p < n) p *= 2;
-            let x = new Float32Array(p); x.set(realArray); let y = new Float32Array(p); let j = 0;
-            for (let i = 0; i < p - 1; i++) { if (i < j) { let tx = x[i]; x[i] = x[j]; x[j] = tx; } let m = p >> 1; while (m >= 1 && j >= m) { j -= m; m >>= 1; } j += m; }
-            for (let l = 1; l < p; l <<= 1) { let wk1r = Math.cos(Math.PI / l), wk1i = -Math.sin(Math.PI / l); for (let i = 0; i < p; i += l << 1) { let wr = 1, wi = 0; for (let k = 0; k < l; k++) { let tr = wr * x[i + k + l] - wi * y[i + k + l], ti = wr * y[i + k + l] + wi * x[i + k + l]; x[i + k + l] = x[i + k] - tr; y[i + k + l] = y[i + k] - ti; x[i + k] += tr; y[i + k] += ti; let wtemp = wr; wr = wr * wk1r - wi * wk1i; wi = wtemp * wk1i + wi * wk1r; } } }
-            let magnitudes = new Float32Array(p / 2); for(let i=0; i<p/2; i++) { magnitudes[i] = Math.sqrt(x[i]*x[i] + y[i]*y[i]) / (p/2); } return magnitudes;
-        }
-
         function openFFTModal() {
-            if (!isInitialized) return; document.getElementById('fftModalOverlay').style.display = 'flex';
+            if (!channelConfig.A.active && !channelConfig.B.active) return; document.getElementById('fftModalOverlay').style.display = 'flex';
             document.getElementById('fftTargetFreq').value = (lockedFrequency > 0) ? Math.round(lockedFrequency) : 440;
             const container = document.querySelector('.fft-canvas-container'), canv = document.getElementById('fftDisplayCanvas');
             canv.width = container.clientWidth - 12; canv.height = container.clientHeight - 12; processAndDrawFFT();
@@ -998,11 +961,9 @@
             
             if (isChatLightMode) {
                 chatBox.classList.add('light-theme');
-                // Biểu tượng Mặt trăng (cho chế độ Dark mode)
                 toggleBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>`;
             } else {
                 chatBox.classList.remove('light-theme');
-                // Biểu tượng Mặt trời (cho chế độ Light mode)
                 toggleBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>`;
             }
         }
@@ -1022,62 +983,22 @@
         // HÀM DỊCH MARKDOWN & TOÁN HỌC MINI CHO CHATBOX
         function parseBotReply(text) {
             if (!text) return "";
-            let html = text;
-            
-            html = html.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-            html = html.replace(/\$\$/g, "");
-            html = html.replace(/\$/g, "");
-            
-            html = html.replace(/\\cdot/g, "·");
-            html = html.replace(/\\pi/g, "π");
-            html = html.replace(/\\Delta/g, "Δ");
-            html = html.replace(/\\lambda/g, "λ");
-            html = html.replace(/\\omega/g, "ω");
-            html = html.replace(/\\varphi/g, "φ");
-            html = html.replace(/\\phi/g, "φ");
-            html = html.replace(/\\alpha/g, "α");
-            html = html.replace(/\\beta/g, "β");
-            html = html.replace(/\\gamma/g, "γ");
-            html = html.replace(/\\approx/g, "≈");
-            html = html.replace(/\\pm/g, "±");
-            html = html.replace(/\\times/g, "×");
-            html = html.replace(/\\div/g, "÷");
-            html = html.replace(/\\leq?/g, "≤");
-            html = html.replace(/\\geq?/g, "≥");
-            html = html.replace(/\\neq/g, "≠");
-            html = html.replace(/\\rightarrow/g, "→");
-            html = html.replace(/\\Rightarrow/g, "⇒");
-            html = html.replace(/\\infty/g, "∞");
-            html = html.replace(/\\circ/g, "°");
-            
+            let html = text.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\$\$/g, "").replace(/\$/g, "");
+            const reps = {"\\\\cdot":"·","\\\\pi":"π","\\\\Delta":"Δ","\\\\lambda":"λ","\\\\omega":"ω","\\\\varphi":"φ","\\\\phi":"φ","\\\\alpha":"α","\\\\beta":"β","\\\\gamma":"γ","\\\\approx":"≈","\\\\pm":"±","\\\\times":"×","\\\\div":"÷","\\\\leq?":"≤","\\\\geq?":"≥","\\\\neq":"≠","\\\\rightarrow":"→","\\\\Rightarrow":"⇒","\\\\infty":"∞","\\\\circ":"°"};
+            for(let k in reps) html = html.replace(new RegExp(k, 'g'), reps[k]);
             html = html.replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, "($1)/($2)");
             html = html.replace(/\\sqrt\{([^}]+)\}/g, "√($1)");
-
-            html = html.replace(/\*\*(.*?)\*\*/g, "<b>$1</b>");
-            html = html.replace(/\*(.*?)\*/g, "<i>$1</i>");
-            
-            html = html.replace(/_\{([^}]+)\}/g, "<sub>$1</sub>");
-            html = html.replace(/_([a-zA-Z0-9]+)/g, "<sub>$1</sub>");
-            
-            html = html.replace(/\^\{([^}]+)\}/g, "<sup>$1</sup>");
-            html = html.replace(/\^([a-zA-Z0-9]+)/g, "<sup>$1</sup>");
-            
-            html = html.replace(/\\\[/g, "");
-            html = html.replace(/\\\]/g, "");
-            html = html.replace(/\\\(/g, "");
-            html = html.replace(/\\\)/g, "");
-
+            html = html.replace(/\*\*(.*?)\*\*/g, "<b>$1</b>").replace(/\*(.*?)\*/g, "<i>$1</i>");
+            html = html.replace(/_\{([^}]+)\}/g, "<sub>$1</sub>").replace(/_([a-zA-Z0-9]+)/g, "<sub>$1</sub>");
+            html = html.replace(/\^\{([^}]+)\}/g, "<sup>$1</sup>").replace(/\^([a-zA-Z0-9]+)/g, "<sup>$1</sup>");
+            html = html.replace(/\\\[/g, "").replace(/\\\]/g, "").replace(/\\\(/g, "").replace(/\\\)/g, "");
             html = html.replace(/\n/g, "<br>");
-            
             return html;
         }
 
         async function sendChatMessage() {
-            const input = document.getElementById('fox-chat-input');
-            const btn = document.getElementById('foxSendBtn');
-            const content = document.getElementById('fox-chat-content');
-            const msg = input.value.trim();
-            if(!msg) return;
+            const input = document.getElementById('fox-chat-input'), btn = document.getElementById('foxSendBtn'), content = document.getElementById('fox-chat-content');
+            const msg = input.value.trim(); if(!msg) return;
             
             input.value = ''; btn.disabled = true;
             content.innerHTML += `<div class="fox-msg-row fox-msg-user"><div class="fox-msg-group"><div class="fox-msg-bubble">${msg}</div></div></div>`;
