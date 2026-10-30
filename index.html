@@ -434,10 +434,18 @@
         window.addEventListener('DOMContentLoaded', () => {
             const qrImage = document.getElementById('qrImage');
             if (qrImage) {
-                let currentUrl = window.location.href;
-                if (currentUrl.startsWith('file://')) currentUrl = 'https://github.com/TenCuaThay/DaoDongKy';
-                qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(currentUrl)}`;
+                // TÍCH HỢP SMART QR (CHỐNG CACHE TRÌNH DUYỆT ĐIỆN THOẠI)
+                let currentUrl = window.location.href.split('?')[0]; 
+                if (currentUrl.startsWith('file://') || currentUrl.includes('localhost')) {
+                    // LINK GITHUB CỦA PRO ĐỂ QR HOẠT ĐỘNG NGAY CẢ KHI TEST OFFLINE
+                    currentUrl = 'https://tencuathay.github.io/DaoDongKy'; 
+                }
+                // Token thời gian để ép smartphone luôn tải trang mới nhất
+                let versionToken = new Date().getTime(); 
+                let smartUrl = `${currentUrl}?v=${versionToken}`;
+                qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(smartUrl)}`;
             }
+
             const speedGroup = document.getElementById('groupSpeed');
             const modeVal = document.getElementById('modeSelect').value;
             if (modeVal === 'continuous') speedGroup.style.display = 'block'; else speedGroup.style.display = 'none';
@@ -456,7 +464,6 @@
 
         let isInitialized = true; 
         
-        // TRẠNG THÁI MODAL 2 NGUỒN (BIẾN MỚI CHỨA DATA SNAPSHOT)
         let isTwoSourceModalOpen = false;
         let tsViewMode = 'overlay'; 
         let isTsPaused = false;
@@ -668,7 +675,6 @@
                 cfg.filterLP = audioCtx.createBiquadFilter(); cfg.filterLP.frequency.value = 3000; cfg.filterLP.type = 'lowpass';
                 cfg.processor = audioCtx.createScriptProcessor(4096, 1, 1);
                 
-                // Thuật toán: Nếu đang mở modal mà CHƯA PAUSE thì vẫn tiếp tục cập nhật dữ liệu để Live Stream
                 cfg.processor.onaudioprocess = function (e) { 
                     if (!isPaused && cfg.active && !isTwoSourceModalOpen) { 
                         let input = e.inputBuffer.getChannelData(0), len = cfg.data.length; 
@@ -731,7 +737,7 @@
             }
             if (!isUserZoomed) totalTimeOnScreen = Math.max(0.002, Math.min(5 * (1.0 / ((lockedFrequency > 0) ? lockedFrequency : 440)), 2.4));
             
-            if (isTwoSourceModalOpen) { calculatePhaseAndDrawLive(); return; } // Modal takes over drawing
+            if (isTwoSourceModalOpen) { calculatePhaseAndDrawLive(); return; }
 
             const width = canvas.clientWidth || canvas.width, height = canvas.clientHeight || canvas.height;
             canvasCtx.fillStyle = '#f8fafc'; canvasCtx.fillRect(0, 0, width, height);
@@ -797,63 +803,34 @@
             btnResult.className = "btn-slate";
             document.getElementById('btnTsEquation').className = "btn-slate";
 
-            // LOGIC CHUẨN XÁC: Phân biệt Tự Dừng và Liên Tục
             if (isContinuousMode) {
-                // CHẾ ĐỘ LIÊN TỤC: Sóng vẫn đang chạy
-                isTsPaused = false; 
-                btnPause.style.display = "inline-block"; // Hiện nút Dừng
-                btnPause.innerHTML = "⏸ Dừng";
-                btnPause.className = "btn-orange";
-                btnResult.style.display = "none"; // Ẩn nút Kết quả
+                isTsPaused = false; btnPause.style.display = "inline-block"; btnPause.innerHTML = "⏸ Dừng"; btnPause.className = "btn-orange"; btnResult.style.display = "none"; 
             } else {
-                // CHẾ ĐỘ TỰ DỪNG: Sóng đã đứng yên sẵn từ trước
-                isTsPaused = true;
-                btnPause.style.display = "none"; // Ẩn nút Dừng đi
-                btnResult.style.display = "inline-block"; // Hiện sẵn nút kết quả để học sinh ấn
-                
-                // Lấy snapshot liền tay từ đồ thị chính
+                isTsPaused = true; btnPause.style.display = "none"; btnResult.style.display = "inline-block"; 
                 const samplesNeeded = Math.floor(totalTimeOnScreen * sampleRate);
                 let sharedOffset = findZeroCrossingOffset(channelConfig.A, channelConfig.A.index, samplesNeeded);
                 snapDataA = extractWindowData(channelConfig.A, samplesNeeded, sharedOffset);
                 snapDataB = extractWindowData(channelConfig.B, samplesNeeded, sharedOffset);
             }
-
             const container = document.getElementById('tsContainer'), canv = document.getElementById('twoSourceCanvas');
             canv.width = container.clientWidth - 12; canv.height = container.clientHeight - 12;
-
-            setTsMode('overlay'); 
-            if (isPaused || isTsPaused) calculatePhaseAndDrawLive();
+            setTsMode('overlay'); if (isPaused || isTsPaused) calculatePhaseAndDrawLive();
         }
 
-        function closeTwoSourceModal() { 
-            document.getElementById('twoSourceModalOverlay').style.display = 'none'; 
-            isTwoSourceModalOpen = false;
-            setTimeout(resizeCanvas, 50); if(isPaused) drawFrame(); 
-        }
+        function closeTwoSourceModal() { document.getElementById('twoSourceModalOverlay').style.display = 'none'; isTwoSourceModalOpen = false; setTimeout(resizeCanvas, 50); if(isPaused) drawFrame(); }
 
-        // HÀM LẮNG NGHE NÚT TẠM DỪNG ĐỒ THỊ BÊN TRONG CỬA SỔ
         function toggleTsPause() {
             isTsPaused = !isTsPaused;
-            const btnPause = document.getElementById('btnTsPause');
-            const btnResult = document.getElementById('btnTsResult');
-            
+            const btnPause = document.getElementById('btnTsPause'), btnResult = document.getElementById('btnTsResult');
             if (isTsPaused) {
-                btnPause.innerHTML = "▶ Tiếp tục";
-                btnPause.className = "btn-green";
-                btnResult.style.display = "inline-block"; // Hiện nút Kết Quả khi đã Dừng
-                
-                // Chụp Snapshot ngay khoảnh khắc bấm nút
+                btnPause.innerHTML = "▶ Tiếp tục"; btnPause.className = "btn-green"; btnResult.style.display = "inline-block";
                 const samplesNeeded = Math.floor(totalTimeOnScreen * sampleRate);
                 let sharedOffset = findZeroCrossingOffset(channelConfig.A, channelConfig.A.index, samplesNeeded);
                 snapDataA = extractWindowData(channelConfig.A, samplesNeeded, sharedOffset);
                 snapDataB = extractWindowData(channelConfig.B, samplesNeeded, sharedOffset);
             } else {
-                btnPause.innerHTML = "⏸ Dừng";
-                btnPause.className = "btn-orange";
-                btnResult.style.display = "none"; // Thu sóng tiếp thì ẩn Kết Quả đi
-                showTsResults = false; // Tắt luôn bảng HUD nếu đang mở
-                document.getElementById('hudResults').style.display = 'none';
-                btnResult.className = "btn-slate";
+                btnPause.innerHTML = "⏸ Dừng"; btnPause.className = "btn-orange"; btnResult.style.display = "none"; 
+                showTsResults = false; document.getElementById('hudResults').style.display = 'none'; btnResult.className = "btn-slate";
             }
             calculatePhaseAndDrawLive();
         }
@@ -864,20 +841,8 @@
             if(mode === 'overlay') document.getElementById('btnModeOverlay').classList.add('active-mode'); else document.getElementById('btnModeSum').classList.add('active-mode');
             if(isPaused || isTsPaused) calculatePhaseAndDrawLive();
         }
-
-        function toggleTsResults() {
-            showTsResults = !showTsResults;
-            document.getElementById('btnTsResult').className = showTsResults ? "btn-blue" : "btn-slate";
-            document.getElementById('hudResults').style.display = showTsResults ? "block" : "none";
-            if(isPaused || isTsPaused) calculatePhaseAndDrawLive();
-        }
-
-        function toggleTsEquations() {
-            showTsEquations = !showTsEquations;
-            document.getElementById('btnTsEquation').className = showTsEquations ? "btn-purple" : "btn-slate";
-            document.getElementById('hudEquations').style.display = showTsEquations ? "block" : "none";
-            if(isPaused || isTsPaused) calculatePhaseAndDrawLive();
-        }
+        function toggleTsResults() { showTsResults = !showTsResults; document.getElementById('btnTsResult').className = showTsResults ? "btn-blue" : "btn-slate"; document.getElementById('hudResults').style.display = showTsResults ? "block" : "none"; if(isPaused || isTsPaused) calculatePhaseAndDrawLive(); }
+        function toggleTsEquations() { showTsEquations = !showTsEquations; document.getElementById('btnTsEquation').className = showTsEquations ? "btn-purple" : "btn-slate"; document.getElementById('hudEquations').style.display = showTsEquations ? "block" : "none"; if(isPaused || isTsPaused) calculatePhaseAndDrawLive(); }
 
         function extractWindowData(cfg, samplesNeeded, triggerOffset) {
             let res = new Float32Array(samplesNeeded); if (!cfg || !cfg.active || !cfg.data) return res;
@@ -919,60 +884,43 @@
             
             const samplesNeeded = Math.floor(totalTimeOnScreen * sampleRate);
             let dataA, dataB;
-
-            // Nếu đang Tạm dừng => Dùng biến Snapshot. Ngược lại dùng Window Data trực tiếp
-            if (isTsPaused) {
-                dataA = snapDataA;
-                dataB = snapDataB;
-            } else {
+            if (isTsPaused) { dataA = snapDataA; dataB = snapDataB; } 
+            else {
                 let sharedOffset = findZeroCrossingOffset(channelConfig.A, channelConfig.A.index, samplesNeeded);
-                dataA = extractWindowData(channelConfig.A, samplesNeeded, sharedOffset);
-                dataB = extractWindowData(channelConfig.B, samplesNeeded, sharedOffset);
+                dataA = extractWindowData(channelConfig.A, samplesNeeded, sharedOffset); dataB = extractWindowData(channelConfig.B, samplesNeeded, sharedOffset);
             }
             
-            // Tính toán Logic cho Kết quả & Phương trình
             if (dataA.length > 0 && dataB.length > 0 && (isTsPaused || Math.random() < 0.15)) {
                 let fA = calculateFreqFromArray(dataA, sampleRate), fB = calculateFreqFromArray(dataB, sampleRate);
                 if(fA > 0) currentCalcFreqA = fA; if(fB > 0) currentCalcFreqB = fB;
                 let zcA = findFirstZeroCrossing(dataA), zcB = findFirstZeroCrossing(dataB);
                 if (zcA >= 0 && zcB >= 0) {
-                    let deltaT_sec = (zcB - zcA) / sampleRate;
-                    let phaseRad = 2 * Math.PI * currentCalcFreqA * deltaT_sec;
-                    phaseRad = phaseRad % (2 * Math.PI);
-                    if (phaseRad < -Math.PI) phaseRad += 2 * Math.PI; if (phaseRad > Math.PI) phaseRad -= 2 * Math.PI;
+                    let deltaT_sec = (zcB - zcA) / sampleRate; let phaseRad = 2 * Math.PI * currentCalcFreqA * deltaT_sec;
+                    phaseRad = phaseRad % (2 * Math.PI); if (phaseRad < -Math.PI) phaseRad += 2 * Math.PI; if (phaseRad > Math.PI) phaseRad -= 2 * Math.PI;
                     currentPhaseRad = phaseRad; currentPhaseDeg = phaseRad * (180 / Math.PI);
                 }
             }
 
-            // Update DOM HUD Results
             if(showTsResults) {
                 document.getElementById('hudFreqA').textContent = currentCalcFreqA.toFixed(1); document.getElementById('hudPerA').textContent = (1000/currentCalcFreqA).toFixed(2);
                 document.getElementById('hudFreqB').textContent = currentCalcFreqB.toFixed(1); document.getElementById('hudPerB').textContent = (1000/currentCalcFreqB).toFixed(2);
                 document.getElementById('hudPhaseRad').textContent = Math.abs(currentPhaseRad).toFixed(2); document.getElementById('hudPhaseDeg').textContent = Math.abs(currentPhaseDeg).toFixed(0);
             }
             if(showTsEquations) {
-                document.getElementById('eqFreqA').textContent = currentCalcFreqA.toFixed(1);
-                document.getElementById('eqFreqB').textContent = currentCalcFreqB.toFixed(1);
-                // Xử lý logic hiển thị chuẩn dấu (+ -) của độ lệch pha
-                let pSign = currentPhaseRad >= 0 ? "+" : "-";
-                document.getElementById('eqPhase').textContent = `${pSign} ${Math.abs(currentPhaseRad).toFixed(2)}`;
+                document.getElementById('eqFreqA').textContent = currentCalcFreqA.toFixed(1); document.getElementById('eqFreqB').textContent = currentCalcFreqB.toFixed(1);
+                let pSign = currentPhaseRad >= 0 ? "+" : "-"; document.getElementById('eqPhase').textContent = `${pSign} ${Math.abs(currentPhaseRad).toFixed(2)}`;
                 if(tsViewMode === 'sum') document.getElementById('eqSumLine').style.display = 'block'; else document.getElementById('eqSumLine').style.display = 'none';
             }
             
-            // Vẽ lưới đồ thị Modal
-            ctx.save(); ctx.beginPath(); ctx.rect(0, 0, cw, ch); ctx.clip();
-            drawMainGrid(ctx, 0, 0, cw, ch, '#1e293b', null, true);
-
-            document.getElementById('tsWarningText').style.display = 'none';
+            ctx.save(); ctx.beginPath(); ctx.rect(0, 0, cw, ch); ctx.clip(); drawMainGrid(ctx, 0, 0, cw, ch, '#1e293b', null, true); document.getElementById('tsWarningText').style.display = 'none';
 
             if (tsViewMode === 'overlay') {
-                drawWaveformRaw(ctx, dataA, 0, 0, cw, ch, '#ef4444', 2.5); // A Đỏ
-                drawWaveformRaw(ctx, dataB, 0, 0, cw, ch, '#3b82f6', 2.5); // B Xanh
+                drawWaveformRaw(ctx, dataA, 0, 0, cw, ch, '#ef4444', 2.5); drawWaveformRaw(ctx, dataB, 0, 0, cw, ch, '#3b82f6', 2.5);
                 ctx.fillStyle = 'rgba(241, 245, 249, 0.9)'; ctx.fillRect(10, 10, 210, 22); ctx.font = 'bold 11px "Be Vietnam Pro", sans-serif'; 
                 ctx.fillStyle = '#ef4444'; ctx.fillText("Kênh A (Đỏ)", 16, 25); ctx.fillStyle = '#3b82f6'; ctx.fillText(" | Kênh B (Xanh)", 85, 25);
             } else {
                 let dataSum = new Float32Array(samplesNeeded); for(let i=0; i<samplesNeeded; i++) dataSum[i] = dataA[i] + dataB[i];
-                drawWaveformRaw(ctx, dataSum, 0, 0, cw, ch, '#10b981', 3.0); // Tổng Xanh lá
+                drawWaveformRaw(ctx, dataSum, 0, 0, cw, ch, '#10b981', 3.0); 
                 ctx.fillStyle = 'rgba(241, 245, 249, 0.9)'; ctx.fillRect(10, 10, 170, 22); ctx.font = 'bold 11px "Be Vietnam Pro", sans-serif'; 
                 ctx.fillStyle = '#10b981'; ctx.fillText("Đồ thị Tổng hợp (A + B)", 16, 25);
                 if (Math.abs(currentCalcFreqA - currentCalcFreqB) > 15 && currentCalcFreqA > 50 && currentCalcFreqB > 50) { document.getElementById('tsWarningText').style.display = 'block'; }
@@ -1039,6 +987,32 @@
             } 
         }
 
+        // HÀM DỊCH MARKDOWN & TOÁN HỌC MINI CHO CHATBOX
+        function parseBotReply(text) {
+            if (!text) return "";
+            let html = text;
+            
+            // 1. Chống lỗi mã HTML đen (XSS)
+            html = html.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            
+            // 2. Định dạng In đậm, In nghiêng của Markdown
+            html = html.replace(/\*\*(.*?)\*\*/g, "<b>$1</b>");
+            html = html.replace(/\*(.*?)\*/g, "<i>$1</i>");
+            
+            // 3. Xử lý Chỉ số dưới: H_1 hoặc H_{1}
+            html = html.replace(/_\{([^}]+)\}/g, "<sub>$1</sub>");
+            html = html.replace(/_([a-zA-Z0-9]+)/g, "<sub>$1</sub>");
+            
+            // 4. Xử lý Chỉ số trên (mũ): x^2 hoặc x^{2}
+            html = html.replace(/\^\{([^}]+)\}/g, "<sup>$1</sup>");
+            html = html.replace(/\^([a-zA-Z0-9]+)/g, "<sup>$1</sup>");
+            
+            // 5. Xuống dòng (Dịch \n thành thẻ <br>)
+            html = html.replace(/\n/g, "<br>");
+            
+            return html;
+        }
+
         async function sendChatMessage() {
             const input = document.getElementById('fox-chat-input');
             const btn = document.getElementById('foxSendBtn');
@@ -1061,9 +1035,15 @@
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                     body: JSON.stringify({ message: msg, currentFrequency: currentFreq })
                 });
+                
                 const data = await response.json();
                 document.getElementById(typingId).remove();
-                content.innerHTML += `<div class="fox-msg-row fox-msg-bot"><div class="fox-msg-avatar"><svg viewBox="0 0 100 100" fill="none"><use href="#foxCyberIcon"/></svg></div><div class="fox-msg-group"><div class="fox-msg-bubble">${data.reply || data.message || "Xin lỗi, thầy chưa hiểu ý em."}</div></div></div>`;
+                
+                // GỌI HÀM DỊCH MARKDOWN & TOÁN HỌC Ở ĐÂY
+                let rawReply = data.reply || data.message || "Xin lỗi, thầy chưa hiểu ý em.";
+                let formattedReply = parseBotReply(rawReply);
+                
+                content.innerHTML += `<div class="fox-msg-row fox-msg-bot"><div class="fox-msg-avatar"><svg viewBox="0 0 100 100" fill="none"><use href="#foxCyberIcon"/></svg></div><div class="fox-msg-group"><div class="fox-msg-bubble">${formattedReply}</div></div></div>`;
             } catch (error) {
                 document.getElementById(typingId).remove();
                 content.innerHTML += `<div class="fox-msg-row fox-msg-bot"><div class="fox-msg-avatar"><svg viewBox="0 0 100 100" fill="none"><use href="#foxCyberIcon"/></svg></div><div class="fox-msg-group"><div class="fox-msg-bubble" style="color:#ef4444;">Lỗi kết nối API! Pro hãy kiểm tra lại GAS_URL nhé.</div></div></div>`;
