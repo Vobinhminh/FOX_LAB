@@ -105,7 +105,6 @@
         .channel-tag-a { color: #ef4444; background-color: rgba(239, 68, 68, 0.1); }
         .channel-tag-b { color: #3b82f6; background-color: rgba(59, 130, 246, 0.1); }
         
-        /* CHỈNH LẠI MÀU NÚT CÀI ĐẶT NHẬP KEY LÀ MÀU ĐEN */
         .license-gear-btn { 
             background: #f8fafc; 
             border: 1px solid #cbd5e1; 
@@ -262,7 +261,6 @@
     </style>
 </head>
 <script>
-    // 1. Chặn các phím tắt mở công cụ lập trình (chỉ tác dụng trên bàn phím máy tính)
     document.addEventListener('keydown', function(e) {
         if (
             e.key === 'F12' ||
@@ -274,12 +272,10 @@
         }
     });
 
-    // 2. Vô hiệu hóa click chuột phải
     document.addEventListener('contextmenu', function(e) {
         e.preventDefault();
     });
 
-    // 3. Bẫy DevTools (CHỈ KÍCH HOẠT TRÊN MÁY TÍNH)
     const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
     if (!isMobileDevice) {
@@ -515,7 +511,6 @@
     <script>
         const FOX_AVATAR_SVG = `<svg viewBox="0 0 100 100" fill="none"><polygon points="22,12 10,48 36,40" fill="#ff7a30"/><polygon points="23,19 16,44 32,38" fill="#1e293b"/><path d="M 19 36 Q 23 32 28 34" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round"/><polygon points="78,12 64,40 90,48" fill="#ff7a30"/><polygon points="77,19 68,38 84,44" fill="#1e293b"/><path d="M 81 36 Q 77 32 72 34" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round"/><polygon points="50,22 36,40 50,46" fill="#ff8f4a"/><polygon points="50,22 50,46 64,40" fill="#ff7a30"/><polygon points="36,40 10,48 20,68 38,58" fill="#d4380d"/><polygon points="64,40 38,58 50,46" fill="#e04006"/><polygon points="64,40 50,46 62,58" fill="#d4380d"/><polygon points="64,40 90,48 80,68 62,58" fill="#d4380d"/><polygon points="20,68 12,74 26,76 34,68" fill="#e2e8f0"/><polygon points="80,68 88,74 74,76 66,68" fill="#cbd5e1"/><polygon points="38,58 50,46 50,78 36,68" fill="#ff7a30"/><polygon points="62,58 50,46 50,78 64,68" fill="#e04006"/><polygon points="50,78 36,68 44,88 50,88" fill="#f8fafc"/><polygon points="50,78 64,68 56,88 50,88" fill="#e2e8f0"/><polygon points="50,88 45,82 55,82" fill="#0f172a"/><polygon points="25,48 50,54 75,48 71,59 50,65 29,59" fill="#090d16" stroke="rgba(56,189,248,0.5)" stroke-width="0.9"/><circle cx="34.5" cy="48" r="1.5" fill="#ffffff"/><circle cx="44.5" cy="60" r="1.5" fill="#ffffff"/><circle cx="54.5" cy="48" r="1.5" fill="#ffffff"/><circle cx="64.5" cy="60" r="1.5" fill="#ffffff"/></svg>`;
 
-        // Caching DOM elements for optimization
         const btnStartA = document.getElementById('btnStartA'), btnStartB = document.getElementById('btnStartB');
         const pauseButton = document.getElementById('pauseButton'), resetButton = document.getElementById('resetButton');
         const btnAnalysis = document.getElementById('btnAnalysis'), infoMessageText = document.getElementById('infoMessageText');
@@ -524,7 +519,6 @@
         const canvas = document.getElementById('oscilloscope'), canvasCtx = canvas.getContext('2d', { alpha: false });
         const settingsDropdown = document.getElementById('settingsDropdown'), settingsMenu = document.getElementById('settingsMenu');
 
-        // --- HỆ THỐNG PHÂN QUYỀN & XÁC THỰC KEY ---
         const GAS_URL = "https://script.google.com/macros/s/AKfycbyStGo5ETWCHq3UxtQEWIFL-R2mpEHdeYuX53EgfPf8LtG2Dfe4Dbk1-i59hf8LcY2bdg/exec"; 
         let isDemoMode = true;
         let demoTimer = null;
@@ -550,7 +544,6 @@
                 document.getElementById('licenseModalOverlay').style.display = 'none';
                 await verifyKeyWithServer(keyParam, "full");
             } else if (savedKey) {
-                // Đã lưu Key trước đó -> Xác thực ngầm
                 document.getElementById('licenseModalOverlay').style.display = 'none';
                 await verifyKeyWithServer(savedKey, "full", true);
             } else if (typeParam === 'demo') {
@@ -599,7 +592,7 @@
                 
                 if (result.status === "success") {
                     isDemoMode = false;
-                    localStorage.setItem('fox_license_key', key); // Lưu Key tự động truy cập lần sau
+                    localStorage.setItem('fox_license_key', key); 
                     if(demoTimer) clearTimeout(demoTimer);
                     document.getElementById('licenseModalOverlay').style.display = 'none';
                     infoMessageText.innerHTML = "✅ Bản Full Chính Thức đã kích hoạt thành công!";
@@ -608,7 +601,7 @@
                     checkAndShowQR();
                 } else {
                     if(!isSilent) alert(`❌ ${result.message}\nVui lòng liên hệ tác giả nhận Key bản Full!`);
-                    localStorage.removeItem('fox_license_key'); // Xóa Key hỏng
+                    localStorage.removeItem('fox_license_key'); 
                     openLicenseModal();
                     selectMode('demo');
                 }
@@ -625,7 +618,6 @@
 
             let currentUrl = window.location.href.split('?')[0]; 
             
-            // Chỉ hiển thị QR khi ở Bản Full VÀ chạy trên nền tảng github.io
             if (!isDemoMode && currentUrl.includes('github.io')) {
                 qrPanel.style.display = 'flex';
                 let activeKey = localStorage.getItem('fox_license_key') || '';
@@ -639,7 +631,6 @@
             }
         }
 
-        // Khởi tạo AudioWorklet Inline Blob
         let workletUrl = null;
         async function setupAudioWorklet(ctx) {
             if (!workletUrl) {
@@ -648,9 +639,9 @@
                     process(inputs, outputs, parameters) {
                         const input = inputs[0];
                         if (input && input.length > 0 && input[0]) {
-                            this.port.postMessage(input[0]); // Chuyển dữ liệu mượt mà về luồng chính
+                            this.port.postMessage(input[0]);
                         }
-                        return true; // Giữ tiến trình chạy liên tục
+                        return true;
                     }
                 }
                 registerProcessor('fox-audio-processor', FoxAudioProcessor);
@@ -724,7 +715,6 @@
 
         settingsMenu.querySelectorAll('.settings-group-items').forEach(groupItems => groupItems.addEventListener('mouseleave', () => updateSettingsPill(groupItems, null, true)));
 
-        // Xử lý chặn "Tốc độ chậm" trên Bản Demo
         settingsMenu.querySelectorAll('.settings-item').forEach(item => {
             item.addEventListener('mouseenter', () => updateSettingsPill(item.parentElement, item, true));
             item.addEventListener('click', (e) => {
@@ -785,7 +775,6 @@
             cfg.active = false; cfg.index = 0; if (cfg.data) cfg.data.fill(0);
         }
 
-        // Logic ẩn tính năng đối với Bản Demo
         function updateAnalysisButtonState() {
             const mode = getActiveChannelMode(), activeChannels = (channelConfig.A.active ? 1 : 0) + (channelConfig.B.active ? 1 : 0);
             
@@ -812,7 +801,7 @@
             const speedGroup = document.getElementById('groupSpeed');
             if (isContinuousMode) { 
                 speedGroup.style.display = 'block'; 
-                if (isDemoMode) { // Ép về chế độ nhanh nếu đang là Demo
+                if (isDemoMode) { 
                      speedSelect.value = "fast";
                      document.querySelectorAll('#groupSpeed .settings-item').forEach(el => el.classList.remove('active')); 
                      document.querySelector('#groupSpeed .settings-item[data-value="fast"]').classList.add('active');
@@ -903,21 +892,34 @@
             for (let i = 0; i <= 10; i++) { ctx.moveTo(boxX + i * stepGridX, boxY); ctx.lineTo(boxX + i * stepGridX, boxY + boxH); }
             for (let i = 0; i <= 8; i++) { ctx.moveTo(boxX, boxY + i * stepGridY); ctx.lineTo(boxX + boxW, boxY + i * stepGridY); }
             ctx.stroke();
+            
             ctx.lineWidth = 2; ctx.strokeStyle = '#334155'; ctx.beginPath();
-            let centerY = boxY + boxH / 2; ctx.moveTo(boxX, centerY); ctx.lineTo(boxX + boxW, centerY); ctx.moveTo(boxX + boxW / 2, boxY); ctx.lineTo(boxX + boxW / 2, boxY + boxH);
+            let centerY = boxY + boxH / 2, centerX = boxX + boxW / 2; 
+            
+            // Trục Ox và Oy giữ nguyên ở chính giữa đồ thị
+            ctx.moveTo(boxX, centerY); ctx.lineTo(boxX + boxW, centerY); 
+            ctx.moveTo(centerX, boxY); ctx.lineTo(centerX, boxY + boxH); 
+            
             const tickSize = 4;
             for (let i = 0; i <= 10; i++) { ctx.moveTo(boxX + i * stepGridX, centerY - tickSize); ctx.lineTo(boxX + i * stepGridX, centerY + tickSize); }
-            for (let i = 0; i <= 8; i++) { ctx.moveTo(boxX + boxW / 2 - tickSize, boxY + i * stepGridY); ctx.lineTo(boxX + boxW / 2 + tickSize, boxY + i * stepGridY); }
+            for (let i = 0; i <= 8; i++) { ctx.moveTo(centerX - tickSize, boxY + i * stepGridY); ctx.lineTo(centerX + tickSize, boxY + i * stepGridY); }
             ctx.stroke();
+            
             if (showTime) {
                 let timePerGrid = totalTimeOnScreen / 10;
                 for (let i = 1; i < 10; i++) { if (i !== 5) drawLabelWithPill(ctx, parseFloat(((i - 5) * timePerGrid * 1000).toFixed(2)).toString().replace('.', ','), boxX + i * stepGridX, centerY + 8, 'center', 'top'); }
                 drawLabelWithPill(ctx, "t (ms)", boxX + boxW - 8, centerY - 24, 'right', 'top');
             }
+            
             const maxY = 1.0 / currentZoomY, valPerStep = (maxY * 2) / 8; let drawYLabels = (boxH > 120); 
-            for (let i = 1; i < 8; i++) { if (i !== 4) { if (!drawYLabels && i % 2 !== 0) continue; drawLabelWithPill(ctx, parseFloat((maxY - i * valPerStep).toFixed(2)).toString().replace('.', ','), boxX + boxW / 2 + 8, boxY + i * stepGridY, 'left', 'middle'); } }
-            drawLabelWithPill(ctx, "0", boxX + boxW / 2 + 8, centerY + 8, 'left', 'top'); 
-            if (titleText) drawLabelWithPill(ctx, titleText, boxX + 8, boxY + 8, 'left', 'top', titleColor);
+            for (let i = 1; i < 8; i++) { if (i !== 4) { if (!drawYLabels && i % 2 !== 0) continue; drawLabelWithPill(ctx, parseFloat((maxY - i * valPerStep).toFixed(2)).toString().replace('.', ','), centerX + 8, boxY + i * stepGridY, 'left', 'middle'); } }
+            drawLabelWithPill(ctx, "0", centerX + 8, centerY + 8, 'left', 'top'); 
+            
+            // Xử lý vị trí tên đồ thị: "Biên độ" ở 1 kênh nằm sát trục Oy (centerX + 6), Kênh A/B giữ nguyên vị trí cũ (boxX + 8)
+            if (titleText) {
+                let textPosX = (titleText === 'Biên độ') ? (centerX + 6) : (boxX + 8);
+                drawLabelWithPill(ctx, titleText, textPosX, boxY + 8, 'left', 'top', titleColor);
+            }
         }
 
         async function populateMics() {
@@ -941,6 +943,12 @@
             if (channelConfig.A.active || channelConfig.B.active) { pauseButton.disabled = false; resetButton.disabled = false; if (isPaused) { infoMessageText.innerHTML = "Đã kết nối. Bấm <span class='info-badge'>Đo / Dừng</span> để khảo sát."; infoMessageText.style.color = "#0284c7"; } } 
             else { pauseButton.disabled = true; resetButton.disabled = false; infoMessageText.innerHTML = "Nhấn vào <span class='info-badge'>Kênh A</span> hoặc <span class='info-badge'>Kênh B</span> để bật mic."; infoMessageText.style.color = "#0284c7"; }
             updateAnalysisButtonState();
+            
+            // Ẩn nút "Nhập Key" sau khi kích hoạt bản Full thành công
+            const gearBtn = document.querySelector('.license-gear-btn');
+            if (gearBtn) {
+                gearBtn.style.display = isDemoMode ? 'inline-flex' : 'none';
+            }
         }
 
         async function initAudioChannel(channelId, deviceId = null) {
@@ -1408,11 +1416,8 @@
             try {
                 let currentFreq = document.getElementById('foxLiveFreqTag').textContent;
                 
-                // Gắn thêm lời nhắc để AI phản hồi tối đa 3 câu (50-100 từ)
-                let promptMsg = msg + "\n\n(Lưu ý hệ thống: Hãy trả lời trực tiếp, tối đa 3 câu, khoảng 50 - 100 từ).";
-
                 const response = await fetch(GAS_URL, {
-                    method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ message: promptMsg, currentFrequency: currentFreq })
+                    method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ message: msg, currentFrequency: currentFreq })
                 });
                 
                 const data = await response.json(); document.getElementById(typingId).remove();
