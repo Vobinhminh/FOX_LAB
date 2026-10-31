@@ -232,33 +232,57 @@
     </style>
 </head>
 <script>
-    // 1. Chặn các phím tắt mở công cụ lập trình (F12, Ctrl+Shift+I/J/C, Ctrl+U)
-    document.addEventListener('keydown', function(e) {
-        if (
-            e.key === 'F12' ||
-            (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) ||
-            (e.ctrlKey && (e.key === 'U' || e.key === 'u'))
-        ) {
+        // 1. Chặn các phím tắt mở công cụ lập trình (F12, Ctrl+Shift+I/J/C, Ctrl+U)
+        document.addEventListener('keydown', function(e) {
+            if (
+                e.key === 'F12' ||
+                (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) ||
+                (e.ctrlKey && (e.key === 'U' || e.key === 'u'))
+            ) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        // 2. Vô hiệu hóa click chuột phải để chặn menu "Inspect" / "Kiểm tra"
+        document.addEventListener('contextmenu', function(e) {
             e.preventDefault();
-            return false;
-        }
-    });
+        });
 
-    // 2. Vô hiệu hóa click chuột phải để chặn menu "Inspect" / "Kiểm tra"
-    document.addEventListener('contextmenu', function(e) {
-        e.preventDefault();
-    });
+        // 3. Bẫy Debugger nâng cao & Giả mạo hệ thống
+        setInterval(function() {
+            const startTime = new Date().getTime();
+            debugger; 
+            const endTime = new Date().getTime();
+            
+            const threshold = 160;
+            const isWindowResized = (window.outerWidth - window.innerWidth > threshold || window.outerHeight - window.innerHeight > threshold);
 
-    // 3. Cơ chế phát hiện DevTools đang mở (Cảnh báo hoặc làm đứng ứng dụng)
-    (function() {
-        const threshold = 160;
-        setInterval(() => {
-            if (window.outerWidth - window.innerWidth > threshold || window.outerHeight - window.innerHeight > threshold) {
-                document.body.innerHTML = "<h2 style='text-align:center; margin-top:20vh; color:#ef4444; font-family:sans-serif;'>⚠️ Hệ thống bảo mật phát hiện công cụ gỡ lỗi đang mở. Vui lòng đóng lại để tiếp tục sử dụng!</h2>";
+            if ((endTime - startTime > 100) || isWindowResized) {
+                let fakeCode = "function fakeAudioProcess_" + Math.floor(Math.random()*1000) + "() { return false; }";
+                
+                document.body.innerHTML = `
+                    <div style="color: #00FF00; background: #000; padding: 20px; font-family: monospace; height: 100vh;">
+                        <h2>[SYSTEM WARNING] UNAUTHORIZED ACCESS DETECTED</h2>
+                        <p>⚠️ Hệ thống bảo mật phát hiện công cụ gỡ lỗi đang mở. Vui lòng đóng lại để tiếp tục sử dụng!</p>
+                        <p>Loading mock environment...</p>
+                        <br>
+                        <code>
+                            var audioContext = null;<br>
+                            ${fakeCode}<br>
+                            var qr_hash = "${Math.random().toString(36).substring(2)}";<br>
+                            // Access Denied
+                        </code>
+                    </div>
+                `;
+                
+                for (let i = 0; i < 20; i++) {
+                    console.log("Loading dummy_module_" + Math.random().toString(36).substring(2, 6) + ".js... OK");
+                    console.error("Connection to fake API endpoint refused.");
+                }
             }
         }, 1000);
-    })();
-</script>
+    </script>
 <body>
     <div class="top-bar">
         <div class="controls-wrapper">
