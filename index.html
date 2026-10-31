@@ -231,7 +231,34 @@
         }
     </style>
 </head>
+<script>
+    // 1. Chặn các phím tắt mở công cụ lập trình (F12, Ctrl+Shift+I/J/C, Ctrl+U)
+    document.addEventListener('keydown', function(e) {
+        if (
+            e.key === 'F12' ||
+            (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) ||
+            (e.ctrlKey && (e.key === 'U' || e.key === 'u'))
+        ) {
+            e.preventDefault();
+            return false;
+        }
+    });
 
+    // 2. Vô hiệu hóa click chuột phải để chặn menu "Inspect" / "Kiểm tra"
+    document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+    });
+
+    // 3. Cơ chế phát hiện DevTools đang mở (Cảnh báo hoặc làm đứng ứng dụng)
+    (function() {
+        const threshold = 160;
+        setInterval(() => {
+            if (window.outerWidth - window.innerWidth > threshold || window.outerHeight - window.innerHeight > threshold) {
+                document.body.innerHTML = "<h2 style='text-align:center; margin-top:20vh; color:#ef4444; font-family:sans-serif;'>⚠️ Hệ thống bảo mật phát hiện công cụ gỡ lỗi đang mở. Vui lòng đóng lại để tiếp tục sử dụng!</h2>";
+            }
+        }, 1000);
+    })();
+</script>
 <body>
     <div class="top-bar">
         <div class="controls-wrapper">
