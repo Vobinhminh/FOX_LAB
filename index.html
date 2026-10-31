@@ -14,7 +14,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
     <style>
-        /* === ANIMATE-UI & TỐI ƯU GIAO DIỆN === */
         @keyframes animUI-fadeInUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
         @keyframes animUI-fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes animUI-slideInLeft { from { opacity: 0; transform: translateX(-16px); } to { opacity: 1; transform: none; } }
@@ -49,34 +48,25 @@
         button:hover:not(:disabled) { transform: translateY(-1px); }
         button:active:not(:disabled) { transform: translateY(1px) scale(0.97); transition-duration: 0.1s; }
 
-        .modal-overlay { transition: opacity 0.3s cubic-bezier(0.22, 1, 0.36, 1); opacity: 0; }
-        .modal-overlay.animUI-visible { opacity: 1; }
-        .modal-content { transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s ease; transform: scale(0.95) translateY(16px); opacity: 0; }
-        .modal-overlay.animUI-visible .modal-content { transform: scale(1) translateY(0); opacity: 1; }
-        .modal-overlay.animUI-visible .modal-controls { animation: animUI-fadeInUp 0.3s cubic-bezier(0.22, 1, 0.36, 1) 0.15s both; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; background: rgba(15, 23, 42, 0.95); z-index: 100000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(6px); padding: 15px; box-sizing: border-box; }
+        .modal-content { background: #f8fafc; width: 100vw; height: 100dvh; max-width: 100vw; max-height: 100dvh; border-radius: 0; box-shadow: none; display: flex; flex-direction: column; overflow: hidden; box-sizing: border-box; }
+        .modal-header { color: #fff; padding: 8px 12px; font-weight: bold; font-size: 13px; text-shadow: 0 1px 2px rgba(0,0,0,0.3); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; border-bottom: 1px solid rgba(0,0,0,0.1); }
+        .modal-controls { padding: 6px 8px; background: #fff; border-bottom: 1px solid #cbd5e1; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; justify-content: center; flex-shrink: 0; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .fft-canvas-container { padding: 6px; background: #e2e8f0; width: 100%; box-sizing: border-box; display: flex; justify-content: center; align-items: center; overflow: hidden; flex-grow: 1; position: relative; }
+        .modal-display-canvas { background: #fff; border: 1px solid #cbd5e1; border-radius: 4px; width: 100%; height: 100%; display: block; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        #fftModal .modal-header { background: linear-gradient(90deg, #7c3aed, #4f46e5); }
+        #twoSourceModal .modal-header { background: linear-gradient(90deg, #db2777, #c026d3); }
 
-        .hud-overlay { transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.22, 1, 0.36, 1); transform: translateY(6px); }
-        .hud-overlay[style*="display: block"], .hud-overlay[style*="display:block"] { transform: translateY(0); }
-        .beat-warning[style*="display: block"], .beat-warning[style*="display:block"] { animation: animUI-scaleIn 0.3s cubic-bezier(0.22, 1, 0.36, 1) both, pulseBeat 2s infinite 0.3s; }
-        .ts-mode-toggle button { transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1); }
-        .ts-mode-toggle button.active-mode { animation: animUI-scaleIn 0.2s cubic-bezier(0.22, 1, 0.36, 1) both; }
-        .info-panel { transition: color 0.3s ease, background-color 0.3s ease; }
-        .qr-panel { transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s ease; }
-        .qr-panel:hover { transform: scale(1.03); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); }
-        .channel-card { transition: box-shadow 0.2s ease, border-color 0.2s ease; }
-        .channel-card:hover { box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); }
-        .settings-dropdown-toggle .dropdown-arrow { display: inline-block; transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1); }
-        .settings-dropdown.open .settings-dropdown-toggle .dropdown-arrow { transform: rotate(180deg); }
-        #fox-chat-trigger { transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), background 0.3s ease, box-shadow 0.3s ease; }
-        #fox-chat-trigger:active { transform: scale(0.92) !important; }
-        #fullscreenButton { transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1); }
-
-        @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
-            .fox-ping-ring { animation: none !important; display: none !important; }
-            .beat-warning { animation: none !important; }
-            .fox-status-dot { animation: none !important; }
-        }
+        /* Popup chọn phiên bản */
+        .license-selection-box { background: #ffffff; width: 100%; max-width: 450px; border-radius: 12px; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3); text-align: center; box-sizing: border-box; }
+        .license-selection-box h2 { color: #0f172a; margin-top: 0; font-size: 20px; font-weight: 700; }
+        .license-selection-box p { color: #475569; font-size: 13px; line-height: 1.5; margin-bottom: 20px; }
+        .license-btn-group { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+        .license-btn { padding: 12px 16px; font-size: 14px; font-weight: bold; border-radius: 8px; border: none; cursor: pointer; color: white; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .btn-demo-mode { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .btn-full-mode { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+        .contact-box { background: #f1f5f9; border-radius: 8px; padding: 12px; font-size: 12px; color: #334155; border: 1px solid #cbd5e1; text-align: left; }
+        .contact-box b { color: #0284c7; }
 
         html, body { margin: 0; padding: 0; width: 100%; height: 100%; height: 100dvh; background-color: #f1f5f9; font-family: 'Be Vietnam Pro', 'Inter', sans-serif; -webkit-font-smoothing: antialiased; overflow: hidden; position: fixed; display: flex; flex-direction: column; }
         button, input, select { font-family: inherit; outline: none; }
@@ -102,8 +92,6 @@
         .info-panel { font-weight: 600; font-size: 11.5px; color: #059669; background: #fff; padding: 2px 6px; border-radius: 4px; border: 1px solid #e2e8f0; width: 100%; text-align: center; box-sizing: border-box; line-height: 1.4; display: flex; align-items: center; justify-content: center; min-height: 22px; position: relative; z-index: 5; }
         .info-badge, .channel-tag-a, .channel-tag-b { display: inline-block; padding: 0 4px; margin: 0 2px; border-radius: 3px; font-weight: 700; }
         .info-badge { background-color: rgba(16, 185, 129, 0.1); color: #059669; border: 1px solid rgba(16, 185, 129, 0.2); }
-        .channel-tag-a { color: #ef4444; background-color: rgba(239, 68, 68, 0.1); }
-        .channel-tag-b { color: #3b82f6; background-color: rgba(59, 130, 246, 0.1); }
 
         button { font-size: 11.5px; font-weight: bold; cursor: pointer; color: white; border: 1px solid rgba(0,0,0,0.1); border-radius: 4px; box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255,255,255,0.2); transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1); box-sizing: border-box; padding: 4px 8px; margin: 0; text-shadow: 0 1px 1px rgba(0,0,0,0.25); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         button:hover:not(:disabled) { filter: brightness(1.1); transform: translateY(-1px); box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255,255,255,0.2); }
@@ -114,7 +102,6 @@
         .btn-orange { background: linear-gradient(180deg, #f59e0b, #d97706); } 
         .btn-purple { background: linear-gradient(180deg, #8b5cf6, #7c3aed); } 
         .btn-pink { background: linear-gradient(180deg, #ec4899, #db2777); } 
-        .btn-teal { background: linear-gradient(180deg, #14b8a6, #0d9488); } 
         .btn-slate { background: linear-gradient(180deg, #64748b, #475569); } 
         .btn-blue { background: linear-gradient(180deg, #3b82f6, #2563eb); } 
         .btn-dark { background: linear-gradient(180deg, #334155, #0f172a); }
@@ -138,29 +125,6 @@
         .settings-item { flex: 1; padding: 6px 4px; font-size: 11px; color: #94a3b8; cursor: pointer; border: 1px solid transparent; border-radius: 4px; text-align: center; font-weight: 600; user-select: none; transition: color 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.15s ease; white-space: nowrap; position: relative; z-index: 2; background: transparent !important; }
         .settings-item:hover { color: #ffffff; }
         .settings-item.active { color: #ffffff; font-weight: 700; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
-
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; background: rgba(15, 23, 42, 0.95); z-index: 100000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(5px); padding: 0; box-sizing: border-box; }
-        .modal-content { background: #f8fafc; width: 100vw; height: 100dvh; max-width: 100vw; max-height: 100dvh; border-radius: 0; box-shadow: none; display: flex; flex-direction: column; overflow: hidden; box-sizing: border-box; }
-        .modal-header { color: #fff; padding: 8px 12px; font-weight: bold; font-size: 13px; text-shadow: 0 1px 2px rgba(0,0,0,0.3); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; border-bottom: 1px solid rgba(0,0,0,0.1); }
-        .modal-controls { padding: 6px 8px; background: #fff; border-bottom: 1px solid #cbd5e1; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; justify-content: center; flex-shrink: 0; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-        .fft-canvas-container { padding: 6px; background: #e2e8f0; width: 100%; box-sizing: border-box; display: flex; justify-content: center; align-items: center; overflow: hidden; flex-grow: 1; position: relative; }
-        .modal-display-canvas { background: #fff; border: 1px solid #cbd5e1; border-radius: 4px; width: 100%; height: 100%; display: block; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        #fftModal .modal-header { background: linear-gradient(90deg, #7c3aed, #4f46e5); }
-        #twoSourceModal .modal-header { background: linear-gradient(90deg, #db2777, #c026d3); }
-
-        .hud-overlay { position: absolute; top: 16px; left: 16px; background: rgba(15, 23, 42, 0.88); color: #f8fafc; padding: 10px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); font-family: 'JetBrains Mono', monospace; font-size: 12px; line-height: 1.6; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); pointer-events: none; backdrop-filter: blur(4px); z-index: 50; display: none; max-width: calc(100% - 32px); }
-        .hud-title { font-family: 'Be Vietnam Pro', sans-serif; font-weight: 700; color: #38bdf8; margin-bottom: 4px; font-size: 13px; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 2px; }
-        .hud-highlight { color: #facc15; font-weight: bold; }
-        .hud-eq { color: #10b981; font-style: italic; }
-        .math-symbol { font-family: "Times New Roman", Times, serif; font-style: italic; font-size: 14.5px; }
-
-        .ts-mode-toggle { display: flex; gap: 4px; background: #0f172a; padding: 3px; border-radius: 6px; border: 1px solid #334155; position: relative; overflow: hidden; }
-        .ts-mode-pill { position: absolute; top: 3px; bottom: 3px; left: 0; width: 0; background: linear-gradient(135deg, #3b82f6, #2563eb); border-radius: 4px; box-shadow: 0 2px 6px rgba(37, 99, 235, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2); pointer-events: none; z-index: 1; transition: transform 0.24s cubic-bezier(0.2, 0.9, 0.3, 1), width 0.24s cubic-bezier(0.2, 0.9, 0.3, 1), opacity 0.15s ease; opacity: 0; }
-        .ts-mode-toggle button { background: transparent; color: #94a3b8; box-shadow: none; border: none; font-weight: 600; padding: 5px 12px; font-size: 11px; position: relative; z-index: 2; cursor: pointer; border-radius: 4px; transition: color 0.2s cubic-bezier(0.2, 0.8, 0.2, 1); user-select: none; }
-        .ts-mode-toggle button:hover { color: #ffffff; }
-        .ts-mode-toggle button.active-mode { color: #ffffff; font-weight: 700; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
-
-        .beat-warning { position: absolute; top: 16px; left: 50%; transform: translateX(-50%); background: rgba(220, 38, 38, 0.9); color: white; padding: 4px 12px; border-radius: 12px; font-size: 11.5px; font-weight: bold; pointer-events: none; z-index: 60; box-shadow: 0 4px 6px rgba(0,0,0,0.2); display: none; animation: pulseBeat 2s infinite; }
 
         :root { --fox-font: 'Be Vietnam Pro', sans-serif; --fox-font-mono: 'JetBrains Mono', monospace; --fox-cyan: #38bdf8; --fox-text-muted: #64748b; }
         #fox-chat-widget { position: fixed; bottom: 20px; right: 20px; z-index: 99998; font-family: var(--fox-font); user-select: none; }
@@ -213,71 +177,41 @@
         .fox-footer-meta { font-size: 9px; color: var(--fox-text-muted); text-align: center; }
         .fox-freq-tag { color: var(--fox-cyan); font-weight: 600; }
 
-        #fox-chat-box.light-theme { background: rgba(255, 255, 255, 0.95); border: 1px solid rgba(0,0,0,0.1); box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.15); }
-        #fox-chat-box.light-theme .fox-chat-header { background: rgba(241, 245, 249, 0.9); border-bottom: 1px solid #cbd5e1; }
-        #fox-chat-box.light-theme .fox-header-title { color: #0f172a; }
-        #fox-chat-box.light-theme .fox-btn-icon { color: #64748b; }
-        #fox-chat-box.light-theme .fox-btn-icon:hover { background: rgba(0, 0, 0, 0.05); color: #0f172a; }
-        #fox-chat-box.light-theme .fox-msg-bot .fox-msg-bubble { background: #f1f5f9; color: #1e293b; border: 1px solid #e2e8f0; }
-        #fox-chat-box.light-theme .fox-msg-bot .fox-msg-bubble b { color: #0284c7; }
-        #fox-chat-box.light-theme .fox-input-container { background: rgba(248, 250, 252, 0.95); border-top: 1px solid #cbd5e1; }
-        #fox-chat-box.light-theme .fox-input-box { background: #ffffff; border: 1px solid #cbd5e1; }
-        #fox-chat-box.light-theme #fox-chat-input { color: #0f172a; }
-        #fox-chat-box.light-theme .fox-send-btn:disabled { background: #e2e8f0 !important; color: #94a3b8 !important; }
-
         @media (max-width: 600px) { 
             #fox-chat-widget { bottom: 95px; right: 15px; } 
             #fox-chat-box { width: calc(100vw - 30px); height: calc(100dvh - 160px); bottom: 55px; } 
         }
     </style>
 </head>
-<script>
-    document.addEventListener('keydown', function(e) {
-        if (
-            e.key === 'F12' ||
-            (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) ||
-            (e.ctrlKey && (e.key === 'U' || e.key === 'u'))
-        ) {
-            e.preventDefault();
-            return false;
-        }
-    });
-
-    document.addEventListener('contextmenu', function(e) {
-        e.preventDefault();
-    });
-
-    const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
-    if (!isMobileDevice) {
-        setInterval(function() {
-            const startTime = new Date().getTime();
-            debugger; 
-            const endTime = new Date().getTime();
-            
-            const threshold = 160;
-            const isWindowResized = (window.outerWidth - window.innerWidth > threshold || window.outerHeight - window.innerHeight > threshold);
-
-            if ((endTime - startTime > 100) || isWindowResized) {
-                let fakeCode = "function fakeAudioProcess_" + Math.floor(Math.random()*1000) + "() { return false; }";
-                
-                document.body.innerHTML = `
-                    <div style="color: #00FF00; background: #000; padding: 20px; font-family: monospace; height: 100vh;">
-                        <h2>[SYSTEM WARNING] UNAUTHORIZED ACCESS DETECTED</h2>
-                        <p>⚠️ Hệ thống bảo mật phát hiện công cụ gỡ lỗi đang mở trên máy tính. Vui lòng đóng lại!</p>
-                        <br>
-                        <code>
-                            var audioContext = null;<br>
-                            ${fakeCode}<br>
-                            // Access Denied
-                        </code>
-                    </div>
-                `;
-            }
-        }, 1000);
-    }
-</script>
 <body>
+    <!-- POPUP CHỌN PHIÊN BẢN (DEMO / FULL) -->
+    <div id="licenseModalOverlay" class="modal-overlay">
+        <div class="license-selection-box">
+            <h2>⚛️ DAO ĐỘNG KÝ - FOX-LAB</h2>
+            <p>Vui lòng chọn chế độ sử dụng ứng dụng:</p>
+            
+            <div class="license-btn-group">
+                <button class="license-btn btn-demo-mode" onclick="selectMode('demo')">
+                    ⏳ Trải nghiệm Bản Demo (Dùng thử 30 Phút)
+                </button>
+                <button class="license-btn btn-full-mode" onclick="selectMode('full')">
+                    🔑 Kích hoạt Bản Full (Nhập Key bản quyền)
+                </button>
+            </div>
+
+            <div id="keyInputContainer" style="display:none; margin-bottom: 15px;">
+                <input type="text" id="licenseKeyInput" placeholder="Nhập mã Key bản quyền..." style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; box-sizing: border-box; margin-bottom: 8px;">
+                <button class="btn-green" style="width: 100%; padding: 10px;" onclick="verifyEnteredKey()">Xác thực & Mở khóa</button>
+            </div>
+
+            <div class="contact-box">
+                📌 <b>Cần nhận bản Full chính thức?</b><br>
+                Liên hệ tác giả / Giáo viên hướng dẫn:VÕ BÌNH MINH<br>
+                • Điện thoại / Zalo: <b>0939323579</b><br>
+            </div>
+        </div>
+    </div>
+
     <div class="top-bar">
         <div class="controls-wrapper">
             <select id="channelModeSelect" style="display:none"><option value="1" selected>1 nguồn âm</option><option value="2">2 nguồn âm</option></select>
@@ -331,139 +265,17 @@
                 </div>
             </div>
 
-            <div class="info-panel" id="infoText">Đang khởi tạo hệ thống...</div>
-        </div>
-
-        <div class="qr-panel" id="qrPanel" style="display:none;">
-            <img id="qrImage" src="" alt="QR Code"><span class="scan-title">FOX-LAB</span>
+            <div class="info-panel" id="infoText">Vui lòng chọn chế độ sử dụng bản quyền để bắt đầu.</div>
         </div>
     </div>
 
     <canvas id="oscilloscope"></canvas>
-    
-    <!-- FFT MODAL -->
-    <div id="fftModalOverlay" class="modal-overlay">
-        <div id="fftModal" class="modal-content" onclick="event.stopPropagation()">
-            <div class="modal-header">
-                <span>Phân tích Họa âm (Spectrum - 5 Họa âm)</span>
-            </div>
-            <div class="modal-controls">
-                <button class="btn-dark" onclick="closeFFTModal()">⬅ Quay lại</button>
-                <label style="font-weight: 600; font-size: 11.5px; margin-left:10px;">Tần số (f0):</label>
-                <input type="number" id="fftTargetFreq" value="440" min="20" max="5000" oninput="processAndDrawFFT()"> 
-                <span style="font-weight: 600; font-size: 11.5px;">Hz</span>
-                <button class="btn-green" onclick="processAndDrawFFT()">Quét Họa âm</button>
-            </div>
-            <div class="fft-canvas-container">
-                <canvas id="fftDisplayCanvas" class="modal-display-canvas"></canvas>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL XỬ LÝ 2 NGUỒN ÂM -->
-    <div id="twoSourceModalOverlay" class="modal-overlay">
-        <div id="twoSourceModal" class="modal-content" onclick="event.stopPropagation()">
-            <div class="modal-header">
-                <span>Phân tích & Xử lý 2 Nguồn âm</span>
-            </div>
-            <div class="modal-controls" style="justify-content: space-between; padding: 6px 12px;">
-                <button class="btn-dark" onclick="closeTwoSourceModal()">⬅ Quay lại</button>
-                
-                <div class="ts-mode-toggle">
-                    <button id="btnModeOverlay" class="active-mode" onclick="setTsMode('overlay')">Ghép sóng</button>
-                    <button id="btnModeSum" onclick="setTsMode('sum')">Tổng hợp (A+B)</button>
-                </div>
-
-                <div style="display:flex; gap:6px;">
-                    <button id="btnTsPause" class="btn-orange" onclick="toggleTsPause()" style="display:none;">⏸ Dừng</button>
-                    <button id="btnTsResult" class="btn-slate" onclick="toggleTsResults()" style="display:none;">📊 Kết quả</button>
-                    <button id="btnTsEquation" class="btn-slate" onclick="toggleTsEquations()">∑ Phương trình</button>
-                </div>
-            </div>
-            <div class="fft-canvas-container" id="tsContainer">
-                <canvas id="twoSourceCanvas" class="modal-display-canvas"></canvas>
-                
-                <!-- HUD KẾT QUẢ ĐỐI CHIẾU -->
-                <div id="hudResults" class="hud-overlay">
-                    <div class="hud-title">BẢNG KẾT QUẢ ĐỐI CHIẾU</div>
-                    <div>Tần số Kênh A: <span class="hud-highlight" id="hudFreqA">0</span> Hz &nbsp;|&nbsp; Chu kỳ T<sub>A</sub> = <span class="hud-highlight" id="hudPerA">0</span> ms</div>
-                    <div>Tần số Kênh B: <span class="hud-highlight" id="hudFreqB">0</span> Hz &nbsp;|&nbsp; Chu kỳ T<sub>B</sub> = <span class="hud-highlight" id="hudPerB">0</span> ms</div>
-                    <div style="margin-top:4px; padding-top:4px; border-top:1px dashed rgba(255,255,255,0.2);">
-                        Độ lệch pha Δφ: <span class="hud-highlight" id="hudPhaseRad">0.00</span> rad (<span class="hud-highlight" id="hudPhaseDeg">0</span>°)
-                    </div>
-                </div>
-
-                <!-- HUD PHƯƠNG TRÌNH SÓNG -->
-                <div id="hudEquations" class="hud-overlay" style="top: auto; bottom: 16px; left: 16px;">
-                    <div class="hud-title">PHƯƠNG TRÌNH DAO ĐỘNG</div>
-                    <div class="hud-eq">Kênh A: <span class="math-symbol">u<sub>A</sub> = A<sub>A</sub>cos(2π·<span id="eqFreqA">0</span>·t)</span></div>
-                    <div class="hud-eq">Kênh B: <span class="math-symbol">u<sub>B</sub> = A<sub>B</sub>cos(2π·<span id="eqFreqB">0</span>·t <span id="eqPhase">+ 0.00</span>)</span></div>
-                    <div class="hud-eq" id="eqSumLine" style="margin-top:4px;">Tổng hợp: <span class="math-symbol">u = u<sub>A</sub> + u<sub>B</sub></span></div>
-                </div>
-
-                <!-- CẢNH BÁO SÓNG PHÁCH -->
-                <div id="tsWarningText" class="beat-warning">⚠️ Hai nguồn khác tần số (Tạo Sóng Phách)</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- FOX-LAB AI WIDGET -->
-    <div id="fox-chat-widget">
-        <div class="fox-trigger-wrapper">
-            <div class="fox-ping-ring"></div>
-            <button id="fox-chat-trigger" onclick="toggleChat()">
-                <span class="fox-trigger-icon fox-trigger-fox-icon" id="trigger-fox-icon-container"></span>
-                <span class="fox-trigger-icon fox-trigger-close-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span>
-            </button>
-        </div>
-        <div id="fox-chat-box">
-            <div class="fox-chat-header">
-                <div class="fox-header-left">
-                    <div class="fox-avatar-container" id="header-fox-icon-container"></div>
-                    <div class="fox-header-info">
-                        <div class="fox-header-title">FOX-Lab AI</div>
-                        <div class="fox-header-status"><span class="fox-status-dot"></span><span id="foxStatusText">Trực tuyến</span></div>
-                    </div>
-                </div>
-                <div class="fox-header-actions">
-                    <button class="fox-btn-icon" id="themeToggleBtn" onclick="toggleChatTheme()" title="Đổi giao diện">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                    </button>
-                    <button class="fox-btn-icon" onclick="toggleChat()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
-                </div>
-            </div>
-            <div id="fox-chat-content">
-                <div class="fox-msg-row fox-msg-bot">
-                    <div class="fox-msg-avatar" id="msg-fox-icon-container"></div>
-                    <div class="fox-msg-group"><div class="fox-msg-bubble">Chào em! Thầy là <strong>FOX-Lab AI</strong>. Em có câu hỏi nào về dao động ký hoặc bài Sóng âm không?</div></div>
-                </div>
-            </div>
-            <div class="fox-input-container">
-                <div class="fox-input-box">
-                    <input type="text" id="fox-chat-input" placeholder="Hỏi FOX-Lab..." autocomplete="off">
-                    <button class="fox-send-btn" id="foxSendBtn" onclick="sendChatMessage()" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg></button>
-                </div>
-                <div class="fox-footer-meta">Tần số bám: <span class="fox-freq-tag" id="foxLiveFreqTag">440.0 Hz</span></div>
-            </div>
-        </div>
-    </div>
 
     <script>
-        // --- 1. CẤU HÌNH ĐƯỜNG DẪN WEB APP CỦA GOOGLE APPS SCRIPT ---
         const GAS_URL = "https://script.google.com/macros/s/AKfycbyStGo5ETWCHq3UxtQEWIFL-R2mpEHdeYuX53EgfPf8LtG2Dfe4Dbk1-i59hf8LcY2bdg/exec"; 
+        let isDemoMode = true;
+        let demoTimer = null;
 
-        const FOX_AVATAR_SVG = `<svg viewBox="0 0 100 100" fill="none"><polygon points="22,12 10,48 36,40" fill="#ff7a30"/><polygon points="23,19 16,44 32,38" fill="#1e293b"/><path d="M 19 36 Q 23 32 28 34" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round"/><polygon points="78,12 64,40 90,48" fill="#ff7a30"/><polygon points="77,19 68,38 84,44" fill="#1e293b"/><path d="M 81 36 Q 77 32 72 34" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round"/><polygon points="50,22 36,40 50,46" fill="#ff8f4a"/><polygon points="50,22 50,46 64,40" fill="#ff7a30"/><polygon points="36,40 10,48 20,68 38,58" fill="#d4380d"/><polygon points="64,40 38,58 50,46" fill="#e04006"/><polygon points="64,40 50,46 62,58" fill="#d4380d"/><polygon points="64,40 90,48 80,68 62,58" fill="#d4380d"/><polygon points="20,68 12,74 26,76 34,68" fill="#e2e8f0"/><polygon points="80,68 88,74 74,76 66,68" fill="#cbd5e1"/><polygon points="38,58 50,46 50,78 36,68" fill="#ff7a30"/><polygon points="62,58 50,46 50,78 64,68" fill="#e04006"/><polygon points="50,78 36,68 44,88 50,88" fill="#f8fafc"/><polygon points="50,78 64,68 56,88 50,88" fill="#e2e8f0"/><polygon points="50,88 45,82 55,82" fill="#0f172a"/><polygon points="25,48 50,54 75,48 71,59 50,65 29,59" fill="#090d16" stroke="rgba(56,189,248,0.5)" stroke-width="0.9"/><circle cx="34.5" cy="48" r="1.5" fill="#ffffff"/><circle cx="44.5" cy="60" r="1.5" fill="#ffffff"/><circle cx="54.5" cy="48" r="1.5" fill="#ffffff"/><circle cx="64.5" cy="60" r="1.5" fill="#ffffff"/></svg>`;
-
-        let isDemoMode = true; // Mặc định là Demo
-
-        function getUrlParameter(name) {
-            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
-            var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
-            var results = regex.exec(location.search);
-            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
-        }
-
-        // Tạo hoặc lấy Device ID định danh duy nhất cho máy này (đảm bảo 1 Key / 1 máy)
         function getDeviceId() {
             let deviceId = localStorage.getItem('fox_device_id');
             if (!deviceId) {
@@ -473,77 +285,90 @@
             return deviceId;
         }
 
-        // --- 2. KHỞI ĐỘNG VÀ PHÂN QUYỀN ---
         window.addEventListener('DOMContentLoaded', async () => {
-            document.getElementById('trigger-fox-icon-container').innerHTML = FOX_AVATAR_SVG;
-            document.getElementById('header-fox-icon-container').innerHTML = FOX_AVATAR_SVG;
-            document.getElementById('msg-fox-icon-container').innerHTML = FOX_AVATAR_SVG;
+            // Kiểm tra xem URL có đính kèm Key sẵn hay không (khi quét QR)
+            const urlParams = new URLSearchParams(window.location.search);
+            const keyParam = urlParams.get('key');
+            const typeParam = urlParams.get('type');
 
-            document.getElementById('fftModalOverlay').addEventListener('click', closeFFTModal);
-            document.getElementById('twoSourceModalOverlay').addEventListener('click', closeTwoSourceModal);
-
-            const speedGroup = document.getElementById('groupSpeed');
-            speedGroup.style.display = (modeSelect.value === 'continuous') ? 'block' : 'none';
-            document.getElementById('cardChannelB').style.display = (getActiveChannelMode() === '2') ? 'flex' : 'none';
-            
-            const keyParam = getUrlParameter('key');
-            const typeParam = getUrlParameter('type').toLowerCase();
-
-            // Phân định: Nếu quét QR hoặc mở link có type=full hoặc có key thì xác thực bản Full (1 key 1 máy qua GAS)
-            if (keyParam || typeParam === 'full') {
-                infoText.innerHTML = "Đang kiểm tra Key bản Full với Google Sheets...";
-                const deviceId = getDeviceId();
-                try {
-                    const response = await fetch(GAS_URL, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                        body: JSON.stringify({ action: "verifyKey", key: keyParam || "QR_FULL", deviceId: deviceId, type: "full" })
-                    });
-                    const result = await response.json();
-                    
-                    if (result.status === "success") {
-                        isDemoMode = false;
-                        infoText.innerHTML = "Bản Full Chính Thức đã được kích hoạt thành công cho thiết bị này. Nhấn vào <span class='info-badge'>Kênh A</span> để bắt đầu.";
-                    } else {
-                        isDemoMode = true;
-                        applyDemoRestrictions();
-                        infoText.innerHTML = `⚠️ ${result.message || "Xác thực thất bại!"} Đã chuyển về Bản Demo.`;
-                    }
-                } catch (e) {
-                    if (typeParam === 'full') {
-                        isDemoMode = false;
-                        infoText.innerHTML = "Bản Full Chính Thức (Ngoại tuyến). Nhấn vào <span class='info-badge'>Kênh A</span> để bắt đầu.";
-                    } else {
-                        isDemoMode = true;
-                        applyDemoRestrictions();
-                        infoText.innerHTML = "Lỗi kết nối máy chủ! Đang chạy Bản Dùng thử Demo.";
-                    }
-                }
-            } else {
-                // Vào bình thường (không key hoặc type=demo): Dùng luôn bản Demo 30 phút không cần key
-                isDemoMode = true;
-                applyDemoRestrictions();
-                infoText.innerHTML = "Bản Dùng thử Demo (30 phút - Vào là dùng). Nhấn vào <span class='info-badge'>Kênh A</span> để bắt đầu.";
+            if (keyParam) {
+                // Nếu quét QR có sẵn Key -> Tự động xác thực bản Full luôn
+                document.getElementById('licenseModalOverlay').style.display = 'none';
+                await verifyKeyWithServer(keyParam, "full");
+            } else if (typeParam === 'demo') {
+                selectMode('demo');
             }
-
-            resizeCanvas(); 
-            btnStartA.disabled = false;
-            updateUIState();
-            drawFrame(true);
         });
 
-        // Hạn chế tính năng nếu là bản Demo
+        // Xử lý khi người dùng bấm chọn chế độ
+        function selectMode(mode) {
+            if (mode === 'demo') {
+                isDemoMode = true;
+                document.getElementById('licenseModalOverlay').style.display = 'none';
+                applyDemoRestrictions();
+                infoText.innerHTML = "Đang chạy <b>Bản Dùng thử Demo (30 phút)</b>. Nhấn Kênh A để bắt đầu.";
+                
+                // Đếm ngược 30 phút hết hạn demo
+                demoTimer = setTimeout(() => {
+                    alert("⏰ Đã hết 30 phút dùng thử Demo! Vui lòng liên hệ để nhận bản Full chính thức.");
+                    document.getElementById('licenseModalOverlay').style.display = 'flex';
+                }, 30 * 60 * 1000);
+
+            } else if (mode === 'full') {
+                // Hiện ô nhập Key
+                document.getElementById('keyInputContainer').style.display = 'block';
+            }
+        }
+
+        async function verifyEnteredKey() {
+            const keyInput = document.getElementById('licenseKeyInput').value.trim();
+            if (!keyInput) {
+                alert("⚠️ Vui lòng nhập mã Key hợp lệ!");
+                return;
+            }
+            await verifyKeyWithServer(keyInput, "full");
+        }
+
+        async function verifyKeyWithServer(key, type) {
+            infoText.innerHTML = "Đang kiểm tra Key bản Full với hệ thống Google Sheets...";
+            const deviceId = getDeviceId();
+            
+            try {
+                const response = await fetch(GAS_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ action: "verifyKey", key: key, deviceId: deviceId, type: type })
+                });
+                const result = await response.json();
+                
+                if (result.status === "success") {
+                    isDemoMode = false;
+                    if(demoTimer) clearTimeout(demoTimer);
+                    document.getElementById('licenseModalOverlay').style.display = 'none';
+                    infoText.innerHTML = "✅ Bản Full Chính Thức đã kích hoạt thành công cho thiết bị này!";
+                    btnStartA.disabled = false;
+                    updateUIState();
+                    resizeCanvas();
+                    drawFrame(true);
+                } else {
+                    alert(`❌ ${result.message}\n\nVui lòng liên hệ tác giả để nhận Key bản Full chính thức!`);
+                    document.getElementById('licenseModalOverlay').style.display = 'flex';
+                }
+            } catch (e) {
+                alert("❌ Lỗi kết nối đến máy chủ xác thực! Đang chuyển về bản Demo.");
+                selectMode('demo');
+            }
+        }
+
         function applyDemoRestrictions() {
             const groupChannelMode = document.getElementById('groupChannelMode');
-            if (groupChannelMode) {
-                groupChannelMode.style.opacity = '0.5';
-                groupChannelMode.style.pointerEvents = 'none';
-            }
+            if (groupChannelMode) { groupChannelMode.style.opacity = '0.5'; groupChannelMode.style.pointerEvents = 'none'; }
             const groupSpeed = document.getElementById('groupSpeed');
-            if (groupSpeed) {
-                groupSpeed.style.opacity = '0.5';
-                groupSpeed.style.pointerEvents = 'none';
-            }
+            if (groupSpeed) { groupSpeed.style.opacity = '0.5'; groupSpeed.style.pointerEvents = 'none'; }
+            btnStartA.disabled = false;
+            updateUIState();
+            resizeCanvas();
+            drawFrame(true);
         }
 
         const btnStartA = document.getElementById('btnStartA'), btnStartB = document.getElementById('btnStartB');
@@ -572,10 +397,7 @@
                 const blob = new Blob([workletCode], { type: 'application/javascript' });
                 workletUrl = URL.createObjectURL(blob);
             }
-            try {
-                await ctx.audioWorklet.addModule(workletUrl);
-                return true;
-            } catch (e) { return false; }
+            try { await ctx.audioWorklet.addModule(workletUrl); return true; } catch (e) { return false; }
         }
 
         let animFrameId = null;
@@ -605,7 +427,7 @@
         settingsMenu.querySelectorAll('.settings-group-header').forEach(header => {
             header.addEventListener('click', (e) => {
                 e.stopPropagation();
-                if (isDemoMode) { alert("⚠️ Tính năng này bị khóa ở phiên bản Demo 30 phút!"); return; }
+                if (isDemoMode) { alert("⚠️ Tính năng này bị khóa ở phiên bản Demo 30 phút! Vui lòng liên hệ nhận bản Full."); return; }
                 const group = header.parentElement;
                 settingsMenu.querySelectorAll('.settings-group').forEach(g => { if (g !== group) g.classList.remove('expanded'); });
                 if (group.classList.toggle('expanded')) { requestAnimationFrame(() => updateSettingsPill(group.querySelector('.settings-group-items'), null, false)); }
@@ -655,8 +477,7 @@
         }
 
         btnAnalysis.addEventListener('click', () => { 
-            if (isDemoMode) { alert("⚠️ Vui lòng nâng cấp bản Full để sử dụng tính năng này!"); return; }
-            if(getActiveChannelMode() === '1') openFFTModal(); else openTwoSourceModal(); 
+            if (isDemoMode) { alert("⚠️ Vui lòng kích hoạt bản Full để sử dụng tính năng này!"); return; }
         });
 
         btnStartA.addEventListener('click', async () => { if (channelConfig.A.active) { stopAudioChannel('A'); updateUIState(); drawFrame(); } else { await initAudioChannel('A', micSelectA.value); } });
@@ -744,112 +565,6 @@
             if (isPaused) { if (animFrameId) { cancelAnimationFrame(animFrameId); animFrameId = null; } return; }
             animFrameId = requestAnimationFrame(draw);
             drawFrame();
-        }
-
-        function openFFTModal() {
-            if (isDemoMode) { alert("⚠️ Tính năng phân tích Họa âm bị khóa ở bản Demo!"); return; }
-            const overlay = document.getElementById('fftModalOverlay');
-            overlay.style.display = 'flex';
-            requestAnimationFrame(() => overlay.classList.add('animUI-visible'));
-        }
-        function closeFFTModal() { document.getElementById('fftModalOverlay').style.display = 'none'; }
-        
-        function openTwoSourceModal() {
-            if (isDemoMode) { alert("⚠️ Tính năng xử lý 2 nguồn âm bị khóa ở bản Demo!"); return; }
-            const overlay = document.getElementById('twoSourceModalOverlay');
-            overlay.style.display = 'flex';
-            requestAnimationFrame(() => overlay.classList.add('animUI-visible'));
-        }
-        function closeTwoSourceModal() { document.getElementById('twoSourceModalOverlay').style.display = 'none'; }
-        function setTsMode(m) {}
-
-        // --- 3. TÍCH HỢP CHATBOX & KẾT NỐI API GET/POST GAS CHO AI ---
-        function toggleChat() {
-            document.getElementById("fox-chat-widget").classList.toggle("open");
-        }
-
-        function toggleChatTheme() {
-            document.getElementById("fox-chat-box").classList.toggle("light-theme");
-        }
-
-        const chatInput = document.getElementById('fox-chat-input');
-        const sendBtn = document.getElementById('foxSendBtn');
-
-        chatInput.addEventListener('input', () => {
-            sendBtn.disabled = chatInput.value.trim() === '';
-        });
-
-        chatInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && !sendBtn.disabled) {
-                sendChatMessage();
-            }
-        });
-
-        async function sendChatMessage() {
-            const text = chatInput.value.trim();
-            if (!text) return;
-
-            appendMessage(text, 'user');
-            chatInput.value = '';
-            sendBtn.disabled = true;
-
-            const chatContent = document.getElementById('fox-chat-content');
-            const loadingId = 'loading-' + Date.now();
-            appendMessage("FOX-Lab AI đang phân tích...", 'bot', loadingId);
-
-            try {
-                const response = await fetch(GAS_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify({ action: "chat", message: text })
-                });
-                const result = await response.json();
-                
-                const loadingBubble = document.getElementById(loadingId);
-                if (loadingBubble) loadingBubble.remove();
-
-                if (result.status === "success" && result.reply) {
-                    appendMessage(result.reply, 'bot');
-                } else {
-                    appendMessage("Hệ thống phản hồi lỗi từ máy chủ AI.", 'bot');
-                }
-            } catch (err) {
-                const loadingBubble = document.getElementById(loadingId);
-                if (loadingBubble) loadingBubble.remove();
-                appendMessage("Lỗi kết nối đến máy chủ AI GAS.", 'bot');
-            }
-            chatContent.scrollTop = chatContent.scrollHeight;
-        }
-
-        function appendMessage(text, sender, customId = null) {
-            const chatContent = document.getElementById('fox-chat-content');
-            const row = document.createElement('div');
-            row.className = `fox-msg-row fox-msg-${sender}`;
-            
-            if (sender === 'bot') {
-                row.innerHTML = `
-                    <div class="fox-msg-avatar">${FOX_AVATAR_SVG}</div>
-                    <div class="fox-msg-group">
-                        <div class="fox-msg-bubble" ${customId ? `id="${customId}"` : ''}>${formatBotMessage(text)}</div>
-                    </div>
-                `;
-            } else {
-                row.innerHTML = `
-                    <div class="fox-msg-group">
-                        <div class="fox-msg-bubble">${escapeHtml(text)}</div>
-                    </div>
-                `;
-            }
-            chatContent.appendChild(row);
-            chatContent.scrollTop = chatContent.scrollHeight;
-        }
-
-        function formatBotMessage(text) {
-            return text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
-        }
-
-        function escapeHtml(string) {
-            return String(string).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
         }
     </script>
 </body>
