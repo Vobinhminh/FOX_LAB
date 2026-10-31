@@ -23,7 +23,6 @@
         @keyframes statusPulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.85); } }
         @keyframes animUI-pulseSubtle { 0%, 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); } 50% { box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); } }
         @keyframes animUI-dropdownIn { from { opacity: 0; transform: translateY(-4px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
-        @keyframes pulseBeat { 0%, 100% { opacity: 0.9; transform: translateX(-50%) scale(1); } 50% { opacity: 1; transform: translateX(-50%) scale(1.05); } }
         @keyframes foxPulsePing { 0% { transform: scale(0.95); opacity: 0.8; } 70%, 100% { transform: scale(1.65); opacity: 0; } }
         @keyframes foxMsgFadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -33,7 +32,6 @@
         .channel-card { animation: animUI-slideInLeft 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0.25s both; }
         .channel-card:nth-child(2) { animation-name: animUI-slideInRight; animation-delay: 0.3s; }
         .info-panel { animation: animUI-fadeIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.35s both; }
-        .qr-panel { animation: animUI-scaleIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0.4s both; }
         canvas#oscilloscope { animation: animUI-fadeIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both; }
 
         .settings-dropdown-menu { transform-origin: top left; }
@@ -49,15 +47,7 @@
         button:active:not(:disabled) { transform: translateY(1px) scale(0.97); transition-duration: 0.1s; }
 
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; background: rgba(15, 23, 42, 0.95); z-index: 100000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(6px); padding: 15px; box-sizing: border-box; }
-        .modal-content { background: #f8fafc; width: 100vw; height: 100dvh; max-width: 100vw; max-height: 100dvh; border-radius: 0; box-shadow: none; display: flex; flex-direction: column; overflow: hidden; box-sizing: border-box; }
-        .modal-header { color: #fff; padding: 8px 12px; font-weight: bold; font-size: 13px; text-shadow: 0 1px 2px rgba(0,0,0,0.3); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; border-bottom: 1px solid rgba(0,0,0,0.1); }
-        .modal-controls { padding: 6px 8px; background: #fff; border-bottom: 1px solid #cbd5e1; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; justify-content: center; flex-shrink: 0; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-        .fft-canvas-container { padding: 6px; background: #e2e8f0; width: 100%; box-sizing: border-box; display: flex; justify-content: center; align-items: center; overflow: hidden; flex-grow: 1; position: relative; }
-        .modal-display-canvas { background: #fff; border: 1px solid #cbd5e1; border-radius: 4px; width: 100%; height: 100%; display: block; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        #fftModal .modal-header { background: linear-gradient(90deg, #7c3aed, #4f46e5); }
-        #twoSourceModal .modal-header { background: linear-gradient(90deg, #db2777, #c026d3); }
-
-        /* Popup chọn phiên bản */
+        
         .license-selection-box { background: #ffffff; width: 100%; max-width: 450px; border-radius: 12px; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3); text-align: center; box-sizing: border-box; }
         .license-selection-box h2 { color: #0f172a; margin-top: 0; font-size: 20px; font-weight: 700; }
         .license-selection-box p { color: #475569; font-size: 13px; line-height: 1.5; margin-bottom: 20px; }
@@ -83,15 +73,8 @@
         .channel-a-indicator { border-left: 3px solid #ef4444; }
         .channel-b-indicator { border-left: 3px solid #3b82f6; }
 
-        @media (max-width: 600px) { .channel-card { flex: 1 1 100%; height: 26px; } .toolbar-row > * { font-size: 11px; padding: 4px; } }
-        .qr-panel { display: flex; flex-direction: column; align-items: center; justify-content: center; background: #fff; border: 1px solid #cbd5e1; border-radius: 4px; padding: 2px; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); width: 65px; flex-shrink: 0; cursor: pointer; }
-        .qr-panel img { width: 45px; height: 45px; }
-        .qr-panel .scan-title { font-size: 8px; font-weight: 800; color: #ef4444; margin-top: 1px; }
-        @media (max-width: 800px) { .qr-panel { display: none !important; } }
-
         .info-panel { font-weight: 600; font-size: 11.5px; color: #059669; background: #fff; padding: 2px 6px; border-radius: 4px; border: 1px solid #e2e8f0; width: 100%; text-align: center; box-sizing: border-box; line-height: 1.4; display: flex; align-items: center; justify-content: center; min-height: 22px; position: relative; z-index: 5; }
-        .info-badge, .channel-tag-a, .channel-tag-b { display: inline-block; padding: 0 4px; margin: 0 2px; border-radius: 3px; font-weight: 700; }
-        .info-badge { background-color: rgba(16, 185, 129, 0.1); color: #059669; border: 1px solid rgba(16, 185, 129, 0.2); }
+        .info-badge { display: inline-block; padding: 0 4px; margin: 0 2px; border-radius: 3px; font-weight: 700; background-color: rgba(16, 185, 129, 0.1); color: #059669; border: 1px solid rgba(16, 185, 129, 0.2); }
 
         button { font-size: 11.5px; font-weight: bold; cursor: pointer; color: white; border: 1px solid rgba(0,0,0,0.1); border-radius: 4px; box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255,255,255,0.2); transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1); box-sizing: border-box; padding: 4px 8px; margin: 0; text-shadow: 0 1px 1px rgba(0,0,0,0.25); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         button:hover:not(:disabled) { filter: brightness(1.1); transform: translateY(-1px); box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255,255,255,0.2); }
@@ -100,11 +83,7 @@
         .btn-green { background: linear-gradient(180deg, #10b981, #059669); } 
         .btn-red { background: linear-gradient(180deg, #ef4444, #dc2626); } 
         .btn-orange { background: linear-gradient(180deg, #f59e0b, #d97706); } 
-        .btn-purple { background: linear-gradient(180deg, #8b5cf6, #7c3aed); } 
-        .btn-pink { background: linear-gradient(180deg, #ec4899, #db2777); } 
         .btn-slate { background: linear-gradient(180deg, #64748b, #475569); } 
-        .btn-blue { background: linear-gradient(180deg, #3b82f6, #2563eb); } 
-        .btn-dark { background: linear-gradient(180deg, #334155, #0f172a); }
 
         canvas { flex-grow: 1; width: 100%; height: 100%; display: block; cursor: crosshair; touch-action: none; background-color: #f8fafc; }
 
@@ -126,6 +105,7 @@
         .settings-item:hover { color: #ffffff; }
         .settings-item.active { color: #ffffff; font-weight: 700; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
 
+        /* === FOX-LAB AI CHATBOX WIDGET (ĐÃ KHÔI PHỤC ĐẦY ĐỦ) === */
         :root { --fox-font: 'Be Vietnam Pro', sans-serif; --fox-font-mono: 'JetBrains Mono', monospace; --fox-cyan: #38bdf8; --fox-text-muted: #64748b; }
         #fox-chat-widget { position: fixed; bottom: 20px; right: 20px; z-index: 99998; font-family: var(--fox-font); user-select: none; }
         .fox-trigger-wrapper { position: relative; display: flex; align-items: center; justify-content: center; }
@@ -142,12 +122,12 @@
         #fox-chat-box { position: absolute; bottom: 60px; right: 0; width: 330px; height: 450px; max-height: calc(100dvh - 100px); max-width: calc(100vw - 20px); background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.7); display: flex; flex-direction: column; overflow: hidden; transform-origin: bottom right; transform: scale(0.9) translateY(20px); opacity: 0; visibility: hidden; pointer-events: none; transition: all 0.3s; z-index: 10; }
         #fox-chat-widget.open #fox-chat-box { transform: scale(1) translateY(0); opacity: 1; visibility: visible; pointer-events: auto; }
         
-        .fox-chat-header { padding: 10px 12px; background: rgba(30, 41, 59, 0.8); border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; transition: background 0.3s; }
+        .fox-chat-header { padding: 10px 12px; background: rgba(30, 41, 59, 0.8); border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
         .fox-header-left { display: flex; align-items: center; gap: 8px; }
         .fox-avatar-container { width: 28px; height: 28px; border-radius: 6px; border: 1px solid rgba(249, 115, 22, 0.5); background: rgba(249, 115, 22, 0.1); display: flex; align-items: center; justify-content: center; padding: 2px; box-sizing: border-box; }
         .fox-avatar-container svg, .fox-msg-avatar svg { width: 100%; height: 100%; display: block; }
         .fox-header-info { display: flex; flex-direction: column; gap: 1px; }
-        .fox-header-title { font-size: 13.5px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 4px; transition: color 0.3s; }
+        .fox-header-title { font-size: 13.5px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 4px; }
         .fox-header-status { font-size: 10px; color: #94a3b8; display: flex; align-items: center; gap: 4px; }
         .fox-status-dot { width: 5px; height: 5px; border-radius: 50%; background: #22c55e; animation: statusPulse 2s infinite ease-in-out; }
         .fox-header-actions { display: flex; gap: 6px; }
@@ -163,31 +143,35 @@
         .fox-msg-group { display: flex; flex-direction: column; max-width: 85%; gap: 2px; }
         .fox-msg-user .fox-msg-group { align-items: flex-end; }
         .fox-msg-bot .fox-msg-group { align-items: flex-start; }
-        .fox-msg-bubble { padding: 8px 12px; border-radius: 10px; font-size: 12px; line-height: 1.4; word-wrap: break-word; max-width: 100%; transition: background 0.3s, color 0.3s, border 0.3s; }
+        .fox-msg-bubble { padding: 8px 12px; border-radius: 10px; font-size: 12px; line-height: 1.4; word-wrap: break-word; max-width: 100%; }
         .fox-msg-user .fox-msg-bubble { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); color: #ffffff; border-bottom-right-radius: 2px; font-weight: 500; }
         .fox-msg-bot .fox-msg-bubble { background: rgba(30, 41, 59, 0.85); color: #f1f5f9; border: 1px solid rgba(255, 255, 255, 0.1); border-top-left-radius: 2px; }
         .fox-msg-bot .fox-msg-bubble b { color: var(--fox-cyan); font-weight: 600; }
         
-        .fox-input-container { padding: 10px; background: rgba(15, 23, 42, 0.95); border-top: 1px solid rgba(255, 255, 255, 0.1); display: flex; flex-direction: column; gap: 4px; flex-shrink: 0; transition: background 0.3s, border 0.3s; }
-        .fox-input-box { display: flex; align-items: center; background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 20px; padding: 4px 6px 4px 12px; transition: background 0.3s, border 0.3s; }
-        #fox-chat-input { flex: 1; background: transparent; border: none; color: #f8fafc; font-size: 12px; outline: none; padding: 6px 0; transition: color 0.3s; }
+        .fox-input-container { padding: 10px; background: rgba(15, 23, 42, 0.95); border-top: 1px solid rgba(255, 255, 255, 0.1); display: flex; flex-direction: column; gap: 4px; flex-shrink: 0; }
+        .fox-input-box { display: flex; align-items: center; background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 20px; padding: 4px 6px 4px 12px; }
+        #fox-chat-input { flex: 1; background: transparent; border: none; color: #f8fafc; font-size: 12px; outline: none; padding: 6px 0; }
         .fox-send-btn { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); border: none; color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
         .fox-send-btn:disabled { background: rgba(255, 255, 255, 0.1) !important; color: #64748b !important; cursor: not-allowed; }
         .fox-send-btn svg { width: 12px; height: 12px; margin-left: 2px; }
         .fox-footer-meta { font-size: 9px; color: var(--fox-text-muted); text-align: center; }
         .fox-freq-tag { color: var(--fox-cyan); font-weight: 600; }
 
-        @media (max-width: 600px) { 
-            #fox-chat-widget { bottom: 95px; right: 15px; } 
-            #fox-chat-box { width: calc(100vw - 30px); height: calc(100dvh - 160px); bottom: 55px; } 
-        }
+        #fox-chat-box.light-theme { background: rgba(255, 255, 255, 0.95); border: 1px solid rgba(0,0,0,0.1); box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.15); }
+        #fox-chat-box.light-theme .fox-chat-header { background: rgba(241, 245, 249, 0.9); border-bottom: 1px solid #cbd5e1; }
+        #fox-chat-box.light-theme .fox-header-title { color: #0f172a; }
+        #fox-chat-box.light-theme .fox-btn-icon { color: #64748b; }
+        #fox-chat-box.light-theme .fox-msg-bot .fox-msg-bubble { background: #f1f5f9; color: #1e293b; border: 1px solid #e2e8f0; }
+        #fox-chat-box.light-theme .fox-input-container { background: rgba(248, 250, 252, 0.95); border-top: 1px solid #cbd5e1; }
+        #fox-chat-box.light-theme .fox-input-box { background: #ffffff; border: 1px solid #cbd5e1; }
+        #fox-chat-box.light-theme #fox-chat-input { color: #0f172a; }
     </style>
 </head>
 <body>
     <!-- POPUP CHỌN PHIÊN BẢN (DEMO / FULL) -->
     <div id="licenseModalOverlay" class="modal-overlay">
         <div class="license-selection-box">
-            <h2>⚛️ DAO ĐỘNG KÝ - FOX-LAB</h2>
+            <h2>⚛️ DAO ĐỘNG KÝ_FOX-LAB</h2>
             <p>Vui lòng chọn chế độ sử dụng ứng dụng:</p>
             
             <div class="license-btn-group">
@@ -271,10 +255,53 @@
 
     <canvas id="oscilloscope"></canvas>
 
+    <!-- FOX-LAB AI CHATBOX WIDGET -->
+    <div id="fox-chat-widget">
+        <div class="fox-trigger-wrapper">
+            <div class="fox-ping-ring"></div>
+            <button id="fox-chat-trigger" onclick="toggleChat()">
+                <span class="fox-trigger-icon fox-trigger-fox-icon" id="trigger-fox-icon-container"></span>
+                <span class="fox-trigger-icon fox-trigger-close-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span>
+            </button>
+        </div>
+        <div id="fox-chat-box">
+            <div class="fox-chat-header">
+                <div class="fox-header-left">
+                    <div class="fox-avatar-container" id="header-fox-icon-container"></div>
+                    <div class="fox-header-info">
+                        <div class="fox-header-title">FOX-Lab AI</div>
+                        <div class="fox-header-status"><span class="fox-status-dot"></span><span id="foxStatusText">Trực tuyến</span></div>
+                    </div>
+                </div>
+                <div class="fox-header-actions">
+                    <button class="fox-btn-icon" id="themeToggleBtn" onclick="toggleChatTheme()" title="Đổi giao diện">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    </button>
+                    <button class="fox-btn-icon" onclick="toggleChat()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+                </div>
+            </div>
+            <div id="fox-chat-content">
+                <div class="fox-msg-row fox-msg-bot">
+                    <div class="fox-msg-avatar" id="msg-fox-icon-container"></div>
+                    <div class="fox-msg-group"><div class="fox-msg-bubble">Chào thầy và các em! Thầy là <strong>FOX-Lab AI</strong>. Các em có câu hỏi nào về dao động ký hoặc bài Sóng âm không?</div></div>
+                </div>
+            </div>
+            <div class="fox-input-container">
+                <div class="fox-input-box">
+                    <input type="text" id="fox-chat-input" placeholder="Hỏi FOX-Lab..." autocomplete="off">
+                    <button class="fox-send-btn" id="foxSendBtn" onclick="sendChatMessage()" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg></button>
+                </div>
+                <div class="fox-footer-meta">Tần số bám: <span class="fox-freq-tag" id="foxLiveFreqTag">440.0 Hz</span></div>
+            </div>
+        </div>
+    </div>
+
     <script>
         const GAS_URL = "https://script.google.com/macros/s/AKfycbyStGo5ETWCHq3UxtQEWIFL-R2mpEHdeYuX53EgfPf8LtG2Dfe4Dbk1-i59hf8LcY2bdg/exec"; 
         let isDemoMode = true;
         let demoTimer = null;
+
+        const FOX_AVATAR_SVG = `<svg viewBox="0 0 100 100" fill="none"><polygon points="22,12 10,48 36,40" fill="#ff7a30"/><polygon points="23,19 16,44 32,38" fill="#1e293b"/><path d="M 19 36 Q 23 32 28 34" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round"/><polygon points="78,12 64,40 90,48" fill="#ff7a30"/><polygon points="77,19 68,38 84,44" fill="#1e293b"/><path d="M 81 36 Q 77 32 72 34" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round"/><polygon points="50,22 36,40 50,46" fill="#ff8f4a"/><polygon points="50,22 50,46 64,40" fill="#ff7a30"/><polygon points="36,40 10,48 20,68 38,58" fill="#d4380d"/><polygon points="64,40 38,58 50,46" fill="#e04006"/><polygon points="64,40 50,46 62,58" fill="#d4380d"/><polygon points="64,40 90,48 80,68 62,58" fill="#d4380d"/><polygon points="20,68 12,74 26,76 34,68" fill="#e2e8f0"/><polygon points="80,68 88,74 74,76 66,68" fill="#cbd5e1"/><polygon points="38,58 50,46 50,78 36,68" fill="#ff7a30"/><polygon points="62,58 50,46 50,78 64,68" fill="#e04006"/><polygon points="50,78 36,68 44,88 50,88" fill="#f8fafc"/><polygon points="50,78 64,68 56,88 50,88" fill="#e2e8f0"/><polygon points="50,88 45,82 55,82" fill="#0f172a"/><polygon points="25,48 50,54 75,48 71,59 50,65 29,59" fill="#090d16" stroke="rgba(56,189,248,0.5)" stroke-width="0.9"/><circle cx="34.5" cy="48" r="1.5" fill="#ffffff"/><circle cx="44.5" cy="60" r="1.5" fill="#ffffff"/><circle cx="54.5" cy="48" r="1.5" fill="#ffffff"/><circle cx="64.5" cy="60" r="1.5" fill="#ffffff"/></svg>`;
 
         function getDeviceId() {
             let deviceId = localStorage.getItem('fox_device_id');
@@ -286,13 +313,15 @@
         }
 
         window.addEventListener('DOMContentLoaded', async () => {
-            // Kiểm tra xem URL có đính kèm Key sẵn hay không (khi quét QR)
+            document.getElementById('trigger-fox-icon-container').innerHTML = FOX_AVATAR_SVG;
+            document.getElementById('header-fox-icon-container').innerHTML = FOX_AVATAR_SVG;
+            document.getElementById('msg-fox-icon-container').innerHTML = FOX_AVATAR_SVG;
+
             const urlParams = new URLSearchParams(window.location.search);
             const keyParam = urlParams.get('key');
             const typeParam = urlParams.get('type');
 
             if (keyParam) {
-                // Nếu quét QR có sẵn Key -> Tự động xác thực bản Full luôn
                 document.getElementById('licenseModalOverlay').style.display = 'none';
                 await verifyKeyWithServer(keyParam, "full");
             } else if (typeParam === 'demo') {
@@ -300,7 +329,6 @@
             }
         });
 
-        // Xử lý khi người dùng bấm chọn chế độ
         function selectMode(mode) {
             if (mode === 'demo') {
                 isDemoMode = true;
@@ -308,14 +336,12 @@
                 applyDemoRestrictions();
                 infoText.innerHTML = "Đang chạy <b>Bản Dùng thử Demo (30 phút)</b>. Nhấn Kênh A để bắt đầu.";
                 
-                // Đếm ngược 30 phút hết hạn demo
                 demoTimer = setTimeout(() => {
                     alert("⏰ Đã hết 30 phút dùng thử Demo! Vui lòng liên hệ để nhận bản Full chính thức.");
                     document.getElementById('licenseModalOverlay').style.display = 'flex';
                 }, 30 * 60 * 1000);
 
             } else if (mode === 'full') {
-                // Hiện ô nhập Key
                 document.getElementById('keyInputContainer').style.display = 'block';
             }
         }
@@ -565,6 +591,95 @@
             if (isPaused) { if (animFrameId) { cancelAnimationFrame(animFrameId); animFrameId = null; } return; }
             animFrameId = requestAnimationFrame(draw);
             drawFrame();
+        }
+
+        // --- XỬ LÝ CHATBOX AI ---
+        function toggleChat() {
+            document.getElementById("fox-chat-widget").classList.toggle("open");
+        }
+
+        function toggleChatTheme() {
+            document.getElementById("fox-chat-box").classList.toggle("light-theme");
+        }
+
+        const chatInput = document.getElementById('fox-chat-input');
+        const sendBtn = document.getElementById('foxSendBtn');
+
+        chatInput.addEventListener('input', () => {
+            sendBtn.disabled = chatInput.value.trim() === '';
+        });
+
+        chatInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !sendBtn.disabled) {
+                sendChatMessage();
+            }
+        });
+
+        async function sendChatMessage() {
+            const text = chatInput.value.trim();
+            if (!text) return;
+
+            appendMessage(text, 'user');
+            chatInput.value = '';
+            sendBtn.disabled = true;
+
+            const chatContent = document.getElementById('fox-chat-content');
+            const loadingId = 'loading-' + Date.now();
+            appendMessage("FOX-Lab AI đang phân tích...", 'bot', loadingId);
+
+            try {
+                const response = await fetch(GAS_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ action: "chat", message: text })
+                });
+                const result = await response.json();
+                
+                const loadingBubble = document.getElementById(loadingId);
+                if (loadingBubble) loadingBubble.remove();
+
+                if (result.status === "success" && result.reply) {
+                    appendMessage(result.reply, 'bot');
+                } else {
+                    appendMessage("Hệ thống phản hồi lỗi từ máy chủ AI.", 'bot');
+                }
+            } catch (err) {
+                const loadingBubble = document.getElementById(loadingId);
+                if (loadingBubble) loadingBubble.remove();
+                appendMessage("Lỗi kết nối đến máy chủ AI GAS.", 'bot');
+            }
+            chatContent.scrollTop = chatContent.scrollHeight;
+        }
+
+        function appendMessage(text, sender, customId = null) {
+            const chatContent = document.getElementById('fox-chat-content');
+            const row = document.createElement('div');
+            row.className = `fox-msg-row fox-msg-${sender}`;
+            
+            if (sender === 'bot') {
+                row.innerHTML = `
+                    <div class="fox-msg-avatar">${FOX_AVATAR_SVG}</div>
+                    <div class="fox-msg-group">
+                        <div class="fox-msg-bubble" ${customId ? `id="${customId}"` : ''}>${formatBotMessage(text)}</div>
+                    </div>
+                `;
+            } else {
+                row.innerHTML = `
+                    <div class="fox-msg-group">
+                        <div class="fox-msg-bubble">${escapeHtml(text)}</div>
+                    </div>
+                `;
+            }
+            chatContent.appendChild(row);
+            chatContent.scrollTop = chatContent.scrollHeight;
+        }
+
+        function formatBotMessage(text) {
+            return text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
+        }
+
+        function escapeHtml(string) {
+            return String(string).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
         }
     </script>
 </body>
