@@ -94,7 +94,7 @@
         .channel-b-indicator { border-left: 3px solid #3b82f6; }
 
         @media (max-width: 600px) { .channel-card { flex: 1 1 100%; height: 26px; } .toolbar-row > * { font-size: 11px; padding: 4px; } }
-        .qr-panel { display: flex; flex-direction: column; align-items: center; justify-content: center; background: #fff; border: 1px solid #cbd5e1; border-radius: 4px; padding: 2px; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); width: 65px; flex-shrink: 0; cursor: pointer; }
+        .qr-panel { display: none; flex-direction: column; align-items: center; justify-content: center; background: #fff; border: 1px solid #cbd5e1; border-radius: 4px; padding: 2px; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); width: 65px; flex-shrink: 0; cursor: pointer; }
         .qr-panel img { width: 45px; height: 45px; }
         .qr-panel .scan-title { font-size: 8px; font-weight: 800; color: #ef4444; margin-top: 1px; }
         @media (max-width: 800px) { .qr-panel { display: none !important; } }
@@ -105,8 +105,23 @@
         .channel-tag-a { color: #ef4444; background-color: rgba(239, 68, 68, 0.1); }
         .channel-tag-b { color: #3b82f6; background-color: rgba(59, 130, 246, 0.1); }
         
-        .license-gear-btn { background: none; border: none; font-size: 14px; cursor: pointer; padding: 0 4px; filter: grayscale(1); transition: filter 0.2s; }
-        .license-gear-btn:hover { filter: grayscale(0); }
+        /* CHỈNH LẠI MÀU NÚT CÀI ĐẶT NHẬP KEY LÀ MÀU ĐEN */
+        .license-gear-btn { 
+            background: #f8fafc; 
+            border: 1px solid #cbd5e1; 
+            border-radius: 4px; 
+            font-size: 11.5px; 
+            font-weight: 700; 
+            color: #0f172a; 
+            cursor: pointer; 
+            padding: 2px 6px; 
+            transition: all 0.2s ease; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 4px; 
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05); 
+        }
+        .license-gear-btn:hover { background: #e2e8f0; color: #000000; }
 
         button { font-size: 11.5px; font-weight: bold; cursor: pointer; color: white; border: 1px solid rgba(0,0,0,0.1); border-radius: 4px; box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255,255,255,0.2); transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1); box-sizing: border-box; padding: 4px 8px; margin: 0; text-shadow: 0 1px 1px rgba(0,0,0,0.25); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         button:hover:not(:disabled) { filter: brightness(1.1); transform: translateY(-1px); box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255,255,255,0.2); }
@@ -264,7 +279,7 @@
         e.preventDefault();
     });
 
-    // 3. Bẫy DevTools (CHỈ KÍCH HOẠT TRÊN MÁY TÍNH, BỎ QUA ĐIỆN THOẠI VÀ TABLET)
+    // 3. Bẫy DevTools (CHỈ KÍCH HOẠT TRÊN MÁY TÍNH)
     const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
     if (!isMobileDevice) {
@@ -304,10 +319,10 @@
             
             <div class="license-btn-group">
                 <button class="license-btn btn-demo-mode" onclick="selectMode('demo')">
-                    ⏳ Trải nghiệm Bản Demo (Dùng thử 30 Phút)
+                    ⏳ Trải nghiệm Bản Demo (Dùng thử)
                 </button>
                 <button class="license-btn btn-full-mode" onclick="selectMode('full')">
-                    🔑 Kích hoạt Bản Full (Nhập Key bản quyền)
+                    🔑 Kích hoạt Bản Full (Nhập Key)
                 </button>
             </div>
 
@@ -513,6 +528,8 @@
         const GAS_URL = "https://script.google.com/macros/s/AKfycbyStGo5ETWCHq3UxtQEWIFL-R2mpEHdeYuX53EgfPf8LtG2Dfe4Dbk1-i59hf8LcY2bdg/exec"; 
         let isDemoMode = true;
         let demoTimer = null;
+        let demoChatCount = 0;
+        const MAX_DEMO_CHAT = 3;
 
         function getDeviceId() {
             let deviceId = localStorage.getItem('fox_device_id');
@@ -527,12 +544,19 @@
             const urlParams = new URLSearchParams(window.location.search);
             const keyParam = urlParams.get('key');
             const typeParam = urlParams.get('type');
+            let savedKey = localStorage.getItem('fox_license_key');
 
             if (keyParam) {
                 document.getElementById('licenseModalOverlay').style.display = 'none';
                 await verifyKeyWithServer(keyParam, "full");
+            } else if (savedKey) {
+                // Đã lưu Key trước đó -> Xác thực ngầm
+                document.getElementById('licenseModalOverlay').style.display = 'none';
+                await verifyKeyWithServer(savedKey, "full", true);
             } else if (typeParam === 'demo') {
                 selectMode('demo');
+            } else {
+                openLicenseModal();
             }
         });
 
@@ -544,13 +568,9 @@
             if (mode === 'demo') {
                 isDemoMode = true;
                 document.getElementById('licenseModalOverlay').style.display = 'none';
-                infoMessageText.innerHTML = `Bản Dùng thử Demo (30 phút).`;
-                
-                demoTimer = setTimeout(() => {
-                    alert("⏰ Đã hết 30 phút dùng thử Demo! Vui lòng nhập Key bản Full.");
-                    openLicenseModal();
-                }, 30 * 60 * 1000);
-
+                infoMessageText.innerHTML = `Bản Dùng thử Demo (Khóa tính năng nâng cao).`;
+                updateAnalysisButtonState();
+                checkAndShowQR();
             } else if (mode === 'full') {
                 document.getElementById('keyInputContainer').style.display = 'block';
             }
@@ -565,8 +585,8 @@
             await verifyKeyWithServer(keyInput, "full");
         }
 
-        async function verifyKeyWithServer(key, type) {
-            infoMessageText.innerHTML = "Đang kiểm tra Key bản Full với Google Sheets...";
+        async function verifyKeyWithServer(key, type, isSilent = false) {
+            if(!isSilent) infoMessageText.innerHTML = "Đang kiểm tra Key bản Full với Google Sheets...";
             const deviceId = getDeviceId();
             
             try {
@@ -579,20 +599,47 @@
                 
                 if (result.status === "success") {
                     isDemoMode = false;
+                    localStorage.setItem('fox_license_key', key); // Lưu Key tự động truy cập lần sau
                     if(demoTimer) clearTimeout(demoTimer);
                     document.getElementById('licenseModalOverlay').style.display = 'none';
                     infoMessageText.innerHTML = "✅ Bản Full Chính Thức đã kích hoạt thành công!";
+                    
+                    updateAnalysisButtonState();
+                    checkAndShowQR();
                 } else {
-                    alert(`❌ ${result.message}\nVui lòng liên hệ tác giả nhận Key bản Full!`);
+                    if(!isSilent) alert(`❌ ${result.message}\nVui lòng liên hệ tác giả nhận Key bản Full!`);
+                    localStorage.removeItem('fox_license_key'); // Xóa Key hỏng
                     openLicenseModal();
+                    selectMode('demo');
                 }
             } catch (e) {
-                alert("❌ Lỗi kết nối máy chủ! Chuyển về bản Demo.");
+                if(!isSilent) alert("❌ Lỗi kết nối máy chủ! Chuyển về bản Demo.");
                 selectMode('demo');
             }
         }
 
-        // Khởi tạo AudioWorklet Inline Blob (Tránh việc phải tạo file audio-processor.js bên ngoài)
+        function checkAndShowQR() {
+            const qrPanel = document.getElementById('qrPanel');
+            const qrImage = document.getElementById('qrImage');
+            if (!qrImage || !qrPanel) return;
+
+            let currentUrl = window.location.href.split('?')[0]; 
+            
+            // Chỉ hiển thị QR khi ở Bản Full VÀ chạy trên nền tảng github.io
+            if (!isDemoMode && currentUrl.includes('github.io')) {
+                qrPanel.style.display = 'flex';
+                let activeKey = localStorage.getItem('fox_license_key') || '';
+                let qrUrl = currentUrl;
+                if (activeKey) {
+                    qrUrl += '?key=' + encodeURIComponent(activeKey);
+                }
+                qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrUrl)}`;
+            } else {
+                qrPanel.style.display = 'none';
+            }
+        }
+
+        // Khởi tạo AudioWorklet Inline Blob
         let workletUrl = null;
         async function setupAudioWorklet(ctx) {
             if (!workletUrl) {
@@ -625,15 +672,7 @@
             document.getElementById('header-fox-icon-container').innerHTML = FOX_AVATAR_SVG;
             document.getElementById('msg-fox-icon-container').innerHTML = FOX_AVATAR_SVG;
 
-            const qrImage = document.getElementById('qrImage');
-            if (qrImage) {
-                let currentUrl = window.location.href.split('?')[0]; 
-                if (currentUrl.startsWith('file://') || currentUrl.includes('localhost')) currentUrl = 'https://tencuathay.github.io/DaoDongKy'; 
-                qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(currentUrl + '?v=' + Date.now())}`;
-            }
-
             document.getElementById('qrPanel').addEventListener('click', function() { this.style.display = 'none'; });
-            
             document.getElementById('fftModalOverlay').addEventListener('click', closeFFTModal);
             document.getElementById('twoSourceModalOverlay').addEventListener('click', closeTwoSourceModal);
 
@@ -685,10 +724,17 @@
 
         settingsMenu.querySelectorAll('.settings-group-items').forEach(groupItems => groupItems.addEventListener('mouseleave', () => updateSettingsPill(groupItems, null, true)));
 
+        // Xử lý chặn "Tốc độ chậm" trên Bản Demo
         settingsMenu.querySelectorAll('.settings-item').forEach(item => {
             item.addEventListener('mouseenter', () => updateSettingsPill(item.parentElement, item, true));
             item.addEventListener('click', (e) => {
                 e.stopPropagation();
+
+                if (isDemoMode && item.dataset.target === 'speedSelect' && item.dataset.value === 'slow') {
+                    alert("Tốc độ quét 'Chậm' chỉ hỗ trợ trên bản Full.");
+                    return;
+                }
+
                 const targetSelect = document.getElementById(item.dataset.target);
                 item.parentElement.querySelectorAll('.settings-item').forEach(s => s.classList.remove('active'));
                 item.classList.add('active');
@@ -739,21 +785,43 @@
             cfg.active = false; cfg.index = 0; if (cfg.data) cfg.data.fill(0);
         }
 
+        // Logic ẩn tính năng đối với Bản Demo
         function updateAnalysisButtonState() {
             const mode = getActiveChannelMode(), activeChannels = (channelConfig.A.active ? 1 : 0) + (channelConfig.B.active ? 1 : 0);
+            
+            if (isDemoMode) {
+                btnAnalysis.disabled = true;
+                btnAnalysis.textContent = (mode === '1') ? "Phân tích FFT (Bản Full)" : "Xử lý nguồn âm (Bản Full)";
+                btnAnalysis.className = 'btn-slate';
+                return;
+            }
+
             if (mode === '2' && activeChannels === 2) { btnAnalysis.disabled = false; btnAnalysis.textContent = "Xử lý nguồn âm"; btnAnalysis.className = 'btn-pink'; } 
             else if (mode === '1' && channelConfig.A.active) { btnAnalysis.disabled = !isPaused; btnAnalysis.textContent = "Phân tích FFT"; btnAnalysis.className = isPaused ? 'btn-purple' : 'btn-slate'; } 
             else { btnAnalysis.disabled = true; btnAnalysis.textContent = "Xử lý nguồn âm"; btnAnalysis.className = 'btn-slate'; }
         }
 
-        btnAnalysis.addEventListener('click', () => { if(getActiveChannelMode() === '1') openFFTModal(); else openTwoSourceModal(); });
+        btnAnalysis.addEventListener('click', () => { 
+            if(getActiveChannelMode() === '1') openFFTModal(); 
+            else openTwoSourceModal(); 
+        });
 
         speedSelect.addEventListener('change', (e) => { targetFPS = (e.target.value === 'slow') ? 15 : 60; });
         modeSelect.addEventListener('change', (e) => {
             isContinuousMode = (e.target.value === 'continuous'); clearTimeout(stopTimer);
             const speedGroup = document.getElementById('groupSpeed');
-            if (isContinuousMode) { speedGroup.style.display = 'block'; targetFPS = (speedSelect.value === 'slow') ? 15 : 60; } 
-            else { speedGroup.style.display = 'none'; targetFPS = 60; document.querySelectorAll('#groupSpeed .settings-item').forEach(el => el.classList.remove('active')); document.querySelector('#groupSpeed .settings-item[data-value="fast"]').classList.add('active'); speedSelect.value = "fast"; if (!isPaused) triggerAutoStop(); }
+            if (isContinuousMode) { 
+                speedGroup.style.display = 'block'; 
+                if (isDemoMode) { // Ép về chế độ nhanh nếu đang là Demo
+                     speedSelect.value = "fast";
+                     document.querySelectorAll('#groupSpeed .settings-item').forEach(el => el.classList.remove('active')); 
+                     document.querySelector('#groupSpeed .settings-item[data-value="fast"]').classList.add('active');
+                }
+                targetFPS = (speedSelect.value === 'slow') ? 15 : 60; 
+            } 
+            else { 
+                speedGroup.style.display = 'none'; targetFPS = 60; document.querySelectorAll('#groupSpeed .settings-item').forEach(el => el.classList.remove('active')); document.querySelector('#groupSpeed .settings-item[data-value="fast"]').classList.add('active'); speedSelect.value = "fast"; if (!isPaused) triggerAutoStop(); 
+            }
         });
         
         channelModeSelect.addEventListener('change', () => {
@@ -887,7 +955,6 @@
             }
             if(audioCtx.state === 'suspended') await audioCtx.resume();
             
-            // TẢI AUDIO WORKLET VÀO TRÌNH DUYỆT (CHỈ 1 LẦN)
             await setupAudioWorklet(audioCtx);
 
             stopAudioChannel(channelId); 
@@ -918,7 +985,6 @@
                 cfg.filterHP = audioCtx.createBiquadFilter(); cfg.filterHP.frequency.value = 80; cfg.filterHP.type = 'highpass';
                 cfg.filterLP = audioCtx.createBiquadFilter(); cfg.filterLP.frequency.value = 3000; cfg.filterLP.type = 'lowpass';
                 
-                // --- SỬ DỤNG AUDIO WORKLET THAY CHO SCRIPT PROCESSOR ---
                 cfg.workletNode = new AudioWorkletNode(audioCtx, 'fox-audio-processor');
                 cfg.workletNode.port.onmessage = (event) => {
                     if (!isPaused && cfg.active && (!isTwoSourceModalOpen || !isTsPaused)) {
@@ -1097,6 +1163,7 @@
         }
 
         function openTwoSourceModal() {
+            if (isDemoMode) { alert("Chức năng Xử lý 2 Nguồn âm chỉ có trên bản Full."); return; }
             if (!channelConfig.A.active || !channelConfig.B.active) return;
             const overlay = document.getElementById('twoSourceModalOverlay');
             overlay.style.display = 'flex';
@@ -1208,6 +1275,7 @@
         }
 
         function openFFTModal() {
+            if (isDemoMode) { alert("Chức năng Phân tích FFT chỉ có trên bản Full."); return; }
             if (!channelConfig.A.active && !channelConfig.B.active) return;
             const overlay = document.getElementById('fftModalOverlay');
             overlay.style.display = 'flex';
@@ -1319,6 +1387,16 @@
             const input = document.getElementById('fox-chat-input'), btn = document.getElementById('foxSendBtn'), content = document.getElementById('fox-chat-content');
             const msg = input.value.trim(); if(!msg) return;
             
+            if (isDemoMode) {
+                demoChatCount++;
+                if (demoChatCount > MAX_DEMO_CHAT) {
+                    content.innerHTML += `<div class="fox-msg-row fox-msg-bot"><div class="fox-msg-avatar">${FOX_AVATAR_SVG}</div><div class="fox-msg-group"><div class="fox-msg-bubble" style="color:#ef4444;">Bạn đã hết 3 lượt hỏi thử trong Bản Demo. Hãy kích hoạt Key bản Full để tiếp tục nhé.</div></div></div>`;
+                    content.scrollTop = content.scrollHeight;
+                    input.value = '';
+                    return;
+                }
+            }
+
             input.value = ''; btn.disabled = true;
             content.innerHTML += `<div class="fox-msg-row fox-msg-user"><div class="fox-msg-group"><div class="fox-msg-bubble">${msg}</div></div></div>`;
             content.scrollTop = content.scrollHeight;
@@ -1329,8 +1407,12 @@
 
             try {
                 let currentFreq = document.getElementById('foxLiveFreqTag').textContent;
+                
+                // Gắn thêm lời nhắc để AI phản hồi tối đa 3 câu (50-100 từ)
+                let promptMsg = msg + "\n\n(Lưu ý hệ thống: Hãy trả lời trực tiếp, tối đa 3 câu, khoảng 50 - 100 từ).";
+
                 const response = await fetch(GAS_URL, {
-                    method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ message: msg, currentFrequency: currentFreq })
+                    method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ message: promptMsg, currentFrequency: currentFreq })
                 });
                 
                 const data = await response.json(); document.getElementById(typingId).remove();
