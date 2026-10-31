@@ -761,30 +761,6 @@
             let freq = sampleRate / truePos; if (freq < 100 || freq > 1500) return -1; return freq;
         }
 
-        function findZeroCrossingOffset(cfg, currentIndex, samplesNeeded) {
-            if (!cfg || !cfg.active || !cfg.data || currentIndex <= 0) return 0;
-            const len = cfg.data.length, maxAvailable = Math.min(currentIndex, len - 4096);
-            if (maxAvailable <= samplesNeeded + 4) return 0;
-            const maxSearchWindow = Math.min(maxAvailable - samplesNeeded - 2, Math.max(512, Math.floor(sampleRate / 60)));
-            if (maxSearchWindow <= 4) return 0;
-            const baseEnd = currentIndex - samplesNeeded; let peak = 0;
-            for (let k = 0; k < maxSearchWindow; k += 2) { let idx = ((baseEnd - k) % len + len) % len, absVal = Math.abs(cfg.data[idx]); if (absVal > peak) peak = absVal; }
-            if (peak < 0.008) return 0; const hysteresis = peak * 0.1;
-            for (let offset = 1; offset < maxSearchWindow - 4; offset++) {
-                let iCurr = ((baseEnd - offset) % len + len) % len, iPrev = ((baseEnd - offset - 1) % len + len) % len, vPrev = cfg.data[iPrev], vCurr = cfg.data[iCurr];
-                if (vPrev <= 0 && vCurr > 0) { let iBack = ((baseEnd - offset - 4) % len + len) % len; if (cfg.data[iBack] < -hysteresis || (vCurr - vPrev) > peak * 0.02) return offset; }
-            }
-            return 0;
-        }
-
-        function computeFFT(realArray) {
-            let n = realArray.length, p = 1; while(p < n) p *= 2;
-            let x = new Float32Array(p); x.set(realArray); let y = new Float32Array(p); let j = 0;
-            for (let i = 0; i < p - 1; i++) { if (i < j) { let tx = x[i]; x[i] = x[j]; x[j] = tx; } let m = p >> 1; while (m >= 1 && j >= m) { j -= m; m >>= 1; } j += m; }
-            for (let l = 1; l < p; l <<= 1) { let wk1r = Math.cos(Math.PI / l), wk1i = -Math.sin(Math.PI / l); for (let i = 0; i < p; i += l << 1) { let wr = 1, wi = 0; for (let k = 0; k < l; k++) { let tr = wr * x[i + k + l] - wi * y[i + k + l], ti = wr * y[i + k + l] + wi * x[i + k + l]; x[i + k + l] = x[i + k] - tr; y[i + k + l] = y[i + k] - ti; x[i + k] += tr; y[i + k] += ti; let wtemp = wr; wr = wr * wk1r - wi * wk1i; wi = wtemp * wk1i + wi * wk1r; } } }
-            let magnitudes = new Float32Array(p / 2); for(let i=0; i<p/2; i++) { magnitudes[i] = Math.hypot(x[i], y[i]) / (p/2); } return magnitudes;
-        }
-
         function drawMainGrid(ctx, boxX, boxY, boxW, boxH, titleColor, titleText, showTime) {
             ctx.strokeStyle = '#bae6fd'; ctx.lineWidth = 1; const stepGridX = boxW / 10, stepGridY = boxH / 8;
             ctx.beginPath();
@@ -878,7 +854,95 @@
         function closeTwoSourceModal() { document.getElementById('twoSourceModalOverlay').style.display = 'none'; }
         function setTsMode(m) {}
 
-        function toggleChat() { document.getElementById("fox-chat-widget").classList.toggle("open"); }
+        // --- 4. TÍCH HỢP CHATBOX & KẾT NỐI API GET/POST GAS CHO AI ---
+        function toggleChat() {
+            document.getElementById("fox-chat-widget").classList.toggle("open");
+        }
+
+        function toggleChatTheme() {
+            document.getElementById("fox-chat-box").classList.toggle("light-theme");
+        }
+
+        const chatInput = document.getElementById('fox-chat-input');
+        const sendBtn = document.getElementById('foxSendBtn');
+
+        chatInput.addEventListener('input', () => {
+            sendBtn.disabled = chatInput.value.trim() === '';
+        });
+
+        chatInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !sendBtn.disabled) {
+                sendChatMessage();
+            }
+        });
+
+        async function sendChatMessage() {
+            const text = chatInput.value.trim();
+            if (!text) return;
+
+            appendMessage(text, 'user');
+            chatInput.value = '';
+            sendBtn.disabled = true;
+
+            const chatContent = document.getElementById('fox-chat-content');
+            const loadingId = 'loading-' + Date.now();
+            appendMessage("FOX-Lab AI đang phân tích...", 'bot', loadingId);
+
+            try {
+                // Gửi POST tới GAS Web App với action chat
+                const response = await fetch(GAS_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ action: "chat", message: text })
+                });
+                const result = await response.json();
+                
+                const loadingBubble = document.getElementById(loadingId);
+                if (loadingBubble) loadingBubble.remove();
+
+                if (result.status === "success" && result.reply) {
+                    appendMessage(result.reply, 'bot');
+                } else {
+                    appendMessage("Hệ thống phản hồi lỗi từ máy chủ AI.", 'bot');
+                }
+            } catch (err) {
+                const loadingBubble = document.getElementById(loadingId);
+                if (loadingBubble) loadingBubble.remove();
+                appendMessage("Lỗi kết nối đến máy chủ AI GAS.", 'bot');
+            }
+            chatContent.scrollTop = chatContent.scrollHeight;
+        }
+
+        function appendMessage(text, sender, customId = null) {
+            const chatContent = document.getElementById('fox-chat-content');
+            const row = document.createElement('div');
+            row.className = `fox-msg-row fox-msg-${sender}`;
+            
+            if (sender === 'bot') {
+                row.innerHTML = `
+                    <div class="fox-msg-avatar">${FOX_AVATAR_SVG}</div>
+                    <div class="fox-msg-group">
+                        <div class="fox-msg-bubble" ${customId ? `id="${customId}"` : ''}>${formatBotMessage(text)}</div>
+                    </div>
+                `;
+            } else {
+                row.innerHTML = `
+                    <div class="fox-msg-group">
+                        <div class="fox-msg-bubble">${escapeHtml(text)}</div>
+                    </div>
+                `;
+            }
+            chatContent.appendChild(row);
+            chatContent.scrollTop = chatContent.scrollHeight;
+        }
+
+        function formatBotMessage(text) {
+            return text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
+        }
+
+        function escapeHtml(string) {
+            return String(string).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
     </script>
 </body>
 </html>
