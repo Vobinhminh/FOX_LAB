@@ -14,6 +14,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
     <style>
+        /* === ANIMATE-UI & TỐI ƯU GIAO DIỆN === */
         @keyframes animUI-fadeInUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
         @keyframes animUI-fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes animUI-slideInLeft { from { opacity: 0; transform: translateX(-16px); } to { opacity: 1; transform: none; } }
@@ -23,6 +24,7 @@
         @keyframes statusPulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.85); } }
         @keyframes animUI-pulseSubtle { 0%, 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); } 50% { box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); } }
         @keyframes animUI-dropdownIn { from { opacity: 0; transform: translateY(-4px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        @keyframes pulseBeat { 0%, 100% { opacity: 0.9; transform: translateX(-50%) scale(1); } 50% { opacity: 1; transform: translateX(-50%) scale(1.05); } }
         @keyframes foxPulsePing { 0% { transform: scale(0.95); opacity: 0.8; } 70%, 100% { transform: scale(1.65); opacity: 0; } }
         @keyframes foxMsgFadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -32,6 +34,7 @@
         .channel-card { animation: animUI-slideInLeft 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0.25s both; }
         .channel-card:nth-child(2) { animation-name: animUI-slideInRight; animation-delay: 0.3s; }
         .info-panel { animation: animUI-fadeIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.35s both; }
+        .qr-panel { animation: animUI-scaleIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0.4s both; }
         canvas#oscilloscope { animation: animUI-fadeIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both; }
 
         .settings-dropdown-menu { transform-origin: top left; }
@@ -46,17 +49,34 @@
         button:hover:not(:disabled) { transform: translateY(-1px); }
         button:active:not(:disabled) { transform: translateY(1px) scale(0.97); transition-duration: 0.1s; }
 
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; background: rgba(15, 23, 42, 0.95); z-index: 100000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(6px); padding: 15px; box-sizing: border-box; }
-        
-        .license-selection-box { background: #ffffff; width: 100%; max-width: 450px; border-radius: 12px; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3); text-align: center; box-sizing: border-box; }
-        .license-selection-box h2 { color: #0f172a; margin-top: 0; font-size: 20px; font-weight: 700; }
-        .license-selection-box p { color: #475569; font-size: 13px; line-height: 1.5; margin-bottom: 20px; }
-        .license-btn-group { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
-        .license-btn { padding: 12px 16px; font-size: 14px; font-weight: bold; border-radius: 8px; border: none; cursor: pointer; color: white; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .btn-demo-mode { background: linear-gradient(135deg, #f59e0b, #d97706); }
-        .btn-full-mode { background: linear-gradient(135deg, #3b82f6, #2563eb); }
-        .contact-box { background: #f1f5f9; border-radius: 8px; padding: 12px; font-size: 12px; color: #334155; border: 1px solid #cbd5e1; text-align: left; }
-        .contact-box b { color: #0284c7; }
+        .modal-overlay { transition: opacity 0.3s cubic-bezier(0.22, 1, 0.36, 1); opacity: 0; }
+        .modal-overlay.animUI-visible { opacity: 1; }
+        .modal-content { transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s ease; transform: scale(0.95) translateY(16px); opacity: 0; }
+        .modal-overlay.animUI-visible .modal-content { transform: scale(1) translateY(0); opacity: 1; }
+        .modal-overlay.animUI-visible .modal-controls { animation: animUI-fadeInUp 0.3s cubic-bezier(0.22, 1, 0.36, 1) 0.15s both; }
+
+        .hud-overlay { transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.22, 1, 0.36, 1); transform: translateY(6px); }
+        .hud-overlay[style*="display: block"], .hud-overlay[style*="display:block"] { transform: translateY(0); }
+        .beat-warning[style*="display: block"], .beat-warning[style*="display:block"] { animation: animUI-scaleIn 0.3s cubic-bezier(0.22, 1, 0.36, 1) both, pulseBeat 2s infinite 0.3s; }
+        .ts-mode-toggle button { transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1); }
+        .ts-mode-toggle button.active-mode { animation: animUI-scaleIn 0.2s cubic-bezier(0.22, 1, 0.36, 1) both; }
+        .info-panel { transition: color 0.3s ease, background-color 0.3s ease; }
+        .qr-panel { transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s ease; }
+        .qr-panel:hover { transform: scale(1.03); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); }
+        .channel-card { transition: box-shadow 0.2s ease, border-color 0.2s ease; }
+        .channel-card:hover { box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); }
+        .settings-dropdown-toggle .dropdown-arrow { display: inline-block; transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1); }
+        .settings-dropdown.open .settings-dropdown-toggle .dropdown-arrow { transform: rotate(180deg); }
+        #fox-chat-trigger { transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), background 0.3s ease, box-shadow 0.3s ease; }
+        #fox-chat-trigger:active { transform: scale(0.92) !important; }
+        #fullscreenButton { transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1); }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+            .fox-ping-ring { animation: none !important; display: none !important; }
+            .beat-warning { animation: none !important; }
+            .fox-status-dot { animation: none !important; }
+        }
 
         html, body { margin: 0; padding: 0; width: 100%; height: 100%; height: 100dvh; background-color: #f1f5f9; font-family: 'Be Vietnam Pro', 'Inter', sans-serif; -webkit-font-smoothing: antialiased; overflow: hidden; position: fixed; display: flex; flex-direction: column; }
         button, input, select { font-family: inherit; outline: none; }
@@ -73,8 +93,20 @@
         .channel-a-indicator { border-left: 3px solid #ef4444; }
         .channel-b-indicator { border-left: 3px solid #3b82f6; }
 
-        .info-panel { font-weight: 600; font-size: 11.5px; color: #059669; background: #fff; padding: 2px 6px; border-radius: 4px; border: 1px solid #e2e8f0; width: 100%; text-align: center; box-sizing: border-box; line-height: 1.4; display: flex; align-items: center; justify-content: center; min-height: 22px; position: relative; z-index: 5; }
-        .info-badge { display: inline-block; padding: 0 4px; margin: 0 2px; border-radius: 3px; font-weight: 700; background-color: rgba(16, 185, 129, 0.1); color: #059669; border: 1px solid rgba(16, 185, 129, 0.2); }
+        @media (max-width: 600px) { .channel-card { flex: 1 1 100%; height: 26px; } .toolbar-row > * { font-size: 11px; padding: 4px; } }
+        .qr-panel { display: flex; flex-direction: column; align-items: center; justify-content: center; background: #fff; border: 1px solid #cbd5e1; border-radius: 4px; padding: 2px; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); width: 65px; flex-shrink: 0; cursor: pointer; }
+        .qr-panel img { width: 45px; height: 45px; }
+        .qr-panel .scan-title { font-size: 8px; font-weight: 800; color: #ef4444; margin-top: 1px; }
+        @media (max-width: 800px) { .qr-panel { display: none !important; } }
+
+        .info-panel { font-weight: 600; font-size: 11.5px; color: #dc2626; background: #fff; padding: 2px 6px; border-radius: 4px; border: 1px solid #e2e8f0; width: 100%; text-align: center; box-sizing: border-box; line-height: 1.4; display: flex; align-items: center; justify-content: space-between; min-height: 22px; position: relative; z-index: 5; }
+        .info-badge, .channel-tag-a, .channel-tag-b { display: inline-block; padding: 0 4px; margin: 0 2px; border-radius: 3px; font-weight: 700; }
+        .info-badge { background-color: rgba(16, 185, 129, 0.1); color: #059669; border: 1px solid rgba(16, 185, 129, 0.2); }
+        .channel-tag-a { color: #ef4444; background-color: rgba(239, 68, 68, 0.1); }
+        .channel-tag-b { color: #3b82f6; background-color: rgba(59, 130, 246, 0.1); }
+        
+        .license-gear-btn { background: none; border: none; font-size: 14px; cursor: pointer; padding: 0 4px; filter: grayscale(1); transition: filter 0.2s; }
+        .license-gear-btn:hover { filter: grayscale(0); }
 
         button { font-size: 11.5px; font-weight: bold; cursor: pointer; color: white; border: 1px solid rgba(0,0,0,0.1); border-radius: 4px; box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255,255,255,0.2); transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1); box-sizing: border-box; padding: 4px 8px; margin: 0; text-shadow: 0 1px 1px rgba(0,0,0,0.25); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         button:hover:not(:disabled) { filter: brightness(1.1); transform: translateY(-1px); box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255,255,255,0.2); }
@@ -83,7 +115,12 @@
         .btn-green { background: linear-gradient(180deg, #10b981, #059669); } 
         .btn-red { background: linear-gradient(180deg, #ef4444, #dc2626); } 
         .btn-orange { background: linear-gradient(180deg, #f59e0b, #d97706); } 
+        .btn-purple { background: linear-gradient(180deg, #8b5cf6, #7c3aed); } 
+        .btn-pink { background: linear-gradient(180deg, #ec4899, #db2777); } 
+        .btn-teal { background: linear-gradient(180deg, #14b8a6, #0d9488); } 
         .btn-slate { background: linear-gradient(180deg, #64748b, #475569); } 
+        .btn-blue { background: linear-gradient(180deg, #3b82f6, #2563eb); } 
+        .btn-dark { background: linear-gradient(180deg, #334155, #0f172a); }
 
         canvas { flex-grow: 1; width: 100%; height: 100%; display: block; cursor: crosshair; touch-action: none; background-color: #f8fafc; }
 
@@ -105,7 +142,41 @@
         .settings-item:hover { color: #ffffff; }
         .settings-item.active { color: #ffffff; font-weight: 700; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
 
-        /* === FOX-LAB AI CHATBOX WIDGET (ĐÃ KHÔI PHỤC ĐẦY ĐỦ) === */
+        /* Modal hệ thống phân quyền */
+        .license-modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; background: rgba(15, 23, 42, 0.95); z-index: 200000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(6px); padding: 15px; box-sizing: border-box; }
+        .license-selection-box { background: #ffffff; width: 100%; max-width: 450px; border-radius: 12px; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3); text-align: center; box-sizing: border-box; }
+        .license-selection-box h2 { color: #0f172a; margin-top: 0; font-size: 20px; font-weight: 700; }
+        .license-selection-box p { color: #475569; font-size: 13px; line-height: 1.5; margin-bottom: 20px; }
+        .license-btn-group { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+        .license-btn { padding: 12px 16px; font-size: 14px; font-weight: bold; border-radius: 8px; border: none; cursor: pointer; color: white; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 100%; }
+        .btn-demo-mode { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .btn-full-mode { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+        .contact-box { background: #f1f5f9; border-radius: 8px; padding: 12px; font-size: 12px; color: #334155; border: 1px solid #cbd5e1; text-align: left; }
+        .contact-box b { color: #0284c7; }
+
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; background: rgba(15, 23, 42, 0.95); z-index: 100000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(5px); padding: 0; box-sizing: border-box; }
+        .modal-content { background: #f8fafc; width: 100vw; height: 100dvh; max-width: 100vw; max-height: 100dvh; border-radius: 0; box-shadow: none; display: flex; flex-direction: column; overflow: hidden; box-sizing: border-box; }
+        .modal-header { color: #fff; padding: 8px 12px; font-weight: bold; font-size: 13px; text-shadow: 0 1px 2px rgba(0,0,0,0.3); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; border-bottom: 1px solid rgba(0,0,0,0.1); }
+        .modal-controls { padding: 6px 8px; background: #fff; border-bottom: 1px solid #cbd5e1; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; justify-content: center; flex-shrink: 0; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .fft-canvas-container { padding: 6px; background: #e2e8f0; width: 100%; box-sizing: border-box; display: flex; justify-content: center; align-items: center; overflow: hidden; flex-grow: 1; position: relative; }
+        .modal-display-canvas { background: #fff; border: 1px solid #cbd5e1; border-radius: 4px; width: 100%; height: 100%; display: block; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        #fftModal .modal-header { background: linear-gradient(90deg, #7c3aed, #4f46e5); }
+        #twoSourceModal .modal-header { background: linear-gradient(90deg, #db2777, #c026d3); }
+
+        .hud-overlay { position: absolute; top: 16px; left: 16px; background: rgba(15, 23, 42, 0.88); color: #f8fafc; padding: 10px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); font-family: 'JetBrains Mono', monospace; font-size: 12px; line-height: 1.6; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); pointer-events: none; backdrop-filter: blur(4px); z-index: 50; display: none; max-width: calc(100% - 32px); }
+        .hud-title { font-family: 'Be Vietnam Pro', sans-serif; font-weight: 700; color: #38bdf8; margin-bottom: 4px; font-size: 13px; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 2px; }
+        .hud-highlight { color: #facc15; font-weight: bold; }
+        .hud-eq { color: #10b981; font-style: italic; }
+        .math-symbol { font-family: "Times New Roman", Times, serif; font-style: italic; font-size: 14.5px; }
+
+        .ts-mode-toggle { display: flex; gap: 4px; background: #0f172a; padding: 3px; border-radius: 6px; border: 1px solid #334155; position: relative; overflow: hidden; }
+        .ts-mode-pill { position: absolute; top: 3px; bottom: 3px; left: 0; width: 0; background: linear-gradient(135deg, #3b82f6, #2563eb); border-radius: 4px; box-shadow: 0 2px 6px rgba(37, 99, 235, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2); pointer-events: none; z-index: 1; transition: transform 0.24s cubic-bezier(0.2, 0.9, 0.3, 1), width 0.24s cubic-bezier(0.2, 0.9, 0.3, 1), opacity 0.15s ease; opacity: 0; }
+        .ts-mode-toggle button { background: transparent; color: #94a3b8; box-shadow: none; border: none; font-weight: 600; padding: 5px 12px; font-size: 11px; position: relative; z-index: 2; cursor: pointer; border-radius: 4px; transition: color 0.2s cubic-bezier(0.2, 0.8, 0.2, 1); user-select: none; }
+        .ts-mode-toggle button:hover { color: #ffffff; }
+        .ts-mode-toggle button.active-mode { color: #ffffff; font-weight: 700; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
+
+        .beat-warning { position: absolute; top: 16px; left: 50%; transform: translateX(-50%); background: rgba(220, 38, 38, 0.9); color: white; padding: 4px 12px; border-radius: 12px; font-size: 11.5px; font-weight: bold; pointer-events: none; z-index: 60; box-shadow: 0 4px 6px rgba(0,0,0,0.2); display: none; animation: pulseBeat 2s infinite; }
+
         :root { --fox-font: 'Be Vietnam Pro', sans-serif; --fox-font-mono: 'JetBrains Mono', monospace; --fox-cyan: #38bdf8; --fox-text-muted: #64748b; }
         #fox-chat-widget { position: fixed; bottom: 20px; right: 20px; z-index: 99998; font-family: var(--fox-font); user-select: none; }
         .fox-trigger-wrapper { position: relative; display: flex; align-items: center; justify-content: center; }
@@ -122,12 +193,12 @@
         #fox-chat-box { position: absolute; bottom: 60px; right: 0; width: 330px; height: 450px; max-height: calc(100dvh - 100px); max-width: calc(100vw - 20px); background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.7); display: flex; flex-direction: column; overflow: hidden; transform-origin: bottom right; transform: scale(0.9) translateY(20px); opacity: 0; visibility: hidden; pointer-events: none; transition: all 0.3s; z-index: 10; }
         #fox-chat-widget.open #fox-chat-box { transform: scale(1) translateY(0); opacity: 1; visibility: visible; pointer-events: auto; }
         
-        .fox-chat-header { padding: 10px 12px; background: rgba(30, 41, 59, 0.8); border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+        .fox-chat-header { padding: 10px 12px; background: rgba(30, 41, 59, 0.8); border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; transition: background 0.3s; }
         .fox-header-left { display: flex; align-items: center; gap: 8px; }
         .fox-avatar-container { width: 28px; height: 28px; border-radius: 6px; border: 1px solid rgba(249, 115, 22, 0.5); background: rgba(249, 115, 22, 0.1); display: flex; align-items: center; justify-content: center; padding: 2px; box-sizing: border-box; }
         .fox-avatar-container svg, .fox-msg-avatar svg { width: 100%; height: 100%; display: block; }
         .fox-header-info { display: flex; flex-direction: column; gap: 1px; }
-        .fox-header-title { font-size: 13.5px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 4px; }
+        .fox-header-title { font-size: 13.5px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 4px; transition: color 0.3s; }
         .fox-header-status { font-size: 10px; color: #94a3b8; display: flex; align-items: center; gap: 4px; }
         .fox-status-dot { width: 5px; height: 5px; border-radius: 50%; background: #22c55e; animation: statusPulse 2s infinite ease-in-out; }
         .fox-header-actions { display: flex; gap: 6px; }
@@ -143,14 +214,14 @@
         .fox-msg-group { display: flex; flex-direction: column; max-width: 85%; gap: 2px; }
         .fox-msg-user .fox-msg-group { align-items: flex-end; }
         .fox-msg-bot .fox-msg-group { align-items: flex-start; }
-        .fox-msg-bubble { padding: 8px 12px; border-radius: 10px; font-size: 12px; line-height: 1.4; word-wrap: break-word; max-width: 100%; }
+        .fox-msg-bubble { padding: 8px 12px; border-radius: 10px; font-size: 12px; line-height: 1.4; word-wrap: break-word; max-width: 100%; transition: background 0.3s, color 0.3s, border 0.3s; }
         .fox-msg-user .fox-msg-bubble { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); color: #ffffff; border-bottom-right-radius: 2px; font-weight: 500; }
         .fox-msg-bot .fox-msg-bubble { background: rgba(30, 41, 59, 0.85); color: #f1f5f9; border: 1px solid rgba(255, 255, 255, 0.1); border-top-left-radius: 2px; }
         .fox-msg-bot .fox-msg-bubble b { color: var(--fox-cyan); font-weight: 600; }
         
-        .fox-input-container { padding: 10px; background: rgba(15, 23, 42, 0.95); border-top: 1px solid rgba(255, 255, 255, 0.1); display: flex; flex-direction: column; gap: 4px; flex-shrink: 0; }
-        .fox-input-box { display: flex; align-items: center; background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 20px; padding: 4px 6px 4px 12px; }
-        #fox-chat-input { flex: 1; background: transparent; border: none; color: #f8fafc; font-size: 12px; outline: none; padding: 6px 0; }
+        .fox-input-container { padding: 10px; background: rgba(15, 23, 42, 0.95); border-top: 1px solid rgba(255, 255, 255, 0.1); display: flex; flex-direction: column; gap: 4px; flex-shrink: 0; transition: background 0.3s, border 0.3s; }
+        .fox-input-box { display: flex; align-items: center; background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 20px; padding: 4px 6px 4px 12px; transition: background 0.3s, border 0.3s; }
+        #fox-chat-input { flex: 1; background: transparent; border: none; color: #f8fafc; font-size: 12px; outline: none; padding: 6px 0; transition: color 0.3s; }
         .fox-send-btn { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); border: none; color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
         .fox-send-btn:disabled { background: rgba(255, 255, 255, 0.1) !important; color: #64748b !important; cursor: not-allowed; }
         .fox-send-btn svg { width: 12px; height: 12px; margin-left: 2px; }
@@ -161,15 +232,72 @@
         #fox-chat-box.light-theme .fox-chat-header { background: rgba(241, 245, 249, 0.9); border-bottom: 1px solid #cbd5e1; }
         #fox-chat-box.light-theme .fox-header-title { color: #0f172a; }
         #fox-chat-box.light-theme .fox-btn-icon { color: #64748b; }
+        #fox-chat-box.light-theme .fox-btn-icon:hover { background: rgba(0, 0, 0, 0.05); color: #0f172a; }
         #fox-chat-box.light-theme .fox-msg-bot .fox-msg-bubble { background: #f1f5f9; color: #1e293b; border: 1px solid #e2e8f0; }
+        #fox-chat-box.light-theme .fox-msg-bot .fox-msg-bubble b { color: #0284c7; }
         #fox-chat-box.light-theme .fox-input-container { background: rgba(248, 250, 252, 0.95); border-top: 1px solid #cbd5e1; }
         #fox-chat-box.light-theme .fox-input-box { background: #ffffff; border: 1px solid #cbd5e1; }
         #fox-chat-box.light-theme #fox-chat-input { color: #0f172a; }
+        #fox-chat-box.light-theme .fox-send-btn:disabled { background: #e2e8f0 !important; color: #94a3b8 !important; }
+
+        @media (max-width: 600px) { 
+            #fox-chat-widget { bottom: 95px; right: 15px; } 
+            #fox-chat-box { width: calc(100vw - 30px); height: calc(100dvh - 160px); bottom: 55px; } 
+        }
     </style>
 </head>
+<script>
+    // 1. Chặn các phím tắt mở công cụ lập trình (chỉ tác dụng trên bàn phím máy tính)
+    document.addEventListener('keydown', function(e) {
+        if (
+            e.key === 'F12' ||
+            (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) ||
+            (e.ctrlKey && (e.key === 'U' || e.key === 'u'))
+        ) {
+            e.preventDefault();
+            return false;
+        }
+    });
+
+    // 2. Vô hiệu hóa click chuột phải
+    document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+    });
+
+    // 3. Bẫy DevTools (CHỈ KÍCH HOẠT TRÊN MÁY TÍNH, BỎ QUA ĐIỆN THOẠI VÀ TABLET)
+    const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    if (!isMobileDevice) {
+        setInterval(function() {
+            const startTime = new Date().getTime();
+            debugger; 
+            const endTime = new Date().getTime();
+            
+            const threshold = 160;
+            const isWindowResized = (window.outerWidth - window.innerWidth > threshold || window.outerHeight - window.innerHeight > threshold);
+
+            if ((endTime - startTime > 100) || isWindowResized) {
+                let fakeCode = "function fakeAudioProcess_" + Math.floor(Math.random()*1000) + "() { return false; }";
+                
+                document.body.innerHTML = `
+                    <div style="color: #00FF00; background: #000; padding: 20px; font-family: monospace; height: 100vh;">
+                        <h2>[SYSTEM WARNING] UNAUTHORIZED ACCESS DETECTED</h2>
+                        <p>⚠️ Hệ thống bảo mật phát hiện công cụ gỡ lỗi đang mở trên máy tính. Vui lòng đóng lại!</p>
+                        <br>
+                        <code>
+                            var audioContext = null;<br>
+                            ${fakeCode}<br>
+                            // Access Denied
+                        </code>
+                    </div>
+                `;
+            }
+        }, 1000);
+    }
+</script>
 <body>
     <!-- POPUP CHỌN PHIÊN BẢN (DEMO / FULL) -->
-    <div id="licenseModalOverlay" class="modal-overlay">
+    <div id="licenseModalOverlay" class="license-modal-overlay">
         <div class="license-selection-box">
             <h2>⚛️ DAO ĐỘNG KÝ_FOX-LAB</h2>
             <p>Vui lòng chọn chế độ sử dụng ứng dụng:</p>
@@ -222,7 +350,7 @@
                                 <div class="settings-item" data-target="modeSelect" data-value="continuous">Liên tục</div>
                             </div>
                         </div>
-                        <div class="settings-group" id="groupSpeed">
+                        <div class="settings-group" id="groupSpeed" style="display: none;">
                             <div class="settings-group-header" data-group="speed"><span>Tốc độ quét</span><span class="group-arrow">›</span></div>
                             <div class="settings-group-items">
                                 <div class="settings-item active" data-target="speedSelect" data-value="fast">Nhanh</div>
@@ -249,13 +377,86 @@
                 </div>
             </div>
 
-            <div class="info-panel" id="infoText">Vui lòng chọn chế độ sử dụng bản quyền để bắt đầu.</div>
+            <div class="info-panel" id="infoText">
+                <span id="infoMessageText">Đang tải hệ thống phân tích...</span>
+                <button class="license-gear-btn" onclick="openLicenseModal()" title="Kích hoạt bản Full">⚙️ Nhập Key</button>
+            </div>
+        </div>
+
+        <div class="qr-panel" id="qrPanel">
+            <img id="qrImage" src="" alt="QR Code"><span class="scan-title">FOX-LAB</span>
         </div>
     </div>
 
     <canvas id="oscilloscope"></canvas>
+    
+    <!-- FFT MODAL -->
+    <div id="fftModalOverlay" class="modal-overlay">
+        <div id="fftModal" class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <span>Phân tích Họa âm (Spectrum - 5 Họa âm)</span>
+            </div>
+            <div class="modal-controls">
+                <button class="btn-dark" onclick="closeFFTModal()">⬅ Quay lại</button>
+                <label style="font-weight: 600; font-size: 11.5px; margin-left:10px;">Tần số (f0):</label>
+                <input type="number" id="fftTargetFreq" value="440" min="20" max="5000" oninput="processAndDrawFFT()"> 
+                <span style="font-weight: 600; font-size: 11.5px;">Hz</span>
+                <button class="btn-green" onclick="processAndDrawFFT()">Quét Họa âm</button>
+            </div>
+            <div class="fft-canvas-container">
+                <canvas id="fftDisplayCanvas" class="modal-display-canvas"></canvas>
+            </div>
+        </div>
+    </div>
 
-    <!-- FOX-LAB AI CHATBOX WIDGET -->
+    <!-- MODAL XỬ LÝ 2 NGUỒN ÂM -->
+    <div id="twoSourceModalOverlay" class="modal-overlay">
+        <div id="twoSourceModal" class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <span>Phân tích & Xử lý 2 Nguồn âm</span>
+            </div>
+            <div class="modal-controls" style="justify-content: space-between; padding: 6px 12px;">
+                <button class="btn-dark" onclick="closeTwoSourceModal()">⬅ Quay lại</button>
+                
+                <div class="ts-mode-toggle">
+                    <button id="btnModeOverlay" class="active-mode" onclick="setTsMode('overlay')">Ghép sóng</button>
+                    <button id="btnModeSum" onclick="setTsMode('sum')">Tổng hợp (A+B)</button>
+                </div>
+
+                <div style="display:flex; gap:6px;">
+                    <button id="btnTsPause" class="btn-orange" onclick="toggleTsPause()" style="display:none;">⏸ Dừng</button>
+                    <button id="btnTsResult" class="btn-slate" onclick="toggleTsResults()" style="display:none;">📊 Kết quả</button>
+                    <button id="btnTsEquation" class="btn-slate" onclick="toggleTsEquations()">∑ Phương trình</button>
+                </div>
+            </div>
+            <div class="fft-canvas-container" id="tsContainer">
+                <canvas id="twoSourceCanvas" class="modal-display-canvas"></canvas>
+                
+                <!-- HUD KẾT QUẢ ĐỐI CHIẾU -->
+                <div id="hudResults" class="hud-overlay">
+                    <div class="hud-title">BẢNG KẾT QUẢ ĐỐI CHIẾU</div>
+                    <div>Tần số Kênh A: <span class="hud-highlight" id="hudFreqA">0</span> Hz &nbsp;|&nbsp; Chu kỳ T<sub>A</sub> = <span class="hud-highlight" id="hudPerA">0</span> ms</div>
+                    <div>Tần số Kênh B: <span class="hud-highlight" id="hudFreqB">0</span> Hz &nbsp;|&nbsp; Chu kỳ T<sub>B</sub> = <span class="hud-highlight" id="hudPerB">0</span> ms</div>
+                    <div style="margin-top:4px; padding-top:4px; border-top:1px dashed rgba(255,255,255,0.2);">
+                        Độ lệch pha Δφ: <span class="hud-highlight" id="hudPhaseRad">0.00</span> rad (<span class="hud-highlight" id="hudPhaseDeg">0</span>°)
+                    </div>
+                </div>
+
+                <!-- HUD PHƯƠNG TRÌNH SÓNG -->
+                <div id="hudEquations" class="hud-overlay" style="top: auto; bottom: 16px; left: 16px;">
+                    <div class="hud-title">PHƯƠNG TRÌNH DAO ĐỘNG</div>
+                    <div class="hud-eq">Kênh A: <span class="math-symbol">u<sub>A</sub> = A<sub>A</sub>cos(2π·<span id="eqFreqA">0</span>·t)</span></div>
+                    <div class="hud-eq">Kênh B: <span class="math-symbol">u<sub>B</sub> = A<sub>B</sub>cos(2π·<span id="eqFreqB">0</span>·t <span id="eqPhase">+ 0.00</span>)</span></div>
+                    <div class="hud-eq" id="eqSumLine" style="margin-top:4px;">Tổng hợp: <span class="math-symbol">u = u<sub>A</sub> + u<sub>B</sub></span></div>
+                </div>
+
+                <!-- CẢNH BÁO SÓNG PHÁCH -->
+                <div id="tsWarningText" class="beat-warning">⚠️ Hai nguồn khác tần số (Tạo Sóng Phách)</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOX-LAB AI WIDGET -->
     <div id="fox-chat-widget">
         <div class="fox-trigger-wrapper">
             <div class="fox-ping-ring"></div>
@@ -283,7 +484,7 @@
             <div id="fox-chat-content">
                 <div class="fox-msg-row fox-msg-bot">
                     <div class="fox-msg-avatar" id="msg-fox-icon-container"></div>
-                    <div class="fox-msg-group"><div class="fox-msg-bubble">Chào thầy và các em! Thầy là <strong>FOX-Lab AI</strong>. Các em có câu hỏi nào về dao động ký hoặc bài Sóng âm không?</div></div>
+                    <div class="fox-msg-group"><div class="fox-msg-bubble">Chào em! Thầy là <strong>FOX-Lab AI</strong>. Em có câu hỏi nào về dao động ký hoặc bài Sóng âm không?</div></div>
                 </div>
             </div>
             <div class="fox-input-container">
@@ -297,11 +498,21 @@
     </div>
 
     <script>
+        const FOX_AVATAR_SVG = `<svg viewBox="0 0 100 100" fill="none"><polygon points="22,12 10,48 36,40" fill="#ff7a30"/><polygon points="23,19 16,44 32,38" fill="#1e293b"/><path d="M 19 36 Q 23 32 28 34" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round"/><polygon points="78,12 64,40 90,48" fill="#ff7a30"/><polygon points="77,19 68,38 84,44" fill="#1e293b"/><path d="M 81 36 Q 77 32 72 34" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round"/><polygon points="50,22 36,40 50,46" fill="#ff8f4a"/><polygon points="50,22 50,46 64,40" fill="#ff7a30"/><polygon points="36,40 10,48 20,68 38,58" fill="#d4380d"/><polygon points="64,40 38,58 50,46" fill="#e04006"/><polygon points="64,40 50,46 62,58" fill="#d4380d"/><polygon points="64,40 90,48 80,68 62,58" fill="#d4380d"/><polygon points="20,68 12,74 26,76 34,68" fill="#e2e8f0"/><polygon points="80,68 88,74 74,76 66,68" fill="#cbd5e1"/><polygon points="38,58 50,46 50,78 36,68" fill="#ff7a30"/><polygon points="62,58 50,46 50,78 64,68" fill="#e04006"/><polygon points="50,78 36,68 44,88 50,88" fill="#f8fafc"/><polygon points="50,78 64,68 56,88 50,88" fill="#e2e8f0"/><polygon points="50,88 45,82 55,82" fill="#0f172a"/><polygon points="25,48 50,54 75,48 71,59 50,65 29,59" fill="#090d16" stroke="rgba(56,189,248,0.5)" stroke-width="0.9"/><circle cx="34.5" cy="48" r="1.5" fill="#ffffff"/><circle cx="44.5" cy="60" r="1.5" fill="#ffffff"/><circle cx="54.5" cy="48" r="1.5" fill="#ffffff"/><circle cx="64.5" cy="60" r="1.5" fill="#ffffff"/></svg>`;
+
+        // Caching DOM elements for optimization
+        const btnStartA = document.getElementById('btnStartA'), btnStartB = document.getElementById('btnStartB');
+        const pauseButton = document.getElementById('pauseButton'), resetButton = document.getElementById('resetButton');
+        const btnAnalysis = document.getElementById('btnAnalysis'), infoMessageText = document.getElementById('infoMessageText');
+        const channelModeSelect = document.getElementById('channelModeSelect'), modeSelect = document.getElementById('modeSelect'), speedSelect = document.getElementById('speedSelect');
+        const micSelectA = document.getElementById('micSelectA'), micSelectB = document.getElementById('micSelectB');
+        const canvas = document.getElementById('oscilloscope'), canvasCtx = canvas.getContext('2d', { alpha: false });
+        const settingsDropdown = document.getElementById('settingsDropdown'), settingsMenu = document.getElementById('settingsMenu');
+
+        // --- HỆ THỐNG PHÂN QUYỀN & XÁC THỰC KEY ---
         const GAS_URL = "https://script.google.com/macros/s/AKfycbyStGo5ETWCHq3UxtQEWIFL-R2mpEHdeYuX53EgfPf8LtG2Dfe4Dbk1-i59hf8LcY2bdg/exec"; 
         let isDemoMode = true;
         let demoTimer = null;
-
-        const FOX_AVATAR_SVG = `<svg viewBox="0 0 100 100" fill="none"><polygon points="22,12 10,48 36,40" fill="#ff7a30"/><polygon points="23,19 16,44 32,38" fill="#1e293b"/><path d="M 19 36 Q 23 32 28 34" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round"/><polygon points="78,12 64,40 90,48" fill="#ff7a30"/><polygon points="77,19 68,38 84,44" fill="#1e293b"/><path d="M 81 36 Q 77 32 72 34" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round"/><polygon points="50,22 36,40 50,46" fill="#ff8f4a"/><polygon points="50,22 50,46 64,40" fill="#ff7a30"/><polygon points="36,40 10,48 20,68 38,58" fill="#d4380d"/><polygon points="64,40 38,58 50,46" fill="#e04006"/><polygon points="64,40 50,46 62,58" fill="#d4380d"/><polygon points="64,40 90,48 80,68 62,58" fill="#d4380d"/><polygon points="20,68 12,74 26,76 34,68" fill="#e2e8f0"/><polygon points="80,68 88,74 74,76 66,68" fill="#cbd5e1"/><polygon points="38,58 50,46 50,78 36,68" fill="#ff7a30"/><polygon points="62,58 50,46 50,78 64,68" fill="#e04006"/><polygon points="50,78 36,68 44,88 50,88" fill="#f8fafc"/><polygon points="50,78 64,68 56,88 50,88" fill="#e2e8f0"/><polygon points="50,88 45,82 55,82" fill="#0f172a"/><polygon points="25,48 50,54 75,48 71,59 50,65 29,59" fill="#090d16" stroke="rgba(56,189,248,0.5)" stroke-width="0.9"/><circle cx="34.5" cy="48" r="1.5" fill="#ffffff"/><circle cx="44.5" cy="60" r="1.5" fill="#ffffff"/><circle cx="54.5" cy="48" r="1.5" fill="#ffffff"/><circle cx="64.5" cy="60" r="1.5" fill="#ffffff"/></svg>`;
 
         function getDeviceId() {
             let deviceId = localStorage.getItem('fox_device_id');
@@ -313,10 +524,6 @@
         }
 
         window.addEventListener('DOMContentLoaded', async () => {
-            document.getElementById('trigger-fox-icon-container').innerHTML = FOX_AVATAR_SVG;
-            document.getElementById('header-fox-icon-container').innerHTML = FOX_AVATAR_SVG;
-            document.getElementById('msg-fox-icon-container').innerHTML = FOX_AVATAR_SVG;
-
             const urlParams = new URLSearchParams(window.location.search);
             const keyParam = urlParams.get('key');
             const typeParam = urlParams.get('type');
@@ -329,16 +536,19 @@
             }
         });
 
+        function openLicenseModal() {
+            document.getElementById('licenseModalOverlay').style.display = 'flex';
+        }
+
         function selectMode(mode) {
             if (mode === 'demo') {
                 isDemoMode = true;
                 document.getElementById('licenseModalOverlay').style.display = 'none';
-                applyDemoRestrictions();
-                infoText.innerHTML = "Đang chạy <b>Bản Dùng thử Demo (30 phút)</b>. Nhấn Kênh A để bắt đầu.";
+                infoMessageText.innerHTML = `Bản Dùng thử Demo (30 phút).`;
                 
                 demoTimer = setTimeout(() => {
-                    alert("⏰ Đã hết 30 phút dùng thử Demo! Vui lòng liên hệ để nhận bản Full chính thức.");
-                    document.getElementById('licenseModalOverlay').style.display = 'flex';
+                    alert("⏰ Đã hết 30 phút dùng thử Demo! Vui lòng nhập Key bản Full.");
+                    openLicenseModal();
                 }, 30 * 60 * 1000);
 
             } else if (mode === 'full') {
@@ -356,7 +566,7 @@
         }
 
         async function verifyKeyWithServer(key, type) {
-            infoText.innerHTML = "Đang kiểm tra Key bản Full với hệ thống Google Sheets...";
+            infoMessageText.innerHTML = "Đang kiểm tra Key bản Full với Google Sheets...";
             const deviceId = getDeviceId();
             
             try {
@@ -371,40 +581,18 @@
                     isDemoMode = false;
                     if(demoTimer) clearTimeout(demoTimer);
                     document.getElementById('licenseModalOverlay').style.display = 'none';
-                    infoText.innerHTML = "✅ Bản Full Chính Thức đã kích hoạt thành công cho thiết bị này!";
-                    btnStartA.disabled = false;
-                    updateUIState();
-                    resizeCanvas();
-                    drawFrame(true);
+                    infoMessageText.innerHTML = "✅ Bản Full Chính Thức đã kích hoạt thành công!";
                 } else {
-                    alert(`❌ ${result.message}\n\nVui lòng liên hệ tác giả để nhận Key bản Full chính thức!`);
-                    document.getElementById('licenseModalOverlay').style.display = 'flex';
+                    alert(`❌ ${result.message}\nVui lòng liên hệ tác giả nhận Key bản Full!`);
+                    openLicenseModal();
                 }
             } catch (e) {
-                alert("❌ Lỗi kết nối đến máy chủ xác thực! Đang chuyển về bản Demo.");
+                alert("❌ Lỗi kết nối máy chủ! Chuyển về bản Demo.");
                 selectMode('demo');
             }
         }
 
-        function applyDemoRestrictions() {
-            const groupChannelMode = document.getElementById('groupChannelMode');
-            if (groupChannelMode) { groupChannelMode.style.opacity = '0.5'; groupChannelMode.style.pointerEvents = 'none'; }
-            const groupSpeed = document.getElementById('groupSpeed');
-            if (groupSpeed) { groupSpeed.style.opacity = '0.5'; groupSpeed.style.pointerEvents = 'none'; }
-            btnStartA.disabled = false;
-            updateUIState();
-            resizeCanvas();
-            drawFrame(true);
-        }
-
-        const btnStartA = document.getElementById('btnStartA'), btnStartB = document.getElementById('btnStartB');
-        const pauseButton = document.getElementById('pauseButton'), resetButton = document.getElementById('resetButton');
-        const btnAnalysis = document.getElementById('btnAnalysis'), infoText = document.getElementById('infoText');
-        const channelModeSelect = document.getElementById('channelModeSelect'), modeSelect = document.getElementById('modeSelect'), speedSelect = document.getElementById('speedSelect');
-        const micSelectA = document.getElementById('micSelectA'), micSelectB = document.getElementById('micSelectB');
-        const canvas = document.getElementById('oscilloscope'), canvasCtx = canvas.getContext('2d', { alpha: false });
-        const settingsDropdown = document.getElementById('settingsDropdown'), settingsMenu = document.getElementById('settingsMenu');
-
+        // Khởi tạo AudioWorklet Inline Blob (Tránh việc phải tạo file audio-processor.js bên ngoài)
         let workletUrl = null;
         async function setupAudioWorklet(ctx) {
             if (!workletUrl) {
@@ -413,9 +601,9 @@
                     process(inputs, outputs, parameters) {
                         const input = inputs[0];
                         if (input && input.length > 0 && input[0]) {
-                            this.port.postMessage(input[0]);
+                            this.port.postMessage(input[0]); // Chuyển dữ liệu mượt mà về luồng chính
                         }
-                        return true;
+                        return true; // Giữ tiến trình chạy liên tục
                     }
                 }
                 registerProcessor('fox-audio-processor', FoxAudioProcessor);
@@ -423,9 +611,42 @@
                 const blob = new Blob([workletCode], { type: 'application/javascript' });
                 workletUrl = URL.createObjectURL(blob);
             }
-            try { await ctx.audioWorklet.addModule(workletUrl); return true; } catch (e) { return false; }
+            try {
+                await ctx.audioWorklet.addModule(workletUrl);
+                return true;
+            } catch (e) {
+                console.error("AudioWorklet load error:", e);
+                return false;
+            }
         }
 
+        window.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('trigger-fox-icon-container').innerHTML = FOX_AVATAR_SVG;
+            document.getElementById('header-fox-icon-container').innerHTML = FOX_AVATAR_SVG;
+            document.getElementById('msg-fox-icon-container').innerHTML = FOX_AVATAR_SVG;
+
+            const qrImage = document.getElementById('qrImage');
+            if (qrImage) {
+                let currentUrl = window.location.href.split('?')[0]; 
+                if (currentUrl.startsWith('file://') || currentUrl.includes('localhost')) currentUrl = 'https://tencuathay.github.io/DaoDongKy'; 
+                qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(currentUrl + '?v=' + Date.now())}`;
+            }
+
+            document.getElementById('qrPanel').addEventListener('click', function() { this.style.display = 'none'; });
+            
+            document.getElementById('fftModalOverlay').addEventListener('click', closeFFTModal);
+            document.getElementById('twoSourceModalOverlay').addEventListener('click', closeTwoSourceModal);
+
+            const speedGroup = document.getElementById('groupSpeed');
+            speedGroup.style.display = (modeSelect.value === 'continuous') ? 'block' : 'none';
+            document.getElementById('cardChannelB').style.display = (getActiveChannelMode() === '2') ? 'flex' : 'none';
+            
+            resizeCanvas(); updateUIState(); drawFrame(true);
+        });
+
+        let isInitialized = true, isTwoSourceModalOpen = false, tsViewMode = 'overlay', isTsPaused = false, showTsResults = false, showTsEquations = false;
+        let snapDataA = new Float32Array(0), snapDataB = new Float32Array(0);
+        let currentCalcFreqA = 440, currentCalcFreqB = 440, currentPhaseRad = 0, currentPhaseDeg = 0;
         let animFrameId = null;
 
         function updateSettingsPill(groupItems, targetItem, animated = true) {
@@ -434,8 +655,10 @@
             if (!pill) { pill = document.createElement('div'); pill.className = 'settings-slider-pill'; groupItems.prepend(pill); }
             if (!targetItem) targetItem = groupItems.querySelector('.settings-item.active');
             if (!targetItem) { pill.style.opacity = '0'; return; }
+            
             const gRect = groupItems.getBoundingClientRect(), iRect = targetItem.getBoundingClientRect();
             if (gRect.width === 0 || iRect.width === 0) return;
+            
             pill.style.transition = animated ? 'transform 0.24s cubic-bezier(0.2, 0.9, 0.3, 1), width 0.24s cubic-bezier(0.2, 0.9, 0.3, 1), opacity 0.15s ease' : 'none';
             pill.style.opacity = '1';
             pill.style.transform = `translateX(${iRect.left - gRect.left}px)`;
@@ -448,22 +671,24 @@
             e.stopPropagation();
             if (settingsDropdown.classList.toggle('open')) { requestAnimationFrame(() => settingsMenu.querySelectorAll('.settings-group.expanded .settings-group-items').forEach(g => updateSettingsPill(g, null, false))); }
         });
+
         document.addEventListener('click', (e) => { if (!settingsDropdown.contains(e.target)) settingsDropdown.classList.remove('open'); });
 
         settingsMenu.querySelectorAll('.settings-group-header').forEach(header => {
             header.addEventListener('click', (e) => {
                 e.stopPropagation();
-                if (isDemoMode) { alert("⚠️ Tính năng này bị khóa ở phiên bản Demo 30 phút! Vui lòng liên hệ nhận bản Full."); return; }
                 const group = header.parentElement;
                 settingsMenu.querySelectorAll('.settings-group').forEach(g => { if (g !== group) g.classList.remove('expanded'); });
                 if (group.classList.toggle('expanded')) { requestAnimationFrame(() => updateSettingsPill(group.querySelector('.settings-group-items'), null, false)); }
             });
         });
 
+        settingsMenu.querySelectorAll('.settings-group-items').forEach(groupItems => groupItems.addEventListener('mouseleave', () => updateSettingsPill(groupItems, null, true)));
+
         settingsMenu.querySelectorAll('.settings-item').forEach(item => {
+            item.addEventListener('mouseenter', () => updateSettingsPill(item.parentElement, item, true));
             item.addEventListener('click', (e) => {
                 e.stopPropagation();
-                if (isDemoMode) { alert("⚠️ Tính năng này bị khóa ở phiên bản Demo 30 phút!"); return; }
                 const targetSelect = document.getElementById(item.dataset.target);
                 item.parentElement.querySelectorAll('.settings-item').forEach(s => s.classList.remove('active'));
                 item.classList.add('active');
@@ -473,11 +698,33 @@
             });
         });
 
-        let audioCtx, sampleRate = 48000, isPaused = true;
+        function updateTsModePill(targetBtn, animated = true) {
+            const container = document.querySelector('.ts-mode-toggle');
+            if (!container) return;
+            let pill = container.querySelector('.ts-mode-pill');
+            if (!pill) { pill = document.createElement('div'); pill.className = 'ts-mode-pill'; container.prepend(pill); }
+            if (!targetBtn) targetBtn = container.querySelector('button.active-mode');
+            if (!targetBtn) { pill.style.opacity = '0'; return; }
+            const cRect = container.getBoundingClientRect(), bRect = targetBtn.getBoundingClientRect();
+            if (cRect.width === 0 || bRect.width === 0) return;
+            pill.style.transition = animated ? 'transform 0.24s cubic-bezier(0.2, 0.9, 0.3, 1), width 0.24s cubic-bezier(0.2, 0.9, 0.3, 1), opacity 0.15s ease' : 'none';
+            pill.style.opacity = '1';
+            pill.style.transform = `translateX(${bRect.left - cRect.left}px)`;
+            pill.style.width = `${bRect.width}px`;
+        }
+
+        const tsToggleContainer = document.querySelector('.ts-mode-toggle');
+        if (tsToggleContainer) {
+            tsToggleContainer.addEventListener('mouseleave', () => updateTsModePill(null, true));
+            tsToggleContainer.querySelectorAll('button').forEach(btn => btn.addEventListener('mouseenter', () => updateTsModePill(btn, true)));
+        }
+
+        let audioCtx, sampleRate = 48000, isPaused = true, isContinuousMode = false, stopTimer;
         const channelConfig = {
-            A: { stream: null, source: null, workletNode: null, data: null, index: 0, color: '#dc2626', active: false },
-            B: { stream: null, source: null, workletNode: null, data: null, index: 0, color: '#2563eb', active: false }
+            A: { stream: null, source: null, workletNode: null, filterHP: null, filterLP: null, dummy: null, data: null, index: 0, color: '#dc2626', active: false },
+            B: { stream: null, source: null, workletNode: null, filterHP: null, filterLP: null, dummy: null, data: null, index: 0, color: '#2563eb', active: false }
         };
+        let detectedFrequency = 0, lockedFrequency = 440, lastCorrelateTime = 0, isUserZoomed = false, totalTimeOnScreen = 5 * (1.0 / 440), currentZoomY = 2.0, targetFPS = 60, lastDrawTime = performance.now();
 
         function getActiveChannelMode() { return channelModeSelect.value || '1'; }
         
@@ -486,36 +733,101 @@
             if (cfg.stream) { cfg.stream.getTracks().forEach(track => track.stop()); cfg.stream = null; }
             if (cfg.workletNode) { cfg.workletNode.port.onmessage = null; try { cfg.workletNode.disconnect(); } catch (e) {} cfg.workletNode = null; }
             if (cfg.source) { try { cfg.source.disconnect(); } catch (e) {} cfg.source = null; }
+            if (cfg.filterHP) { try { cfg.filterHP.disconnect(); } catch (e) {} cfg.filterHP = null; }
+            if (cfg.filterLP) { try { cfg.filterLP.disconnect(); } catch (e) {} cfg.filterLP = null; }
+            if (cfg.dummy) { try { cfg.dummy.disconnect(); } catch (e) {} cfg.dummy = null; }
             cfg.active = false; cfg.index = 0; if (cfg.data) cfg.data.fill(0);
         }
 
         function updateAnalysisButtonState() {
-            if (isDemoMode) {
-                btnAnalysis.disabled = true;
-                btnAnalysis.textContent = "Bản Demo (Khóa)";
-                btnAnalysis.className = 'btn-slate';
-                return;
-            }
             const mode = getActiveChannelMode(), activeChannels = (channelConfig.A.active ? 1 : 0) + (channelConfig.B.active ? 1 : 0);
             if (mode === '2' && activeChannels === 2) { btnAnalysis.disabled = false; btnAnalysis.textContent = "Xử lý nguồn âm"; btnAnalysis.className = 'btn-pink'; } 
             else if (mode === '1' && channelConfig.A.active) { btnAnalysis.disabled = !isPaused; btnAnalysis.textContent = "Phân tích FFT"; btnAnalysis.className = isPaused ? 'btn-purple' : 'btn-slate'; } 
             else { btnAnalysis.disabled = true; btnAnalysis.textContent = "Xử lý nguồn âm"; btnAnalysis.className = 'btn-slate'; }
         }
 
-        btnAnalysis.addEventListener('click', () => { 
-            if (isDemoMode) { alert("⚠️ Vui lòng kích hoạt bản Full để sử dụng tính năng này!"); return; }
+        btnAnalysis.addEventListener('click', () => { if(getActiveChannelMode() === '1') openFFTModal(); else openTwoSourceModal(); });
+
+        speedSelect.addEventListener('change', (e) => { targetFPS = (e.target.value === 'slow') ? 15 : 60; });
+        modeSelect.addEventListener('change', (e) => {
+            isContinuousMode = (e.target.value === 'continuous'); clearTimeout(stopTimer);
+            const speedGroup = document.getElementById('groupSpeed');
+            if (isContinuousMode) { speedGroup.style.display = 'block'; targetFPS = (speedSelect.value === 'slow') ? 15 : 60; } 
+            else { speedGroup.style.display = 'none'; targetFPS = 60; document.querySelectorAll('#groupSpeed .settings-item').forEach(el => el.classList.remove('active')); document.querySelector('#groupSpeed .settings-item[data-value="fast"]').classList.add('active'); speedSelect.value = "fast"; if (!isPaused) triggerAutoStop(); }
+        });
+        
+        channelModeSelect.addEventListener('change', () => {
+            if (getActiveChannelMode() === '1') { document.getElementById('cardChannelB').style.display = 'none'; stopAudioChannel('B'); } 
+            else { document.getElementById('cardChannelB').style.display = 'flex'; }
+            updateUIState(); drawFrame();
         });
 
         btnStartA.addEventListener('click', async () => { if (channelConfig.A.active) { stopAudioChannel('A'); updateUIState(); drawFrame(); } else { await initAudioChannel('A', micSelectA.value); } });
         btnStartB.addEventListener('click', async () => { if (channelConfig.B.active) { stopAudioChannel('B'); updateUIState(); drawFrame(); } else { await initAudioChannel('B', micSelectB.value); } });
+        micSelectA.addEventListener('change', (e) => { if (channelConfig.A.active) initAudioChannel('A', e.target.value); });
+        micSelectB.addEventListener('change', (e) => { if (channelConfig.B.active) initAudioChannel('B', e.target.value); });
 
         function resizeCanvas() {
             const dpr = window.devicePixelRatio || 1, cssWidth = canvas.clientWidth, cssHeight = canvas.clientHeight;
             canvas.width = Math.round(cssWidth * dpr); canvas.height = Math.round(cssHeight * dpr);
             canvasCtx.setTransform(dpr, 0, 0, dpr, 0, 0); 
+            if(isTwoSourceModalOpen) { const container = document.getElementById('tsContainer'), canv = document.getElementById('twoSourceCanvas'); if(container && canv) { canv.width = container.clientWidth - 12; canv.height = container.clientHeight - 12; } }
             drawFrame();
         }
         window.addEventListener('resize', resizeCanvas);
+        
+        let initialPinchDistX = 0, initialPinchDistY = 0, startDuration = totalTimeOnScreen, startZoomY = currentZoomY;
+        canvas.addEventListener('touchstart', (e) => { if (e.touches.length === 2 && isPaused) { e.preventDefault(); initialPinchDistX = Math.max(Math.abs(e.touches[0].clientX - e.touches[1].clientX), 10); initialPinchDistY = Math.max(Math.abs(e.touches[0].clientY - e.touches[1].clientY), 10); startDuration = totalTimeOnScreen; startZoomY = currentZoomY; } }, { passive: false });
+        canvas.addEventListener('touchmove', (e) => { if (e.touches.length === 2 && isPaused) { e.preventDefault(); let dx = Math.max(Math.abs(e.touches[0].clientX - e.touches[1].clientX), 10), dy = Math.max(Math.abs(e.touches[0].clientY - e.touches[1].clientY), 10); isUserZoomed = true; totalTimeOnScreen = Math.max(0.002, Math.min(startDuration * (initialPinchDistX / dx), 2.4)); currentZoomY = Math.max(0.5, Math.min(startZoomY * (dy / initialPinchDistY), 10.0)); drawFrame(); } }, { passive: false });
+        canvas.addEventListener('wheel', (e) => { if (!isPaused) return; e.preventDefault(); isUserZoomed = true; if (e.deltaY > 0) { totalTimeOnScreen *= 1.1; currentZoomY /= 1.1; } else { totalTimeOnScreen /= 1.1; currentZoomY *= 1.1; } totalTimeOnScreen = Math.max(0.002, Math.min(totalTimeOnScreen, 2.4)); currentZoomY = Math.max(0.5, Math.min(currentZoomY, 10.0)); drawFrame(); }, { passive: false });
+        document.getElementById('fullscreenButton').addEventListener('click', () => { let elem = document.documentElement; if (!document.fullscreenElement) { if(elem.requestFullscreen) elem.requestFullscreen().catch(()=>{}); else if(elem.webkitRequestFullscreen) elem.webkitRequestFullscreen(); } else { if(document.exitFullscreen) document.exitFullscreen(); else if(document.webkitExitFullscreen) document.webkitExitFullscreen(); } });
+
+        function autoCorrelate(buffer, sampleRate) {
+            let SIZE = buffer.length, sumSq = 0; for (let i = 0; i < SIZE; i++) sumSq += buffer[i] * buffer[i];
+            let rootMeanSq = Math.sqrt(sumSq / SIZE); if (rootMeanSq < 0.02) return -1;
+            let c = new Float32Array(SIZE), halfSize = Math.floor(SIZE / 2);
+            for (let i = 0; i < halfSize; i++) { let sum = 0; for (let j = 0; j < SIZE - i; j++) { sum += buffer[j] * buffer[j + i]; } c[i] = sum; }
+            let d = 0; while (d < halfSize - 1 && c[d] > c[d + 1]) d++;
+            let maxval = -1, maxpos = -1;
+            for (let i = d; i < halfSize; i++) { if (c[i] > maxval) { maxval = c[i]; maxpos = i; } }
+            if (maxpos <= 0 || maxval < c[0] * 0.3) return -1;
+            let truePos = maxpos;
+            if (maxpos > 0 && maxpos < halfSize - 1) { let x1 = c[maxpos - 1], x2 = c[maxpos], x3 = c[maxpos + 1], a = (x1 + x3 - 2 * x2) / 2, b = (x3 - x1) / 2; if (a < 0) truePos = maxpos - b / (2 * a); }
+            let freq = sampleRate / truePos; if (freq < 100 || freq > 1500) return -1; return freq;
+        }
+
+        function findZeroCrossingOffset(cfg, currentIndex, samplesNeeded) {
+            if (!cfg || !cfg.active || !cfg.data || currentIndex <= 0) return 0;
+            const len = cfg.data.length, maxAvailable = Math.min(currentIndex, len - 4096);
+            if (maxAvailable <= samplesNeeded + 4) return 0;
+            const maxSearchWindow = Math.min(maxAvailable - samplesNeeded - 2, Math.max(512, Math.floor(sampleRate / 60)));
+            if (maxSearchWindow <= 4) return 0;
+            const baseEnd = currentIndex - samplesNeeded; let peak = 0;
+            for (let k = 0; k < maxSearchWindow; k += 2) { let idx = ((baseEnd - k) % len + len) % len, absVal = Math.abs(cfg.data[idx]); if (absVal > peak) peak = absVal; }
+            if (peak < 0.008) return 0; const hysteresis = peak * 0.1;
+            for (let offset = 1; offset < maxSearchWindow - 4; offset++) {
+                let iCurr = ((baseEnd - offset) % len + len) % len, iPrev = ((baseEnd - offset - 1) % len + len) % len, vPrev = cfg.data[iPrev], vCurr = cfg.data[iCurr];
+                if (vPrev <= 0 && vCurr > 0) { let iBack = ((baseEnd - offset - 4) % len + len) % len; if (cfg.data[iBack] < -hysteresis || (vCurr - vPrev) > peak * 0.02) return offset; }
+            }
+            return 0;
+        }
+
+        function computeFFT(realArray) {
+            let n = realArray.length, p = 1; while(p < n) p *= 2;
+            let x = new Float32Array(p); x.set(realArray); let y = new Float32Array(p); let j = 0;
+            for (let i = 0; i < p - 1; i++) { if (i < j) { let tx = x[i]; x[i] = x[j]; x[j] = tx; } let m = p >> 1; while (m >= 1 && j >= m) { j -= m; m >>= 1; } j += m; }
+            for (let l = 1; l < p; l <<= 1) { let wk1r = Math.cos(Math.PI / l), wk1i = -Math.sin(Math.PI / l); for (let i = 0; i < p; i += l << 1) { let wr = 1, wi = 0; for (let k = 0; k < l; k++) { let tr = wr * x[i + k + l] - wi * y[i + k + l], ti = wr * y[i + k + l] + wi * x[i + k + l]; x[i + k + l] = x[i + k] - tr; y[i + k + l] = y[i + k] - ti; x[i + k] += tr; y[i + k] += ti; let wtemp = wr; wr = wr * wk1r - wi * wk1i; wi = wtemp * wk1i + wi * wk1r; } } }
+            let magnitudes = new Float32Array(p / 2); for(let i=0; i<p/2; i++) { magnitudes[i] = Math.hypot(x[i], y[i]) / (p/2); } return magnitudes;
+        }
+
+        function drawLabelWithPill(ctx, text, x, y, align = 'center', baseline = 'top', textColor = '#1e293b') {
+            ctx.save(); ctx.font = '600 11px "Inter", sans-serif'; ctx.textAlign = align; ctx.textBaseline = baseline;
+            const metrics = ctx.measureText(text), padX = 4, padY = 2, textW = metrics.width, textH = 12;
+            let boxX = x - padX; if (align === 'center') boxX = x - textW / 2 - padX; else if (align === 'right') boxX = x - textW - padX;
+            let boxY = y - padY; if (baseline === 'middle') boxY = y - textH / 2 - padY; else if (baseline === 'bottom') boxY = y - textH - padY;
+            ctx.fillStyle = 'rgba(241, 245, 249, 0.85)'; ctx.fillRect(boxX, boxY, textW + padX * 2, textH + padY * 2);
+            ctx.fillStyle = textColor; ctx.fillText(text, x, y); ctx.restore();
+        }
 
         function drawMainGrid(ctx, boxX, boxY, boxW, boxH, titleColor, titleText, showTime) {
             ctx.strokeStyle = '#bae6fd'; ctx.lineWidth = 1; const stepGridX = boxW / 10, stepGridY = boxH / 8;
@@ -525,7 +837,42 @@
             ctx.stroke();
             ctx.lineWidth = 2; ctx.strokeStyle = '#334155'; ctx.beginPath();
             let centerY = boxY + boxH / 2; ctx.moveTo(boxX, centerY); ctx.lineTo(boxX + boxW, centerY); ctx.moveTo(boxX + boxW / 2, boxY); ctx.lineTo(boxX + boxW / 2, boxY + boxH);
+            const tickSize = 4;
+            for (let i = 0; i <= 10; i++) { ctx.moveTo(boxX + i * stepGridX, centerY - tickSize); ctx.lineTo(boxX + i * stepGridX, centerY + tickSize); }
+            for (let i = 0; i <= 8; i++) { ctx.moveTo(boxX + boxW / 2 - tickSize, boxY + i * stepGridY); ctx.lineTo(boxX + boxW / 2 + tickSize, boxY + i * stepGridY); }
             ctx.stroke();
+            if (showTime) {
+                let timePerGrid = totalTimeOnScreen / 10;
+                for (let i = 1; i < 10; i++) { if (i !== 5) drawLabelWithPill(ctx, parseFloat(((i - 5) * timePerGrid * 1000).toFixed(2)).toString().replace('.', ','), boxX + i * stepGridX, centerY + 8, 'center', 'top'); }
+                drawLabelWithPill(ctx, "t (ms)", boxX + boxW - 8, centerY - 24, 'right', 'top');
+            }
+            const maxY = 1.0 / currentZoomY, valPerStep = (maxY * 2) / 8; let drawYLabels = (boxH > 120); 
+            for (let i = 1; i < 8; i++) { if (i !== 4) { if (!drawYLabels && i % 2 !== 0) continue; drawLabelWithPill(ctx, parseFloat((maxY - i * valPerStep).toFixed(2)).toString().replace('.', ','), boxX + boxW / 2 + 8, boxY + i * stepGridY, 'left', 'middle'); } }
+            drawLabelWithPill(ctx, "0", boxX + boxW / 2 + 8, centerY + 8, 'left', 'top'); 
+            if (titleText) drawLabelWithPill(ctx, titleText, boxX + 8, boxY + 8, 'left', 'top', titleColor);
+        }
+
+        async function populateMics() {
+            try {
+                const devices = await navigator.mediaDevices.enumerateDevices(), audioInputs = devices.filter(device => device.kind === 'audioinput');
+                let valA = micSelectA.value, valB = micSelectB.value;
+                micSelectA.innerHTML = '<option value="">-- Kênh A: Mặc định hệ thống --</option>'; micSelectB.innerHTML = '<option value="">-- Kênh B: Mặc định hệ thống --</option>';
+                audioInputs.forEach((device, index) => { 
+                    let optA = document.createElement('option'); optA.value = device.deviceId; optA.text = `Mic ${index + 1}: ${device.label || 'Tự chọn'}`; 
+                    let optB = document.createElement('option'); optB.value = device.deviceId; optB.text = `Mic ${index + 1}: ${device.label || 'Tự chọn'}`; 
+                    micSelectA.appendChild(optA); micSelectB.appendChild(optB); 
+                });
+                if (audioInputs.length > 1) micSelectB.selectedIndex = 2;
+                if (valA) micSelectA.value = valA; if (valB) micSelectB.value = valB;
+            } catch(e) {}
+        }
+
+        function updateUIState() {
+            if (channelConfig.A.active) { btnStartA.textContent = "Kênh A (Hoạt động)"; btnStartA.className = "btn-red"; } else { btnStartA.textContent = "Kênh A (Khóa)"; btnStartA.className = "btn-slate"; } btnStartA.disabled = false;
+            if (channelConfig.B.active) { btnStartB.textContent = "Kênh B (Hoạt động)"; btnStartB.className = "btn-blue"; } else { btnStartB.textContent = "Kênh B (Khóa)"; btnStartB.className = "btn-slate"; } btnStartB.disabled = false;
+            if (channelConfig.A.active || channelConfig.B.active) { pauseButton.disabled = false; resetButton.disabled = false; if (isPaused) { infoMessageText.innerHTML = "Đã kết nối. Bấm <span class='info-badge'>Đo / Dừng</span> để khảo sát."; infoMessageText.style.color = "#0284c7"; } } 
+            else { pauseButton.disabled = true; resetButton.disabled = false; infoMessageText.innerHTML = "Nhấn vào <span class='info-badge'>Kênh A</span> hoặc <span class='info-badge'>Kênh B</span> để bật mic."; infoMessageText.style.color = "#0284c7"; }
+            updateAnalysisButtonState();
         }
 
         async function initAudioChannel(channelId, deviceId = null) {
@@ -539,6 +886,8 @@
                 channelConfig.B.data = new Float32Array(sampleRate * 10); 
             }
             if(audioCtx.state === 'suspended') await audioCtx.resume();
+            
+            // TẢI AUDIO WORKLET VÀO TRÌNH DUYỆT (CHỈ 1 LẦN)
             await setupAudioWorklet(audioCtx);
 
             stopAudioChannel(channelId); 
@@ -546,141 +895,456 @@
             if (!cfg.data || cfg.data.length !== sampleRate * 10) cfg.data = new Float32Array(sampleRate * 10);
             
             try {
-                cfg.stream = await navigator.mediaDevices.getUserMedia({ audio: true }).catch(e => null);
+                let audioConstraints = {
+                    audio: mode === '2' ? {
+                        deviceId: deviceId ? { exact: deviceId } : undefined, channelCount: 2, echoCancellation: false, noiseSuppression: false, autoGainControl: false
+                    } : (deviceId ? { deviceId: { exact: deviceId } } : { echoCancellation: false, noiseSuppression: false, autoGainControl: false })
+                };
+
+                cfg.stream = await navigator.mediaDevices.getUserMedia(audioConstraints).catch(e => {
+                    return navigator.mediaDevices.getUserMedia({ audio: true });
+                });
+                
                 cfg.source = audioCtx.createMediaStreamSource(cfg.stream);
+                let finalSourceNode = cfg.source;
+                if (mode === '2') {
+                    const splitter = audioCtx.createChannelSplitter(2);
+                    cfg.source.connect(splitter);
+                    const channelSelector = audioCtx.createGain();
+                    splitter.connect(channelSelector, (channelId === 'A') ? 0 : 1);
+                    finalSourceNode = channelSelector;
+                }
+
+                cfg.filterHP = audioCtx.createBiquadFilter(); cfg.filterHP.frequency.value = 80; cfg.filterHP.type = 'highpass';
+                cfg.filterLP = audioCtx.createBiquadFilter(); cfg.filterLP.frequency.value = 3000; cfg.filterLP.type = 'lowpass';
+                
+                // --- SỬ DỤNG AUDIO WORKLET THAY CHO SCRIPT PROCESSOR ---
                 cfg.workletNode = new AudioWorkletNode(audioCtx, 'fox-audio-processor');
                 cfg.workletNode.port.onmessage = (event) => {
-                    if (!isPaused && cfg.active) {
-                        let inputChunk = event.data, len = cfg.data.length, currentIdx = cfg.index;
-                        for (let i = 0; i < inputChunk.length; i++) cfg.data[(currentIdx + i) % len] = inputChunk[i];
+                    if (!isPaused && cfg.active && (!isTwoSourceModalOpen || !isTsPaused)) {
+                        let inputChunk = event.data;
+                        let len = cfg.data.length;
+                        let currentIdx = cfg.index;
+                        for (let i = 0; i < inputChunk.length; i++) {
+                            cfg.data[(currentIdx + i) % len] = inputChunk[i];
+                        }
                         cfg.index += inputChunk.length;
                     }
                 };
-                cfg.source.connect(cfg.workletNode);
-                cfg.workletNode.connect(audioCtx.destination);
+                
+                cfg.dummy = audioCtx.createGain(); cfg.dummy.gain.value = 0;
+                
+                finalSourceNode.connect(cfg.filterHP); 
+                cfg.filterHP.connect(cfg.filterLP); 
+                cfg.filterLP.connect(cfg.workletNode); 
+                cfg.workletNode.connect(cfg.dummy); 
+                cfg.dummy.connect(audioCtx.destination);
+                
                 cfg.active = true; 
+                if (micSelectA.options.length <= 1) await populateMics(); 
                 updateUIState();
+                
                 if (isPaused) { resizeCanvas(); drawFrame(true); } 
-            } catch (err) { alert(`Lỗi Micro Kênh ${channelId}.`); }
+                else { 
+                    let text = "Đang thu liên tục: "; 
+                    if (channelConfig.A.active) text += "<span class='channel-tag-a'>Kênh A</span>"; 
+                    if (channelConfig.A.active && channelConfig.B.active) text += " &amp; "; 
+                    if (channelConfig.B.active) text += "<span class='channel-tag-b'>Kênh B</span>"; 
+                    infoMessageText.innerHTML = text; 
+                }
+            } catch (err) { alert(`Lỗi Micro Kênh ${channelId}. Vui lòng kiểm tra quyền truy cập.`); }
         }
 
-        function updateUIState() {
-            if (channelConfig.A.active) { btnStartA.textContent = "Kênh A (Hoạt động)"; btnStartA.className = "btn-red"; } else { btnStartA.textContent = "Kênh A (Khóa)"; btnStartA.className = "btn-slate"; } btnStartA.disabled = false;
-            if (channelConfig.A.active) { pauseButton.disabled = false; resetButton.disabled = false; }
-            updateAnalysisButtonState();
+        function triggerAutoStop() {
+            clearTimeout(stopTimer);
+            if (!isPaused && !isContinuousMode) {
+                stopTimer = setTimeout(() => {
+                    if (!isPaused) { isPaused = true; pauseButton.textContent = "Đo / Dừng"; pauseButton.className = "btn-green"; infoMessageText.innerHTML = "Đã khóa sóng &mdash; Chọn Xử lý nguồn âm để tiếp tục"; infoMessageText.style.color = "#dc2626"; updateAnalysisButtonState(); drawFrame(); }
+                }, 2000);
+            }
         }
 
         pauseButton.addEventListener('click', () => {
             if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
             if (isPaused) {
-                isPaused = false; pauseButton.textContent = "Đang đo..."; pauseButton.className = "btn-red";
-                updateAnalysisButtonState(); 
+                isPaused = false; 
+                if(channelConfig.A.data) { channelConfig.A.data.fill(0); channelConfig.A.index = 0; }
+                if(channelConfig.B.data) { channelConfig.B.data.fill(0); channelConfig.B.index = 0; }
+                isUserZoomed = false; detectedFrequency = 0; lockedFrequency = 440; totalTimeOnScreen = 5 * (1.0 / lockedFrequency);
+                pauseButton.textContent = "Đang đo..."; pauseButton.className = "btn-red";
+                let text = "Đang quét tín hiệu: "; if (channelConfig.A.active) text += "<span class='channel-tag-a'>Kênh A</span>"; if (channelConfig.A.active && channelConfig.B.active) text += " &amp; "; if (channelConfig.B.active) text += "<span class='channel-tag-b'>Kênh B</span>";
+                infoMessageText.innerHTML = text; lastDrawTime = performance.now(); updateAnalysisButtonState(); 
                 if(!animFrameId) draw(); 
+                triggerAutoStop();
             } else {
-                isPaused = true; pauseButton.textContent = "Đo / Dừng"; pauseButton.className = "btn-green"; updateAnalysisButtonState(); drawFrame();
+                isPaused = true; clearTimeout(stopTimer); pauseButton.textContent = "Đo / Dừng"; pauseButton.className = "btn-green"; infoMessageText.innerHTML = isContinuousMode ? "Đã tạm dừng vẽ." : "Đã khóa sóng an toàn."; infoMessageText.style.color = "#dc2626"; updateAnalysisButtonState(); drawFrame();
             }
+        });
+
+        resetButton.addEventListener('click', () => {
+            isPaused = true; clearTimeout(stopTimer); pauseButton.textContent = "Đo / Dừng"; pauseButton.className = "btn-green";
+            if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+            if (channelConfig.A.data) { channelConfig.A.data.fill(0); channelConfig.A.index = 0; } if (channelConfig.B.data) { channelConfig.B.data.fill(0); channelConfig.B.index = 0; }
+            isContinuousMode = (modeSelect.value === 'continuous'); isUserZoomed = false; detectedFrequency = 0; lockedFrequency = 440; totalTimeOnScreen = 5 * (1.0 / 440); currentZoomY = 2.0; updateUIState(); drawFrame(true);
         });
 
         function drawFrame(isReset = false) {
+            let now = performance.now();
+            if (audioCtx && !isPaused && (channelConfig.A.index > 2048 || channelConfig.B.index > 2048)) {
+                if (now - lastCorrelateTime > 300) {
+                    let mainCfg = channelConfig.A.active ? channelConfig.A : channelConfig.B;
+                    if (mainCfg.active && mainCfg.index > 2048) {
+                        let recentData = new Float32Array(2048), len = mainCfg.data.length, currentIdx = mainCfg.index;
+                        for (let i = 0; i < 2048; i++) recentData[i] = mainCfg.data[((currentIdx - 2048 + i) % len + len) % len];
+                        let freq = autoCorrelate(recentData, sampleRate);
+                        if (freq > 0) { 
+                            detectedFrequency = (detectedFrequency === 0) ? freq : (detectedFrequency * 0.7 + freq * 0.3); 
+                            if (Math.abs(detectedFrequency - lockedFrequency) / lockedFrequency > 0.08) lockedFrequency = detectedFrequency; 
+                            if (typeof updateFoxLiveFrequency === 'function') updateFoxLiveFrequency(lockedFrequency || detectedFrequency); 
+                        }
+                    }
+                    lastCorrelateTime = now;
+                }
+            }
+            if (!isUserZoomed) totalTimeOnScreen = Math.max(0.002, Math.min(5 * (1.0 / ((lockedFrequency > 0) ? lockedFrequency : 440)), 2.4));
+            
+            if (isTwoSourceModalOpen) { calculatePhaseAndDrawLive(); return; }
+
             const width = canvas.clientWidth, height = canvas.clientHeight;
             canvasCtx.fillStyle = '#f8fafc'; canvasCtx.fillRect(0, 0, width, height);
-            drawMainGrid(canvasCtx, 0, 0, width, height, '#1e293b', 'Biên độ', true);
+
+            const mode = getActiveChannelMode();
+            let boxA_Y = 0, boxA_H = height, boxB_Y = 0, boxB_H = 0;
+            if (mode === '2') { boxA_H = height / 2; boxB_Y = height / 2; boxB_H = height / 2; }
+
+            drawMainGrid(canvasCtx, 0, boxA_Y, width, boxA_H, mode==='2' ? '#ef4444' : '#1e293b', mode==='2' ? 'Kênh A (Đỏ)' : 'Biên độ', true);
+            if (mode === '2') { canvasCtx.strokeStyle = '#cbd5e1'; canvasCtx.lineWidth = 2; canvasCtx.beginPath(); canvasCtx.moveTo(0, boxB_Y); canvasCtx.lineTo(width, boxB_Y); canvasCtx.stroke(); drawMainGrid(canvasCtx, 0, boxB_Y, width, boxB_H, '#3b82f6', 'Kênh B (Xanh)', true); }
+
+            if (audioCtx && !isReset) {
+                const samplesNeeded = Math.floor(totalTimeOnScreen * sampleRate), step = Math.max(1, Math.floor(samplesNeeded / (width * 2))), sliceWidth = (width / samplesNeeded) * step;
+                let refCfg = channelConfig.A.active ? channelConfig.A : (channelConfig.B.active ? channelConfig.B : null);
+                let sharedTriggerOffset = (refCfg && refCfg.index > samplesNeeded) ? findZeroCrossingOffset(refCfg, refCfg.index, samplesNeeded) : 0;
+                
+                ['A', 'B'].forEach(ch => {
+                    const cfg = channelConfig[ch]; if (mode === '1' && ch === 'B') return;
+                    if (cfg.active && cfg.index > 0 && cfg.data) {
+                        const len = cfg.data.length, availableSamples = Math.min(cfg.index, len - 4096); if (availableSamples <= 0) return;
+                        let currentBoxY = (ch === 'A') ? boxA_Y : boxB_Y, currentBoxH = (ch === 'A') ? boxA_H : boxB_H, graphCenterY = currentBoxY + currentBoxH / 2, drawHeight = currentBoxH / 2.2; 
+                        const triggerOffset = (cfg === refCfg) ? sharedTriggerOffset : Math.min(sharedTriggerOffset, Math.max(0, availableSamples - samplesNeeded)), endIndex = cfg.index - triggerOffset, startIndex = endIndex - samplesNeeded;
+                        
+                        canvasCtx.save(); canvasCtx.beginPath(); canvasCtx.rect(0, currentBoxY, width, currentBoxH); canvasCtx.clip();
+                        canvasCtx.lineWidth = 2.5; canvasCtx.lineJoin = 'round'; canvasCtx.strokeStyle = cfg.color; canvasCtx.beginPath();
+                        let x = 0, hasMoved = false;
+                        for (let i = startIndex; i < endIndex; i += step) {
+                            if (i < 0 || i < cfg.index - availableSamples || i >= cfg.index) { x += sliceWidth; continue; }
+                            let bufIdx = ((i % len) + len) % len, v = cfg.data[bufIdx];
+                            if (step > 2) {
+                                let maxV = v, minV = v; for (let j = 1; j < step; j++) { if (i + j < endIndex && i + j < cfg.index) { let tempV = cfg.data[((i + j) % len + len) % len]; if (tempV > maxV) maxV = tempV; if (tempV < minV) minV = tempV; } }
+                                let yMin = graphCenterY - (minV * currentZoomY * drawHeight); if (!hasMoved) { canvasCtx.moveTo(x, yMin); hasMoved = true; } else canvasCtx.lineTo(x, yMin);
+                                let yMax = graphCenterY - (maxV * currentZoomY * drawHeight); canvasCtx.lineTo(x, yMax); x += sliceWidth;
+                            } else { let y = graphCenterY - (v * currentZoomY * drawHeight); if (!hasMoved) { canvasCtx.moveTo(x, y); hasMoved = true; } else canvasCtx.lineTo(x, y); x += sliceWidth; }
+                            if (x > width) break;
+                        }
+                        canvasCtx.stroke(); canvasCtx.restore();
+                    }
+                });
+            }
         }
 
         function draw(timestamp) {
-            if (isPaused) { if (animFrameId) { cancelAnimationFrame(animFrameId); animFrameId = null; } return; }
+            if (isPaused && !isTwoSourceModalOpen) {
+                if (animFrameId) { cancelAnimationFrame(animFrameId); animFrameId = null; }
+                return;
+            }
             animFrameId = requestAnimationFrame(draw);
-            drawFrame();
+            if (!timestamp) timestamp = performance.now();
+            let elapsed = timestamp - lastDrawTime, interval = 1000 / targetFPS;
+            if (elapsed > interval) { lastDrawTime = timestamp - (elapsed % interval); drawFrame(); }
         }
 
-        // --- XỬ LÝ CHATBOX AI ---
-        function toggleChat() {
-            document.getElementById("fox-chat-widget").classList.toggle("open");
+        function extractWindowData(cfg, samplesNeeded, triggerOffset) {
+            let res = new Float32Array(samplesNeeded); if (!cfg || !cfg.active || !cfg.data) return res;
+            let len = cfg.data.length, available = Math.min(cfg.index, len - 4096); if(available <= samplesNeeded) return res;
+            let actualOffset = Math.min(triggerOffset, Math.max(0, available - samplesNeeded)), endIndex = cfg.index - actualOffset, startIndex = endIndex - samplesNeeded;
+            for(let i=0; i<samplesNeeded; i++) { res[i] = cfg.data[((startIndex + i) % len + len) % len]; } return res;
         }
+        function findFirstZeroCrossing(arr) {
+            let max = 0; for(let i=0; i<arr.length; i++) { if(Math.abs(arr[i])>max) max = Math.abs(arr[i]); } if(max < 0.01) return -1; 
+            for(let i=1; i<arr.length-1; i++) { if(arr[i-1] <= 0 && arr[i] > 0 && arr[i+1] > arr[i]) return i; } return -1;
+        }
+        function calculateFreqFromArray(arr, sampleRate) {
+            let zc1 = findFirstZeroCrossing(arr); if(zc1 < 0) return 0;
+            let zc2 = -1; for(let i=zc1+10; i<arr.length-1; i++) { if(arr[i-1] <= 0 && arr[i] > 0 && arr[i+1] > arr[i]) { zc2 = i; break; } }
+            if(zc2 > zc1) return sampleRate / (zc2 - zc1);
+            return autoCorrelate(arr, sampleRate) > 0 ? autoCorrelate(arr, sampleRate) : 0;
+        }
+
+        function drawWaveformRaw(ctx, arr, boxX, boxY, boxW, boxH, color, strokeWidth = 2) {
+            if(!arr || arr.length === 0) return;
+            ctx.strokeStyle = color; ctx.lineWidth = strokeWidth; ctx.lineJoin = 'round'; ctx.beginPath();
+            let step = Math.max(1, Math.floor(arr.length / (boxW * 2))), sliceWidth = (boxW / arr.length) * step;
+            let x = boxX, hasMoved = false, graphCenterY = boxY + boxH/2, graphDrawHeight = boxH / 2.2;
+            for(let i=0; i<arr.length; i+=step) {
+                let v = arr[i];
+                if(step > 2) {
+                    let min = v, max = v; for(let j=1; j<step && i+j<arr.length; j++) { let tv = arr[i+j]; if(tv < min) min = tv; if(tv > max) max = tv; }
+                    let y1 = graphCenterY - (min * currentZoomY * graphDrawHeight), y2 = graphCenterY - (max * currentZoomY * graphDrawHeight);
+                    if(!hasMoved) { ctx.moveTo(x, y1); hasMoved = true; } else { ctx.lineTo(x, y1); } ctx.lineTo(x, y2);
+                } else { let y = graphCenterY - (v * currentZoomY * graphDrawHeight); if(!hasMoved) { ctx.moveTo(x, y); hasMoved = true; } else { ctx.lineTo(x, y); } }
+                x += sliceWidth; if(x > boxX + boxW) break;
+            }
+            ctx.stroke();
+        }
+
+        function openTwoSourceModal() {
+            if (!channelConfig.A.active || !channelConfig.B.active) return;
+            const overlay = document.getElementById('twoSourceModalOverlay');
+            overlay.style.display = 'flex';
+            requestAnimationFrame(() => requestAnimationFrame(() => overlay.classList.add('animUI-visible')));
+            isTwoSourceModalOpen = true; 
+            const btnPause = document.getElementById('btnTsPause'), btnResult = document.getElementById('btnTsResult');
+            showTsResults = false; showTsEquations = false;
+            document.getElementById('hudResults').style.display = 'none'; 
+            document.getElementById('hudEquations').style.display = 'none';
+            btnResult.className = "btn-slate"; document.getElementById('btnTsEquation').className = "btn-slate";
+
+            if (isContinuousMode) {
+                isTsPaused = false; btnPause.style.display = "inline-block"; btnPause.innerHTML = "⏸ Dừng"; btnPause.className = "btn-orange"; btnResult.style.display = "none"; 
+            } else {
+                isTsPaused = true; btnPause.style.display = "none"; btnResult.style.display = "inline-block"; 
+                const samplesNeeded = Math.floor(totalTimeOnScreen * sampleRate);
+                let sharedOffset = findZeroCrossingOffset(channelConfig.A, channelConfig.A.index, samplesNeeded);
+                snapDataA = extractWindowData(channelConfig.A, samplesNeeded, sharedOffset);
+                snapDataB = extractWindowData(channelConfig.B, samplesNeeded, sharedOffset);
+            }
+            const container = document.getElementById('tsContainer'), canv = document.getElementById('twoSourceCanvas');
+            canv.width = container.clientWidth - 12; canv.height = container.clientHeight - 12;
+            setTsMode('overlay');
+            requestAnimationFrame(() => { if (typeof updateTsModePill === 'function') updateTsModePill(document.getElementById('btnModeOverlay'), false); });
+            if (isPaused || isTsPaused) calculatePhaseAndDrawLive();
+        }
+
+        function closeTwoSourceModal() {
+            const overlay = document.getElementById('twoSourceModalOverlay');
+            overlay.classList.remove('animUI-visible');
+            setTimeout(() => { overlay.style.display = 'none'; isTwoSourceModalOpen = false; setTimeout(resizeCanvas, 50); if(isPaused) drawFrame(); }, 300);
+        }
+
+        function toggleTsPause() {
+            isTsPaused = !isTsPaused;
+            const btnPause = document.getElementById('btnTsPause'), btnResult = document.getElementById('btnTsResult');
+            if (isTsPaused) {
+                btnPause.innerHTML = "▶ Tiếp tục"; btnPause.className = "btn-green"; btnResult.style.display = "inline-block";
+                const samplesNeeded = Math.floor(totalTimeOnScreen * sampleRate);
+                let sharedOffset = findZeroCrossingOffset(channelConfig.A, channelConfig.A.index, samplesNeeded);
+                snapDataA = extractWindowData(channelConfig.A, samplesNeeded, sharedOffset); snapDataB = extractWindowData(channelConfig.B, samplesNeeded, sharedOffset);
+            } else {
+                btnPause.innerHTML = "⏸ Dừng"; btnPause.className = "btn-orange"; btnResult.style.display = "none"; 
+                showTsResults = false; document.getElementById('hudResults').style.display = 'none'; btnResult.className = "btn-slate";
+            }
+            calculatePhaseAndDrawLive();
+        }
+
+        function setTsMode(mode) {
+            tsViewMode = mode;
+            const btnOverlay = document.getElementById('btnModeOverlay'), btnSum = document.getElementById('btnModeSum');
+            btnOverlay.classList.remove('active-mode'); btnSum.classList.remove('active-mode');
+            const activeBtn = (mode === 'overlay') ? btnOverlay : btnSum;
+            activeBtn.classList.add('active-mode');
+            if (typeof updateTsModePill === 'function') updateTsModePill(activeBtn, true);
+            if(isPaused || isTsPaused) calculatePhaseAndDrawLive();
+        }
+        function toggleTsResults() { showTsResults = !showTsResults; document.getElementById('btnTsResult').className = showTsResults ? "btn-blue" : "btn-slate"; document.getElementById('hudResults').style.display = showTsResults ? "block" : "none"; if(isPaused || isTsPaused) calculatePhaseAndDrawLive(); }
+        function toggleTsEquations() { showTsEquations = !showTsEquations; document.getElementById('btnTsEquation').className = showTsEquations ? "btn-purple" : "btn-slate"; document.getElementById('hudEquations').style.display = showTsEquations ? "block" : "none"; if(isPaused || isTsPaused) calculatePhaseAndDrawLive(); }
+
+        function calculatePhaseAndDrawLive() {
+            const canv = document.getElementById('twoSourceCanvas'), ctx = canv.getContext('2d', { alpha: false }); if(!canv) return;
+            const cw = canv.width, ch = canv.height; ctx.fillStyle = '#f8fafc'; ctx.fillRect(0, 0, cw, ch);
+            
+            const samplesNeeded = Math.floor(totalTimeOnScreen * sampleRate);
+            let dataA, dataB;
+            if (isTsPaused) { dataA = snapDataA; dataB = snapDataB; } 
+            else {
+                let sharedOffset = findZeroCrossingOffset(channelConfig.A, channelConfig.A.index, samplesNeeded);
+                dataA = extractWindowData(channelConfig.A, samplesNeeded, sharedOffset); dataB = extractWindowData(channelConfig.B, samplesNeeded, sharedOffset);
+            }
+            
+            if (dataA.length > 0 && dataB.length > 0 && (isTsPaused || Math.random() < 0.15)) {
+                let fA = calculateFreqFromArray(dataA, sampleRate), fB = calculateFreqFromArray(dataB, sampleRate);
+                if(fA > 0) currentCalcFreqA = fA; if(fB > 0) currentCalcFreqB = fB;
+                let zcA = findFirstZeroCrossing(dataA), zcB = findFirstZeroCrossing(dataB);
+                if (zcA >= 0 && zcB >= 0) {
+                    let deltaT_sec = (zcB - zcA) / sampleRate; let phaseRad = 2 * Math.PI * currentCalcFreqA * deltaT_sec;
+                    phaseRad = phaseRad % (2 * Math.PI); if (phaseRad < -Math.PI) phaseRad += 2 * Math.PI; if (phaseRad > Math.PI) phaseRad -= 2 * Math.PI;
+                    currentPhaseRad = phaseRad; currentPhaseDeg = phaseRad * (180 / Math.PI);
+                }
+            }
+
+            if(showTsResults) {
+                document.getElementById('hudFreqA').textContent = currentCalcFreqA.toFixed(1); document.getElementById('hudPerA').textContent = (1000/currentCalcFreqA).toFixed(2);
+                document.getElementById('hudFreqB').textContent = currentCalcFreqB.toFixed(1); document.getElementById('hudPerB').textContent = (1000/currentCalcFreqB).toFixed(2);
+                document.getElementById('hudPhaseRad').textContent = Math.abs(currentPhaseRad).toFixed(2); document.getElementById('hudPhaseDeg').textContent = Math.abs(currentPhaseDeg).toFixed(0);
+            }
+            if(showTsEquations) {
+                document.getElementById('eqFreqA').textContent = currentCalcFreqA.toFixed(1); document.getElementById('eqFreqB').textContent = currentCalcFreqB.toFixed(1);
+                let pSign = currentPhaseRad >= 0 ? "+" : "-"; document.getElementById('eqPhase').textContent = `${pSign} ${Math.abs(currentPhaseRad).toFixed(2)}`;
+                if(tsViewMode === 'sum') document.getElementById('eqSumLine').style.display = 'block'; else document.getElementById('eqSumLine').style.display = 'none';
+            }
+            
+            ctx.save(); ctx.beginPath(); ctx.rect(0, 0, cw, ch); ctx.clip(); drawMainGrid(ctx, 0, 0, cw, ch, '#1e293b', null, true); document.getElementById('tsWarningText').style.display = 'none';
+
+            if (tsViewMode === 'overlay') {
+                drawWaveformRaw(ctx, dataA, 0, 0, cw, ch, '#ef4444', 2.5); drawWaveformRaw(ctx, dataB, 0, 0, cw, ch, '#3b82f6', 2.5);
+                ctx.fillStyle = 'rgba(241, 245, 249, 0.9)'; ctx.fillRect(10, 10, 210, 22); ctx.font = 'bold 11px "Be Vietnam Pro", sans-serif'; 
+                ctx.fillStyle = '#ef4444'; ctx.fillText("Kênh A (Đỏ)", 16, 25); ctx.fillStyle = '#3b82f6'; ctx.fillText(" | Kênh B (Xanh)", 85, 25);
+            } else {
+                let dataSum = new Float32Array(samplesNeeded); for(let i=0; i<samplesNeeded; i++) dataSum[i] = dataA[i] + dataB[i];
+                drawWaveformRaw(ctx, dataSum, 0, 0, cw, ch, '#10b981', 3.0); 
+                ctx.fillStyle = 'rgba(241, 245, 249, 0.9)'; ctx.fillRect(10, 10, 170, 22); ctx.font = 'bold 11px "Be Vietnam Pro", sans-serif'; 
+                ctx.fillStyle = '#10b981'; ctx.fillText("Đồ thị Tổng hợp (A + B)", 16, 25);
+                if (Math.abs(currentCalcFreqA - currentCalcFreqB) > 15 && currentCalcFreqA > 50 && currentCalcFreqB > 50) { document.getElementById('tsWarningText').style.display = 'block'; }
+            }
+            ctx.restore();
+        }
+
+        function openFFTModal() {
+            if (!channelConfig.A.active && !channelConfig.B.active) return;
+            const overlay = document.getElementById('fftModalOverlay');
+            overlay.style.display = 'flex';
+            requestAnimationFrame(() => requestAnimationFrame(() => overlay.classList.add('animUI-visible')));
+            document.getElementById('fftTargetFreq').value = (lockedFrequency > 0) ? Math.round(lockedFrequency) : 440;
+            const container = document.querySelector('.fft-canvas-container'), canv = document.getElementById('fftDisplayCanvas');
+            canv.width = container.clientWidth - 12; canv.height = container.clientHeight - 12; processAndDrawFFT();
+        }
+        
+        function closeFFTModal() {
+            const overlay = document.getElementById('fftModalOverlay');
+            overlay.classList.remove('animUI-visible');
+            setTimeout(() => { overlay.style.display = 'none'; setTimeout(resizeCanvas, 50); }, 300);
+        }
+
+        function processAndDrawFFT() {
+            let activeCfg = channelConfig.A.active ? channelConfig.A : channelConfig.B; if (!activeCfg.active || activeCfg.index < 8192) return;
+            const N = 8192; let rawData = new Float32Array(N), len = activeCfg.data.length, currentIdx = activeCfg.index;
+            for(let i = 0; i < N; i++) { let multiplier = 0.5 * (1 - Math.cos(2 * Math.PI * i / (N - 1))); rawData[i] = activeCfg.data[((currentIdx - N + i) % len + len) % len] * multiplier; }
+            let magnitudes = computeFFT(rawData);
+            const fftCanv = document.getElementById('fftDisplayCanvas'), ctx = fftCanv.getContext('2d', { alpha: false });
+            const cw = fftCanv.width, ch = fftCanv.height; ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, cw, ch);
+            let baseFreq = parseFloat(document.getElementById('fftTargetFreq').value) || 440, maxDrawFreq = baseFreq * 5.8, maxBin = Math.floor((maxDrawFreq / sampleRate) * N);
+            let maxMag = 0.001; for(let i=1; i<maxBin; i++) { if(magnitudes[i] > maxMag) maxMag = magnitudes[i]; }
+            const chartBottom = ch - 30; ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 1; ctx.beginPath();
+            for(let i = 0; i <= 10; i++) { let x = i * (cw / 10); ctx.moveTo(x, 0); ctx.lineTo(x, chartBottom); }
+            for(let i = 0; i <= 6; i++) { let y = i * (chartBottom / 6); ctx.moveTo(0, y); ctx.lineTo(cw, y); }
+            ctx.stroke(); ctx.strokeStyle = '#334155'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(0, chartBottom); ctx.lineTo(cw, chartBottom); ctx.stroke();
+            ctx.fillStyle = '#0f172a'; ctx.font = 'bold 11px "Be Vietnam Pro", sans-serif'; ctx.textAlign = 'center';
+            for(let i = 1; i <= 5; i++) { let fVal = Math.round(i * baseFreq), xPos = (fVal / maxDrawFreq) * cw; if (xPos < cw - 20) { ctx.fillText(fVal + " Hz", xPos, chartBottom + 16); ctx.strokeStyle = '#3b82f6'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(xPos, chartBottom); ctx.lineTo(xPos, chartBottom + 5); ctx.stroke(); } }
+            const binWidth = cw / maxBin, tolerance = baseFreq * 0.15;
+            for(let i = 1; i < maxBin; i++) {
+                let freq = i * (sampleRate / N), isHarmonic = false, harmonicNum = Math.round(freq / baseFreq);
+                if(harmonicNum >= 1 && harmonicNum <= 5 && Math.abs(freq - harmonicNum * baseFreq) < tolerance) isHarmonic = true;
+                let mag = magnitudes[i], barHeight = (mag / maxMag) * (chartBottom - 25), x = i * binWidth;
+                if(barHeight > 1) {
+                    ctx.fillStyle = isHarmonic ? '#ef4444' : '#38bdf8'; ctx.fillRect(x - (binWidth > 2 ? binWidth/2 : 0), chartBottom - barHeight, Math.max(2, binWidth), barHeight);
+                    if (isHarmonic && barHeight > 15 && mag > magnitudes[i-1] && mag > magnitudes[i+1]) { ctx.fillStyle = '#ef4444'; ctx.font = 'bold 11px "Be Vietnam Pro", sans-serif'; ctx.fillText("H" + harmonicNum, x, chartBottom - barHeight - 4); }
+                }
+            }
+        }
+
+        let isChatLightMode = false;
 
         function toggleChatTheme() {
-            document.getElementById("fox-chat-box").classList.toggle("light-theme");
+            const chatBox = document.getElementById('fox-chat-box'), toggleBtn = document.getElementById('themeToggleBtn');
+            isChatLightMode = !isChatLightMode;
+            if (isChatLightMode) {
+                chatBox.classList.add('light-theme');
+                toggleBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>`;
+            } else {
+                chatBox.classList.remove('light-theme');
+                toggleBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>`;
+            }
         }
 
-        const chatInput = document.getElementById('fox-chat-input');
-        const sendBtn = document.getElementById('foxSendBtn');
+        function toggleChat() { 
+            const widget = document.getElementById("fox-chat-widget"); 
+            if(widget.classList.toggle("open")) { setTimeout(() => document.getElementById("fox-chat-input").focus(), 150); } 
+        }
 
-        chatInput.addEventListener('input', () => {
-            sendBtn.disabled = chatInput.value.trim() === '';
-        });
+        function updateFoxLiveFrequency(freq) { 
+            if(freq > 0) { 
+                document.getElementById("foxLiveFreqTag").textContent = freq.toFixed(1) + " Hz"; 
+                document.getElementById("foxStatusText").textContent = `Trực tuyến`; 
+            } 
+        }
 
-        chatInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && !sendBtn.disabled) {
-                sendChatMessage();
+        function parseBotReply(text) {
+            if (!text) return "";
+            let html = text.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\$\$/g, "").replace(/\$/g, "");
+            html = html.replace(/\\left\(/g, "(").replace(/\\right\)/g, ")").replace(/\\left\[/g, "[").replace(/\\right\]/g, "]");
+            html = html.replace(/\\left/g, "").replace(/\\right/g, ""); 
+            html = html.replace(/\\(cos|sin|tan|cot|ln|log|exp)\b/g, "$1").replace(/\\(text|mathrm|mathbf)\{([^}]+)\}/g, "$2");
+            
+            function isWrapped(s) { if (!s.startsWith('(') || !s.endsWith(')')) return false; let d = 0; for (let i = 0; i < s.length; i++) { if (s[i] === '(') d++; else if (s[i] === ')') d--; if (d === 0 && i < s.length - 1) return false; } return d === 0; }
+            function hasAddSub(s) { let d = 0; for (let i = 0; i < s.length; i++) { const ch = s[i]; if (ch === '(' || ch === '[' || ch === '{') d++; else if (ch === ')' || ch === ']' || ch === '}') d--; else if (d === 0 && (ch === '+' || ch === '-')) { if (i > 0 && s[i - 1] !== 'e' && s[i - 1] !== 'E') return true; } } return false; }
+            function isSimpleToken(s) { if (/^\d+(\.\d+)?$/.test(s)) return true; if (/^[a-zA-Z]$/.test(s)) return true; if (/^[a-zA-Z]_(?:[a-zA-Z0-9]+|\{[a-zA-Z0-9]+\})$/.test(s)) return true; if (/^\\[a-zA-Z]+(?:_(?:[a-zA-Z0-9]+|\{[a-zA-Z0-9]+\}))?$/.test(s)) return true; if (/^[πωλΔφαβγ]$/.test(s)) return true; if (/^[πωλΔφαβγ]_(?:[a-zA-Z0-9]+|\{[a-zA-Z0-9]+\})$/.test(s)) return true; return false; }
+            function formatFrac(num, den) { num = num.trim(); den = den.trim(); const needNumParen = !isWrapped(num) && (hasAddSub(num) || num.includes('/')); const needDenParen = !isWrapped(den) && (!isSimpleToken(den) || den.includes('/')); return (needNumParen ? '(' + num + ')' : num) + '/' + (needDenParen ? '(' + den + ')' : den); }
+            function replaceFrac(str) {
+                let idx = 0;
+                while ((idx = str.indexOf('\\frac', idx)) !== -1) {
+                    let p = idx + 5; while (p < str.length && /\s/.test(str[p])) p++; if (str[p] !== '{') { idx += 5; continue; }
+                    let numStart = p + 1, depth = 1; p++; while (p < str.length && depth > 0) { if (str[p] === '{') depth++; else if (str[p] === '}') depth--; p++; }
+                    if (depth !== 0) { idx += 5; continue; }
+                    let num = str.substring(numStart, p - 1); while (p < str.length && /\s/.test(str[p])) p++; if (str[p] !== '{') { idx += 5; continue; }
+                    let denStart = p + 1; depth = 1; p++; while (p < str.length && depth > 0) { if (str[p] === '{') depth++; else if (str[p] === '}') depth--; p++; }
+                    if (depth !== 0) { idx += 5; continue; }
+                    let den = str.substring(denStart, p - 1); num = replaceFrac(num); den = replaceFrac(den);
+                    let formatted = formatFrac(num, den); str = str.substring(0, idx) + formatted + str.substring(p); idx += formatted.length;
+                }
+                return str;
             }
-        });
+
+            html = replaceFrac(html);
+            html = html.replace(/\\sqrt\{([^}]+)\}/g, "√($1)");
+            const reps = { "\\\\cdot":"·", "\\\\pi":"π", "\\\\Delta":"Δ", "\\\\lambda":"λ", "\\\\omega":"ω", "\\\\varphi":"φ", "\\\\phi":"φ", "\\\\alpha":"α", "\\\\beta":"β", "\\\\gamma":"γ", "\\\\approx":"≈", "\\\\pm":"±", "\\\\times":"×", "\\\\div":"÷", "\\\\leq?\\b":"≤", "\\\\geq?\\b":"≥", "\\\\neq":"≠", "\\\\rightarrow":"→", "\\\\Rightarrow":"⇒", "\\\\infty":"∞", "\\\\circ":"°" };
+            for(let k in reps) html = html.replace(new RegExp(k, 'g'), reps[k]);
+            
+            html = html.replace(/\*\*(.*?)\*\*/g, "<b>$1</b>").replace(/\*(.*?)\*/g, "<i>$1</i>");
+            html = html.replace(/_\{([^}]+)\}/g, "<sub>$1</sub>").replace(/_([a-zA-Z0-9]+)/g, "<sub>$1</sub>");
+            html = html.replace(/\^\{([^}]+)\}/g, "<sup>$1</sup>").replace(/\^([a-zA-Z0-9]+)/g, "<sup>$1</sup>");
+            html = html.replace(/\\\[/g, "").replace(/\\\]/g, "").replace(/\\\(/g, "").replace(/\\\)/g, "");
+            html = html.replace(/\n/g, "<br>");
+            return html;
+        }
 
         async function sendChatMessage() {
-            const text = chatInput.value.trim();
-            if (!text) return;
+            const input = document.getElementById('fox-chat-input'), btn = document.getElementById('foxSendBtn'), content = document.getElementById('fox-chat-content');
+            const msg = input.value.trim(); if(!msg) return;
+            
+            input.value = ''; btn.disabled = true;
+            content.innerHTML += `<div class="fox-msg-row fox-msg-user"><div class="fox-msg-group"><div class="fox-msg-bubble">${msg}</div></div></div>`;
+            content.scrollTop = content.scrollHeight;
 
-            appendMessage(text, 'user');
-            chatInput.value = '';
-            sendBtn.disabled = true;
-
-            const chatContent = document.getElementById('fox-chat-content');
-            const loadingId = 'loading-' + Date.now();
-            appendMessage("FOX-Lab AI đang phân tích...", 'bot', loadingId);
+            const typingId = 'typing-' + Date.now();
+            content.innerHTML += `<div class="fox-msg-row fox-msg-bot" id="${typingId}"><div class="fox-msg-avatar">${FOX_AVATAR_SVG}</div><div class="fox-msg-group"><div class="fox-msg-bubble" style="color:#94a3b8; font-style:italic;">Đang suy nghĩ...</div></div></div>`;
+            content.scrollTop = content.scrollHeight;
 
             try {
+                let currentFreq = document.getElementById('foxLiveFreqTag').textContent;
                 const response = await fetch(GAS_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify({ action: "chat", message: text })
+                    method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ message: msg, currentFrequency: currentFreq })
                 });
-                const result = await response.json();
                 
-                const loadingBubble = document.getElementById(loadingId);
-                if (loadingBubble) loadingBubble.remove();
-
-                if (result.status === "success" && result.reply) {
-                    appendMessage(result.reply, 'bot');
-                } else {
-                    appendMessage("Hệ thống phản hồi lỗi từ máy chủ AI.", 'bot');
-                }
-            } catch (err) {
-                const loadingBubble = document.getElementById(loadingId);
-                if (loadingBubble) loadingBubble.remove();
-                appendMessage("Lỗi kết nối đến máy chủ AI GAS.", 'bot');
+                const data = await response.json(); document.getElementById(typingId).remove();
+                let rawReply = data.reply || data.message || "Xin lỗi, thầy chưa hiểu ý em.";
+                content.innerHTML += `<div class="fox-msg-row fox-msg-bot"><div class="fox-msg-avatar">${FOX_AVATAR_SVG}</div><div class="fox-msg-group"><div class="fox-msg-bubble">${parseBotReply(rawReply)}</div></div></div>`;
+            } catch (error) {
+                document.getElementById(typingId).remove();
+                content.innerHTML += `<div class="fox-msg-row fox-msg-bot"><div class="fox-msg-avatar">${FOX_AVATAR_SVG}</div><div class="fox-msg-group"><div class="fox-msg-bubble" style="color:#ef4444;">Lỗi kết nối API! Vui lòng kiểm tra lại đường dẫn máy chủ.</div></div></div>`;
             }
-            chatContent.scrollTop = chatContent.scrollHeight;
+            btn.disabled = false; content.scrollTop = content.scrollHeight; input.focus();
         }
 
-        function appendMessage(text, sender, customId = null) {
-            const chatContent = document.getElementById('fox-chat-content');
-            const row = document.createElement('div');
-            row.className = `fox-msg-row fox-msg-${sender}`;
-            
-            if (sender === 'bot') {
-                row.innerHTML = `
-                    <div class="fox-msg-avatar">${FOX_AVATAR_SVG}</div>
-                    <div class="fox-msg-group">
-                        <div class="fox-msg-bubble" ${customId ? `id="${customId}"` : ''}>${formatBotMessage(text)}</div>
-                    </div>
-                `;
-            } else {
-                row.innerHTML = `
-                    <div class="fox-msg-group">
-                        <div class="fox-msg-bubble">${escapeHtml(text)}</div>
-                    </div>
-                `;
-            }
-            chatContent.appendChild(row);
-            chatContent.scrollTop = chatContent.scrollHeight;
-        }
-
-        function formatBotMessage(text) {
-            return text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
-        }
-
-        function escapeHtml(string) {
-            return String(string).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-        }
+        document.getElementById('fox-chat-input').addEventListener('keypress', function(e) { if (e.key === 'Enter') sendChatMessage(); });
+        document.getElementById('fox-chat-input').addEventListener('input', function(e) { document.getElementById('foxSendBtn').disabled = e.target.value.trim() === ''; });
     </script>
 </body>
 </html>
