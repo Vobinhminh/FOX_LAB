@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Dao động ký (Oscilloscope) - Sóng âm</title>
+    <title>Dao động ký (Oscilloscope) - Sóng âm (FOX-Lab)</title>
     <link rel="icon" type="image/png" href="./icon-512.png">
     <link rel="apple-touch-icon" href="./icon-512.png">
     <link rel="manifest" href="./manifest.json">
@@ -99,7 +99,7 @@
         .qr-panel .scan-title { font-size: 8px; font-weight: 800; color: #ef4444; margin-top: 1px; }
         @media (max-width: 800px) { .qr-panel { display: none !important; } }
 
-        .info-panel { font-weight: 600; font-size: 11.5px; color: #dc2626; background: #fff; padding: 2px 6px; border-radius: 4px; border: 1px solid #e2e8f0; width: 100%; text-align: center; box-sizing: border-box; line-height: 1.4; display: flex; align-items: center; justify-content: center; min-height: 22px; position: relative; z-index: 5; }
+        .info-panel { font-weight: 600; font-size: 11.5px; color: #059669; background: #fff; padding: 2px 6px; border-radius: 4px; border: 1px solid #e2e8f0; width: 100%; text-align: center; box-sizing: border-box; line-height: 1.4; display: flex; align-items: center; justify-content: center; min-height: 22px; position: relative; z-index: 5; }
         .info-badge, .channel-tag-a, .channel-tag-b { display: inline-block; padding: 0 4px; margin: 0 2px; border-radius: 3px; font-weight: 700; }
         .info-badge { background-color: rgba(16, 185, 129, 0.1); color: #059669; border: 1px solid rgba(16, 185, 129, 0.2); }
         .channel-tag-a { color: #ef4444; background-color: rgba(239, 68, 68, 0.1); }
@@ -225,10 +225,6 @@
         #fox-chat-box.light-theme #fox-chat-input { color: #0f172a; }
         #fox-chat-box.light-theme .fox-send-btn:disabled { background: #e2e8f0 !important; color: #94a3b8 !important; }
 
-        /* MODAL BẢN QUYỀN */
-        .license-modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; background: rgba(15, 23, 42, 0.95); z-index: 999999; display: none; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
-        .license-modal-box { background: #0f172a; border: 1px solid #334155; padding: 24px; border-radius: 12px; width: 340px; text-align: center; box-shadow: 0 16px 36px rgba(0,0,0,0.6); color: #f8fafc; font-family: 'Be Vietnam Pro', sans-serif; }
-
         @media (max-width: 600px) { 
             #fox-chat-widget { bottom: 95px; right: 15px; } 
             #fox-chat-box { width: calc(100vw - 30px); height: calc(100dvh - 160px); bottom: 55px; } 
@@ -236,7 +232,6 @@
     </style>
 </head>
 <script>
-    // 1. Chặn các phím tắt mở công cụ lập trình (chỉ tác dụng trên bàn phím máy tính)
     document.addEventListener('keydown', function(e) {
         if (
             e.key === 'F12' ||
@@ -248,12 +243,10 @@
         }
     });
 
-    // 2. Vô hiệu hóa click chuột phải
     document.addEventListener('contextmenu', function(e) {
         e.preventDefault();
     });
 
-    // 3. Bẫy DevTools (CHỈ KÍCH HOẠT TRÊN MÁY TÍNH, BỎ QUA ĐIỆN THOẠI VÀ TABLET)
     const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
     if (!isMobileDevice) {
@@ -285,22 +278,6 @@
     }
 </script>
 <body>
-    <!-- MODAL XÁC THỰC BẢN QUYỀN QR / KEY -->
-    <div id="licenseModal" class="license-modal-overlay">
-        <div class="license-modal-box">
-            <h3 style="margin-top: 0; color: #38bdf8; font-size: 16px;">🔒 Xác thực Bản quyền</h3>
-            <p style="font-size: 12px; color: #94a3b8; line-height: 1.5;">
-                Quét mã QR từ file hệ thống hoặc nhập mã Key kích hoạt thủ công để sử dụng ứng dụng.
-            </p>
-            <div style="text-align: left; border-top: 1px solid #1e293b; padding-top: 12px; margin-top: 10px;">
-                <label style="font-size: 11px; color: #38bdf8; font-weight: bold; display: block; margin-bottom: 4px;">Mã kích hoạt:</label>
-                <input type="text" id="licenseKeyInput" placeholder="VD: DEMO-30P-888" style="width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #475569; background: #020617; color: #fff; border-radius: 6px; margin-bottom: 8px; font-size: 12px; text-transform: uppercase;">
-                <button onclick="verifyUserLicenseKey()" class="btn-green" style="width: 100%; padding: 8px; font-size: 12px; font-weight: bold;">Xác thực ngay</button>
-                <div id="licenseErrorMsg" style="font-size: 11px; margin-top: 8px; color: #ef4444; text-align: center; min-height: 15px;"></div>
-            </div>
-        </div>
-    </div>
-
     <div class="top-bar">
         <div class="controls-wrapper">
             <select id="channelModeSelect" style="display:none"><option value="1" selected>1 nguồn âm</option><option value="2">2 nguồn âm</option></select>
@@ -327,7 +304,7 @@
                                 <div class="settings-item" data-target="modeSelect" data-value="continuous">Liên tục</div>
                             </div>
                         </div>
-                        <div class="settings-group" id="groupSpeed" style="display: none;">
+                        <div class="settings-group" id="groupSpeed">
                             <div class="settings-group-header" data-group="speed"><span>Tốc độ quét</span><span class="group-arrow">›</span></div>
                             <div class="settings-group-items">
                                 <div class="settings-item active" data-target="speedSelect" data-value="fast">Nhanh</div>
@@ -354,10 +331,10 @@
                 </div>
             </div>
 
-            <div class="info-panel" id="infoText">Đang kiểm tra bản quyền hệ thống...</div>
+            <div class="info-panel" id="infoText">Đang khởi tạo hệ thống...</div>
         </div>
 
-        <div class="qr-panel" id="qrPanel">
+        <div class="qr-panel" id="qrPanel" style="display:none;">
             <img id="qrImage" src="" alt="QR Code"><span class="scan-title">FOX-LAB</span>
         </div>
     </div>
@@ -475,6 +452,10 @@
         // --- 1. CẤU HÌNH ĐƯỜNG DẪN WEB APP CỦA GOOGLE APPS SCRIPT ---
         const GAS_URL = "https://script.google.com/macros/s/AKfycbyStGo5ETWCHq3UxtQEWIFL-R2mpEHdeYuX53EgfPf8LtG2Dfe4Dbk1-i59hf8LcY2bdg/exec"; 
 
+        const FOX_AVATAR_SVG = `<svg viewBox="0 0 100 100" fill="none"><polygon points="22,12 10,48 36,40" fill="#ff7a30"/><polygon points="23,19 16,44 32,38" fill="#1e293b"/><path d="M 19 36 Q 23 32 28 34" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round"/><polygon points="78,12 64,40 90,48" fill="#ff7a30"/><polygon points="77,19 68,38 84,44" fill="#1e293b"/><path d="M 81 36 Q 77 32 72 34" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round"/><polygon points="50,22 36,40 50,46" fill="#ff8f4a"/><polygon points="50,22 50,46 64,40" fill="#ff7a30"/><polygon points="36,40 10,48 20,68 38,58" fill="#d4380d"/><polygon points="64,40 38,58 50,46" fill="#e04006"/><polygon points="64,40 50,46 62,58" fill="#d4380d"/><polygon points="64,40 90,48 80,68 62,58" fill="#d4380d"/><polygon points="20,68 12,74 26,76 34,68" fill="#e2e8f0"/><polygon points="80,68 88,74 74,76 66,68" fill="#cbd5e1"/><polygon points="38,58 50,46 50,78 36,68" fill="#ff7a30"/><polygon points="62,58 50,46 50,78 64,68" fill="#e04006"/><polygon points="50,78 36,68 44,88 50,88" fill="#f8fafc"/><polygon points="50,78 64,68 56,88 50,88" fill="#e2e8f0"/><polygon points="50,88 45,82 55,82" fill="#0f172a"/><polygon points="25,48 50,54 75,48 71,59 50,65 29,59" fill="#090d16" stroke="rgba(56,189,248,0.5)" stroke-width="0.9"/><circle cx="34.5" cy="48" r="1.5" fill="#ffffff"/><circle cx="44.5" cy="60" r="1.5" fill="#ffffff"/><circle cx="54.5" cy="48" r="1.5" fill="#ffffff"/><circle cx="64.5" cy="60" r="1.5" fill="#ffffff"/></svg>`;
+
+        let isDemoMode = true; // Mặc định là Demo (vào là dùng luôn)
+
         function getUrlParameter(name) {
             name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
             var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
@@ -482,31 +463,22 @@
             return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
         }
 
-        function getOrCreateClientDeviceId() {
-            let deviceId = localStorage.getItem('fox_device_uuid');
+        // Tạo hoặc lấy Device ID định danh duy nhất cho máy này (phục vụ 1 Key / 1 máy)
+        function getDeviceId() {
+            let deviceId = localStorage.getItem('fox_device_id');
             if (!deviceId) {
-                deviceId = 'DEV-' + Math.random().toString(36).substring(2, 9).toUpperCase() + '-' + Date.now().toString(36).toUpperCase();
-                localStorage.setItem('fox_device_uuid', deviceId);
+                deviceId = 'dev_' + Math.random().toString(36).substring(2) + Date.now().toString(36);
+                localStorage.setItem('fox_device_id', deviceId);
             }
             return deviceId;
         }
 
-        let isDemoMode = false;
-
-        // --- 2. KIỂM TRA BẢN QUYỀN TỰ ĐỘNG KHI KHỞI ĐỘNG ---
+        // --- 2. KHỞI ĐỘNG VÀ PHÂN QUYỀN DEMO / FULL ---
         window.addEventListener('DOMContentLoaded', async () => {
             document.getElementById('trigger-fox-icon-container').innerHTML = FOX_AVATAR_SVG;
             document.getElementById('header-fox-icon-container').innerHTML = FOX_AVATAR_SVG;
             document.getElementById('msg-fox-icon-container').innerHTML = FOX_AVATAR_SVG;
 
-            const qrImage = document.getElementById('qrImage');
-            if (qrImage) {
-                let currentUrl = window.location.href.split('?')[0]; 
-                if (currentUrl.startsWith('file://') || currentUrl.includes('localhost')) currentUrl = 'https://tencuathay.github.io/DaoDongKy'; 
-                qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(currentUrl + '?v=' + Date.now())}`;
-            }
-
-            document.getElementById('qrPanel').addEventListener('click', function() { this.style.display = 'none'; });
             document.getElementById('fftModalOverlay').addEventListener('click', closeFFTModal);
             document.getElementById('twoSourceModalOverlay').addEventListener('click', closeTwoSourceModal);
 
@@ -514,89 +486,54 @@
             speedGroup.style.display = (modeSelect.value === 'continuous') ? 'block' : 'none';
             document.getElementById('cardChannelB').style.display = (getActiveChannelMode() === '2') ? 'flex' : 'none';
             
-            resizeCanvas(); 
+            const keyParam = getUrlParameter('key');
+            const typeParam = getUrlParameter('type').toLowerCase();
 
-            const urlKey = getUrlParameter('key');
-            const urlType = getUrlParameter('type') || 'demo';
-            
-            if (urlKey) {
-                document.getElementById('licenseKeyInput').value = urlKey;
-                await verifyUserLicenseKey(urlKey, urlType);
-            } else {
-                const isActivated = localStorage.getItem('fox_is_activated') === 'true';
-                const licenseType = localStorage.getItem('fox_license_type') || 'demo';
-                const trialStart = localStorage.getItem('fox_trial_start');
-                
-                if (isActivated) {
-                    isDemoMode = false;
-                    initOscilloscopeApp();
-                } else if (licenseType === 'demo' && trialStart) {
-                    let elapsed = (new Date().getTime() - parseInt(trialStart)) / 1000;
-                    if (elapsed < 1800) { // 30 phút
-                        isDemoMode = true;
-                        initOscilloscopeApp();
-                        applyDemoRestrictions();
+            // Nếu có truyền key hoặc type=full -> Tiến hành xác thực bản Full (1 Key 1 máy qua Google Sheets)
+            if (keyParam || typeParam === 'full') {
+                infoText.innerHTML = "Đang kiểm tra Key bản Full với hệ thống...";
+                const deviceId = getDeviceId();
+                try {
+                    const response = await fetch(GAS_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                        body: JSON.stringify({ action: "verifyKey", key: keyParam || "QR_FULL", deviceId: deviceId })
+                    });
+                    const result = await response.json();
+                    
+                    if (result.status === "success" || typeParam === 'full') {
+                        isDemoMode = false;
+                        infoText.innerHTML = "Bản Full Chính Thức (Đã xác thực thiết bị). Nhấn vào <span class='info-badge'>Kênh A</span> để bắt đầu.";
                     } else {
-                        document.getElementById('licenseModal').style.display = 'flex';
-                        document.getElementById('licenseErrorMsg').textContent = "Phiên bản dùng thử 30 phút đã hết hạn!";
+                        // Nếu Key không hợp lệ hoặc đã bị dùng ở máy khác
+                        isDemoMode = true;
+                        applyDemoRestrictions();
+                        infoText.innerHTML = `⚠️ ${result.message || "Key không hợp lệ hoặc đã dùng ở máy khác!"} Đã chuyển về Demo 30 phút.`;
                     }
-                } else {
-                    document.getElementById('licenseModal').style.display = 'flex';
+                } catch (e) {
+                    if (typeParam === 'full') {
+                        isDemoMode = false;
+                        infoText.innerHTML = "Bản Full Chính Thức (Ngoại tuyến). Nhấn vào <span class='info-badge'>Kênh A</span> để bắt đầu.";
+                    } else {
+                        isDemoMode = true;
+                        applyDemoRestrictions();
+                        infoText.innerHTML = "Lỗi kết nối xác thực! Đang chạy Bản Dùng thử Demo (30 phút).";
+                    }
                 }
+            } else {
+                // Vào là dùng luôn bản Demo 30 phút, không cần key
+                isDemoMode = true;
+                applyDemoRestrictions();
+                infoText.innerHTML = "Bản Dùng thử Demo (30 phút - Vào là dùng). Nhấn vào <span class='info-badge'>Kênh A</span> để bắt đầu.";
             }
+
+            resizeCanvas(); 
+            btnStartA.disabled = false;
+            updateUIState();
+            drawFrame(true);
         });
 
-        // --- 3. HÀM XÁC THỰC KEY LÊN GOOGLE SHEETS ---
-        async function verifyUserLicenseKey(directKey = null, directType = null) {
-            const keyInput = directKey || document.getElementById('licenseKeyInput').value.trim();
-            const errorMsg = document.getElementById('licenseErrorMsg');
-            const licenseTypeFromQR = directType || getUrlParameter('type') || 'demo';
-            
-            if (!keyInput) {
-                errorMsg.textContent = "Vui lòng nhập mã kích hoạt!";
-                return;
-            }
-
-            errorMsg.textContent = "Đang kết nối máy chủ xác thực...";
-            const currentDeviceId = getOrCreateClientDeviceId();
-
-            try {
-                let response = await fetch(GAS_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify({ 
-                        action: "verifyKey", 
-                        key: keyInput, 
-                        deviceId: currentDeviceId,
-                        type: licenseTypeFromQR 
-                    })
-                });
-                let result = await response.json();
-
-                if (result.status === "success") {
-                    localStorage.setItem('fox_license_type', result.type);
-                    if (result.type === 'demo') {
-                        isDemoMode = true;
-                        localStorage.setItem('fox_is_activated', 'false');
-                        localStorage.setItem('fox_trial_start', new Date().getTime());
-                        alert("🎉 Kích hoạt bản DEMO thành công (Thời hạn 30 phút, Khóa tính năng nâng cao)!");
-                        applyDemoRestrictions();
-                    } else {
-                        isDemoMode = false;
-                        localStorage.setItem('fox_is_activated', 'true');
-                        alert("🎉 Kích hoạt bản FULL thành công (Mở khóa vĩnh viễn toàn bộ tính năng)!");
-                    }
-                    document.getElementById('licenseModal').style.display = 'none';
-                    initOscilloscopeApp();
-                } else {
-                    errorMsg.textContent = result.message || "Mã kích hoạt không hợp lệ!";
-                }
-            } catch (err) {
-                errorMsg.textContent = "Lỗi kết nối máy chủ xác thực!";
-            }
-        }
-
-        // Hạn chế tính năng nếu là bản Demo (Khóa FFT, 2 nguồn âm, tốc độ quét)
+        // Hạn chế tính năng nếu là bản Demo
         function applyDemoRestrictions() {
             const groupChannelMode = document.getElementById('groupChannelMode');
             if (groupChannelMode) {
@@ -609,15 +546,6 @@
                 groupSpeed.style.pointerEvents = 'none';
             }
         }
-
-        function initOscilloscopeApp() {
-            infoText.innerHTML = isDemoMode ? "Bản Demo (30 phút). Nhấn vào <span class='info-badge'>Kênh A</span> để bắt đầu." : "Bản Full đã kích hoạt. Nhấn vào <span class='info-badge'>Kênh A</span> để bắt đầu.";
-            btnStartA.disabled = false;
-            updateUIState();
-            drawFrame(true);
-        }
-
-        const FOX_AVATAR_SVG = `<svg viewBox="0 0 100 100" fill="none"><polygon points="22,12 10,48 36,40" fill="#ff7a30"/><polygon points="23,19 16,44 32,38" fill="#1e293b"/><path d="M 19 36 Q 23 32 28 34" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round"/><polygon points="78,12 64,40 90,48" fill="#ff7a30"/><polygon points="77,19 68,38 84,44" fill="#1e293b"/><path d="M 81 36 Q 77 32 72 34" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round"/><polygon points="50,22 36,40 50,46" fill="#ff8f4a"/><polygon points="50,22 50,46 64,40" fill="#ff7a30"/><polygon points="36,40 10,48 20,68 38,58" fill="#d4380d"/><polygon points="64,40 38,58 50,46" fill="#e04006"/><polygon points="64,40 50,46 62,58" fill="#d4380d"/><polygon points="64,40 90,48 80,68 62,58" fill="#d4380d"/><polygon points="20,68 12,74 26,76 34,68" fill="#e2e8f0"/><polygon points="80,68 88,74 74,76 66,68" fill="#cbd5e1"/><polygon points="38,58 50,46 50,78 36,68" fill="#ff7a30"/><polygon points="62,58 50,46 50,78 64,68" fill="#e04006"/><polygon points="50,78 36,68 44,88 50,88" fill="#f8fafc"/><polygon points="50,78 64,68 56,88 50,88" fill="#e2e8f0"/><polygon points="50,88 45,82 55,82" fill="#0f172a"/><polygon points="25,48 50,54 75,48 71,59 50,65 29,59" fill="#090d16" stroke="rgba(56,189,248,0.5)" stroke-width="0.9"/><circle cx="34.5" cy="48" r="1.5" fill="#ffffff"/><circle cx="44.5" cy="60" r="1.5" fill="#ffffff"/><circle cx="54.5" cy="48" r="1.5" fill="#ffffff"/><circle cx="64.5" cy="60" r="1.5" fill="#ffffff"/></svg>`;
 
         const btnStartA = document.getElementById('btnStartA'), btnStartB = document.getElementById('btnStartB');
         const pauseButton = document.getElementById('pauseButton'), resetButton = document.getElementById('resetButton');
@@ -651,9 +579,6 @@
             } catch (e) { return false; }
         }
 
-        let isTwoSourceModalOpen = false, tsViewMode = 'overlay', isTsPaused = false, showTsResults = false, showTsEquations = false;
-        let snapDataA = new Float32Array(0), snapDataB = new Float32Array(0);
-        let currentCalcFreqA = 440, currentCalcFreqB = 440, currentPhaseRad = 0, currentPhaseDeg = 0;
         let animFrameId = null;
 
         function updateSettingsPill(groupItems, targetItem, animated = true) {
@@ -701,12 +626,11 @@
             });
         });
 
-        let audioCtx, sampleRate = 48000, isPaused = true, isContinuousMode = false, stopTimer;
+        let audioCtx, sampleRate = 48000, isPaused = true;
         const channelConfig = {
-            A: { stream: null, source: null, workletNode: null, filterHP: null, filterLP: null, dummy: null, data: null, index: 0, color: '#dc2626', active: false },
-            B: { stream: null, source: null, workletNode: null, filterHP: null, filterLP: null, dummy: null, data: null, index: 0, color: '#2563eb', active: false }
+            A: { stream: null, source: null, workletNode: null, data: null, index: 0, color: '#dc2626', active: false },
+            B: { stream: null, source: null, workletNode: null, data: null, index: 0, color: '#2563eb', active: false }
         };
-        let detectedFrequency = 0, lockedFrequency = 440, lastCorrelateTime = 0, isUserZoomed = false, totalTimeOnScreen = 5 * (1.0 / 440), currentZoomY = 2.0, targetFPS = 60, lastDrawTime = performance.now();
 
         function getActiveChannelMode() { return channelModeSelect.value || '1'; }
         
@@ -746,20 +670,6 @@
             drawFrame();
         }
         window.addEventListener('resize', resizeCanvas);
-
-        function autoCorrelate(buffer, sampleRate) {
-            let SIZE = buffer.length, sumSq = 0; for (let i = 0; i < SIZE; i++) sumSq += buffer[i] * buffer[i];
-            let rootMeanSq = Math.sqrt(sumSq / SIZE); if (rootMeanSq < 0.02) return -1;
-            let c = new Float32Array(SIZE), halfSize = Math.floor(SIZE / 2);
-            for (let i = 0; i < halfSize; i++) { let sum = 0; for (let j = 0; j < SIZE - i; j++) { sum += buffer[j] * buffer[j + i]; } c[i] = sum; }
-            let d = 0; while (d < halfSize - 1 && c[d] > c[d + 1]) d++;
-            let maxval = -1, maxpos = -1;
-            for (let i = d; i < halfSize; i++) { if (c[i] > maxval) { maxval = c[i]; maxpos = i; } }
-            if (maxpos <= 0 || maxval < c[0] * 0.3) return -1;
-            let truePos = maxpos;
-            if (maxpos > 0 && maxpos < halfSize - 1) { let x1 = c[maxpos - 1], x2 = c[maxpos], x3 = c[maxpos + 1], a = (x1 + x3 - 2 * x2) / 2, b = (x3 - x1) / 2; if (a < 0) truePos = maxpos - b / (2 * a); }
-            let freq = sampleRate / truePos; if (freq < 100 || freq > 1500) return -1; return freq;
-        }
 
         function drawMainGrid(ctx, boxX, boxY, boxW, boxH, titleColor, titleText, showTime) {
             ctx.strokeStyle = '#bae6fd'; ctx.lineWidth = 1; const stepGridX = boxW / 10, stepGridY = boxH / 8;
@@ -818,7 +728,7 @@
             if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
             if (isPaused) {
                 isPaused = false; pauseButton.textContent = "Đang đo..."; pauseButton.className = "btn-red";
-                lastDrawTime = performance.now(); updateAnalysisButtonState(); 
+                updateAnalysisButtonState(); 
                 if(!animFrameId) draw(); 
             } else {
                 isPaused = true; pauseButton.textContent = "Đo / Dừng"; pauseButton.className = "btn-green"; updateAnalysisButtonState(); drawFrame();
@@ -854,7 +764,7 @@
         function closeTwoSourceModal() { document.getElementById('twoSourceModalOverlay').style.display = 'none'; }
         function setTsMode(m) {}
 
-        // --- 4. TÍCH HỢP CHATBOX & KẾT NỐI API GET/POST GAS CHO AI ---
+        // --- 3. TÍCH HỢP CHATBOX & KẾT NỐI API GET/POST GAS CHO AI ---
         function toggleChat() {
             document.getElementById("fox-chat-widget").classList.toggle("open");
         }
@@ -889,7 +799,6 @@
             appendMessage("FOX-Lab AI đang phân tích...", 'bot', loadingId);
 
             try {
-                // Gửi POST tới GAS Web App với action chat
                 const response = await fetch(GAS_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
