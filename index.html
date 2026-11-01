@@ -915,7 +915,7 @@
             for (let i = 1; i < 8; i++) { if (i !== 4) { if (!drawYLabels && i % 2 !== 0) continue; drawLabelWithPill(ctx, parseFloat((maxY - i * valPerStep).toFixed(2)).toString().replace('.', ','), centerX + 8, boxY + i * stepGridY, 'left', 'middle'); } }
             drawLabelWithPill(ctx, "0", centerX + 8, centerY + 8, 'left', 'top'); 
             
-            // Xử lý vị trí tên đồ thị: "Biên độ" ở 1 kênh nằm sát trục Oy (centerX + 6), Kênh A/B giữ nguyên vị trí cũ (boxX + 8)
+            // Xử lý vị trí tên đồ thị
             if (titleText) {
                 let textPosX = (titleText === 'Biên độ') ? (centerX + 6) : (boxX + 8);
                 drawLabelWithPill(ctx, titleText, textPosX, boxY + 8, 'left', 'top', titleColor);
@@ -951,43 +951,70 @@
             }
         }
 
+        // ==========================================
+        // KHỐI HÀM INIT AUDIO (SMART USB/STEREO DETECT)
+        // ==========================================
         async function initAudioChannel(channelId, deviceId = null) {
             const mode = getActiveChannelMode();
+            
+            // Nếu chế độ 1 nguồn thì tự động tắt nguồn âm kia
             if (mode === '1') stopAudioChannel((channelId === 'A') ? 'B' : 'A');
-            
-            if (!audioCtx) { 
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)(); 
-                sampleRate = audioCtx.sampleRate; 
-                channelConfig.A.data = new Float32Array(sampleRate * 10); 
-                channelConfig.B.data = new Float32Array(sampleRate * 10); 
-            }
-            if(audioCtx.state === 'suspended') await audioCtx.resume();
-            
-            await setupAudioWorklet(audioCtx);
 
-            stopAudioChannel(channelId); 
-            const cfg = channelConfig[channelId];
-            if (!cfg.data || cfg.data.length !== sampleRate * 10) cfg.data = new Float32Array(sampleRate * 10);
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                sampleRate = audioCtx.sampleRate;
+                channelConfig.A.data = new Float32Array(sampleRate * 10);
+                channelConfig.B.data = new Float32Array(sampleRate * 10);
+            }
             
+            if (audioCtx.state === 'suspended') await audioCtx.resume();
+            await setupAudioWorklet(audioCtx);
+            stopAudioChannel(channelId);
+
+            const cfg = channelConfig[channelId];
+            if (!cfg.data || cfg.data.length !== sampleRate * 10) {
+                cfg.data = new Float32Array(sampleRate * 10);
+            }
+            cfg.index = 0;
+
             try {
+                // Đọc ID thiết bị đang được chọn
+                const idA = micSelectA ? micSelectA.value : '';
+                const idB = micSelectB ? micSelectB.value : '';
+                
+                // NHẬN DIỆN THÔNG MINH (SharedDevice)
+                const isSharedDevice = (idA === idB);
+
+                const baseConstraints = { echoCancellation: false, noiseSuppression: false, autoGainControl: false };
+
                 let audioConstraints = {
-                    audio: mode === '2' ? {
-                        deviceId: deviceId ? { exact: deviceId } : undefined, channelCount: 2, echoCancellation: false, noiseSuppression: false, autoGainControl: false
-                    } : (deviceId ? { deviceId: { exact: deviceId } } : { echoCancellation: false, noiseSuppression: false, autoGainControl: false })
+                    audio: (mode === '2' && isSharedDevice) ? {
+                        deviceId: deviceId ? { exact: deviceId } : undefined,
+                        channelCount: 2, // Yêu cầu HĐH cấp 2 kênh Stereo
+                        ...baseConstraints
+                    } : {
+                        deviceId: deviceId ? { exact: deviceId } : undefined,
+                        ...baseConstraints // Cấp luồng Mono thông thường
+                    }
                 };
 
                 cfg.stream = await navigator.mediaDevices.getUserMedia(audioConstraints).catch(e => {
-                    return navigator.mediaDevices.getUserMedia({ audio: true });
+                    return navigator.mediaDevices.getUserMedia({ audio: true, ...baseConstraints });
                 });
                 
                 cfg.source = audioCtx.createMediaStreamSource(cfg.stream);
                 let finalSourceNode = cfg.source;
+
                 if (mode === '2') {
-                    const splitter = audioCtx.createChannelSplitter(2);
-                    cfg.source.connect(splitter);
-                    const channelSelector = audioCtx.createGain();
-                    splitter.connect(channelSelector, (channelId === 'A') ? 0 : 1);
-                    finalSourceNode = channelSelector;
+                    if (isSharedDevice) {
+                        const splitter = audioCtx.createChannelSplitter(2);
+                        cfg.source.connect(splitter);
+                        const channelSelector = audioCtx.createGain();
+                        splitter.connect(channelSelector, (channelId === 'A') ? 0 : 1);
+                        finalSourceNode = channelSelector;
+                    } else {
+                        finalSourceNode = cfg.source;
+                    }
                 }
 
                 cfg.filterHP = audioCtx.createBiquadFilter(); cfg.filterHP.frequency.value = 80; cfg.filterHP.type = 'highpass';
@@ -996,16 +1023,14 @@
                 cfg.workletNode = new AudioWorkletNode(audioCtx, 'fox-audio-processor');
                 cfg.workletNode.port.onmessage = (event) => {
                     if (!isPaused && cfg.active && (!isTwoSourceModalOpen || !isTsPaused)) {
-                        let inputChunk = event.data;
-                        let len = cfg.data.length;
-                        let currentIdx = cfg.index;
+                        let inputChunk = event.data, len = cfg.data.length, currentIdx = cfg.index;
                         for (let i = 0; i < inputChunk.length; i++) {
                             cfg.data[(currentIdx + i) % len] = inputChunk[i];
                         }
                         cfg.index += inputChunk.length;
                     }
                 };
-                
+
                 cfg.dummy = audioCtx.createGain(); cfg.dummy.gain.value = 0;
                 
                 finalSourceNode.connect(cfg.filterHP); 
@@ -1014,10 +1039,10 @@
                 cfg.workletNode.connect(cfg.dummy); 
                 cfg.dummy.connect(audioCtx.destination);
                 
-                cfg.active = true; 
+                cfg.active = true;
                 if (micSelectA.options.length <= 1) await populateMics(); 
-                updateUIState();
                 
+                updateUIState();
                 if (isPaused) { resizeCanvas(); drawFrame(true); } 
                 else { 
                     let text = "Đang thu liên tục: "; 
@@ -1026,7 +1051,10 @@
                     if (channelConfig.B.active) text += "<span class='channel-tag-b'>Kênh B</span>"; 
                     infoMessageText.innerHTML = text; 
                 }
-            } catch (err) { alert(`Lỗi Micro Kênh ${channelId}. Vui lòng kiểm tra quyền truy cập.`); }
+
+            } catch (err) {
+                alert(`Lỗi Micro Kênh ${channelId}. Vui lòng kiểm tra quyền truy cập: ` + err.message);
+            }
         }
 
         function triggerAutoStop() {
