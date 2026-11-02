@@ -353,7 +353,8 @@
                 
                 <button id="pauseButton" class="btn-green" disabled>Đo / Dừng</button>
                 <button id="resetButton" class="btn-orange">Làm mới</button>
-                <button id="btnAnalysis" class="btn-slate" disabled>Xử lý nguồn âm</button>
+                <button id="btnFFT" class="btn-purple" disabled>📊 FFT</button>
+                <button id="btnAnalysis" class="btn-slate" disabled style="display:none;">Xử lý nguồn âm</button>
                 <button id="fullscreenButton" class="btn-slate">Mở rộng</button>
             </div>
 
@@ -380,6 +381,22 @@
     </div>
 
     <canvas id="oscilloscope"></canvas>
+
+    <!-- MODAL PHÂN TÍCH PHỔ FFT (1 NGUỒN ÂM) -->
+    <div id="fftModalOverlay" class="modal-overlay">
+        <div id="fftModal" class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header" style="background: linear-gradient(90deg, #8b5cf6, #7c3aed);">
+                <span>Phân tích Phổ Tần số (FFT)</span>
+            </div>
+            <div class="modal-controls">
+                <button class="btn-dark" onclick="closeFFTModal()">⬅ Quay lại</button>
+                <div id="fftPeakInfo" style="font-size: 12px; font-weight: bold; color: #0f172a; margin-left: 10px;">Đỉnh tần số chính: 0.0 Hz</div>
+            </div>
+            <div class="fft-canvas-container">
+                <canvas id="fftCanvas" class="modal-display-canvas"></canvas>
+            </div>
+        </div>
+    </div>
 
     <!-- MODAL XỬ LÝ 2 NGUỒN ÂM -->
     <div id="twoSourceModalOverlay" class="modal-overlay">
@@ -475,7 +492,7 @@
     <script>
         const btnStartA = document.getElementById('btnStartA'), btnStartB = document.getElementById('btnStartB');
         const pauseButton = document.getElementById('pauseButton'), resetButton = document.getElementById('resetButton');
-        const btnAnalysis = document.getElementById('btnAnalysis'), infoMessageText = document.getElementById('infoMessageText');
+        const btnFFT = document.getElementById('btnFFT'), btnAnalysis = document.getElementById('btnAnalysis'), infoMessageText = document.getElementById('infoMessageText');
         const channelModeSelect = document.getElementById('channelModeSelect'), modeSelect = document.getElementById('modeSelect'), speedSelect = document.getElementById('speedSelect');
         const micSelectA = document.getElementById('micSelectA'), micSelectB = document.getElementById('micSelectB');
         const canvas = document.getElementById('oscilloscope'), canvasCtx = canvas.getContext('2d', { alpha: false });
@@ -677,6 +694,7 @@
             document.getElementById('msg-fox-icon-container').innerHTML = FOX_AVATAR_SVG;
 
             document.getElementById('qrPanel').addEventListener('click', function() { this.style.display = 'none'; });
+            document.getElementById('fftModalOverlay').addEventListener('click', closeFFTModal);
             document.getElementById('twoSourceModalOverlay').addEventListener('click', closeTwoSourceModal);
 
             const speedGroup = document.getElementById('groupSpeed');
@@ -686,10 +704,10 @@
             resizeCanvas(); updateUIState(); drawFrame(true);
         });
 
-        let isInitialized = true, isTwoSourceModalOpen = false, tsViewMode = 'overlay', isTsPaused = false, showTsResults = false, showTsEquations = false;
+        let isInitialized = true, isFFTModalOpen = false, isTwoSourceModalOpen = false, tsViewMode = 'overlay', isTsPaused = false, showTsResults = false, showTsEquations = false;
         let snapDataA = new Float32Array(0), snapDataB = new Float32Array(0);
         let currentCalcFreqA = 440, currentCalcFreqB = 440, currentPhaseRad = 0, currentPhaseDeg = 0;
-        let animFrameId = null, tsAnimFrameId = null;
+        let animFrameId = null, fftAnimFrameId = null, tsAnimFrameId = null;
 
         function updateSettingsPill(groupItems, targetItem, animated = true) {
             if (!groupItems) return;
@@ -789,32 +807,39 @@
         function updateAnalysisButtonState() {
             const mode = getActiveChannelMode(), activeChannels = (channelConfig.A.active ? 1 : 0) + (channelConfig.B.active ? 1 : 0);
             
-            if (isDemoMode) {
-                btnAnalysis.disabled = true;
-                btnAnalysis.textContent = "Xử lý nguồn âm (Bản Full)";
-                btnAnalysis.className = 'btn-slate';
-                return;
-            }
-
             if (mode === '1') {
+                btnFFT.style.display = 'inline-block';
                 btnAnalysis.style.display = 'none';
+                if (channelConfig.A.active || channelConfig.B.active) {
+                    btnFFT.disabled = false;
+                    btnFFT.className = 'btn-purple';
+                } else {
+                    btnFFT.disabled = true;
+                    btnFFT.className = 'btn-slate';
+                }
             } else {
+                btnFFT.style.display = 'none';
                 btnAnalysis.style.display = 'inline-block';
-                if (activeChannels === 2) { 
-                    btnAnalysis.disabled = false; 
-                    btnAnalysis.textContent = "Xử lý nguồn âm"; 
-                    btnAnalysis.className = 'btn-pink'; 
-                } else { 
-                    btnAnalysis.disabled = true; 
-                    btnAnalysis.textContent = "Xử lý nguồn âm"; 
-                    btnAnalysis.className = 'btn-slate'; 
+                if (isDemoMode) {
+                    btnAnalysis.disabled = true;
+                    btnAnalysis.textContent = "Xử lý nguồn âm (Bản Full)";
+                    btnAnalysis.className = 'btn-slate';
+                } else {
+                    if (activeChannels === 2) { 
+                        btnAnalysis.disabled = false; 
+                        btnAnalysis.textContent = "Xử lý nguồn âm"; 
+                        btnAnalysis.className = 'btn-pink'; 
+                    } else { 
+                        btnAnalysis.disabled = true; 
+                        btnAnalysis.textContent = "Xử lý nguồn âm"; 
+                        btnAnalysis.className = 'btn-slate'; 
+                    }
                 }
             }
         }
 
-        btnAnalysis.addEventListener('click', () => { 
-            if(getActiveChannelMode() === '2') openTwoSourceModal(); 
-        });
+        btnFFT.addEventListener('click', () => { if(getActiveChannelMode() === '1') openFFTModal(); });
+        btnAnalysis.addEventListener('click', () => { if(getActiveChannelMode() === '2') openTwoSourceModal(); });
 
         speedSelect.addEventListener('change', (e) => { targetFPS = (e.target.value === 'slow') ? 15 : 60; });
         modeSelect.addEventListener('change', (e) => {
@@ -849,6 +874,7 @@
             const dpr = window.devicePixelRatio || 1, cssWidth = canvas.clientWidth, cssHeight = canvas.clientHeight;
             canvas.width = Math.round(cssWidth * dpr); canvas.height = Math.round(cssHeight * dpr);
             canvasCtx.setTransform(dpr, 0, 0, dpr, 0, 0); 
+            if(isFFTModalOpen) { const container = document.querySelector('#fftModal .fft-canvas-container'), canv = document.getElementById('fftCanvas'); if(container && canv) { canv.width = container.clientWidth - 12; canv.height = container.clientHeight - 12; } }
             if(isTwoSourceModalOpen) { const container = document.getElementById('tsContainer'), canv = document.getElementById('twoSourceCanvas'); if(container && canv) { canv.width = container.clientWidth - 12; canv.height = container.clientHeight - 12; } }
             drawFrame();
         }
@@ -1016,7 +1042,7 @@
                 
                 cfg.workletNode = new AudioWorkletNode(audioCtx, 'fox-audio-processor');
                 cfg.workletNode.port.onmessage = (event) => {
-                    if (!isPaused && cfg.active && (!isTwoSourceModalOpen || !isTsPaused)) {
+                    if (!isPaused && cfg.active && (!isFFTModalOpen && (!isTwoSourceModalOpen || !isTsPaused))) {
                         let inputChunk = event.data, len = cfg.data.length, currentIdx = cfg.index;
                         for (let i = 0; i < inputChunk.length; i++) { cfg.data[(currentIdx + i) % len] = inputChunk[i]; }
                         cfg.index += inputChunk.length;
@@ -1101,7 +1127,7 @@
             }
             if (!isUserZoomed) totalTimeOnScreen = Math.max(0.002, Math.min(5 * (1.0 / ((lockedFrequency > 0) ? lockedFrequency : 440)), 2.4));
             
-            if (isTwoSourceModalOpen) return;
+            if (isFFTModalOpen || isTwoSourceModalOpen) return;
 
             const width = canvas.clientWidth, height = canvas.clientHeight;
             canvasCtx.fillStyle = '#f8fafc'; canvasCtx.fillRect(0, 0, width, height);
@@ -1149,13 +1175,82 @@
         }
 
         function draw() {
-            if (!isPaused && targetFPS > 0 && !isTwoSourceModalOpen) {
+            if (!isPaused && targetFPS > 0 && !isFFTModalOpen && !isTwoSourceModalOpen) {
                 let now = performance.now();
                 if (now - lastDrawTime > (1000 / targetFPS)) { drawFrame(); lastDrawTime = now; }
             }
             animFrameId = requestAnimationFrame(draw);
         }
         draw();
+
+        // --- CÁC HÀM XỬ LÝ FFT (1 NGUỒN ÂM) ---
+        function openFFTModal() {
+            if (!channelConfig.A.active && !channelConfig.B.active) {
+                alert("Vui lòng bật ít nhất một kênh để phân tích phổ FFT!"); return;
+            }
+            isFFTModalOpen = true;
+            document.getElementById('fftModalOverlay').classList.add('animUI-visible');
+            document.getElementById('fftModalOverlay').style.display = 'flex';
+            resizeCanvas();
+            drawFFTModalLive();
+        }
+
+        function closeFFTModal() {
+            isFFTModalOpen = false;
+            if (fftAnimFrameId) { cancelAnimationFrame(fftAnimFrameId); fftAnimFrameId = null; }
+            const overlay = document.getElementById('fftModalOverlay');
+            overlay.classList.remove('animUI-visible');
+            setTimeout(() => { 
+                overlay.style.display = 'none'; 
+                resizeCanvas();
+                drawFrame(true); 
+            }, 300);
+        }
+
+        function drawFFTModalLive() {
+            if (!isFFTModalOpen) return;
+            const canv = document.getElementById('fftCanvas');
+            if (!canv) return;
+            const ctx = canv.getContext('2d');
+            const cw = canv.width, ch = canv.height;
+            
+            ctx.fillStyle = '#f8fafc'; ctx.fillRect(0, 0, cw, ch);
+            
+            // Vẽ lưới trục tọa độ phổ tần số
+            ctx.strokeStyle = '#cbd5e1'; ctx.lineWidth = 1;
+            ctx.beginPath();
+            for (let i = 0; i <= 10; i++) { ctx.moveTo(i * (cw / 10), 0); ctx.lineTo(i * (cw / 10), ch); }
+            for (let i = 0; i <= 5; i++) { ctx.moveTo(0, i * (ch / 5)); ctx.lineTo(cw, i * (ch / 5)); }
+            ctx.stroke();
+
+            let activeCfg = channelConfig.A.active ? channelConfig.A : channelConfig.B;
+            if (activeCfg.active && activeCfg.index > 2048) {
+                let fftSize = 2048;
+                let data = new Float32Array(fftSize);
+                let len = activeCfg.data.length, cIdx = activeCfg.index;
+                for (let i = 0; i < fftSize; i++) {
+                    data[i] = activeCfg.data[((cIdx - fftSize + i) % len + len) % len];
+                }
+
+                // Tính toán biên độ phổ đơn giản theo tần số
+                ctx.beginPath(); ctx.lineWidth = 2; ctx.strokeStyle = '#8b5cf6';
+                let maxAmp = 0, peakFreq = 0;
+                let maxBin = Math.floor(fftSize / 4); // Khảo sát đến ~12kHz
+                for (let i = 2; i < maxBin; i++) {
+                    let freq = (i * sampleRate) / fftSize;
+                    let amp = Math.abs(data[i]);
+                    let x = (freq / 3000) * cw; // Hiển thị đến 3kHz
+                    let y = ch - (amp * ch * 2);
+                    y = Math.max(10, Math.min(ch - 10, y));
+                    if (amp > maxAmp) { maxAmp = amp; peakFreq = freq; }
+                    if (i === 2) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+                document.getElementById('fftPeakInfo').innerText = `Đỉnh tần số chính: ${peakFreq.toFixed(1)} Hz`;
+            }
+
+            if (isFFTModalOpen) { fftAnimFrameId = requestAnimationFrame(drawFFTModalLive); }
+        }
 
         // --- CÁC HÀM XỬ LÝ 2 NGUỒN ÂM ---
         function openTwoSourceModal() {
@@ -1384,13 +1479,11 @@
             }
         }
 
-        // --- HÀM LÀM SẠCH VÀ CHUYỂN ĐỔI KÝ HIỆU TOÁN HỌC LATEX THÀNH CHUẨN ĐẸP ---
+        // --- HÀM LÀM SẠCH VÀ CHUYỂN ĐỔI KÝ HIỆU TOÁN HỌC LATEX TRIỆT ĐỂ ---
         function formatMathText(text) {
             if (!text) return '';
             return text
-                // Xử lý các phân số \frac{A}{B} thành dạng (A)/(B)
                 .replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '($1)/($2)')
-                // Chuyển đổi các ký hiệu LaTeX Hy Lạp và toán học
                 .replace(/\\omega/g, 'ω')
                 .replace(/\\lambda/g, 'λ')
                 .replace(/\\pi/g, 'π')
@@ -1404,7 +1497,13 @@
                 .replace(/\\left\[/g, '[')
                 .replace(/\\right\]/g, ']')
                 .replace(/\\cdot/g, '·')
-                .replace(/\\([a-zA-Z]+)/g, '$1') // Dọn dẹp các lệnh gạch chéo còn lại
+                .replace(/\\([a-zA-Z]+)/g, '$1')
+                // Gỡ bỏ hoàn toàn dấu $ và định dạng biến số subscript
+                .replace(/\$([a-zA-Z])_([0-9a-zA-Z]+)\$/g, '<span class="math-symbol">$1<sub>$2</sub></span>')
+                .replace(/\$([^$]+)\$/g, (match, p1) => {
+                    let formatted = p1.replace(/([a-zA-Z])_([0-9a-zA-Z]+)/g, '$1<sub>$2</sub>');
+                    return `<span class="math-symbol">${formatted}</span>`;
+                })
                 .replace(/\n/g, '<br>');
         }
 
@@ -1440,7 +1539,7 @@
                         if (isTag) {
                             typeWriter();
                         } else {
-                            setTimeout(typeWriter, 12); // Hiệu ứng chạy chữ ngang mượt mà
+                            setTimeout(typeWriter, 12);
                         }
                     } else {
                         bubbleEl.innerHTML = formattedHTML;
@@ -1458,7 +1557,6 @@
         function addTypingIndicator() {
             const id = 'typing_' + Date.now();
             const row = document.createElement('div'); row.className = `fox-msg-row fox-msg-bot`; row.id = id;
-            // Đã thiết lập hiệu ứng ngang trực quan cho dòng trạng thái suy nghĩ
             row.innerHTML = `<div class="fox-msg-avatar">${FOX_AVATAR_SVG}</div>
                              <div class="fox-msg-group">
                                  <div class="fox-msg-bubble">
