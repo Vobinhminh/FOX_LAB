@@ -972,17 +972,188 @@
         }
 
         // --- XỬ LÝ 2 NGUỒN ÂM ---
+        // --- TỐI ƯU HÓA KHẢO SÁT 2 NGUỒN ÂM (KHÔNG LAG, CHỈ TÍNH KHI DỪNG) ---
         function openTwoSourceModal() {
             if (isDemoMode) { alert("Chức năng Xử lý 2 Nguồn âm chỉ có trên bản Full."); return; }
             if (getActiveChannelMode() !== '2' || !channelConfig.A.active || !channelConfig.B.active) { alert("Vui lòng bật cả Kênh A và Kênh B để sử dụng tính năng này!"); return; }
-            isTwoSourceModalOpen = true; isTsPaused = false; document.getElementById('twoSourceModalOverlay').classList.add('animUI-visible'); document.getElementById('twoSourceModalOverlay').style.display = 'flex'; resizeCanvas(); 
-        }
-        function closeTwoSourceModal() { isTwoSourceModalOpen = false; const overlay = document.getElementById('twoSourceModalOverlay'); overlay.classList.remove('animUI-visible'); setTimeout(() => { overlay.style.display = 'none'; }, 300); }
-        function setTsMode(mode) { tsViewMode = mode; document.getElementById('btnModeOverlay').classList.remove('active-mode'); document.getElementById('btnModeSum').classList.remove('active-mode'); if (mode === 'overlay') document.getElementById('btnModeOverlay').classList.add('active-mode'); else document.getElementById('btnModeSum').classList.add('active-mode'); }
-        function toggleTsPause() { isTsPaused = !isTsPaused; let btn = document.getElementById('btnTsPause'); if (isTsPaused) { btn.textContent = "▶ Tiếp tục"; btn.className = "btn-green"; } else { btn.textContent = "⏸ Dừng"; btn.className = "btn-orange"; } }
-        function toggleTsResults() { showTsResults = !showTsResults; document.getElementById('hudResults').style.display = showTsResults ? 'block' : 'none'; }
-        function toggleTsEquations() { showTsEquations = !showTsEquations; document.getElementById('hudEquations').style.display = showTsEquations ? 'block' : 'none'; }
+            isTwoSourceModalOpen = true; 
+            isTsPaused = false; // Bắt đầu ở trạng thái chạy mượt
+            
+            // Ẩn kết quả và phương trình khi chưa dừng để chống lag
+            showTsResults = false;
+            showTsEquations = false;
+            document.getElementById('hudResults').style.display = 'none';
+            document.getElementById('hudEquations').style.display = 'none';
+            document.getElementById('btnTsPause').textContent = "⏸ Dừng";
+            document.getElementById('btnTsPauseclassName = "btn-orange";
 
+            document.getElementById('twoSourceModalOverlay').classList.add('animUI-visible');
+            document.getElementById('twoSourceModalOverlay').style.display = 'flex';
+            resizeCanvas(); 
+        }
+
+        function closeTwoSourceModal() {
+            isTwoSourceModalOpen = false;
+            const overlay = document.getElementById('twoSourceModalOverlay');
+            overlay.classList.remove('animUI-visible');
+            setTimeout(() => { overlay.style.display = 'none'; }, 300);
+        }
+
+        function setTsMode(mode) {
+            tsViewMode = mode;
+            document.getElementById('btnModeOverlay').classList.remove('active-mode');
+            document.getElementById('btnModeSum').classList.remove('active-mode');
+            if (mode === 'overlay') document.getElementById('btnModeOverlay').classList.add('active-mode');
+            else document.getElementById('btnModeSum').classList.add('active-mode');
+        }
+
+        function toggleTsPause() {
+            isTsPaused = !isTsPaused;
+            let btn = document.getElementById('btnTsPause');
+            if (isTsPaused) { 
+                btn.textContent = "▶ Tiếp tục"; 
+                btn.className = "btn-green";
+                // KHI BẤM DỪNG: Tiến hành chốt dữ liệu và tính toán kết quả, phương trình chính xác
+                computeAndLockTwoSourceData();
+            } else { 
+                btn.textContent = "⏸ Dừng"; 
+                btn.className = "btn-orange";
+                // Khi tiếp tục chạy: ẩn bảng kết quả đi để mượt mà
+                document.getElementById('hudResults').style.display = 'none';
+                document.getElementById('hudEquations').style.display = 'none';
+                showTsResults = false;
+                showTsEquations = false;
+            }
+        }
+
+        function toggleTsResults() {
+            if (!isTsPaused) {
+                alert("⚠️ Thầy vui lòng bấm nút [Dừng] trước khi xem kết quả đối chiếu nhé!");
+                return;
+            }
+            showTsResults = !showTsResults;
+            document.getElementById('hudResults').style.display = showTsResults ? 'block' : 'none';
+        }
+
+        function toggleTsEquations() {
+            if (!isTsPaused) {
+                alert("⚠️ Thầy vui lòng bấm nút [Dừng] trước khi xem phương trình dao động nhé!");
+                return;
+            }
+            showTsEquations = !showTsEquations;
+            document.getElementById('hudEquations').style.display = showTsEquations ? 'block' : 'none';
+        }
+
+        // Hàm tính toán chuyên sâu chỉ chạy 1 lần khi bấm Dừng
+        function computeAndLockTwoSourceData() {
+            const fftSize = 4096;
+            let recA = new Float32Array(fftSize), recB = new Float32Array(fftSize);
+            let len = channelConfig.A.data.length, cAIdx = channelConfig.A.index, cBIdx = channelConfig.B.index;
+            
+            for(let i=0; i<fftSize; i++) {
+                recA[i] = channelConfig.A.data[((cAIdx - fftSize + i) % len + len) % len];
+                recB[i] = channelConfig.B.data[((cBIdx - fftSize + i) % len + len) % len];
+            }
+            snapDataA = recA; snapDataB = recB;
+
+            let fA = autoCorrelate(recA, sampleRate), fB = autoCorrelate(recB, sampleRate);
+            if (fA > 50 && fA < 3000) currentCalcFreqA = fA;
+            if (fB > 50 && fB < 3000) currentCalcFreqB = fB;
+
+            let maxShift = Math.floor(sampleRate / currentCalcFreqA);
+            let bestCross = -Infinity, bestShift = 0;
+            for (let shift = -maxShift/2; shift < maxShift/2; shift++) {
+                let sum = 0;
+                for (let i = snapDataA.length - 2000; i < snapDataA.length; i++) {
+                    let bIdx = i + shift;
+                    if (bIdx >= 0 && bIdx < snapDataB.length) { sum += snapDataA[i] * snapDataB[bIdx]; }
+                }
+                if (sum > bestCross) { bestCross = sum; bestShift = shift; }
+            }
+            
+            let timeShift = bestShift / sampleRate;
+            let periodA = 1.0 / currentCalcFreqA;
+            currentPhaseRad = (timeShift / periodA) * 2 * Math.PI;
+            while(currentPhaseRad > Math.PI) currentPhaseRad -= 2*Math.PI;
+            while(currentPhaseRad < -Math.PI) currentPhaseRad += 2*Math.PI;
+            currentPhaseDeg = currentPhaseRad * (180 / Math.PI);
+
+            // Cập nhật giá trị vào HUD
+            document.getElementById('hudFreqA').innerText = currentCalcFreqA.toFixed(1);
+            document.getElementById('hudPerA').innerText = (1000/currentCalcFreqA).toFixed(2);
+            document.getElementById('hudFreqB').innerText = currentCalcFreqB.toFixed(1);
+            document.getElementById('hudPerB').innerText = (1000/currentCalcFreqB).toFixed(2);
+            document.getElementById('hudPhaseRad').innerText = currentPhaseRad.toFixed(2);
+            document.getElementById('hudPhaseDeg').innerText = Math.round(currentPhaseDeg);
+
+            document.getElementById('eqFreqA').innerText = currentCalcFreqA.toFixed(1);
+            document.getElementById('eqFreqB').innerText = currentCalcFreqB.toFixed(1);
+            let phaseStr = (currentPhaseRad >= 0 ? "+ " : "- ") + Math.abs(currentPhaseRad).toFixed(2);
+            document.getElementById('eqPhase').innerText = phaseStr;
+            document.getElementById('eqSumLine').style.display = (tsViewMode === 'sum') ? 'block' : 'none';
+        }
+
+        // Hàm vẽ cực kỳ nhẹ nhàng, không gây lag
+        function calculatePhaseAndDrawLive() {
+            if (!isTwoSourceModalOpen) return;
+            const canv = document.getElementById('twoSourceCanvas');
+            if (!canv) return;
+            const ctx = canv.getContext('2d');
+            const cw = canv.width, ch = canv.height;
+            ctx.fillStyle = '#f8fafc'; ctx.fillRect(0, 0, cw, ch);
+            
+            drawMainGrid(ctx, 0, 0, cw, ch, null, null, true);
+
+            let samplesDraw = Math.floor(sampleRate * totalTimeOnScreen);
+            
+            // Lấy dữ liệu trực tiếp từ buffer để vẽ mượt
+            let activeDataA = channelConfig.A.data;
+            let activeDataB = channelConfig.B.data;
+            let len = activeDataA.length;
+            let cIdxA = channelConfig.A.index;
+            let cIdxB = channelConfig.B.index;
+
+            let offsetA = isTsPaused ? findZeroCrossingOffset({active:true, data: snapDataA}, snapDataA.length, samplesDraw) : 0;
+            let startI = isTsPaused ? (snapDataA.length - offsetA - samplesDraw) : (cIdxA - samplesDraw);
+
+            ctx.lineWidth = 2.5; ctx.lineJoin = 'round';
+            let step = Math.max(1, Math.floor(samplesDraw / cw));
+            
+            if (tsViewMode === 'overlay') {
+                // Vẽ kênh A
+                ctx.strokeStyle = '#ef4444'; ctx.beginPath();
+                for (let i = 0; i < samplesDraw; i+=step) {
+                    let idx = isTsPaused ? Math.max(0, Math.min(snapDataA.length - 1, startI + i)) : ((cIdxA - samplesDraw + i) % len + len) % len;
+                    let val = isTsPaused ? snapDataA[idx] : activeDataA[idx];
+                    let x = (i/samplesDraw)*cw, y = ch/2 - (val * currentZoomY * ch/2);
+                    if (i===0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+                
+                // Vẽ kênh B
+                ctx.strokeStyle = '#3b82f6'; ctx.beginPath();
+                for (let i = 0; i < samplesDraw; i+=step) {
+                    let idx = isTsPaused ? Math.max(0, Math.min(snapDataB.length - 1, startI + i)) : ((cIdxB - samplesDraw + i) % len + len) % len;
+                    let val = isTsPaused ? snapDataB[idx] : activeDataB[idx];
+                    let x = (i/samplesDraw)*cw, y = ch/2 - (val * currentZoomY * ch/2);
+                    if (i===0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+            } else if (tsViewMode === 'sum') {
+                ctx.strokeStyle = '#8b5cf6'; ctx.beginPath();
+                for (let i = 0; i < samplesDraw; i+=step) {
+                    let idxA = isTsPaused ? Math.max(0, Math.min(snapDataA.length - 1, startI + i)) : ((cIdxA - samplesDraw + i) % len + len) % len;
+                    let idxB = isTsPaused ? Math.max(0, Math.min(snapDataB.length - 1, startI + i)) : ((cIdxB - samplesDraw + i) % len + len) % len;
+                    let val = (isTsPaused ? snapDataA[idxA] : activeDataA[idxA]) + (isTsPaused ? snapDataB[idxB] : activeDataB[idxB]);
+                    let x = (i/samplesDraw)*cw, y = ch/2 - (val * (currentZoomY/2) * ch/2);
+                    if (i===0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+            }
+            
+            // Tiếp tục vòng lặp vẽ mượt
+            if (isTwoSourceModalOpen) requestAnimationFrame(calculatePhaseAndDrawLive);
+        }
         function calculatePhaseAndDrawLive() {
             if (!isTwoSourceModalOpen) return;
             const canv = document.getElementById('twoSourceCanvas'); if (!canv) return;
