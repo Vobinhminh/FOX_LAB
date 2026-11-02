@@ -55,11 +55,11 @@
         button:disabled { background: linear-gradient(180deg, #94a3b8, #64748b) !important; cursor: not-allowed; opacity: 0.8; }
         .btn-green { background: linear-gradient(180deg, #10b981, #059669); } 
         .btn-red { background: linear-gradient(180deg, #ef4444, #dc2626); } 
-        .btn-orange { background: linear-gradient(180deg, #f59e0b, #d97706); } 
+        .btn-orange { background: linear-gradient(180deg, #f59e0b, #d97706); color: #fff !important; border: 1px solid #b45309; } 
         .btn-purple { background: linear-gradient(180deg, #8b5cf6, #7c3aed); } 
         .btn-pink { background: linear-gradient(180deg, #ec4899, #db2777); } 
-        .btn-slate { background: linear-gradient(180deg, #64748b, #475569); } 
-        .btn-blue { background: linear-gradient(180deg, #3b82f6, #2563eb); } 
+        .btn-slate { background: linear-gradient(180deg, #64748b, #475569); color: #fff !important; border: 1px solid #334155; } 
+        .btn-blue { background: linear-gradient(180deg, #3b82f6, #2563eb); color: #fff !important; border: 1px solid #1d4ed8; } 
         .btn-dark { background: linear-gradient(180deg, #334155, #0f172a); }
 
         canvas { flex-grow: 1; width: 100%; height: 100%; display: block; cursor: crosshair; touch-action: none; background-color: #f8fafc; }
@@ -110,7 +110,7 @@
         .ts-mode-toggle button { background: transparent; color: #94a3b8; border: none; font-weight: 600; padding: 5px 12px; font-size: 11px; position: relative; z-index: 2; cursor: pointer; border-radius: 4px; }
         .ts-mode-toggle button.active-mode { color: #ffffff; font-weight: 700; }
 
-        .beat-warning { position: absolute; top: 16px; left: 50%; transform: translateX(-50%); background: rgba(220, 38, 38, 0.9); color: white; padding: 4px 12px; border-radius: 12px; font-size: 11.5px; font-weight: bold; z-index: 60; display: none; }
+        .beat-warning { position: absolute; top: 16px; left: 50%; transform: translateX(-50%); background: rgba(220, 38, 38, 0.9); color: white; padding: 4px 12px; border-radius: 12px; font-size: 11.5px; font-weight: bold; z-index: 60; display: none; border: 1px solid #f87171; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
 
         :root { --fox-font: 'Be Vietnam Pro', sans-serif; --fox-font-mono: 'JetBrains Mono', monospace; --fox-cyan: #38bdf8; --fox-text-muted: #64748b; }
         #fox-chat-widget { position: fixed; bottom: 20px; right: 20px; z-index: 99998; font-family: var(--fox-font); user-select: none; }
@@ -143,7 +143,12 @@
         .fox-msg-user { justify-content: flex-end; }
         .fox-msg-bot { justify-content: flex-start; }
         .fox-msg-avatar { width: 24px; height: 24px; border-radius: 4px; background: rgba(30, 41, 59, 0.9); border: 1px solid rgba(249, 115, 22, 0.4); display: flex; align-items: center; justify-content: center; flex-shrink: 0; padding: 2px; }
-        .fox-msg-group { display: flex; flex-direction: column; max-width: 85%; gap: 2px; }
+        
+        /* CSS CHO NÚT COPY TRONG KHUNG CHAT */
+        .fox-msg-group { position: relative; display: flex; flex-direction: column; max-width: 85%; gap: 2px; }
+        .fox-copy-btn { position: absolute; bottom: -18px; right: 0px; background: #cbd5e1; border: none; border-radius: 4px; color: #0f172a; cursor: pointer; font-size: 9px; padding: 2px 6px; font-weight: bold; opacity: 0; transition: opacity 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+        .fox-msg-group:hover .fox-copy-btn { opacity: 1; }
+
         .fox-msg-user .fox-msg-group { align-items: flex-end; }
         .fox-msg-bot .fox-msg-group { align-items: flex-start; }
         .fox-msg-bubble { padding: 8px 12px; border-radius: 10px; font-size: 12px; line-height: 1.4; word-wrap: break-word; max-width: 100%; }
@@ -302,19 +307,15 @@
                     <button id="btnModeSum" onclick="setTsMode('sum')">Tổng hợp (A+B)</button>
                 </div>
 
+                <!-- CỤM NÚT ĐÃ LÊN MÀU ĐẸP -->
                 <div class="flex items-center gap-2">
-                    <!-- Nút Dừng / Tiếp tục -->
-                    <button id="tsPlayBtn" onclick="toggleTsPlay()" class="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded shadow text-sm font-medium transition" style="margin-left: 8px;">
+                    <button id="tsPlayBtn" onclick="toggleTsPlay()" class="btn-orange" style="margin-left: 8px;">
                         <i class="fa-solid fa-pause"></i> Dừng
                     </button>
-
-                    <!-- Nút Kết quả (mặc định ẩn) -->
-                    <button id="tsResultBtn" onclick="showTsResultModal()" style="display: none !important; margin-left: 4px;" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded shadow text-sm font-medium transition">
+                    <button id="tsResultBtn" onclick="showTsResultModal()" style="display: none !important; margin-left: 4px;" class="btn-blue">
                         <i class="fa-solid fa-chart-bar"></i> Kết quả
                     </button>
-
-                    <!-- Nút Phương trình (mặc định ẩn) -->
-                    <button id="tsEquationBtn" onclick="showTsEquationModal()" style="display: none !important; margin-left: 4px;" class="px-3 py-1.5 bg-slate-700 hover:bg-slate-800 text-white rounded shadow text-sm font-medium transition">
+                    <button id="tsEquationBtn" onclick="showTsEquationModal()" style="display: none !important; margin-left: 4px;" class="btn-slate">
                         <i class="fa-solid fa-square-root-variable"></i> Phương trình
                     </button>
                 </div>
@@ -408,7 +409,6 @@
         let detectedFrequency = 0, lockedFrequency = 440;
         let isUserZoomed = false, totalTimeOnScreen = 5 * (1.0 / 440), currentZoomY = 2.0;
 
-        // KHAI BÁO BIẾN TOÀN CỤC CHUẨN CHO 2 NGUỒN ÂM
         let isTwoSourceModalOpen = false;
         let isTsPaused = false;
         let snapDataA = [];
@@ -416,6 +416,7 @@
         let tsViewMode = 'overlay';
         let showTsResults = false;
         let showTsEquations = false;
+        let currentCalcFreqA = 0, currentCalcFreqB = 0;
 
         function getDeviceId() {
             let deviceId = localStorage.getItem('fox_device_id');
@@ -426,7 +427,6 @@
             return deviceId;
         }
 
-        // --- HÀM XỬ LÝ GIAO DIỆN LICENSE ---
         function selectMode(mode) {
             if (mode === 'demo') {
                 isDemoMode = true;
@@ -919,7 +919,7 @@
                 }
             }
             if (!isUserZoomed) totalTimeOnScreen = Math.max(0.002, Math.min(5 * (1.0 / ((lockedFrequency > 0) ? lockedFrequency : 440)), 2.4));
-            if (isTwoSourceModalOpen) return; // Không vẽ đè lên modal 2 nguồn
+            if (isTwoSourceModalOpen) return;
 
             const width = canvas.clientWidth, height = canvas.clientHeight;
             canvasCtx.fillStyle = '#f8fafc'; canvasCtx.fillRect(0, 0, width, height);
@@ -963,7 +963,6 @@
             animFrameId = requestAnimationFrame(draw);
         }
 
-        // --- FFT MODAL LOGIC ---
         function openFFTModal() {
             if (isDemoMode) { alert("Chức năng Phân tích Họa âm FFT chỉ có trên bản Full."); return; }
             document.getElementById('fftModalOverlay').classList.add('animUI-visible'); document.getElementById('fftModalOverlay').style.display = 'flex';
@@ -1065,12 +1064,12 @@
             }
         }
 
-        // --- XỬ LÝ 2 NGUỒN ÂM CHUẨN MƯỢT 100% ---
+        // --- XỬ LÝ 2 NGUỒN ÂM (ĐÃ TỐI ƯU CÙNG TẦN SỐ MỚI TỔNG HỢP & KHÓA TẦN SỐ KHI DỪNG) ---
         function setTsMode(mode) {
             tsViewMode = mode;
             document.getElementById('btnModeOverlay').classList.toggle('active-mode', mode === 'overlay');
             document.getElementById('btnModeSum').classList.toggle('active-mode', mode === 'sum');
-            if (isTsPaused) calculatePhaseAndDrawLive(); // Cập nhật ngay nếu đang dừng
+            if (isTsPaused) calculatePhaseAndDrawLive();
         }
 
         function showTsResultModal() {
@@ -1107,7 +1106,7 @@
             const btn = document.getElementById('tsPlayBtn');
             if (btn) {
                 btn.innerHTML = '<i class="fa-solid fa-pause"></i> Dừng';
-                btn.className = "px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded shadow text-sm font-medium transition";
+                btn.className = "btn-orange";
             }
 
             requestAnimationFrame(calculatePhaseAndDrawLive);
@@ -1122,7 +1121,7 @@
                 overlay.classList.remove('animUI-visible');
                 setTimeout(() => { 
                     overlay.style.display = 'none'; 
-                    if (!animFrameId && typeof draw === 'function') draw(); // Khởi động lại vòng lặp chính
+                    if (!animFrameId && typeof draw === 'function') draw();
                 }, 300);
             }
         }
@@ -1136,10 +1135,10 @@
             if (!isTsPaused) {
                 if (btn) {
                     btn.innerHTML = '<i class="fa-solid fa-pause"></i> Dừng';
-                    btn.className = "px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded shadow text-sm font-medium transition";
+                    btn.className = "btn-orange";
                 }
                 if (resBtn) resBtn.style.setProperty('display', 'none', 'important');
-                if (eqBtn) eqBtn.style.setProperty('display', 'none', 'important');
+                if (eqBtn) resBtn.style.setProperty('display', 'none', 'important');
                 
                 showTsResults = false; showTsEquations = false;
                 document.getElementById('hudResults').style.display = 'none';
@@ -1149,10 +1148,10 @@
             } else {
                 if (btn) {
                     btn.innerHTML = '<i class="fa-solid fa-play"></i> Tiếp tục';
-                    btn.className = "px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded shadow text-sm font-medium transition";
+                    btn.className = "btn-green";
                 }
                 if (resBtn) resBtn.style.setProperty('display', 'inline-flex', 'important');
-                if (eqBtn) eqBtn.style.setProperty('display', 'inline-flex', 'important');
+                if (eqBtn) resBtn.style.setProperty('display', 'inline-flex', 'important');
 
                 if (channelConfig && channelConfig.A && channelConfig.A.data) snapDataA = Array.from(channelConfig.A.data);
                 if (channelConfig && channelConfig.B && channelConfig.B.data) snapDataB = Array.from(channelConfig.B.data);
@@ -1170,9 +1169,7 @@
                 canv.height = canv.parentElement.clientHeight;
 
                 const ctx = canv.getContext('2d'), cw = canv.width, ch = canv.height;
-                ctx.fillStyle = '#f8fafc'; 
-                ctx.fillRect(0, 0, cw, ch); 
-                
+                ctx.fillStyle = '#f8fafc'; ctx.fillRect(0, 0, cw, ch); 
                 drawMainGrid(ctx, 0, 0, cw, ch, null, null, true);
                 
                 let samplesDraw = Math.floor(sampleRate * totalTimeOnScreen);
@@ -1181,6 +1178,32 @@
                 if (!activeDataA || !activeDataB) return;
 
                 let len = activeDataA.length, cIdxA = channelConfig.A.index, cIdxB = channelConfig.B.index;
+                
+                // KHI BẤM DỪNG -> KHÓA TẦN SỐ (KHÔNG TÍNH TOÁN LẠI NỮA)
+                if (!isTsPaused) {
+                    let now = performance.now();
+                    if (now - lastCorrelateTime > 300) {
+                        if (cIdxA > 2048) {
+                            let recA = new Float32Array(2048);
+                            for (let i = 0; i < 2048; i++) recA[i] = activeDataA[((cIdxA - 2048 + i) % len + len) % len];
+                            let fA = autoCorrelate(recA, sampleRate);
+                            if (fA > 0) currentCalcFreqA = (currentCalcFreqA === 0) ? fA : (currentCalcFreqA * 0.7 + fA * 0.3);
+                        }
+                        if (cIdxB > 2048) {
+                            let recB = new Float32Array(2048);
+                            for (let i = 0; i < 2048; i++) recB[i] = activeDataB[((cIdxB - 2048 + i) % len + len) % len];
+                            let fB = autoCorrelate(recB, sampleRate);
+                            if (fB > 0) currentCalcFreqB = (currentCalcFreqB === 0) ? fB : (currentCalcFreqB * 0.7 + fB * 0.3);
+                        }
+                        lastCorrelateTime = now;
+
+                        document.getElementById('hudFreqA').innerText = currentCalcFreqA > 0 ? currentCalcFreqA.toFixed(1) : "0.0";
+                        document.getElementById('hudFreqB').innerText = currentCalcFreqB > 0 ? currentCalcFreqB.toFixed(1) : "0.0";
+                        document.getElementById('hudPerA').innerText = currentCalcFreqA > 0 ? (1000/currentCalcFreqA).toFixed(2) : "0.00";
+                        document.getElementById('hudPerB').innerText = currentCalcFreqB > 0 ? (1000/currentCalcFreqB).toFixed(2) : "0.00";
+                    }
+                }
+
                 let offsetA = isTsPaused ? findZeroCrossingOffset({active:true, data: snapDataA}, snapDataA.length, samplesDraw) : 0;
                 let startI = isTsPaused ? (snapDataA.length - offsetA - samplesDraw) : (cIdxA - samplesDraw);
 
@@ -1188,6 +1211,8 @@
                 let step = Math.max(1, Math.floor(samplesDraw / (cw * 0.75))); 
                 
                 if (tsViewMode === 'overlay') {
+                    document.getElementById('tsWarningText').style.display = 'none';
+                    
                     ctx.strokeStyle = '#ef4444'; ctx.beginPath();
                     for (let i = 0; i < samplesDraw; i+=step) {
                         let idx = isTsPaused ? Math.max(0, Math.min(snapDataA.length - 1, startI + i)) : ((cIdxA - samplesDraw + i) % len + len) % len;
@@ -1205,26 +1230,34 @@
                         if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
                     }
                     ctx.stroke();
-                } else if (tsViewMode === 'sum') {
-                    ctx.strokeStyle = '#8b5cf6'; ctx.beginPath();
-                    for (let i = 0; i < samplesDraw; i+=step) {
-                        let idxA = isTsPaused ? Math.max(0, Math.min(snapDataA.length - 1, startI + i)) : ((cIdxA - samplesDraw + i) % len + len) % len;
-                        let idxB = isTsPaused ? Math.max(0, Math.min(snapDataB.length - 1, startI + i)) : ((cIdxB - samplesDraw + i) % len + len) % len;
-                        let val = (isTsPaused ? snapDataA[idxA] : activeDataA[idxA]) + (isTsPaused ? snapDataB[idxB] : activeDataB[idxB]);
-                        
-                        let x = (i / samplesDraw) * cw, y = ch / 2 - (val * currentZoomY * ch / 2);
-                        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                } 
+                else if (tsViewMode === 'sum') {
+                    // ĐIỀU KIỆN TỔNG HỢP: HAI SÓNG CÙNG TẦN SỐ (SAI SỐ <= 3.0Hz)
+                    let diff = Math.abs(currentCalcFreqA - currentCalcFreqB);
+                    let isSameFreq = (diff <= 3.0); 
+
+                    if (currentCalcFreqA > 10 && currentCalcFreqB > 10 && !isSameFreq) {
+                        document.getElementById('tsWarningText').style.display = 'block';
+                        document.getElementById('tsWarningTextلیسی`innerText = `⚠️ Cảnh báo: Hai nguồn khác tần số (${currentCalcFreqA.toFixed(1)}Hz và ${currentCalcFreqB.toFixed(1)}Hz). Không thể tổng hợp!`;
+                    } else {
+                        document.getElementById('tsWarningText').style.display = 'none';
+                        ctx.strokeStyle = '#8b5cf6'; ctx.beginPath();
+                        for (let i = 0; i < samplesDraw; i+=step) {
+                            let idxA = isTsPaused ? Math.max(0, Math.min(snapDataA.length - 1, startI + i)) : ((cIdxA - samplesDraw + i) % len + len) % len;
+                            let idxB = isTsPaused ? Math.max(0, Math.min(snapDataB.length - 1, startI + i)) : ((cIdxB - samplesDraw + i) % len + len) % len;
+                            let val = (isTsPaused ? snapDataA[idxA] : activeDataA[idxA]) + (isTsPaused ? snapDataB[idxB] : activeDataB[idxB]);
+                            
+                            let x = (i / samplesDraw) * cw, y = ch / 2 - (val * currentZoomY * ch / 2);
+                            if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                        }
+                        ctx.stroke();
                     }
-                    ctx.stroke();
                 }
             }
-            
-            if (isTwoSourceModalOpen && !isTsPaused) {
-                requestAnimationFrame(calculatePhaseAndDrawLive);
-            }
+            if (isTwoSourceModalOpen && !isTsPaused) requestAnimationFrame(calculatePhaseAndDrawLive);
         }
 
-        // --- FOX-LAB AI WIDGET ---
+        // --- FOX-LAB AI WIDGET & COPY CHAT ---
         function formatMathText(text) {
             if (!text) return '';
             let formatted = text
@@ -1267,11 +1300,23 @@
             }
         }
 
+        window.copyFoxText = function(btn, text) {
+            navigator.clipboard.writeText(text).then(() => {
+                let oldText = btn.innerText;
+                btn.innerText = "Đã Copy ✓";
+                setTimeout(() => btn.innerText = oldText, 1500);
+            });
+        }
+
         function addChatMessage(sender, text) {
             const row = document.createElement('div'); row.className = `fox-msg-row ${sender === 'user' ? 'fox-msg-user' : 'fox-msg-bot'}`;
             let html = ''; if (sender === 'bot') html += `<div class="fox-msg-avatar">${FOX_AVATAR_SVG}</div>`;
             const formattedText = sender === 'bot' ? formatMathText(text) : text;
-            html += `<div class="fox-msg-group"><div class="fox-msg-bubble">${formattedText}</div></div>`;
+            
+            let copyStr = text.replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, '\\n');
+            let copyBtn = sender === 'bot' ? `<button class="fox-copy-btn" onclick="copyFoxText(this, '${copyStr}')">Copy</button>` : '';
+            
+            html += `<div class="fox-msg-group"><div class="fox-msg-bubble">${formattedText} ${copyBtn}</div></div>`;
             row.innerHTML = html; chatContent.appendChild(row); chatContent.scrollTop = chatContent.scrollHeight;
         }
 
