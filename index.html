@@ -964,11 +964,92 @@
             }
             if (maxMag === 0) maxMag = 1;
             fCtx.font = 'bold 12px "Inter", sans-serif'; fCtx.textAlign = 'center'; let barW = Math.min(40, (cw / 5) * 0.6), spacing = cw / 5;
-            harmonics.forEach((h, i) => {
-                let cx = (i + 0.5) * spacing, hPx = (h.mag / maxMag) * (ch * 0.7), yStart = ch - 30;
-                fCtx.fillStyle = (i === 0) ? '#3b82f6' : '#8b5cf6'; fCtx.fillRect(cx - barW/2, yStart - hPx, barW, hPx);
-                fCtx.fillStyle = '#0f172a'; fCtx.fillText(`${i+1}f0`, cx, ch - 10); fCtx.fillText(`${Math.round(h.freq)}Hz`, cx, yStart - hPx - 5);
-            });
+          function processAndDrawFFT() {
+            const f0 = parseFloat(document.getElementById('fftTargetFreq').value);
+            if (!f0 || f0 <= 0 || !channelConfig.A.data) return;
+            const fftCanvas = document.getElementById('fftDisplayCanvas');
+            const fCtx = fftCanvas.getContext('2d');
+            const cw = fftCanvas.parentElement.clientWidth - 12, ch = fftCanvas.parentElement.clientHeight - 12;
+            fftCanvas.width = cw; fftCanvas.height = ch;
+            
+            fCtx.fillStyle = '#f8fafc'; fCtx.fillRect(0, 0, cw, ch);
+            
+            let fftSize = 4096, recentData = new Float32Array(fftSize), len = channelConfig.A.data.length, cIdx = channelConfig.A.index;
+            for(let i=0; i<fftSize; i++) {
+                let multiplier = 0.5 * (1 - Math.cos(2 * Math.PI * i / (fftSize - 1)));
+                recentData[i] = channelConfig.A.data[((cIdx - fftSize + i) % len + len) % len] * multiplier;
+            }
+            
+            let magnitudes = computeFFT(recentData);
+            let binFreq = sampleRate / fftSize;
+            
+            // Vẽ lưới tọa độ
+            fCtx.strokeStyle = '#e2e8f0'; fCtx.lineWidth = 1;
+            fCtx.beginPath();
+            for(let i=1; i<10; i++) { let x = (i/10)*cw; fCtx.moveTo(x, 0); fCtx.lineTo(x, ch); }
+            for(let i=1; i<5; i++) { let y = (i/5)*ch; fCtx.moveTo(0, y); fCtx.lineTo(cw, y); }
+            fCtx.stroke();
+            
+            let maxMag = 0;
+            let maxBins = Math.floor((5000 / binFreq)); 
+            let limitBins = Math.min(magnitudes.length, maxBins);
+            
+            for (let i = 2; i < limitBins; i++) {
+                if (magnitudes[i] > maxMag) maxMag = magnitudes[i];
+            }
+            if (maxMag === 0) maxMag = 1;
+            
+            let yBase = ch - 30;
+
+            // 1. VẼ DÃY PHỔ TẦN SỐ LIÊN TỤC (MÀU XANH DƯƠNG)
+            fCtx.strokeStyle = '#3b82f6';
+            fCtx.lineWidth = 1.5;
+            fCtx.beginPath();
+            for (let i = 2; i < limitBins; i++) {
+                let freq = i * binFreq;
+                let x = (freq / 5000) * cw; 
+                let magNorm = magnitudes[i] / maxMag;
+                let y = yBase - (magNorm * (ch * 0.75));
+                if (i === 2) fCtx.moveTo(x, y);
+                else fCtx.lineTo(x, y);
+            }
+            fCtx.stroke();
+
+            // 2. ĐÁNH DẤU TẦN SỐ CHỌN VÀ CÁC HỌA ÂM (MÀU ĐỎ)
+            fCtx.font = 'bold 11px "Inter", sans-serif';
+            fCtx.textAlign = 'center';
+
+            for (let n = 1; n <= 5; n++) {
+                let targetFreq = f0 * n;
+                if (targetFreq > 5000) break;
+                
+                let targetBin = Math.round(targetFreq / binFreq);
+                if (targetBin >= limitBins) continue;
+
+                let x = (targetFreq / 5000) * cw;
+                let magNorm = magnitudes[targetBin] / maxMag;
+                let yPeak = yBase - (magNorm * (ch * 0.75));
+
+                fCtx.strokeStyle = '#ef4444';
+                fCtx.lineWidth = 2.5;
+                fCtx.beginPath();
+                fCtx.moveTo(x, yBase);
+                fCtx.lineTo(x, yPeak);
+                fCtx.stroke();
+
+                fCtx.fillStyle = '#ef4444';
+                fCtx.beginPath();
+                fCtx.arc(x, yPeak, 3.5, 0, 2 * Math.PI);
+                fCtx.fill();
+
+                fCtx.fillStyle = '#0f172a';
+                fCtx.fillText(`${n}f0 (${Math.round(targetFreq)}Hz)`, x, yPeak - 8);
+            }
+
+            fCtx.fillStyle = '#64748b';
+            fCtx.font = '11px "Inter", sans-serif';
+            fCtx.textAlign = 'right';
+            fCtx.fillText("Tần số (Hz) ➔", cw - 10, ch - 10);
         }
 
         // --- XỬ LÝ 2 NGUỒN ÂM ---
