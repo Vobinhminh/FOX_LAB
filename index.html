@@ -1118,52 +1118,59 @@
         }
        // --- XỬ LÝ 2 NGUỒN ÂM (ĐÃ TỐI ƯU KHÔNG LAG & KHÓA KẾT QUẢ KHI CHƯA DỪNG) ---
         function openTwoSourceModal() {
-            if (isDemoMode) { alert("Chức năng Xử lý 2 Nguồn âm chỉ có trên bản Full."); return; }
-            if (getActiveChannelMode() !== '2' || !channelConfig.A.active || !channelConfig.B.active) { alert("Vui lòng bật cả Kênh A và Kênh B để sử dụng tính năng này!"); return; }
-            isTwoSourceModalOpen = true; 
-            isTsPaused = false; 
+            isTwoSourceModalOpen = true;
+            isTsPaused = false; // Mặc định mở lên là chạy liên tục
             
-            showTsResults = false;
-            showTsEquations = false;
-            document.getElementById('hudResults').style.display = 'none';
-            document.getElementById('hudEquations').style.display = 'none';
-            document.getElementById('btnTsPause').textContent = "⏸ Dừng";
-            document.getElementById('btnTsPause').className = "btn-orange";
-
-            document.getElementById('twoSourceModalOverlay').classList.add('animUI-visible');
-            document.getElementById('twoSourceModalOverlay').style.display = 'flex';
-            resizeCanvas(); 
-        }
-
-        function closeTwoSourceModal() {
-            isTwoSourceModalOpen = false;
-            isTsPaused = true; // Đảm bảo trạng thái dừng hẳn khi thoát
             const overlay = document.getElementById('twoSourceModalOverlay');
-            overlay.classList.remove('animUI-visible');
-            setTimeout(() => { 
-                overlay.style.display = 'none'; 
-                // Kích hoạt lại vòng lặp vẽ màn hình chính sáng sủa ngay lập tức
-                if (typeof startMainRenderLoop === 'function') {
-                    startMainRenderLoop();
-                } else {
-                    requestAnimationFrame(drawCanvas);
-                }
-            }, 300);
+            overlay.style.display = 'flex';
+            setTimeout(() => overlay.classList.add('animUI-visible'), 10);
+
+            // Khi mới mở (đang chạy liên tục), ẩn nút Kết quả và Phương trình đi
+            const resBtn = document.getElementById('tsResultBtn'); // Hoặc id nút Kết quả của thầy
+            const eqBtn = document.getElementById('tsEquationBtn');  // Hoặc id nút Phương trình của thầy
+            if (resBtn) resBtn.style.display = 'none';
+            if (eqBtn) eqBtn.style.display = 'none';
+
+            // Cập nhật lại giao diện nút Dừng/Tiếp tục
+            const btn = document.getElementById('tsPlayBtn');
+            if (btn) {
+                btn.innerHTML = '<i class="fa-solid fa-pause"></i> Dừng';
+                btn.className = "px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded shadow text-sm font-medium transition";
+            }
+
+            requestAnimationFrame(calculatePhaseAndDrawLive);
         }
 
         function toggleTsPlay() {
             isTsPaused = !isTsPaused;
             const btn = document.getElementById('tsPlayBtn');
-            if (btn) {
-                if (isTsPaused) {
-                    btn.innerHTML = '<i class="fa-solid fa-play"></i> Tiếp tục';
-                    btn.className = "px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded shadow text-sm font-medium transition";
-                } else {
+            const resBtn = document.getElementById('tsResultBtn'); // Nút Kết quả
+            const eqBtn = document.getElementById('tsEquationBtn');  // Nút Phương trình
+
+            if (!isTsPaused) {
+                // Đang CHẠY LIÊN TỤC -> Ẩn nút Kết quả và Phương trình đi
+                if (btn) {
                     btn.innerHTML = '<i class="fa-solid fa-pause"></i> Dừng';
                     btn.className = "px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded shadow text-sm font-medium transition";
-                    // Khi bấm chạy tiếp tục, kích hoạt lại vòng lặp vẽ ngay
-                    requestAnimationFrame(calculatePhaseAndDrawLive);
                 }
+                if (resBtn) resBtn.style.display = 'none';
+                if (eqBtn) eqBtn.style.display = 'none';
+
+                requestAnimationFrame(calculatePhaseAndDrawLive);
+            } else {
+                // Đã BẤM DỪNG -> HIỆN ra nút Kết quả và Phương trình để học sinh xem
+                if (btn) {
+                    btn.innerHTML = '<i class="fa-solid fa-play"></i> Tiếp tục';
+                    btn.className = "px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded shadow text-sm font-medium transition";
+                }
+                if (resBtn) resBtn.style.display = 'inline-flex';
+                if (eqBtn) eqBtn.style.display = 'inline-flex';
+
+                // Lưu lại dữ liệu tại thời điểm dừng
+                if (channelConfig.A && channelConfig.A.data) snapDataA = [...channelConfig.A.data];
+                if (channelConfig.B && channelConfig.B.data) snapDataB = [...channelConfig.B.data];
+
+                calculatePhaseAndDrawLive();
             }
         }
 
