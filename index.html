@@ -1197,74 +1197,72 @@ function openTwoSourceModal() {
 
         let lastTsDrawTime = 0;
         function calculatePhaseAndDrawLive() {
+            // Nếu đã đóng bảng Phân tích thì thoát hẳn
             if (!isTwoSourceModalOpen) return;
             
-            // Giới hạn tốc độ khung hình (~30fps) chống giật lag tuyệt đối khi chạy liên tục
-            let now = performance.now();
-            if (!isTsPaused && (now - lastTsDrawTime < 33)) {
-                requestAnimationFrame(calculatePhaseAndDrawLive);
-                return;
-            }
-            lastTsDrawTime = now;
-
             const canv = document.getElementById('twoSourceCanvas'); 
-            if (!canv) return;
-            
-            // Đảm bảo canvas nhận diện đúng kích thước khung chứa full màn hình y hệt chế độ đo 1 nguồn
-            canv.width = canv.parentElement.clientWidth;
-            canv.height = canv.parentElement.clientHeight;
+            if (canv) {
+                // Đảm bảo canvas giãn nở full màn hình y hệt chế độ đo 1 nguồn
+                canv.width = canv.parentElement.clientWidth;
+                canv.height = canv.parentElement.clientHeight;
 
-            const ctx = canv.getContext('2d'), cw = canv.width, ch = canv.height;
-            ctx.fillStyle = '#f8fafc'; 
-            ctx.fillRect(0, 0, cw, ch); 
-            
-            // Gọi hàm vẽ lưới với toàn bộ chiều rộng và chiều cao (cw, ch) để lưới giãn nở full màn hình
-            drawMainGrid(ctx, 0, 0, cw, ch, null, null, true);
-            
-            let samplesDraw = Math.floor(sampleRate * totalTimeOnScreen);
-            let activeDataA = channelConfig.A.data, activeDataB = channelConfig.B.data;
-            let len = activeDataA.length, cIdxA = channelConfig.A.index, cIdxB = channelConfig.B.index;
-
-            let offsetA = isTsPaused ? findZeroCrossingOffset({active:true, data: snapDataA}, snapDataA.length, samplesDraw) : 0;
-            let startI = isTsPaused ? (snapDataA.length - offsetA - samplesDraw) : (cIdxA - samplesDraw);
-
-            ctx.lineWidth = 2; ctx.lineJoin = 'round';
-            let step = Math.max(1, Math.floor(samplesDraw / (cw * 0.75)));
-            
-            if (tsViewMode === 'overlay') {
-                // 1. Chế độ vẽ 2 kênh riêng biệt (Overlay)
-                ctx.strokeStyle = '#ef4444'; ctx.beginPath();
-                for (let i = 0; i < samplesDraw; i+=step) {
-                    let idx = isTsPaused ? Math.max(0, Math.min(snapDataA.length - 1, startI + i)) : ((cIdxA - samplesDraw + i) % len + len) % len;
-                    let val = isTsPaused ? snapDataA[idx] : activeDataA[idx];
-                    let x = (i / samplesDraw) * cw, y = ch / 2 - (val * currentZoomY * ch / 2);
-                    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-                }
-                ctx.stroke();
+                const ctx = canv.getContext('2d'), cw = canv.width, ch = canv.height;
+                ctx.fillStyle = '#f8fafc'; 
+                ctx.fillRect(0, 0, cw, ch); 
                 
-                ctx.strokeStyle = '#3b82f6'; ctx.beginPath();
-                for (let i = 0; i < samplesDraw; i+=step) {
-                    let idx = isTsPaused ? Math.max(0, Math.min(snapDataB.length - 1, startI + i)) : ((cIdxB - samplesDraw + i) % len + len) % len;
-                    let val = isTsPaused ? snapDataB[idx] : activeDataB[idx];
-                    let x = (i / samplesDraw) * cw, y = ch / 2 - (val * currentZoomY * ch / 2);
-                    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-                }
-                ctx.stroke();
-            } else if (tsViewMode === 'sum') {
-                // 2. Chế độ Gộp sóng (Sum): Giữ nguyên trục tỉ lệ y hệt, không bị gom nhỏ biên độ
-                ctx.strokeStyle = '#8b5cf6'; ctx.beginPath();
-                for (let i = 0; i < samplesDraw; i+=step) {
-                    let idxA = isTsPaused ? Math.max(0, Math.min(snapDataA.length - 1, startI + i)) : ((cIdxA - samplesDraw + i) % len + len) % len;
-                    let idxB = isTsPaused ? Math.max(0, Math.min(snapDataB.length - 1, startI + i)) : ((cIdxB - samplesDraw + i) % len + len) % len;
-                    let val = (isTsPaused ? snapDataA[idxA] : activeDataA[idxA]) + (isTsPaused ? snapDataB[idxB] : activeDataB[idxB]);
+                // Vẽ lưới full màn hình
+                drawMainGrid(ctx, 0, 0, cw, ch, null, null, true);
+                
+                let samplesDraw = Math.floor(sampleRate * totalTimeOnScreen);
+                let activeDataA = channelConfig.A.data, activeDataB = channelConfig.B.data;
+                let len = activeDataA.length, cIdxA = channelConfig.A.index, cIdxB = channelConfig.B.index;
+
+                let offsetA = isTsPaused ? findZeroCrossingOffset({active:true, data: snapDataA}, snapDataA.length, samplesDraw) : 0;
+                let startI = isTsPaused ? (snapDataA.length - offsetA - samplesDraw) : (cIdxA - samplesDraw);
+
+                ctx.lineWidth = 2; ctx.lineJoin = 'round';
+                
+                // Bước nhảy chống lag tuyệt đối (không cần giới hạn 30fps nữa)
+                let step = Math.max(1, Math.floor(samplesDraw / (cw * 0.75))); 
+                
+                if (tsViewMode === 'overlay') {
+                    // 1. Chế độ vẽ 2 kênh riêng biệt
+                    ctx.strokeStyle = '#ef4444'; ctx.beginPath();
+                    for (let i = 0; i < samplesDraw; i+=step) {
+                        let idx = isTsPaused ? Math.max(0, Math.min(snapDataA.length - 1, startI + i)) : ((cIdxA - samplesDraw + i) % len + len) % len;
+                        let val = isTsPaused ? snapDataA[idx] : activeDataA[idx];
+                        let x = (i / samplesDraw) * cw, y = ch / 2 - (val * currentZoomY * ch / 2);
+                        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                    }
+                    ctx.stroke();
                     
-                    let x = (i / samplesDraw) * cw, y = ch / 2 - (val * currentZoomY * ch / 2);
-                    
-                    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                    ctx.strokeStyle = '#3b82f6'; ctx.beginPath();
+                    for (let i = 0; i < samplesDraw; i+=step) {
+                        let idx = isTsPaused ? Math.max(0, Math.min(snapDataB.length - 1, startI + i)) : ((cIdxB - samplesDraw + i) % len + len) % len;
+                        let val = isTsPaused ? snapDataB[idx] : activeDataB[idx];
+                        let x = (i / samplesDraw) * cw, y = ch / 2 - (val * currentZoomY * ch / 2);
+                        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                    }
+                    ctx.stroke();
+                } else if (tsViewMode === 'sum') {
+                    // 2. Chế độ Gộp sóng (Giữ nguyên tỉ lệ chuẩn)
+                    ctx.strokeStyle = '#8b5cf6'; ctx.beginPath();
+                    for (let i = 0; i < samplesDraw; i+=step) {
+                        let idxA = isTsPaused ? Math.max(0, Math.min(snapDataA.length - 1, startI + i)) : ((cIdxA - samplesDraw + i) % len + len) % len;
+                        let idxB = isTsPaused ? Math.max(0, Math.min(snapDataB.length - 1, startI + i)) : ((cIdxB - samplesDraw + i) % len + len) % len;
+                        let val = (isTsPaused ? snapDataA[idxA] : activeDataA[idxA]) + (isTsPaused ? snapDataB[idxB] : activeDataB[idxB]);
+                        
+                        let x = (i / samplesDraw) * cw, y = ch / 2 - (val * currentZoomY * ch / 2);
+                        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                    }
+                    ctx.stroke();
                 }
-                ctx.stroke();
             }
-            if (isTwoSourceModalOpen && !isTsPaused) requestAnimationFrame(calculatePhaseAndDrawLive);
+            
+            // LUÔN DUY TRÌ VÒNG LẶP NẾU CHƯA BẤM DỪNG (Tuyệt đối không tự dừng)
+            if (isTwoSourceModalOpen && !isTsPaused) {
+                requestAnimationFrame(calculatePhaseAndDrawLive);
+            }
         }
         function formatMathText(text) {
             if (!text) return '';
