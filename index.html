@@ -1392,7 +1392,7 @@
         function addTypingIndicator() {
             const id = 'typing_' + Date.now(), row = document.createElement('div'); 
             row.className = `fox-msg-row fox-msg-bot`; row.id = id;
-            row.innerHTML = `<div class="fox-msg-avatar">${FOX_AVATAR_SVG}</div><div class="fox-msg-group"><div class="fox-msg-bubble"><div class="fox-typing-indicator"><span></span><span></span><span></span><span class="fox-typing-text">Fox-Lab đang phân tích...</span></div></div></div>`;
+            row.innerHTML = `<div class="fox-msg-avatar">${FOX_AVATAR_SVG}</div><div class="fox-msg-group"><div class="fox-msg-bubble"><div class="fox-typing-indicator"><span class="fox-typing-text">Fox-Lab đang phân tích...</span></div></div></div>`;
             chatContent.appendChild(row); chatContent.scrollTop = chatContent.scrollHeight; return id;
         }
         function removeTypingIndicator(id) { const el = document.getElementById(id); if (el) el.remove(); }
