@@ -270,7 +270,6 @@
             </div>
         </div>
 
-        <!-- Panel QR Code chỉ hiển thị thông minh khi chạy trên Github Pages -->
         <div class="qr-panel" id="qrPanel">
             <img id="qrImage" src="" alt="QR Code"><span class="scan-title">FOX_LAB</span>
         </div>
@@ -312,7 +311,7 @@
                 <div style="display: flex; align-items: center; gap: 4px;">
                     <button id="tsPlayBtn" onclick="toggleTsPlay()" class="btn-orange" style="margin-left: 4px;">⏸ Dừng</button>
                     <button id="tsResultBtn" onclick="showTsResultModal()" style="display: none !important; margin-left: 4px;" class="btn-blue">📊 Kết quả</button>
-                    <button id="tsEquationBtn" onclick="showTsEquationModal()" style="display: inline-flex !important; margin-left: 4px;" class="btn-slate">📐 Phương trình</button>
+                    <button id="tsEquationBtn" onclick="showTsEquationModal()" style="display: none !important; margin-left: 4px;" class="btn-slate">📐 Phương trình</button>
                 </div>
             </div>
 
@@ -382,8 +381,32 @@
             </div>
         </div>
     </div>
-
     <script>
+        // --- 0. TỰ ĐỘNG KIỂM TRA PHIÊN BẢN QUA GITHUB ---
+        async function checkAppVersion() {
+            try {
+                const res = await fetch('./version.json?t=' + Date.now(), { cache: 'no-store' });
+                if (!res.ok) return;
+                const data = await res.json();
+                const serverVersion = data.version;
+                const localVersion = localStorage.getItem('fox_app_version');
+
+                if (!localVersion) {
+                    localStorage.setItem('fox_app_version', serverVersion);
+                } else if (localVersion !== serverVersion) {
+                    localStorage.setItem('fox_app_version', serverVersion);
+                    if ('caches' in window) {
+                        const keys = await caches.keys();
+                        await Promise.all(keys.map(key => caches.delete(key)));
+                    }
+                    window.location.reload(true);
+                }
+            } catch (e) {
+                console.log('Chưa thể kiểm tra phiên bản:', e);
+            }
+        }
+        checkAppVersion();
+
         // --- 1. CHẶN PHÍM F12 VÀ CHUỘT PHẢI BẢO VỆ MÃ NGUỒN ---
         document.addEventListener('keydown', function(e) {
             if (e.key === 'F12' || 
@@ -606,18 +629,23 @@
             const qrPanel = document.getElementById('qrPanel'), qrImage = document.getElementById('qrImage');
             if (!qrImage || !qrPanel) return;
             
-            let isGithub = window.location.hostname.includes('github.io');
-            let currentUrl = window.location.href.split('?')[0]; 
+            // Ẩn mã QR hoàn toàn trên các thiết bị di động / màn hình nhỏ
+            const isSmartDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 900;
             
-            if (isGithub) {
-                qrPanel.style.display = 'flex';
-                let activeKey = localStorage.getItem('fox_license_key') || '', qrUrl = currentUrl;
-                if (activeKey) { qrUrl += '?key=' + encodeURIComponent(activeKey); }
-                qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrUrl)}`;
-            } else { 
-                qrPanel.style.display = 'none'; 
+            if (isSmartDevice) {
+                qrPanel.style.display = 'none';
+                return;
             }
+            
+            qrPanel.style.display = 'flex';
+            let currentUrl = window.location.href.split('?')[0]; 
+            let activeKey = localStorage.getItem('fox_license_key') || '', qrUrl = currentUrl;
+            if (activeKey) { qrUrl += '?key=' + encodeURIComponent(activeKey); }
+            qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrUrl)}`;
         }
+
+        // Tự động kiểm tra lại khi thu phóng cửa sổ
+        window.addEventListener('resize', checkAndShowQR);
 
         let workletUrl = null;
         async function setupAudioWorklet(ctx) {
@@ -1195,7 +1223,7 @@
             const resBtn = document.getElementById('tsResultBtn');
             const eqBtn = document.getElementById('tsEquationBtn');
             if (resBtn) resBtn.style.setProperty('display', 'none', 'important');
-            if (eqBtn) eqBtn.style.setProperty('display', 'inline-flex', 'important');
+            if (eqBtn) eqBtn.style.setProperty('display', 'none', 'important'); // Ẩn khi bắt đầu chạy
             document.getElementById('hudResults').style.display = 'none';
             document.getElementById('hudEquations').style.display = 'none';
 
@@ -1228,26 +1256,26 @@
             const resBtn = document.getElementById('tsResultBtn');
             const eqBtn = document.getElementById('tsEquationBtn');
 
-            if (!isTsPaused) {
+            if (!isTsPaused) { // Khi đang chạy
                 if (btn) {
                     btn.innerHTML = '⏸ Dừng';
                     btn.className = "btn-orange";
                 }
                 if (resBtn) resBtn.style.setProperty('display', 'none', 'important');
-                if (eqBtn) resBtn.style.setProperty('display', 'inline-flex', 'important');
+                if (eqBtn) eqBtn.style.setProperty('display', 'none', 'important'); // Sửa lỗi hiển thị
                 
                 showTsResults = false; showTsEquations = false;
                 document.getElementById('hudResults').style.display = 'none';
                 document.getElementById('hudEquations').style.display = 'none';
 
                 requestAnimationFrame(calculatePhaseAndDrawLive);
-            } else {
+            } else { // Khi đã bấm tạm dừng
                 if (btn) {
                     btn.innerHTML = '▶ Tiếp tục';
                     btn.className = "btn-green";
                 }
                 if (resBtn) resBtn.style.setProperty('display', 'inline-flex', 'important');
-                if (eqBtn) resBtn.style.setProperty('display', 'inline-flex', 'important');
+                if (eqBtn) eqBtn.style.setProperty('display', 'inline-flex', 'important'); // Hiện lại khi dừng
 
                 if (channelConfig && channelConfig.A && channelConfig.A.data) snapDataA = Array.from(channelConfig.A.data);
                 if (channelConfig && channelConfig.B && channelConfig.B.data) snapDataB = Array.from(channelConfig.B.data);
