@@ -27,57 +27,7 @@
         @keyframes pulseBeat { 0%, 100% { opacity: 0.9; transform: translateX(-50%) scale(1); } 50% { opacity: 1; transform: translateX(-50%) scale(1.05); } }
         @keyframes foxPulsePing { 0% { transform: scale(0.95); opacity: 0.8; } 70%, 100% { transform: scale(1.65); opacity: 0; } }
         @keyframes foxMsgFadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes typingBounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
-
-        .top-bar { animation: animUI-fadeInUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) both; }
-        .toolbar-row { animation: animUI-fadeInUp 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both; }
-        .channel-row { animation: animUI-fadeInUp 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both; }
-        .channel-card { animation: animUI-slideInLeft 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0.25s both; }
-        .channel-card:nth-child(2) { animation-name: animUI-slideInRight; animation-delay: 0.3s; }
-        .info-panel { animation: animUI-fadeIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.35s both; }
-        .qr-panel { animation: animUI-scaleIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0.4s both; }
-        canvas#oscilloscope { animation: animUI-fadeIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both; }
-
-        .settings-dropdown-menu { transform-origin: top left; }
-        .settings-dropdown.open .settings-dropdown-menu { display: block; animation: animUI-slideDown 0.22s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
-        .settings-group.expanded > .settings-group-items { animation: animUI-fadeInUp 0.2s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
-        .settings-item { transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1); }
-        .settings-item:hover { transform: translateY(-1px); }
-        .settings-item:active { transform: translateY(0) scale(0.97); }
-        .settings-item.active { animation: animUI-pulseSubtle 2s ease-in-out 1; }
-
-        button { transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1); }
-        button:hover:not(:disabled) { transform: translateY(-1px); }
-        button:active:not(:disabled) { transform: translateY(1px) scale(0.97); transition-duration: 0.1s; }
-
-        .modal-overlay { transition: opacity 0.3s cubic-bezier(0.22, 1, 0.36, 1); opacity: 0; }
-        .modal-overlay.animUI-visible { opacity: 1; }
-        .modal-content { transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s ease; transform: scale(0.95) translateY(16px); opacity: 0; }
-        .modal-overlay.animUI-visible .modal-content { transform: scale(1) translateY(0); opacity: 1; }
-        .modal-overlay.animUI-visible .modal-controls { animation: animUI-fadeInUp 0.3s cubic-bezier(0.22, 1, 0.36, 1) 0.15s both; }
-
-        .hud-overlay { transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.22, 1, 0.36, 1); transform: translateY(6px); }
-        .hud-overlay[style*="display: block"], .hud-overlay[style*="display:block"] { transform: translateY(0); }
-        .beat-warning[style*="display: block"], .beat-warning[style*="display:block"] { animation: animUI-scaleIn 0.3s cubic-bezier(0.22, 1, 0.36, 1) both, pulseBeat 2s infinite 0.3s; }
-        .ts-mode-toggle button { transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1); }
-        .ts-mode-toggle button.active-mode { animation: animUI-scaleIn 0.2s cubic-bezier(0.22, 1, 0.36, 1) both; }
-        .info-panel { transition: color 0.3s ease, background-color 0.3s ease; }
-        .qr-panel { transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s ease; }
-        .qr-panel:hover { transform: scale(1.03); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); }
-        .channel-card { transition: box-shadow 0.2s ease, border-color 0.2s ease; }
-        .channel-card:hover { box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); }
-        .settings-dropdown-toggle .dropdown-arrow { display: inline-block; transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1); }
-        .settings-dropdown.open .settings-dropdown-toggle .dropdown-arrow { transform: rotate(180deg); }
-        #fox-chat-trigger { transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), background 0.3s ease, box-shadow 0.3s ease; }
-        #fox-chat-trigger:active { transform: scale(0.92) !important; }
-        #fullscreenButton { transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1); }
-
-        @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
-            .fox-ping-ring { animation: none !important; display: none !important; }
-            .beat-warning { animation: none !important; }
-            .fox-status-dot { animation: none !important; }
-        }
+        @keyframes dotFlashing { 0% { opacity: 0.2; } 20% { opacity: 1; } 100% { opacity: 0.2; } }
 
         html, body { margin: 0; padding: 0; width: 100%; height: 100%; height: 100dvh; background-color: #f1f5f9; font-family: 'Be Vietnam Pro', 'Inter', sans-serif; -webkit-font-smoothing: antialiased; overflow: hidden; position: fixed; display: flex; flex-direction: column; }
         button, input, select { font-family: inherit; outline: none; }
@@ -88,51 +38,32 @@
         .toolbar-row > * { flex: 1 1 auto; min-width: 70px; }
         .channel-row { display: flex; flex-wrap: wrap; gap: 4px; width: 100%; position: relative; z-index: 10; }
         .channel-card { display: flex; flex: 1 1 180px; background: #fff; border: 1px solid #cbd5e1; border-radius: 4px; overflow: hidden; align-items: stretch; box-shadow: 0 1px 2px rgba(0,0,0,0.02); height: 26px; }
-        .channel-card button { border-radius: 0; width: 90px; font-size: 11px; flex-shrink: 0; text-shadow: 0 1px 1px rgba(0,0,0,0.2); box-shadow: none; border-right: 1px solid rgba(255,255,255,0.2); border-top: none; border-bottom: none; border-left: none; padding: 0 4px; }
+        .channel-card button { border-radius: 0; width: 90px; font-size: 11px; flex-shrink: 0; text-shadow: 0 1px 1px rgba(0,0,0,0.2); border: none; padding: 0 4px; }
         .channel-card select { flex-grow: 1; border: none; background: #f8fafc; color: #334155; padding: 0 6px; font-size: 11.5px; font-weight: 700; cursor: pointer; text-overflow: ellipsis; white-space: nowrap; }
-        .channel-card select:focus { background: #fff; }
         .channel-a-indicator { border-left: 3px solid #ef4444; }
         .channel-b-indicator { border-left: 3px solid #3b82f6; }
 
-        @media (max-width: 600px) { .channel-card { flex: 1 1 100%; height: 26px; } .toolbar-row > * { font-size: 11px; padding: 4px; } }
-        .qr-panel { display: none; flex-direction: column; align-items: center; justify-content: center; background: #fff; border: 1px solid #cbd5e1; border-radius: 4px; padding: 2px; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); width: 65px; flex-shrink: 0; cursor: pointer; }
+        .qr-panel { display: none; flex-direction: column; align-items: center; justify-content: center; background: #fff; border: 1px solid #cbd5e1; border-radius: 4px; padding: 2px; width: 65px; flex-shrink: 0; cursor: pointer; }
         .qr-panel img { width: 45px; height: 45px; }
         .qr-panel .scan-title { font-size: 8px; font-weight: 800; color: #ef4444; margin-top: 1px; }
-        @media (max-width: 800px) { .qr-panel { display: none !important; } }
 
-        .info-panel { font-weight: 600; font-size: 11.5px; color: #dc2626; background: #fff; padding: 2px 6px; border-radius: 4px; border: 1px solid #e2e8f0; width: 100%; text-align: center; box-sizing: border-box; line-height: 1.4; display: flex; align-items: center; justify-content: space-between; min-height: 22px; position: relative; z-index: 5; }
+        .info-panel { font-weight: 600; font-size: 11.5px; color: #dc2626; background: #fff; padding: 2px 6px; border-radius: 4px; border: 1px solid #e2e8f0; width: 100%; text-align: center; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between; min-height: 22px; position: relative; z-index: 5; }
         .info-badge, .channel-tag-a, .channel-tag-b { display: inline-block; padding: 0 4px; margin: 0 2px; border-radius: 3px; font-weight: 700; }
         .info-badge { background-color: rgba(16, 185, 129, 0.1); color: #059669; border: 1px solid rgba(16, 185, 129, 0.2); }
         .channel-tag-a { color: #ef4444; background-color: rgba(239, 68, 68, 0.1); }
         .channel-tag-b { color: #3b82f6; background-color: rgba(59, 130, 246, 0.1); }
         
-        .license-gear-btn { 
-            background: #f8fafc; 
-            border: 1px solid #cbd5e1; 
-            border-radius: 4px; 
-            font-size: 11.5px; 
-            font-weight: 700; 
-            color: #0f172a; 
-            cursor: pointer; 
-            padding: 2px 6px; 
-            transition: all 0.2s ease; 
-            display: inline-flex; 
-            align-items: center; 
-            gap: 4px; 
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05); 
-        }
-        .license-gear-btn:hover { background: #e2e8f0; color: #000000; }
+        .license-gear-btn { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 11.5px; font-weight: 700; color: #0f172a; cursor: pointer; padding: 2px 6px; display: inline-flex; align-items: center; gap: 4px; }
+        .license-gear-btn:hover { background: #e2e8f0; }
 
-        button { font-size: 11.5px; font-weight: bold; cursor: pointer; color: white; border: 1px solid rgba(0,0,0,0.1); border-radius: 4px; box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255,255,255,0.2); transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1); box-sizing: border-box; padding: 4px 8px; margin: 0; text-shadow: 0 1px 1px rgba(0,0,0,0.25); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        button:hover:not(:disabled) { filter: brightness(1.1); transform: translateY(-1px); box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255,255,255,0.2); }
-        button:active:not(:disabled) { transform: translateY(1px) scale(0.97); box-shadow: none; transition-duration: 0.1s; }
-        button:disabled { background: linear-gradient(180deg, #94a3b8, #64748b) !important; cursor: not-allowed; box-shadow: none; color: #e2e8f0; border-color: #64748b; text-shadow: none; opacity: 0.8; }
+        button { font-size: 11.5px; font-weight: bold; cursor: pointer; color: white; border: 1px solid rgba(0,0,0,0.1); border-radius: 4px; box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1); padding: 4px 8px; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: all 0.2s ease; }
+        button:hover:not(:disabled) { filter: brightness(1.1); transform: translateY(-1px); }
+        button:disabled { background: linear-gradient(180deg, #94a3b8, #64748b) !important; cursor: not-allowed; opacity: 0.8; }
         .btn-green { background: linear-gradient(180deg, #10b981, #059669); } 
         .btn-red { background: linear-gradient(180deg, #ef4444, #dc2626); } 
         .btn-orange { background: linear-gradient(180deg, #f59e0b, #d97706); } 
         .btn-purple { background: linear-gradient(180deg, #8b5cf6, #7c3aed); } 
         .btn-pink { background: linear-gradient(180deg, #ec4899, #db2777); } 
-        .btn-teal { background: linear-gradient(180deg, #14b8a6, #0d9488); } 
         .btn-slate { background: linear-gradient(180deg, #64748b, #475569); } 
         .btn-blue { background: linear-gradient(180deg, #3b82f6, #2563eb); } 
         .btn-dark { background: linear-gradient(180deg, #334155, #0f172a); }
@@ -141,84 +72,77 @@
 
         .settings-dropdown { position: relative; display: flex; flex: 0 1 auto; z-index: 101; }
         .settings-dropdown.open { z-index: 1000; }
-        .settings-dropdown-toggle { padding: 4px 8px; font-size: 11.5px; font-weight: 700; color: #1e293b; border-radius: 4px; border: 1px solid #cbd5e1; background: linear-gradient(180deg, #ffffff, #f1f5f9); cursor: pointer; box-sizing: border-box; box-shadow: 0 1px 2px rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: center; gap: 4px; user-select: none; white-space: nowrap; }
-        .settings-dropdown-toggle:hover { background: #fff; border-color: #94a3b8; }
-        .settings-dropdown-menu { display: none; position: absolute; top: calc(100% + 4px); left: 0; min-width: 250px; z-index: 1001; background: #0f172a; border: 1px solid #334155; border-radius: 6px; box-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05); overflow: hidden; backdrop-filter: blur(8px); }
-        .settings-dropdown.open .settings-dropdown-menu { display: block; animation: animUI-dropdownIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        .settings-group-header { padding: 8px 12px; font-size: 12px; font-weight: 700; color: #f8fafc; cursor: pointer; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #1e293b; background: #0f172a; transition: background-color 0.2s ease, color 0.2s ease; }
-        .settings-group-header:hover { background-color: #1e293b; }
-        .settings-group.expanded > .settings-group-header { background-color: #1e293b; border-bottom: 1px solid #334155; color: #38bdf8; }
-        .group-arrow { font-size: 11px; font-weight: bold; transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1); color: #64748b; }
+        .settings-dropdown-toggle { padding: 4px 8px; font-size: 11.5px; font-weight: 700; color: #1e293b; border-radius: 4px; border: 1px solid #cbd5e1; background: linear-gradient(180deg, #ffffff, #f1f5f9); cursor: pointer; display: flex; align-items: center; gap: 4px; }
+        .settings-dropdown-menu { display: none; position: absolute; top: calc(100% + 4px); left: 0; min-width: 250px; z-index: 1001; background: #0f172a; border: 1px solid #334155; border-radius: 6px; box-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.5); overflow: hidden; }
+        .settings-dropdown.open .settings-dropdown-menu { display: block; animation: animUI-slideDown 0.22s ease forwards; }
+        .settings-group-header { padding: 8px 12px; font-size: 12px; font-weight: 700; color: #f8fafc; cursor: pointer; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #1e293b; background: #0f172a; }
+        .settings-group.expanded > .settings-group-header { background-color: #1e293b; color: #38bdf8; }
+        .group-arrow { font-size: 11px; transition: transform 0.25s ease; color: #64748b; }
         .settings-group.expanded > .settings-group-header .group-arrow { transform: rotate(90deg); color: #38bdf8; }
-        .settings-group-items { display: none; position: relative; padding: 4px; gap: 4px; background: #020617; border-radius: 6px; margin: 6px 8px 8px 8px; border: 1px solid #1e293b; box-sizing: border-box; overflow: hidden; }
+        .settings-group-items { display: none; position: relative; padding: 4px; gap: 4px; background: #020617; border-radius: 6px; margin: 6px 8px 8px 8px; border: 1px solid #1e293b; }
         .settings-group.expanded > .settings-group-items { display: flex; flex-direction: row; align-items: stretch; }
-        .settings-slider-pill { position: absolute; top: 4px; bottom: 4px; left: 0; width: 0; background: linear-gradient(135deg, #3b82f6, #2563eb); border-radius: 4px; box-shadow: 0 2px 8px rgba(37, 99, 235, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.25); pointer-events: none; z-index: 1; transition: transform 0.24s cubic-bezier(0.2, 0.9, 0.3, 1), width 0.24s cubic-bezier(0.2, 0.9, 0.3, 1), opacity 0.15s ease; opacity: 0; }
-        .settings-item { flex: 1; padding: 6px 4px; font-size: 11px; color: #94a3b8; cursor: pointer; border: 1px solid transparent; border-radius: 4px; text-align: center; font-weight: 600; user-select: none; transition: color 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.15s ease; white-space: nowrap; position: relative; z-index: 2; background: transparent !important; }
-        .settings-item:hover { color: #ffffff; }
-        .settings-item.active { color: #ffffff; font-weight: 700; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
+        .settings-slider-pill { position: absolute; top: 4px; bottom: 4px; left: 0; width: 0; background: linear-gradient(135deg, #3b82f6, #2563eb); border-radius: 4px; pointer-events: none; z-index: 1; transition: transform 0.24s ease, width 0.24s ease; opacity: 0; }
+        .settings-item { flex: 1; padding: 6px 4px; font-size: 11px; color: #94a3b8; cursor: pointer; border-radius: 4px; text-align: center; font-weight: 600; position: relative; z-index: 2; background: transparent !important; }
+        .settings-item.active { color: #ffffff; font-weight: 700; }
 
-        /* Modal hệ thống phân quyền */
-        .license-modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; background: rgba(15, 23, 42, 0.95); z-index: 200000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(6px); padding: 15px; box-sizing: border-box; }
+        .license-modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; background: rgba(15, 23, 42, 0.95); z-index: 200000; display: flex; align-items: center; justify-content: center; padding: 15px; box-sizing: border-box; }
         .license-selection-box { background: #ffffff; width: 100%; max-width: 450px; border-radius: 12px; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3); text-align: center; box-sizing: border-box; }
         .license-selection-box h2 { color: #0f172a; margin-top: 0; font-size: 20px; font-weight: 700; }
         .license-selection-box p { color: #475569; font-size: 13px; line-height: 1.5; margin-bottom: 20px; }
         .license-btn-group { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
-        .license-btn { padding: 12px 16px; font-size: 14px; font-weight: bold; border-radius: 8px; border: none; cursor: pointer; color: white; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 100%; }
+        .license-btn { padding: 12px 16px; font-size: 14px; font-weight: bold; border-radius: 8px; border: none; cursor: pointer; color: white; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; }
         .btn-demo-mode { background: linear-gradient(135deg, #f59e0b, #d97706); }
         .btn-full-mode { background: linear-gradient(135deg, #3b82f6, #2563eb); }
         .contact-box { background: #f1f5f9; border-radius: 8px; padding: 12px; font-size: 12px; color: #334155; border: 1px solid #cbd5e1; text-align: left; }
         .contact-box b { color: #0284c7; }
 
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; background: rgba(15, 23, 42, 0.95); z-index: 100000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(5px); padding: 0; box-sizing: border-box; }
-        .modal-content { background: #f8fafc; width: 100vw; height: 100dvh; max-width: 100vw; max-height: 100dvh; border-radius: 0; box-shadow: none; display: flex; flex-direction: column; overflow: hidden; box-sizing: border-box; }
-        .modal-header { color: #fff; padding: 8px 12px; font-weight: bold; font-size: 13px; text-shadow: 0 1px 2px rgba(0,0,0,0.3); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; border-bottom: 1px solid rgba(0,0,0,0.1); }
-        .modal-controls { padding: 6px 8px; background: #fff; border-bottom: 1px solid #cbd5e1; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; justify-content: center; flex-shrink: 0; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; background: rgba(15, 23, 42, 0.95); z-index: 100000; display: none; align-items: center; justify-content: center; }
+        .modal-content { background: #f8fafc; width: 100vw; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; box-sizing: border-box; }
+        .modal-header { color: #fff; padding: 8px 12px; font-weight: bold; font-size: 13px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+        .modal-controls { padding: 6px 8px; background: #fff; border-bottom: 1px solid #cbd5e1; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; justify-content: center; flex-shrink: 0; }
         .fft-canvas-container { padding: 6px; background: #e2e8f0; width: 100%; box-sizing: border-box; display: flex; justify-content: center; align-items: center; overflow: hidden; flex-grow: 1; position: relative; }
-        .modal-display-canvas { background: #fff; border: 1px solid #cbd5e1; border-radius: 4px; width: 100%; height: 100%; display: block; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .modal-display-canvas { background: #fff; border: 1px solid #cbd5e1; border-radius: 4px; width: 100%; height: 100%; display: block; }
+        #fftModal .modal-header { background: linear-gradient(90deg, #7c3aed, #4f46e5); }
         #twoSourceModal .modal-header { background: linear-gradient(90deg, #db2777, #c026d3); }
 
-        .hud-overlay { position: absolute; top: 16px; left: 16px; background: rgba(15, 23, 42, 0.88); color: #f8fafc; padding: 10px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); font-family: 'JetBrains Mono', monospace; font-size: 12px; line-height: 1.6; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); pointer-events: none; backdrop-filter: blur(4px); z-index: 50; display: none; max-width: calc(100% - 32px); }
+        .hud-overlay { position: absolute; top: 16px; left: 16px; background: rgba(15, 23, 42, 0.88); color: #f8fafc; padding: 10px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); font-family: 'JetBrains Mono', monospace; font-size: 12px; line-height: 1.6; z-index: 50; display: none; max-width: calc(100% - 32px); }
         .hud-title { font-family: 'Be Vietnam Pro', sans-serif; font-weight: 700; color: #38bdf8; margin-bottom: 4px; font-size: 13px; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 2px; }
         .hud-highlight { color: #facc15; font-weight: bold; }
         .hud-eq { color: #10b981; font-style: italic; }
         .math-symbol { font-family: "Times New Roman", Times, serif; font-style: italic; font-size: 14.5px; }
 
         .ts-mode-toggle { display: flex; gap: 4px; background: #0f172a; padding: 3px; border-radius: 6px; border: 1px solid #334155; position: relative; overflow: hidden; }
-        .ts-mode-pill { position: absolute; top: 3px; bottom: 3px; left: 0; width: 0; background: linear-gradient(135deg, #3b82f6, #2563eb); border-radius: 4px; box-shadow: 0 2px 6px rgba(37, 99, 235, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2); pointer-events: none; z-index: 1; transition: transform 0.24s cubic-bezier(0.2, 0.9, 0.3, 1), width 0.24s cubic-bezier(0.2, 0.9, 0.3, 1), opacity 0.15s ease; opacity: 0; }
-        .ts-mode-toggle button { background: transparent; color: #94a3b8; box-shadow: none; border: none; font-weight: 600; padding: 5px 12px; font-size: 11px; position: relative; z-index: 2; cursor: pointer; border-radius: 4px; transition: color 0.2s cubic-bezier(0.2, 0.8, 0.2, 1); user-select: none; }
-        .ts-mode-toggle button:hover { color: #ffffff; }
-        .ts-mode-toggle button.active-mode { color: #ffffff; font-weight: 700; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
+        .ts-mode-pill { position: absolute; top: 3px; bottom: 3px; left: 0; width: 0; background: linear-gradient(135deg, #3b82f6, #2563eb); border-radius: 4px; pointer-events: none; z-index: 1; transition: transform 0.24s ease, width 0.24s ease; opacity: 0; }
+        .ts-mode-toggle button { background: transparent; color: #94a3b8; border: none; font-weight: 600; padding: 5px 12px; font-size: 11px; position: relative; z-index: 2; cursor: pointer; border-radius: 4px; }
+        .ts-mode-toggle button.active-mode { color: #ffffff; font-weight: 700; }
 
-        .beat-warning { position: absolute; top: 16px; left: 50%; transform: translateX(-50%); background: rgba(220, 38, 38, 0.9); color: white; padding: 4px 12px; border-radius: 12px; font-size: 11.5px; font-weight: bold; pointer-events: none; z-index: 60; box-shadow: 0 4px 6px rgba(0,0,0,0.2); display: none; animation: pulseBeat 2s infinite; }
+        .beat-warning { position: absolute; top: 16px; left: 50%; transform: translateX(-50%); background: rgba(220, 38, 38, 0.9); color: white; padding: 4px 12px; border-radius: 12px; font-size: 11.5px; font-weight: bold; z-index: 60; display: none; }
 
         :root { --fox-font: 'Be Vietnam Pro', sans-serif; --fox-font-mono: 'JetBrains Mono', monospace; --fox-cyan: #38bdf8; --fox-text-muted: #64748b; }
         #fox-chat-widget { position: fixed; bottom: 20px; right: 20px; z-index: 99998; font-family: var(--fox-font); user-select: none; }
         .fox-trigger-wrapper { position: relative; display: flex; align-items: center; justify-content: center; }
         .fox-ping-ring { position: absolute; width: 100%; height: 100%; border-radius: 50%; background: rgba(249, 115, 22, 0.4); animation: foxPulsePing 3s infinite; pointer-events: none; z-index: 1; }
-        #fox-chat-trigger { position: relative; z-index: 2; width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, #ff7849 0%, #ea580c 100%); border: 1px solid rgba(255, 255, 255, 0.25); box-shadow: 0 6px 15px -4px rgba(234, 88, 12, 0.5); cursor: pointer; display: flex; align-items: center; justify-content: center; color: #fff; transition: transform 0.3s; }
-        #fox-chat-trigger:hover { transform: scale(1.08) translateY(-2px); }
+        #fox-chat-trigger { position: relative; z-index: 2; width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, #ff7849 0%, #ea580c 100%); border: 1px solid rgba(255, 255, 255, 0.25); box-shadow: 0 6px 15px -4px rgba(234, 88, 12, 0.5); cursor: pointer; display: flex; align-items: center; justify-content: center; color: #fff; }
         .fox-trigger-icon { width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; }
         .fox-trigger-icon svg { width: 100%; height: 100%; display: block; }
         .fox-trigger-close-icon { display: none; width: 18px; height: 18px; }
-        #fox-chat-widget.open #fox-chat-trigger { background: linear-gradient(135deg, #334155 0%, #1e293b 100%); border-color: rgba(255, 255, 255, 0.2); }
+        #fox-chat-widget.open #fox-chat-trigger { background: linear-gradient(135deg, #334155 0%, #1e293b 100%); }
         #fox-chat-widget.open .fox-ping-ring, #fox-chat-widget.open .fox-trigger-fox-icon { display: none; }
         #fox-chat-widget.open .fox-trigger-close-icon { display: flex; transform: rotate(90deg); }
         
-        #fox-chat-box { position: absolute; bottom: 60px; right: 0; width: 330px; height: 450px; max-height: calc(100dvh - 100px); max-width: calc(100vw - 20px); background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.7); display: flex; flex-direction: column; overflow: hidden; transform-origin: bottom right; transform: scale(0.9) translateY(20px); opacity: 0; visibility: hidden; pointer-events: none; transition: all 0.3s; z-index: 10; }
+        #fox-chat-box { position: absolute; bottom: 60px; right: 0; width: 330px; height: 450px; max-height: calc(100dvh - 100px); background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.7); display: flex; flex-direction: column; overflow: hidden; transform: scale(0.9) translateY(20px); opacity: 0; visibility: hidden; pointer-events: none; transition: all 0.3s; z-index: 10; }
         #fox-chat-widget.open #fox-chat-box { transform: scale(1) translateY(0); opacity: 1; visibility: visible; pointer-events: auto; }
         
-        .fox-chat-header { padding: 10px 12px; background: rgba(30, 41, 59, 0.8); border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; transition: background 0.3s; }
+        .fox-chat-header { padding: 10px 12px; background: rgba(30, 41, 59, 0.8); border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
         .fox-header-left { display: flex; align-items: center; gap: 8px; }
-        .fox-avatar-container { width: 28px; height: 28px; border-radius: 6px; border: 1px solid rgba(249, 115, 22, 0.5); background: rgba(249, 115, 22, 0.1); display: flex; align-items: center; justify-content: center; padding: 2px; box-sizing: border-box; }
+        .fox-avatar-container { width: 28px; height: 28px; border-radius: 6px; border: 1px solid rgba(249, 115, 22, 0.5); background: rgba(249, 115, 22, 0.1); display: flex; align-items: center; justify-content: center; padding: 2px; }
         .fox-avatar-container svg, .fox-msg-avatar svg { width: 100%; height: 100%; display: block; }
         .fox-header-info { display: flex; flex-direction: column; gap: 1px; }
-        .fox-header-title { font-size: 13.5px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 4px; transition: color 0.3s; }
+        .fox-header-title { font-size: 13.5px; font-weight: 700; color: #fff; }
         .fox-header-status { font-size: 10px; color: #94a3b8; display: flex; align-items: center; gap: 4px; }
         .fox-status-dot { width: 5px; height: 5px; border-radius: 50%; background: #22c55e; animation: statusPulse 2s infinite ease-in-out; }
-        .fox-header-actions { display: flex; gap: 6px; }
-        .fox-btn-icon { width: 26px; height: 26px; border-radius: 4px; background: transparent; border: none; color: #94a3b8; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; transition: all 0.2s; }
+        .fox-btn-icon { width: 26px; height: 26px; border-radius: 4px; background: transparent; border: none; color: #94a3b8; display: flex; align-items: center; justify-content: center; cursor: pointer; }
         .fox-btn-icon:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
-        .fox-btn-icon svg { width: 16px; height: 16px; stroke-width: 2; }
         
         #fox-chat-content { flex: 1; padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; user-select: text; scroll-behavior: smooth; }
         .fox-msg-row { display: flex; gap: 8px; max-width: 100%; animation: foxMsgFadeIn 0.25s ease forwards; }
@@ -228,22 +152,21 @@
         .fox-msg-group { display: flex; flex-direction: column; max-width: 85%; gap: 2px; }
         .fox-msg-user .fox-msg-group { align-items: flex-end; }
         .fox-msg-bot .fox-msg-group { align-items: flex-start; }
-        .fox-msg-bubble { padding: 8px 12px; border-radius: 10px; font-size: 12px; line-height: 1.5; word-wrap: break-word; max-width: 100%; transition: background 0.3s, color 0.3s, border 0.3s; }
+        .fox-msg-bubble { padding: 8px 12px; border-radius: 10px; font-size: 12px; line-height: 1.4; word-wrap: break-word; max-width: 100%; }
         .fox-msg-user .fox-msg-bubble { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); color: #ffffff; border-bottom-right-radius: 2px; font-weight: 500; }
-        .fox-msg-bot .fox-msg-bubble { background: rgba(30, 41, 59, 0.85); color: #f1f5f9; border: 1px solid rgba(255, 255, 255, 0.1); border-top-left-radius: 2px; font-family: 'Inter', sans-serif; }
+        .fox-msg-bot .fox-msg-bubble { background: rgba(30, 41, 59, 0.85); color: #f1f5f9; border: 1px solid rgba(255, 255, 255, 0.1); border-top-left-radius: 2px; }
         .fox-msg-bot .fox-msg-bubble b { color: var(--fox-cyan); font-weight: 600; }
-        .fox-msg-bot .fox-msg-bubble code { font-family: 'JetBrains Mono', monospace; background: rgba(56, 189, 248, 0.15); padding: 1px 4px; border-radius: 3px; font-size: 11px; color: #38bdf8; }
-
-        /* Hiệu ứng đang phân tích / suy nghĩ của Fox-Lab AI */
-        .fox-typing-indicator { display: inline-flex; align-items: center; gap: 4px; padding: 4px 2px; }
-        .fox-typing-indicator span { width: 6px; height: 6px; background-color: var(--fox-cyan); border-radius: 50%; display: inline-block; animation: typingBounce 1.4s infinite ease-in-out both; }
-        .fox-typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
-        .fox-typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
-        .fox-typing-text { font-size: 11px; font-style: italic; color: #94a3b8; margin-left: 6px; }
         
-        .fox-input-container { padding: 10px; background: rgba(15, 23, 42, 0.95); border-top: 1px solid rgba(255, 255, 255, 0.1); display: flex; flex-direction: column; gap: 4px; flex-shrink: 0; transition: background 0.3s, border 0.3s; }
-        .fox-input-box { display: flex; align-items: center; background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 20px; padding: 4px 6px 4px 12px; transition: background 0.3s, border 0.3s; }
-        #fox-chat-input { flex: 1; background: transparent; border: none; color: #f8fafc; font-size: 12px; outline: none; padding: 6px 0; transition: color 0.3s; }
+        /* Hiệu ứng suy nghĩ hàng ngang */
+        .fox-typing-indicator { display: inline-flex; align-items: center; gap: 4px; padding: 4px 0; }
+        .fox-typing-indicator span { width: 6px; height: 6px; background-color: var(--fox-cyan); border-radius: 50%; animation: dotFlashing 1.4s infinite linear both; }
+        .fox-typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+        .fox-typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+        .fox-typing-text { font-size: 11px; color: #94a3b8; margin-left: 6px; font-style: italic; }
+
+        .fox-input-container { padding: 10px; background: rgba(15, 23, 42, 0.95); border-top: 1px solid rgba(255, 255, 255, 0.1); display: flex; flex-direction: column; gap: 4px; flex-shrink: 0; }
+        .fox-input-box { display: flex; align-items: center; background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 20px; padding: 4px 6px 4px 12px; }
+        #fox-chat-input { flex: 1; background: transparent; border: none; color: #f8fafc; font-size: 12px; outline: none; padding: 6px 0; }
         .fox-send-btn { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); border: none; color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
         .fox-send-btn:disabled { background: rgba(255, 255, 255, 0.1) !important; color: #64748b !important; cursor: not-allowed; }
         .fox-send-btn svg { width: 12px; height: 12px; margin-left: 2px; }
@@ -253,32 +176,18 @@
         #fox-chat-box.light-theme { background: rgba(255, 255, 255, 0.95); border: 1px solid rgba(0,0,0,0.1); box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.15); }
         #fox-chat-box.light-theme .fox-chat-header { background: rgba(241, 245, 249, 0.9); border-bottom: 1px solid #cbd5e1; }
         #fox-chat-box.light-theme .fox-header-title { color: #0f172a; }
-        #fox-chat-box.light-theme .fox-btn-icon { color: #64748b; }
-        #fox-chat-box.light-theme .fox-btn-icon:hover { background: rgba(0, 0, 0, 0.05); color: #0f172a; }
         #fox-chat-box.light-theme .fox-msg-bot .fox-msg-bubble { background: #f1f5f9; color: #1e293b; border: 1px solid #e2e8f0; }
-        #fox-chat-box.light-theme .fox-msg-bot .fox-msg-bubble b { color: #0284c7; }
-        #fox-chat-box.light-theme .fox-msg-bot .fox-msg-bubble code { background: rgba(2, 132, 199, 0.1); color: #0284c7; }
         #fox-chat-box.light-theme .fox-input-container { background: rgba(248, 250, 252, 0.95); border-top: 1px solid #cbd5e1; }
         #fox-chat-box.light-theme .fox-input-box { background: #ffffff; border: 1px solid #cbd5e1; }
         #fox-chat-box.light-theme #fox-chat-input { color: #0f172a; }
-        #fox-chat-box.light-theme .fox-send-btn:disabled { background: #e2e8f0 !important; color: #94a3b8 !important; }
-
-        @media (max-width: 600px) { 
-            #fox-chat-widget { bottom: 95px; right: 15px; } 
-            #fox-chat-box { width: calc(100vw - 30px); height: calc(100dvh - 160px); bottom: 55px; } 
-        }
     </style>
 </head>
 <script>
     const FOX_AVATAR_SVG = `<svg viewBox="0 0 100 100" fill="none"><polygon points="22,12 10,48 36,40" fill="#ff7a30"/><polygon points="23,19 16,44 32,38" fill="#1e293b"/><path d="M 19 36 Q 23 32 28 34" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round"/><polygon points="78,12 64,40 90,48" fill="#ff7a30"/><polygon points="77,19 68,38 84,44" fill="#1e293b"/><path d="M 81 36 Q 77 32 72 34" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round"/><polygon points="50,22 36,40 50,46" fill="#ff8f4a"/><polygon points="50,22 50,46 64,40" fill="#ff7a30"/><polygon points="36,40 10,48 20,68 38,58" fill="#d4380d"/><polygon points="64,40 38,58 50,46" fill="#e04006"/><polygon points="64,40 50,46 62,58" fill="#d4380d"/><polygon points="64,40 90,48 80,68 62,58" fill="#d4380d"/><polygon points="20,68 12,74 26,76 34,68" fill="#e2e8f0"/><polygon points="80,68 88,74 74,76 66,68" fill="#cbd5e1"/><polygon points="38,58 50,46 50,78 36,68" fill="#ff7a30"/><polygon points="62,58 50,46 50,78 64,68" fill="#e04006"/><polygon points="50,78 36,68 44,88 50,88" fill="#f8fafc"/><polygon points="50,78 64,68 56,88 50,88" fill="#e2e8f0"/><polygon points="50,88 45,82 55,82" fill="#0f172a"/><polygon points="25,48 50,54 75,48 71,59 50,65 29,59" fill="#090d16" stroke="rgba(56,189,248,0.5)" stroke-width="0.9"/><circle cx="34.5" cy="48" r="1.5" fill="#ffffff"/><circle cx="44.5" cy="60" r="1.5" fill="#ffffff"/><circle cx="54.5" cy="48" r="1.5" fill="#ffffff"/><circle cx="64.5" cy="60" r="1.5" fill="#ffffff"/></svg>`;
     
+    // TÍCH HÍCH CHÍNH XÁC 2 LINK GAS THEO YÊU CẦU
     const LICENSE_GAS_URL = "https://script.google.com/macros/s/AKfycbwC9gwiwBdIsfvv2nGZQNrkeR1O43GTW9lhMCu6fEn-LGjjbmMEcy-3153DZRkOaLdx3Q/exec";
     const CHAT_GAS_URL = "https://script.google.com/macros/s/AKfycbyStGo5ETWCHq3UxtQEWIFL-R2mpEHdeYuX53EgfPf8LtG2Dfe4Dbk1-i59hf8LcY2bdg/exec";
-    
-    window.addEventListener('beforeunload', function (e) {
-        e.preventDefault();
-        e.returnValue = ''; 
-    });
 </script>
 <body>
     <!-- POPUP CHỌN PHIÊN BẢN (DEMO / FULL) -->
@@ -286,21 +195,14 @@
         <div class="license-selection-box">
             <h2>⚛️ DAO ĐỘNG KÝ_FOX-LAB</h2>
             <p>Vui lòng chọn chế độ sử dụng ứng dụng:</p>
-            
             <div class="license-btn-group">
-                <button class="license-btn btn-demo-mode" onclick="selectMode('demo')">
-                    ⏳ Trải nghiệm Bản Demo (Dùng thử)
-                </button>
-                <button class="license-btn btn-full-mode" onclick="selectMode('full')">
-                    🔑 Kích hoạt Bản Full (Nhập Key)
-                </button>
+                <button class="license-btn btn-demo-mode" onclick="selectMode('demo')">⏳ Trải nghiệm Bản Demo (Dùng thử)</button>
+                <button class="license-btn btn-full-mode" onclick="selectMode('full')">🔑 Kích hoạt Bản Full (Nhập Key)</button>
             </div>
-
             <div id="keyInputContainer" style="display:none; margin-bottom: 15px;">
                 <input type="text" id="licenseKeyInput" placeholder="Nhập mã Key bản quyền..." style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; box-sizing: border-box; margin-bottom: 8px;">
                 <button class="btn-green" style="width: 100%; padding: 10px;" onclick="verifyEnteredKey()">Xác thực & Mở khóa</button>
             </div>
-
             <div class="contact-box">
                 📌 <b>Cần nhận bản Full chính thức?</b><br>
                 Liên hệ tác giả / Giáo viên hướng dẫn: VÕ BÌNH MINH<br>
@@ -342,7 +244,6 @@
                                 <div class="settings-item" data-target="speedSelect" data-value="slow">Chậm</div>
                             </div>
                         </div>
-                        <!-- NÚT XÓA KEY / ĐĂNG XUẤT -->
                         <div class="settings-group" id="groupLicense">
                             <div class="settings-group-header" onclick="forceLogout(true)" style="color: #ef4444; border-top: 1px solid #1e293b;">
                                 <span>🚪 Xóa Key / Đăng xuất</span>
@@ -353,8 +254,7 @@
                 
                 <button id="pauseButton" class="btn-green" disabled>Đo / Dừng</button>
                 <button id="resetButton" class="btn-orange">Làm mới</button>
-                <button id="btnFFT" class="btn-purple" disabled>📊 FFT</button>
-                <button id="btnAnalysis" class="btn-slate" disabled style="display:none;">Xử lý nguồn âm</button>
+                <button id="btnAnalysis" class="btn-slate" disabled>Xử lý nguồn âm</button>
                 <button id="fullscreenButton" class="btn-slate">Mở rộng</button>
             </div>
 
@@ -376,24 +276,27 @@
         </div>
 
         <div class="qr-panel" id="qrPanel">
-            <img id="qrImage" src="" alt="QR Code"><span class="scan-title">Daodongki</span>
+            <img id="qrImage" src="" alt="QR Code"><span class="scan-title">FOX-LAB</span>
         </div>
     </div>
 
     <canvas id="oscilloscope"></canvas>
-
-    <!-- MODAL PHÂN TÍCH PHỔ FFT (1 NGUỒN ÂM) -->
+    
+    <!-- FFT MODAL (Dành cho chế độ 1 nguồn liên tục khi bấm dừng) -->
     <div id="fftModalOverlay" class="modal-overlay">
         <div id="fftModal" class="modal-content" onclick="event.stopPropagation()">
-            <div class="modal-header" style="background: linear-gradient(90deg, #8b5cf6, #7c3aed);">
-                <span>Phân tích Phổ Tần số (FFT)</span>
+            <div class="modal-header">
+                <span>Phân tích Họa âm (Spectrum - 5 Họa âm)</span>
             </div>
             <div class="modal-controls">
                 <button class="btn-dark" onclick="closeFFTModal()">⬅ Quay lại</button>
-                <div id="fftPeakInfo" style="font-size: 12px; font-weight: bold; color: #0f172a; margin-left: 10px;">Đỉnh tần số chính: 0.0 Hz</div>
+                <label style="font-weight: 600; font-size: 11.5px; margin-left:10px;">Tần số (f0):</label>
+                <input type="number" id="fftTargetFreq" value="440" min="20" max="5000" oninput="processAndDrawFFT()"> 
+                <span style="font-weight: 600; font-size: 11.5px;">Hz</span>
+                <button class="btn-green" onclick="processAndDrawFFT()">Quét Họa âm</button>
             </div>
             <div class="fft-canvas-container">
-                <canvas id="fftCanvas" class="modal-display-canvas"></canvas>
+                <canvas id="fftDisplayCanvas" class="modal-display-canvas"></canvas>
             </div>
         </div>
     </div>
@@ -414,8 +317,8 @@
 
                 <div style="display:flex; gap:6px;">
                     <button id="btnTsPause" class="btn-orange" onclick="toggleTsPause()">⏸ Dừng</button>
-                    <button id="btnTsResult" class="btn-slate" onclick="toggleTsResults()" style="display:none;">📊 Kết quả</button>
-                    <button id="btnTsEquation" class="btn-slate" onclick="toggleTsEquations()" style="display:none;">∑ Phương trình</button>
+                    <button id="btnTsResult" class="btn-slate" onclick="toggleTsResults()">📊 Kết quả</button>
+                    <button id="btnTsEquation" class="btn-slate" onclick="toggleTsEquations()">∑ Phương trình</button>
                 </div>
             </div>
             <div class="fft-canvas-container" id="tsContainer">
@@ -484,15 +387,14 @@
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
                     </button>
                 </div>
-                <div class="fox-footer-meta">Đo MCĐ Âm • FOX-Lab</div>
+                <div class="fox-footer-meta">AI có thể cung cấp thông tin không chính xác. Hãy tự kiểm chứng.</div>
             </div>
         </div>
     </div>
-
     <script>
         const btnStartA = document.getElementById('btnStartA'), btnStartB = document.getElementById('btnStartB');
         const pauseButton = document.getElementById('pauseButton'), resetButton = document.getElementById('resetButton');
-        const btnFFT = document.getElementById('btnFFT'), btnAnalysis = document.getElementById('btnAnalysis'), infoMessageText = document.getElementById('infoMessageText');
+        const btnAnalysis = document.getElementById('btnAnalysis'), infoMessageText = document.getElementById('infoMessageText');
         const channelModeSelect = document.getElementById('channelModeSelect'), modeSelect = document.getElementById('modeSelect'), speedSelect = document.getElementById('speedSelect');
         const micSelectA = document.getElementById('micSelectA'), micSelectB = document.getElementById('micSelectB');
         const canvas = document.getElementById('oscilloscope'), canvasCtx = canvas.getContext('2d', { alpha: false });
@@ -512,7 +414,53 @@
             return deviceId;
         }
 
+        // --- LƯU VÀ KHÔI PHỤC TRẠNG THÁI (LOCALSTORAGE) ---
+        function saveAppState() {
+            localStorage.setItem('fox_channel_mode', channelModeSelect.value);
+            localStorage.setItem('fox_mode_select', modeSelect.value);
+            localStorage.setItem('fox_speed_select', speedSelect.value);
+            localStorage.setItem('fox_mic_a', micSelectA.value);
+            localStorage.setItem('fox_mic_b', micSelectB.value);
+        }
+
+        function restoreAppState() {
+            if (localStorage.getItem('fox_channel_mode')) {
+                channelModeSelect.value = localStorage.getItem('fox_channel_mode');
+            }
+            if (localStorage.getItem('fox_mode_select')) {
+                modeSelect.value = localStorage.getItem('fox_mode_select');
+            }
+            if (localStorage.getItem('fox_speed_select')) {
+                speedSelect.value = localStorage.getItem('fox_speed_select');
+            }
+            
+            // Cập nhật UI menu cài đặt tương ứng
+            document.querySelectorAll('#groupChannelMode .settings-item').forEach(el => {
+                if (el.dataset.value === channelModeSelect.value) {
+                    el.parentElement.querySelectorAll('.settings-item').forEach(s => s.classList.remove('active'));
+                    el.classList.add('active');
+                }
+            });
+            document.querySelectorAll('#groupMode .settings-item').forEach(el => {
+                if (el.dataset.value === modeSelect.value) {
+                    el.parentElement.querySelectorAll('.settings-item').forEach(s => s.classList.remove('active'));
+                    el.classList.add('active');
+                }
+            });
+            document.querySelectorAll('#groupSpeed .settings-item').forEach(el => {
+                if (el.dataset.value === speedSelect.value) {
+                    el.parentElement.querySelectorAll('.settings-item').forEach(s => s.classList.remove('active'));
+                    el.classList.add('active');
+                }
+            });
+
+            const speedGroup = document.getElementById('groupSpeed');
+            speedGroup.style.display = (modeSelect.value === 'continuous') ? 'block' : 'none';
+            document.getElementById('cardChannelB').style.display = (getActiveChannelMode() === '2') ? 'flex' : 'none';
+        }
+
         window.addEventListener('DOMContentLoaded', async () => {
+            restoreAppState();
             const urlParams = new URLSearchParams(window.location.search);
             const keyParam = urlParams.get('key');
             const typeParam = urlParams.get('type');
@@ -654,8 +602,8 @@
             if (!isDemoMode && isGithub) {
                 qrPanel.style.display = 'flex';
                 let activeKey = localStorage.getItem('fox_license_key') || '';
-                let qrUrl = currentUrl + '?id=Daodongki';
-                if (activeKey) { qrUrl += '&key=' + encodeURIComponent(activeKey); }
+                let qrUrl = currentUrl;
+                if (activeKey) { qrUrl += '?key=' + encodeURIComponent(activeKey); }
                 qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrUrl)}`;
             } else {
                 qrPanel.style.display = 'none';
@@ -696,18 +644,14 @@
             document.getElementById('qrPanel').addEventListener('click', function() { this.style.display = 'none'; });
             document.getElementById('fftModalOverlay').addEventListener('click', closeFFTModal);
             document.getElementById('twoSourceModalOverlay').addEventListener('click', closeTwoSourceModal);
-
-            const speedGroup = document.getElementById('groupSpeed');
-            speedGroup.style.display = (modeSelect.value === 'continuous') ? 'block' : 'none';
-            document.getElementById('cardChannelB').style.display = (getActiveChannelMode() === '2') ? 'flex' : 'none';
             
             resizeCanvas(); updateUIState(); drawFrame(true);
         });
 
-        let isInitialized = true, isFFTModalOpen = false, isTwoSourceModalOpen = false, tsViewMode = 'overlay', isTsPaused = false, showTsResults = false, showTsEquations = false;
+        let isInitialized = true, isTwoSourceModalOpen = false, tsViewMode = 'overlay', isTsPaused = false, showTsResults = false, showTsEquations = false;
         let snapDataA = new Float32Array(0), snapDataB = new Float32Array(0);
         let currentCalcFreqA = 440, currentCalcFreqB = 440, currentPhaseRad = 0, currentPhaseDeg = 0;
-        let animFrameId = null, fftAnimFrameId = null, tsAnimFrameId = null;
+        let animFrameId = null;
 
         function updateSettingsPill(groupItems, targetItem, animated = true) {
             if (!groupItems) return;
@@ -760,29 +704,9 @@
                 targetSelect.value = item.dataset.value;
                 targetSelect.dispatchEvent(new Event('change'));
                 updateSettingsPill(item.parentElement, item, true);
+                saveAppState();
             });
         });
-
-        function updateTsModePill(targetBtn, animated = true) {
-            const container = document.querySelector('.ts-mode-toggle');
-            if (!container) return;
-            let pill = container.querySelector('.ts-mode-pill');
-            if (!pill) { pill = document.createElement('div'); pill.className = 'ts-mode-pill'; container.prepend(pill); }
-            if (!targetBtn) targetBtn = container.querySelector('button.active-mode');
-            if (!targetBtn) { pill.style.opacity = '0'; return; }
-            const cRect = container.getBoundingClientRect(), bRect = targetBtn.getBoundingClientRect();
-            if (cRect.width === 0 || bRect.width === 0) return;
-            pill.style.transition = animated ? 'transform 0.24s cubic-bezier(0.2, 0.9, 0.3, 1), width 0.24s cubic-bezier(0.2, 0.9, 0.3, 1), opacity 0.15s ease' : 'none';
-            pill.style.opacity = '1';
-            pill.style.transform = `translateX(${bRect.left - cRect.left}px)`;
-            pill.style.width = `${bRect.width}px`;
-        }
-
-        const tsToggleContainer = document.querySelector('.ts-mode-toggle');
-        if (tsToggleContainer) {
-            tsToggleContainer.addEventListener('mouseleave', () => updateTsModePill(null, true));
-            tsToggleContainer.querySelectorAll('button').forEach(btn => btn.addEventListener('mouseenter', () => updateTsModePill(btn, true)));
-        }
 
         let audioCtx, sampleRate = 48000, isPaused = true, isContinuousMode = false, stopTimer;
         const channelConfig = {
@@ -804,87 +728,113 @@
             cfg.active = false; cfg.index = 0; if (cfg.data) cfg.data.fill(0);
         }
 
+        // --- ĐIỀU KIỆN NÚT PHÂN TÍCH (FFT HOẶC 2 NGUỒN) THEO YÊU CẦU 3 ---
         function updateAnalysisButtonState() {
-            const mode = getActiveChannelMode(), activeChannels = (channelConfig.A.active ? 1 : 0) + (channelConfig.B.active ? 1 : 0);
+            const mode = getActiveChannelMode();
+            const surveyMode = modeSelect.value; // 'auto' (tự dừng) hoặc 'continuous' (liên tục)
+            const activeChannels = (channelConfig.A.active ? 1 : 0) + (channelConfig.B.active ? 1 : 0);
             
-            if (mode === '1') {
-                btnFFT.style.display = 'inline-block';
-                btnAnalysis.style.display = 'none';
-                if (channelConfig.A.active || channelConfig.B.active) {
-                    btnFFT.disabled = false;
-                    btnFFT.className = 'btn-purple';
+            if (isDemoMode) {
+                btnAnalysis.disabled = true;
+                btnAnalysis.textContent = (mode === '1') ? "Phân tích FFT (Bản Full)" : "Xử lý nguồn âm (Bản Full)";
+                btnAnalysis.className = 'btn-slate';
+                return;
+            }
+
+            if (mode === '2') {
+                btnAnalysis.style.display = 'inline-block';
+                if (activeChannels === 2) {
+                    btnAnalysis.disabled = false;
+                    btnAnalysis.textContent = "Xử lý nguồn âm";
+                    btnAnalysis.className = 'btn-pink';
                 } else {
-                    btnFFT.disabled = true;
-                    btnFFT.className = 'btn-slate';
+                    btnAnalysis.disabled = true;
+                    btnAnalysis.textContent = "Xử lý nguồn âm";
+                    btnAnalysis.className = 'btn-slate';
                 }
             } else {
-                btnFFT.style.display = 'none';
-                btnAnalysis.style.display = 'inline-block';
-                if (isDemoMode) {
-                    btnAnalysis.disabled = true;
-                    btnAnalysis.textContent = "Xử lý nguồn âm (Bản Full)";
-                    btnAnalysis.className = 'btn-slate';
+                // Chế độ 1 nguồn âm:
+                // "Ở chế độ đo 1 nguồn tự dừng thì không có FFT, chế độ 1 nguồn liên tục khi bấm dừng có phân tích FFT."
+                if (surveyMode === 'auto') {
+                    btnAnalysis.style.display = 'none'; // Không có FFT ở chế độ tự dừng
                 } else {
-                    if (activeChannels === 2) { 
-                        btnAnalysis.disabled = false; 
-                        btnAnalysis.textContent = "Xử lý nguồn âm"; 
-                        btnAnalysis.className = 'btn-pink'; 
-                    } else { 
-                        btnAnalysis.disabled = true; 
-                        btnAnalysis.textContent = "Xử lý nguồn âm"; 
-                        btnAnalysis.className = 'btn-slate'; 
+                    // Chế độ liên tục: chỉ sáng khi đang bấm Dừng (isPaused = true) và kênh A hoạt động
+                    btnAnalysis.style.display = 'inline-block';
+                    if (channelConfig.A.active && isPaused) {
+                        btnAnalysis.disabled = false;
+                        btnAnalysis.textContent = "Phân tích FFT";
+                        btnAnalysis.className = 'btn-purple';
+                    } else {
+                        btnAnalysis.disabled = true;
+                        btnAnalysis.textContent = "Phân tích FFT";
+                        btnAnalysis.className = 'btn-slate';
                     }
                 }
             }
         }
 
-        btnFFT.addEventListener('click', () => { if(getActiveChannelMode() === '1') openFFTModal(); });
-        btnAnalysis.addEventListener('click', () => { if(getActiveChannelMode() === '2') openTwoSourceModal(); });
+        btnAnalysis.addEventListener('click', () => { 
+            if (getActiveChannelMode() === '1') {
+                openFFTModal();
+            } else {
+                openTwoSourceModal();
+            }
+        });
 
-        speedSelect.addEventListener('change', (e) => { targetFPS = (e.target.value === 'slow') ? 15 : 60; });
+        speedSelect.addEventListener('change', (e) => { 
+            targetFPS = (e.target.value === 'slow') ? 15 : 60; 
+            saveAppState();
+        });
+
         modeSelect.addEventListener('change', (e) => {
-            isContinuousMode = (e.target.value === 'continuous'); clearTimeout(stopTimer);
+            isContinuousMode = (e.target.value === 'continuous'); 
+            clearTimeout(stopTimer);
             const speedGroup = document.getElementById('groupSpeed');
             if (isContinuousMode) { 
                 speedGroup.style.display = 'block'; 
-                if (isDemoMode) { 
-                     speedSelect.value = "fast";
-                     document.querySelectorAll('#groupSpeed .settings-item').forEach(el => el.classList.remove('active')); 
-                     document.querySelector('#groupSpeed .settings-item[data-value="fast"]').classList.add('active');
-                }
                 targetFPS = (speedSelect.value === 'slow') ? 15 : 60; 
-            } 
-            else { 
-                speedGroup.style.display = 'none'; targetFPS = 60; document.querySelectorAll('#groupSpeed .settings-item').forEach(el => el.classList.remove('active')); document.querySelector('#groupSpeed .settings-item[data-value="fast"]').classList.add('active'); speedSelect.value = "fast"; if (!isPaused) triggerAutoStop(); 
+            } else { 
+                speedGroup.style.display = 'none'; 
+                targetFPS = 60; 
+                speedSelect.value = "fast"; 
+                if (!isPaused) triggerAutoStop(); 
             }
+            updateAnalysisButtonState();
+            saveAppState();
         });
         
         channelModeSelect.addEventListener('change', () => {
-            if (getActiveChannelMode() === '1') { document.getElementById('cardChannelB').style.display = 'none'; stopAudioChannel('B'); } 
-            else { document.getElementById('cardChannelB').style.display = 'flex'; }
-            updateUIState(); drawFrame();
+            if (getActiveChannelMode() === '1') { 
+                document.getElementById('cardChannelB').style.display = 'none'; 
+                stopAudioChannel('B'); 
+            } else { 
+                document.getElementById('cardChannelB').style.display = 'flex'; 
+            }
+            updateUIState(); 
+            drawFrame();
+            saveAppState();
         });
 
         btnStartA.addEventListener('click', async () => { if (channelConfig.A.active) { stopAudioChannel('A'); updateUIState(); drawFrame(); } else { await initAudioChannel('A', micSelectA.value); } });
         btnStartB.addEventListener('click', async () => { if (channelConfig.B.active) { stopAudioChannel('B'); updateUIState(); drawFrame(); } else { await initAudioChannel('B', micSelectB.value); } });
-        micSelectA.addEventListener('change', (e) => { if (channelConfig.A.active) initAudioChannel('A', e.target.value); });
-        micSelectB.addEventListener('change', (e) => { if (channelConfig.B.active) initAudioChannel('B', e.target.value); });
+        
+        micSelectA.addEventListener('change', (e) => { 
+            if (channelConfig.A.active) initAudioChannel('A', e.target.value); 
+            saveAppState();
+        });
+        micSelectB.addEventListener('change', (e) => { 
+            if (channelConfig.B.active) initAudioChannel('B', e.target.value); 
+            saveAppState();
+        });
 
         function resizeCanvas() {
             const dpr = window.devicePixelRatio || 1, cssWidth = canvas.clientWidth, cssHeight = canvas.clientHeight;
             canvas.width = Math.round(cssWidth * dpr); canvas.height = Math.round(cssHeight * dpr);
             canvasCtx.setTransform(dpr, 0, 0, dpr, 0, 0); 
-            if(isFFTModalOpen) { const container = document.querySelector('#fftModal .fft-canvas-container'), canv = document.getElementById('fftCanvas'); if(container && canv) { canv.width = container.clientWidth - 12; canv.height = container.clientHeight - 12; } }
             if(isTwoSourceModalOpen) { const container = document.getElementById('tsContainer'), canv = document.getElementById('twoSourceCanvas'); if(container && canv) { canv.width = container.clientWidth - 12; canv.height = container.clientHeight - 12; } }
             drawFrame();
         }
         window.addEventListener('resize', resizeCanvas);
-        
-        let initialPinchDistX = 0, initialPinchDistY = 0, startDuration = totalTimeOnScreen, startZoomY = currentZoomY;
-        canvas.addEventListener('touchstart', (e) => { if (e.touches.length === 2 && isPaused) { e.preventDefault(); initialPinchDistX = Math.max(Math.abs(e.touches[0].clientX - e.touches[1].clientX), 10); initialPinchDistY = Math.max(Math.abs(e.touches[0].clientY - e.touches[1].clientY), 10); startDuration = totalTimeOnScreen; startZoomY = currentZoomY; } }, { passive: false });
-        canvas.addEventListener('touchmove', (e) => { if (e.touches.length === 2 && isPaused) { e.preventDefault(); let dx = Math.max(Math.abs(e.touches[0].clientX - e.touches[1].clientX), 10), dy = Math.max(Math.abs(e.touches[0].clientY - e.touches[1].clientY), 10); isUserZoomed = true; totalTimeOnScreen = Math.max(0.002, Math.min(startDuration * (initialPinchDistX / dx), 2.4)); currentZoomY = Math.max(0.5, Math.min(startZoomY * (dy / initialPinchDistY), 10.0)); drawFrame(); } }, { passive: false });
-        canvas.addEventListener('wheel', (e) => { if (!isPaused) return; e.preventDefault(); isUserZoomed = true; if (e.deltaY > 0) { totalTimeOnScreen *= 1.1; currentZoomY /= 1.1; } else { totalTimeOnScreen /= 1.1; currentZoomY *= 1.1; } totalTimeOnScreen = Math.max(0.002, Math.min(totalTimeOnScreen, 2.4)); currentZoomY = Math.max(0.5, Math.min(currentZoomY, 10.0)); drawFrame(); }, { passive: false });
-        document.getElementById('fullscreenButton').addEventListener('click', () => { let elem = document.documentElement; if (!document.fullscreenElement) { if(elem.requestFullscreen) elem.requestFullscreen().catch(()=>{}); else if(elem.webkitRequestFullscreen) elem.webkitRequestFullscreen(); } else { if(document.exitFullscreen) document.exitFullscreen(); else if(document.webkitExitFullscreen) document.webkitExitFullscreen(); } });
 
         function autoCorrelate(buffer, sampleRate) {
             let SIZE = buffer.length, sumSq = 0; for (let i = 0; i < SIZE; i++) sumSq += buffer[i] * buffer[i];
@@ -898,6 +848,14 @@
             let truePos = maxpos;
             if (maxpos > 0 && maxpos < halfSize - 1) { let x1 = c[maxpos - 1], x2 = c[maxpos], x3 = c[maxpos + 1], a = (x1 + x3 - 2 * x2) / 2, b = (x3 - x1) / 2; if (a < 0) truePos = maxpos - b / (2 * a); }
             let freq = sampleRate / truePos; if (freq < 100 || freq > 1500) return -1; return freq;
+        }
+
+        function computeFFT(realArray) {
+            let n = realArray.length, p = 1; while(p < n) p *= 2;
+            let x = new Float32Array(p); x.set(realArray); let y = new Float32Array(p); let j = 0;
+            for (let i = 0; i < p - 1; i++) { if (i < j) { let tx = x[i]; x[i] = x[j]; x[j] = tx; } let m = p >> 1; while (m >= 1 && j >= m) { j -= m; m >>= 1; } j += m; }
+            for (let l = 1; l < p; l <<= 1) { let wk1r = Math.cos(Math.PI / l), wk1i = -Math.sin(Math.PI / l); for (let i = 0; i < p; i += l << 1) { let wr = 1, wi = 0; for (let k = 0; k < l; k++) { let tr = wr * x[i + k + l] - wi * y[i + k + l], ti = wr * y[i + k + l] + wi * x[i + k + l]; x[i + k + l] = x[i + k] - tr; y[i + k + l] = y[i + k] - ti; x[i + k] += tr; y[i + k] += ti; let wtemp = wr; wr = wr * wk1r - wi * wk1i; wi = wtemp * wk1i + wi * wk1r; } } }
+            let magnitudes = new Float32Array(p / 2); for(let i=0; i<p/2; i++) { magnitudes[i] = Math.hypot(x[i], y[i]) / (p/2); } return magnitudes;
         }
 
         function findZeroCrossingOffset(cfg, currentIndex, samplesNeeded) {
@@ -963,13 +921,17 @@
             try {
                 const devices = await navigator.mediaDevices.enumerateDevices(), audioInputs = devices.filter(device => device.kind === 'audioinput');
                 let valA = micSelectA.value, valB = micSelectB.value;
-                micSelectA.innerHTML = '<option value="">-- Kênh A: Mặc định hệ thống --</option>'; micSelectB.innerHTML = '<option value="">-- Kênh B: Mặc định hệ thống --</option>';
+                micSelectA.innerHTML = '<option value="">-- Kênh A: Mặc định hệ thống --</option>'; 
+                micSelectB.innerHTML = '<option value="">-- Kênh B: Mặc định hệ thống --</option>';
                 audioInputs.forEach((device, index) => { 
                     let optA = document.createElement('option'); optA.value = device.deviceId; optA.text = `Mic ${index + 1}: ${device.label || 'Tự chọn'}`; 
                     let optB = document.createElement('option'); optB.value = device.deviceId; optB.text = `Mic ${index + 1}: ${device.label || 'Tự chọn'}`; 
                     micSelectA.appendChild(optA); micSelectB.appendChild(optB); 
                 });
-                if (audioInputs.length > 1) micSelectB.selectedIndex = 2;
+                
+                // Khôi phục từ localStorage nếu có
+                if (localStorage.getItem('fox_mic_a')) micSelectA.value = localStorage.getItem('fox_mic_a');
+                if (localStorage.getItem('fox_mic_b')) micSelectB.value = localStorage.getItem('fox_mic_b');
                 if (valA) micSelectA.value = valA; if (valB) micSelectB.value = valB;
             } catch(e) {}
         }
@@ -1042,7 +1004,7 @@
                 
                 cfg.workletNode = new AudioWorkletNode(audioCtx, 'fox-audio-processor');
                 cfg.workletNode.port.onmessage = (event) => {
-                    if (!isPaused && cfg.active && (!isFFTModalOpen && (!isTwoSourceModalOpen || !isTsPaused))) {
+                    if (!isPaused && cfg.active && (!isTwoSourceModalOpen || !isTsPaused)) {
                         let inputChunk = event.data, len = cfg.data.length, currentIdx = cfg.index;
                         for (let i = 0; i < inputChunk.length; i++) { cfg.data[(currentIdx + i) % len] = inputChunk[i]; }
                         cfg.index += inputChunk.length;
@@ -1127,7 +1089,7 @@
             }
             if (!isUserZoomed) totalTimeOnScreen = Math.max(0.002, Math.min(5 * (1.0 / ((lockedFrequency > 0) ? lockedFrequency : 440)), 2.4));
             
-            if (isFFTModalOpen || isTwoSourceModalOpen) return;
+            if (isTwoSourceModalOpen) { calculatePhaseAndDrawLive(); return; }
 
             const width = canvas.clientWidth, height = canvas.clientHeight;
             canvasCtx.fillStyle = '#f8fafc'; canvasCtx.fillRect(0, 0, width, height);
@@ -1175,117 +1137,103 @@
         }
 
         function draw() {
-            if (!isPaused && targetFPS > 0 && !isFFTModalOpen && !isTwoSourceModalOpen) {
+            if (!isPaused && targetFPS > 0) {
                 let now = performance.now();
                 if (now - lastDrawTime > (1000 / targetFPS)) { drawFrame(); lastDrawTime = now; }
             }
             animFrameId = requestAnimationFrame(draw);
         }
-        draw();
 
-        // --- CÁC HÀM XỬ LÝ FFT (1 NGUỒN ÂM) ---
+        // --- FFT MODAL LOGIC ---
         function openFFTModal() {
-            if (!channelConfig.A.active && !channelConfig.B.active) {
-                alert("Vui lòng bật ít nhất một kênh để phân tích phổ FFT!"); return;
-            }
-            isFFTModalOpen = true;
+            if (isDemoMode) { alert("Chức năng Phân tích Họa âm FFT chỉ có trên bản Full."); return; }
             document.getElementById('fftModalOverlay').classList.add('animUI-visible');
             document.getElementById('fftModalOverlay').style.display = 'flex';
-            resizeCanvas();
-            drawFFTModalLive();
+            const inputFreq = document.getElementById('fftTargetFreq');
+            if (lockedFrequency > 20) inputFreq.value = Math.round(lockedFrequency);
+            setTimeout(processAndDrawFFT, 350);
         }
 
         function closeFFTModal() {
-            isFFTModalOpen = false;
-            if (fftAnimFrameId) { cancelAnimationFrame(fftAnimFrameId); fftAnimFrameId = null; }
             const overlay = document.getElementById('fftModalOverlay');
             overlay.classList.remove('animUI-visible');
-            setTimeout(() => { 
-                overlay.style.display = 'none'; 
-                resizeCanvas();
-                drawFrame(true); 
-            }, 300);
+            setTimeout(() => { overlay.style.display = 'none'; }, 300);
         }
 
-        function drawFFTModalLive() {
-            if (!isFFTModalOpen) return;
-            const canv = document.getElementById('fftCanvas');
-            if (!canv) return;
-            const ctx = canv.getContext('2d');
-            const cw = canv.width, ch = canv.height;
+        function processAndDrawFFT() {
+            const f0 = parseFloat(document.getElementById('fftTargetFreq').value);
+            if (!f0 || f0 <= 0 || !channelConfig.A.data) return;
+            const fftCanvas = document.getElementById('fftDisplayCanvas');
+            const fCtx = fftCanvas.getContext('2d');
+            const cw = fftCanvas.parentElement.clientWidth - 12, ch = fftCanvas.parentElement.clientHeight - 12;
+            fftCanvas.width = cw; fftCanvas.height = ch;
             
-            ctx.fillStyle = '#f8fafc'; ctx.fillRect(0, 0, cw, ch);
+            fCtx.fillStyle = '#f8fafc'; fCtx.fillRect(0, 0, cw, ch);
             
-            // Vẽ lưới trục tọa độ phổ tần số
-            ctx.strokeStyle = '#cbd5e1'; ctx.lineWidth = 1;
-            ctx.beginPath();
-            for (let i = 0; i <= 10; i++) { ctx.moveTo(i * (cw / 10), 0); ctx.lineTo(i * (cw / 10), ch); }
-            for (let i = 0; i <= 5; i++) { ctx.moveTo(0, i * (ch / 5)); ctx.lineTo(cw, i * (ch / 5)); }
-            ctx.stroke();
-
-            let activeCfg = channelConfig.A.active ? channelConfig.A : channelConfig.B;
-            if (activeCfg.active && activeCfg.index > 2048) {
-                let fftSize = 2048;
-                let data = new Float32Array(fftSize);
-                let len = activeCfg.data.length, cIdx = activeCfg.index;
-                for (let i = 0; i < fftSize; i++) {
-                    data[i] = activeCfg.data[((cIdx - fftSize + i) % len + len) % len];
-                }
-
-                // Tính toán biên độ phổ đơn giản theo tần số
-                ctx.beginPath(); ctx.lineWidth = 2; ctx.strokeStyle = '#8b5cf6';
-                let maxAmp = 0, peakFreq = 0;
-                let maxBin = Math.floor(fftSize / 4); // Khảo sát đến ~12kHz
-                for (let i = 2; i < maxBin; i++) {
-                    let freq = (i * sampleRate) / fftSize;
-                    let amp = Math.abs(data[i]);
-                    let x = (freq / 3000) * cw; // Hiển thị đến 3kHz
-                    let y = ch - (amp * ch * 2);
-                    y = Math.max(10, Math.min(ch - 10, y));
-                    if (amp > maxAmp) { maxAmp = amp; peakFreq = freq; }
-                    if (i === 2) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-                }
-                ctx.stroke();
-                document.getElementById('fftPeakInfo').innerText = `Đỉnh tần số chính: ${peakFreq.toFixed(1)} Hz`;
+            let fftSize = 4096, recentData = new Float32Array(fftSize), len = channelConfig.A.data.length, cIdx = channelConfig.A.index;
+            for(let i=0; i<fftSize; i++) {
+                let multiplier = 0.5 * (1 - Math.cos(2 * Math.PI * i / (fftSize - 1)));
+                recentData[i] = channelConfig.A.data[((cIdx - fftSize + i) % len + len) % len] * multiplier;
             }
-
-            if (isFFTModalOpen) { fftAnimFrameId = requestAnimationFrame(drawFFTModalLive); }
+            
+            let magnitudes = computeFFT(recentData);
+            let binFreq = sampleRate / fftSize;
+            
+            fCtx.strokeStyle = '#e2e8f0'; fCtx.lineWidth = 1;
+            fCtx.beginPath();
+            for(let i=1; i<10; i++) { let x = (i/10)*cw; fCtx.moveTo(x, 0); fCtx.lineTo(x, ch); }
+            for(let i=1; i<5; i++) { let y = (i/5)*ch; fCtx.moveTo(0, y); fCtx.lineTo(cw, y); }
+            fCtx.stroke();
+            
+            let maxMag = 0, harmonics = [];
+            for (let i = 1; i <= 5; i++) {
+                let targetFreq = f0 * i;
+                let targetBin = Math.round(targetFreq / binFreq);
+                let localMax = 0;
+                for (let b = Math.max(0, targetBin - 5); b <= Math.min(magnitudes.length - 1, targetBin + 5); b++) {
+                    if (magnitudes[b] > localMax) localMax = magnitudes[b];
+                }
+                harmonics.push({ freq: targetFreq, mag: localMax, index: i });
+                if (localMax > maxMag) maxMag = localMax;
+            }
+            
+            if (maxMag === 0) maxMag = 1;
+            
+            fCtx.font = 'bold 12px "Inter", sans-serif'; fCtx.textAlign = 'center';
+            let barW = Math.min(40, (cw / 5) * 0.6);
+            let spacing = cw / 5;
+            
+            harmonics.forEach((h, i) => {
+                let cx = (i + 0.5) * spacing;
+                let hPx = (h.mag / maxMag) * (ch * 0.7);
+                let yStart = ch - 30;
+                
+                fCtx.fillStyle = (i === 0) ? '#3b82f6' : '#8b5cf6';
+                fCtx.fillRect(cx - barW/2, yStart - hPx, barW, hPx);
+                
+                fCtx.fillStyle = '#0f172a';
+                fCtx.fillText(`${i+1}f0`, cx, ch - 10);
+                fCtx.fillText(`${Math.round(h.freq)}Hz`, cx, yStart - hPx - 5);
+            });
         }
 
-        // --- CÁC HÀM XỬ LÝ 2 NGUỒN ÂM ---
+        // --- XỬ LÝ 2 NGUỒN ÂM ---
         function openTwoSourceModal() {
             if (isDemoMode) { alert("Chức năng Xử lý 2 Nguồn âm chỉ có trên bản Full."); return; }
             if (getActiveChannelMode() !== '2' || !channelConfig.A.active || !channelConfig.B.active) {
                 alert("Vui lòng bật cả Kênh A và Kênh B để sử dụng tính năng này!"); return;
             }
-            isTwoSourceModalOpen = true; 
-            isTsPaused = true; 
-            showTsResults = false;
-            showTsEquations = false;
-            
+            isTwoSourceModalOpen = true; isTsPaused = false;
             document.getElementById('twoSourceModalOverlay').classList.add('animUI-visible');
             document.getElementById('twoSourceModalOverlay').style.display = 'flex';
-            
-            let btnPause = document.getElementById('btnTsPause');
-            btnPause.textContent = "▶ Tiếp tục"; btnPause.className = "btn-green";
-            document.getElementById('btnTsResult').style.display = 'block';
-            document.getElementById('btnTsEquation').style.display = 'block';
-            
-            resizeCanvas();
-            calculatePhaseAndDrawLive();
+            resizeCanvas(); 
         }
 
         function closeTwoSourceModal() {
             isTwoSourceModalOpen = false;
-            if (tsAnimFrameId) { cancelAnimationFrame(tsAnimFrameId); tsAnimFrameId = null; }
-            
             const overlay = document.getElementById('twoSourceModalOverlay');
             overlay.classList.remove('animUI-visible');
-            setTimeout(() => { 
-                overlay.style.display = 'none'; 
-                resizeCanvas();
-                drawFrame(true); 
-            }, 300);
+            setTimeout(() => { overlay.style.display = 'none'; }, 300);
         }
 
         function setTsMode(mode) {
@@ -1294,26 +1242,13 @@
             document.getElementById('btnModeSum').classList.remove('active-mode');
             if (mode === 'overlay') document.getElementById('btnModeOverlay').classList.add('active-mode');
             else document.getElementById('btnModeSum').classList.add('active-mode');
-            
-            let btn = (mode === 'overlay') ? document.getElementById('btnModeOverlay') : document.getElementById('btnModeSum');
-            updateTsModePill(btn, true);
-            if (isTsPaused) calculatePhaseAndDrawLive();
         }
 
         function toggleTsPause() {
             isTsPaused = !isTsPaused;
             let btn = document.getElementById('btnTsPause');
-            if (isTsPaused) { 
-                btn.textContent = "▶ Tiếp tục"; btn.className = "btn-green"; 
-                if (tsAnimFrameId) { cancelAnimationFrame(tsAnimFrameId); tsAnimFrameId = null; }
-                calculatePhaseAndDrawLive();
-            } else { 
-                btn.textContent = "⏸ Dừng"; btn.className = "btn-orange"; 
-                showTsResults = false; showTsEquations = false;
-                document.getElementById('hudResults').style.display = 'none';
-                document.getElementById('hudEquations').style.display = 'none';
-                calculatePhaseAndDrawLive();
-            }
+            if (isTsPaused) { btn.textContent = "▶ Tiếp tục"; btn.className = "btn-green"; } 
+            else { btn.textContent = "⏸ Dừng"; btn.className = "btn-orange"; }
         }
 
         function toggleTsResults() {
@@ -1337,7 +1272,7 @@
             drawMainGrid(ctx, 0, 0, cw, ch, null, null, true);
 
             const fftSize = 4096;
-            if (!isTsPaused || snapDataA.length === 0) {
+            if (!isTsPaused) {
                 let recA = new Float32Array(fftSize), recB = new Float32Array(fftSize);
                 let len = channelConfig.A.data.length;
                 let cAIdx = channelConfig.A.index, cBIdx = channelConfig.B.index;
@@ -1384,18 +1319,22 @@
                 currentPhaseDeg = currentPhaseRad * (180 / Math.PI);
             }
 
-            document.getElementById('hudFreqA').innerText = currentCalcFreqA.toFixed(1);
-            document.getElementById('hudPerA').innerText = (1000/currentCalcFreqA).toFixed(2);
-            document.getElementById('hudFreqB').innerText = currentCalcFreqB.toFixed(1);
-            document.getElementById('hudPerB').innerText = (1000/currentCalcFreqB).toFixed(2);
-            document.getElementById('hudPhaseRad').innerText = currentPhaseRad.toFixed(2);
-            document.getElementById('hudPhaseDeg').innerText = Math.round(currentPhaseDeg);
-
-            document.getElementById('eqFreqA').innerText = currentCalcFreqA.toFixed(1);
-            document.getElementById('eqFreqB').innerText = currentCalcFreqB.toFixed(1);
-            let phaseStr = (currentPhaseRad >= 0 ? "+ " : "- ") + Math.abs(currentPhaseRad).toFixed(2);
-            document.getElementById('eqPhase').innerText = phaseStr;
-            document.getElementById('eqSumLine').style.display = (tsViewMode === 'sum') ? 'block' : 'none';
+            if (showTsResults) {
+                document.getElementById('hudFreqA').innerText = currentCalcFreqA.toFixed(1);
+                document.getElementById('hudPerA').innerText = (1000/currentCalcFreqA).toFixed(2);
+                document.getElementById('hudFreqB').innerText = currentCalcFreqB.toFixed(1);
+                document.getElementById('hudPerB').innerText = (1000/currentCalcFreqB).toFixed(2);
+                document.getElementById('hudPhaseRad').innerText = currentPhaseRad.toFixed(2);
+                document.getElementById('hudPhaseDeg').innerText = Math.round(currentPhaseDeg);
+            }
+            
+            if (showTsEquations) {
+                document.getElementById('eqFreqA').innerText = currentCalcFreqA.toFixed(1);
+                document.getElementById('eqFreqB').innerText = currentCalcFreqB.toFixed(1);
+                let phaseStr = (currentPhaseRad >= 0 ? "+ " : "- ") + Math.abs(currentPhaseRad).toFixed(2);
+                document.getElementById('eqPhase').innerText = phaseStr;
+                document.getElementById('eqSumLine').style.display = (tsViewMode === 'sum') ? 'block' : 'none';
+            }
 
             ctx.beginPath(); ctx.lineWidth = 2.5; ctx.lineJoin = 'round';
             let step = Math.max(1, Math.floor(samplesDraw / cw));
@@ -1428,10 +1367,37 @@
                 ctx.stroke();
             }
             
-            if(!isTsPaused && isTwoSourceModalOpen) { tsAnimFrameId = requestAnimationFrame(calculatePhaseAndDrawLive); }
+            if(!isTsPaused) requestAnimationFrame(calculatePhaseAndDrawLive);
         }
 
-        // --- FOX-LAB AI WIDGET ---
+        // --- HÀM LÀM SẠCH KÝ HIỆU TOÁN HỌC LATEX CHO CHATBOX ---
+        function formatMathText(text) {
+            if (!text) return '';
+            return text
+                .replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '($1)/($2)')
+                .replace(/\\omega/g, 'ω')
+                .replace(/\\lambda/g, 'λ')
+                .replace(/\\pi/g, 'π')
+                .replace(/\\varphi/g, 'φ')
+                .replace(/\\Delta/g, 'Δ')
+                .replace(/\\cos/g, 'cos')
+                .replace(/\\sin/g, 'sin')
+                .replace(/\\tan/g, 'tan')
+                .replace(/\\left\(/g, '(')
+                .replace(/\\right\)/g, ')')
+                .replace(/\\left\[/g, '[')
+                .replace(/\\right\]/g, ']')
+                .replace(/\\cdot/g, '·')
+                .replace(/\\([a-zA-Z]+)/g, '$1')
+                .replace(/\$([a-zA-Z])_([0-9a-zA-Z]+)\$/g, '<span class="math-symbol">$1<sub>$2</sub></span>')
+                .replace(/\$([^$]+)\$/g, (match, p1) => {
+                    let formatted = p1.replace(/([a-zA-Z])_([0-9a-zA-Z]+)/g, '$1<sub>$2</sub>');
+                    return `<span class="math-symbol">${formatted}</span>`;
+                })
+                .replace(/\n/g, '<br>');
+        }
+
+        // --- FOX-LAB AI WIDGET & CHATBOX ---
         function toggleChat() {
             const widget = document.getElementById('fox-chat-widget');
             widget.classList.toggle('open');
@@ -1459,12 +1425,13 @@
             }
 
             addChatMessage('user', text); chatInput.value = ''; sendBtn.disabled = true;
-            document.getElementById('foxStatusText').innerText = "Trực tuyến";
+            document.getElementById('foxStatusText').innerText = "Đang phân tích...";
             
             let thinkingId = addTypingIndicator();
             let currentFreq = lockedFrequency || detectedFrequency;
 
             try {
+                // TÍCH HỢP CHÍNH XÁC CHAT_GAS_URL
                 const response = await fetch(CHAT_GAS_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
@@ -1472,97 +1439,34 @@
                 });
                 const result = await response.json();
                 removeTypingIndicator(thinkingId);
+                document.getElementById('foxStatusText').innerText = "Trực tuyến";
                 addChatMessage('bot', result.reply || "Fox-Lab AI đã ghi nhận câu hỏi của thầy.");
             } catch (e) {
                 removeTypingIndicator(thinkingId);
-                addChatMessage('bot', `Fox-Lab AI hiện tại đang đo đạc tần số <b>${currentFreq.toFixed(1)} Hz</b>. (Phản hồi tự động do lỗi kết nối chat GAS).`);
+                document.getElementById('foxStatusText').innerText = "Trực tuyến";
+                addChatMessage('bot', `Fox-Lab AI hiện tại đang đo đạc tần số <b>${currentFreq.toFixed(1)} Hz</b>. (Phản hồi tự động do kết nối mạng tạm thời).`);
             }
-        }
-
-        // --- HÀM LÀM SẠCH VÀ CHUYỂN ĐỔI KÝ HIỆU TOÁN HỌC LATEX TRIỆT ĐỂ ---
-        function formatMathText(text) {
-            if (!text) return '';
-            return text
-                .replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '($1)/($2)')
-                .replace(/\\omega/g, 'ω')
-                .replace(/\\lambda/g, 'λ')
-                .replace(/\\pi/g, 'π')
-                .replace(/\\varphi/g, 'φ')
-                .replace(/\\Delta/g, 'Δ')
-                .replace(/\\cos/g, 'cos')
-                .replace(/\\sin/g, 'sin')
-                .replace(/\\tan/g, 'tan')
-                .replace(/\\left\(/g, '(')
-                .replace(/\\right\)/g, ')')
-                .replace(/\\left\[/g, '[')
-                .replace(/\\right\]/g, ']')
-                .replace(/\\cdot/g, '·')
-                .replace(/\\([a-zA-Z]+)/g, '$1')
-                // Gỡ bỏ hoàn toàn dấu $ và định dạng biến số subscript
-                .replace(/\$([a-zA-Z])_([0-9a-zA-Z]+)\$/g, '<span class="math-symbol">$1<sub>$2</sub></span>')
-                .replace(/\$([^$]+)\$/g, (match, p1) => {
-                    let formatted = p1.replace(/([a-zA-Z])_([0-9a-zA-Z]+)/g, '$1<sub>$2</sub>');
-                    return `<span class="math-symbol">${formatted}</span>`;
-                })
-                .replace(/\n/g, '<br>');
         }
 
         function addChatMessage(sender, text) {
-            const row = document.createElement('div'); 
-            row.className = `fox-msg-row ${sender === 'user' ? 'fox-msg-user' : 'fox-msg-bot'}`;
-            
+            const row = document.createElement('div'); row.className = `fox-msg-row ${sender === 'user' ? 'fox-msg-user' : 'fox-msg-bot'}`;
             let html = '';
-            if (sender === 'bot') {
-                html += `<div class="fox-msg-avatar">${FOX_AVATAR_SVG}</div>`;
-                html += `<div class="fox-msg-group"><div class="fox-msg-bubble type-effect-bubble"></div></div>`;
-                row.innerHTML = html;
-                chatContent.appendChild(row);
-                
-                const bubbleEl = row.querySelector('.fox-msg-bubble');
-                const formattedHTML = formatMathText(text);
-                
-                let i = 0;
-                let isTag = false;
-                let currentText = "";
-                
-                function typeWriter() {
-                    if (i < formattedHTML.length) {
-                        let char = formattedHTML.charAt(i);
-                        if (char === '<') isTag = true;
-                        currentText += char;
-                        if (char === '>') isTag = false;
-                        
-                        bubbleEl.innerHTML = currentText;
-                        chatContent.scrollTop = chatContent.scrollHeight;
-                        
-                        i++;
-                        if (isTag) {
-                            typeWriter();
-                        } else {
-                            setTimeout(typeWriter, 12);
-                        }
-                    } else {
-                        bubbleEl.innerHTML = formattedHTML;
-                    }
-                }
-                typeWriter();
-            } else {
-                html += `<div class="fox-msg-group"><div class="fox-msg-bubble">${text}</div></div>`;
-                row.innerHTML = html;
-                chatContent.appendChild(row);
-            }
-            chatContent.scrollTop = chatContent.scrollHeight;
+            if (sender === 'bot') html += `<div class="fox-msg-avatar">${FOX_AVATAR_SVG}</div>`;
+            const formattedText = sender === 'bot' ? formatMathText(text) : text;
+            html += `<div class="fox-msg-group"><div class="fox-msg-bubble">${formattedText}</div></div>`;
+            row.innerHTML = html; chatContent.appendChild(row); chatContent.scrollTop = chatContent.scrollHeight;
         }
 
         function addTypingIndicator() {
             const id = 'typing_' + Date.now();
             const row = document.createElement('div'); row.className = `fox-msg-row fox-msg-bot`; row.id = id;
+            // Hiệu ứng suy nghĩ hàng ngang
             row.innerHTML = `<div class="fox-msg-avatar">${FOX_AVATAR_SVG}</div>
                              <div class="fox-msg-group">
                                  <div class="fox-msg-bubble">
                                      <div class="fox-typing-indicator">
                                          <span></span><span></span><span></span>
-                                         <span class="fox-typing-text">Fox-Lab đang phân tích và suy nghĩ...</span>
+                                         <span class="fox-typing-text">Fox-Lab đang phân tích...</span>
                                      </div>
                                  </div>
                              </div>`;
