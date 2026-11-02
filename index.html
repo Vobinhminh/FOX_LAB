@@ -151,7 +151,6 @@
         .fox-msg-bot .fox-msg-bubble { background: rgba(30, 41, 59, 0.85); color: #f1f5f9; border: 1px solid rgba(255, 255, 255, 0.1); border-top-left-radius: 2px; }
         .fox-msg-bot .fox-msg-bubble b { color: var(--fox-cyan); font-weight: 600; }
         
-        /* ĐÃ SỬA LỖI CHỮ RỚT HÀNG DỌC (thêm flex-wrap: nowrap và white-space: nowrap) */
         .fox-typing-indicator { display: inline-flex; align-items: center; gap: 4px; padding: 4px 0; flex-wrap: nowrap; }
         .fox-typing-indicator span { width: 6px; height: 6px; background-color: var(--fox-cyan); border-radius: 50%; animation: dotFlashing 1.4s infinite linear both; }
         .fox-typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
@@ -178,7 +177,7 @@
 </head>
 <body>
     <!-- POPUP CHỌN PHIÊN BẢN (DEMO / FULL) -->
-  <div id="licenseModalOverlay" class="license-modal-overlay">
+    <div id="licenseModalOverlay" class="license-modal-overlay">
         <div class="license-selection-box">
             <h2>⚛️ DAO ĐỘNG KÝ_FOX-LAB</h2>
             <p>Vui lòng chọn chế độ sử dụng ứng dụng:</p>
@@ -455,7 +454,7 @@
 
         function openLicenseModal() { document.getElementById('licenseModalOverlay').style.display = 'flex'; }
 
-      function selectMode(mode) {
+        function selectMode(mode) {
             if (mode === 'demo') {
                 isDemoMode = true; 
                 document.getElementById('licenseModalOverlay').style.display = 'none'; 
@@ -938,35 +937,21 @@
             animFrameId = requestAnimationFrame(draw);
         }
 
-        // --- FFT MODAL LOGIC ---
+        // --- FFT MODAL LOGIC (DÃY PHỔ LIÊN TỤC XANH, VẠCH HỌA ÂM ĐỎ) ---
         function openFFTModal() {
             if (isDemoMode) { alert("Chức năng Phân tích Họa âm FFT chỉ có trên bản Full."); return; }
             document.getElementById('fftModalOverlay').classList.add('animUI-visible'); document.getElementById('fftModalOverlay').style.display = 'flex';
             const inputFreq = document.getElementById('fftTargetFreq'); if (lockedFrequency > 20) inputFreq.value = Math.round(lockedFrequency);
             setTimeout(processAndDrawFFT, 350);
         }
-        function closeFFTModal() { const overlay = document.getElementById('fftModalOverlay'); overlay.classList.remove('animUI-visible'); setTimeout(() => { overlay.style.display = 'none'; }, 300); }
+
+        function closeFFTModal() { 
+            const overlay = document.getElementById('fftModalOverlay'); 
+            overlay.classList.remove('animUI-visible'); 
+            setTimeout(() => { overlay.style.display = 'none'; }, 300); 
+        }
+
         function processAndDrawFFT() {
-            const f0 = parseFloat(document.getElementById('fftTargetFreq').value);
-            if (!f0 || f0 <= 0 || !channelConfig.A.data) return;
-            const fftCanvas = document.getElementById('fftDisplayCanvas'), fCtx = fftCanvas.getContext('2d'), cw = fftCanvas.parentElement.clientWidth - 12, ch = fftCanvas.parentElement.clientHeight - 12;
-            fftCanvas.width = cw; fftCanvas.height = ch; fCtx.fillStyle = '#f8fafc'; fCtx.fillRect(0, 0, cw, ch);
-            let fftSize = 4096, recentData = new Float32Array(fftSize), len = channelConfig.A.data.length, cIdx = channelConfig.A.index;
-            for(let i=0; i<fftSize; i++) { let multiplier = 0.5 * (1 - Math.cos(2 * Math.PI * i / (fftSize - 1))); recentData[i] = channelConfig.A.data[((cIdx - fftSize + i) % len + len) % len] * multiplier; }
-            let magnitudes = computeFFT(recentData), binFreq = sampleRate / fftSize;
-            fCtx.strokeStyle = '#e2e8f0'; fCtx.lineWidth = 1; fCtx.beginPath();
-            for(let i=1; i<10; i++) { let x = (i/10)*cw; fCtx.moveTo(x, 0); fCtx.lineTo(x, ch); }
-            for(let i=1; i<5; i++) { let y = (i/5)*ch; fCtx.moveTo(0, y); fCtx.lineTo(cw, y); }
-            fCtx.stroke();
-            let maxMag = 0, harmonics = [];
-            for (let i = 1; i <= 5; i++) {
-                let targetFreq = f0 * i, targetBin = Math.round(targetFreq / binFreq), localMax = 0;
-                for (let b = Math.max(0, targetBin - 5); b <= Math.min(magnitudes.length - 1, targetBin + 5); b++) { if (magnitudes[b] > localMax) localMax = magnitudes[b]; }
-                harmonics.push({ freq: targetFreq, mag: localMax, index: i }); if (localMax > maxMag) maxMag = localMax;
-            }
-            if (maxMag === 0) maxMag = 1;
-            fCtx.font = 'bold 12px "Inter", sans-serif'; fCtx.textAlign = 'center'; let barW = Math.min(40, (cw / 5) * 0.6), spacing = cw / 5;
-          function processAndDrawFFT() {
             const f0 = parseFloat(document.getElementById('fftTargetFreq').value);
             if (!f0 || f0 <= 0 || !channelConfig.A.data) return;
             const fftCanvas = document.getElementById('fftDisplayCanvas');
@@ -1054,21 +1039,19 @@
             fCtx.fillText("Tần số (Hz) ➔", cw - 10, ch - 10);
         }
 
-        // --- XỬ LÝ 2 NGUỒN ÂM ---
-        // --- TỐI ƯU HÓA KHẢO SÁT 2 NGUỒN ÂM (KHÔNG LAG, CHỈ TÍNH KHI DỪNG) ---
+        // --- XỬ LÝ 2 NGUỒN ÂM (TỐI ƯU KHÔNG LAG) ---
         function openTwoSourceModal() {
             if (isDemoMode) { alert("Chức năng Xử lý 2 Nguồn âm chỉ có trên bản Full."); return; }
             if (getActiveChannelMode() !== '2' || !channelConfig.A.active || !channelConfig.B.active) { alert("Vui lòng bật cả Kênh A và Kênh B để sử dụng tính năng này!"); return; }
             isTwoSourceModalOpen = true; 
-            isTsPaused = false; // Bắt đầu ở trạng thái chạy mượt
+            isTsPaused = false; 
             
-            // Ẩn kết quả và phương trình khi chưa dừng để chống lag
             showTsResults = false;
             showTsEquations = false;
             document.getElementById('hudResults').style.display = 'none';
             document.getElementById('hudEquations').style.display = 'none';
             document.getElementById('btnTsPause').textContent = "⏸ Dừng";
-            document.getElementById('btnTsPauseclassName = "btn-orange";
+            document.getElementById('btnTsPause').className = "btn-orange";
 
             document.getElementById('twoSourceModalOverlay').classList.add('animUI-visible');
             document.getElementById('twoSourceModalOverlay').style.display = 'flex';
@@ -1096,12 +1079,10 @@
             if (isTsPaused) { 
                 btn.textContent = "▶ Tiếp tục"; 
                 btn.className = "btn-green";
-                // KHI BẤM DỪNG: Tiến hành chốt dữ liệu và tính toán kết quả, phương trình chính xác
                 computeAndLockTwoSourceData();
             } else { 
                 btn.textContent = "⏸ Dừng"; 
                 btn.className = "btn-orange";
-                // Khi tiếp tục chạy: ẩn bảng kết quả đi để mượt mà
                 document.getElementById('hudResults').style.display = 'none';
                 document.getElementById('hudEquations').style.display = 'none';
                 showTsResults = false;
@@ -1110,24 +1091,17 @@
         }
 
         function toggleTsResults() {
-            if (!isTsPaused) {
-                alert("⚠️ Thầy vui lòng bấm nút [Dừng] trước khi xem kết quả đối chiếu nhé!");
-                return;
-            }
+            if (!isTsPaused) { alert("⚠️ Thầy vui lòng bấm nút [Dừng] trước khi xem kết quả đối chiếu nhé!"); return; }
             showTsResults = !showTsResults;
             document.getElementById('hudResults').style.display = showTsResults ? 'block' : 'none';
         }
 
         function toggleTsEquations() {
-            if (!isTsPaused) {
-                alert("⚠️ Thầy vui lòng bấm nút [Dừng] trước khi xem phương trình dao động nhé!");
-                return;
-            }
+            if (!isTsPaused) { alert("⚠️ Thầy vui lòng bấm nút [Dừng] trước khi xem phương trình dao động nhé!"); return; }
             showTsEquations = !showTsEquations;
             document.getElementById('hudEquations').style.display = showTsEquations ? 'block' : 'none';
         }
 
-        // Hàm tính toán chuyên sâu chỉ chạy 1 lần khi bấm Dừng
         function computeAndLockTwoSourceData() {
             const fftSize = 4096;
             let recA = new Float32Array(fftSize), recB = new Float32Array(fftSize);
@@ -1161,7 +1135,6 @@
             while(currentPhaseRad < -Math.PI) currentPhaseRad += 2*Math.PI;
             currentPhaseDeg = currentPhaseRad * (180 / Math.PI);
 
-            // Cập nhật giá trị vào HUD
             document.getElementById('hudFreqA').innerText = currentCalcFreqA.toFixed(1);
             document.getElementById('hudPerA').innerText = (1000/currentCalcFreqA).toFixed(2);
             document.getElementById('hudFreqB').innerText = currentCalcFreqB.toFixed(1);
@@ -1176,25 +1149,15 @@
             document.getElementById('eqSumLine').style.display = (tsViewMode === 'sum') ? 'block' : 'none';
         }
 
-        // Hàm vẽ cực kỳ nhẹ nhàng, không gây lag
         function calculatePhaseAndDrawLive() {
             if (!isTwoSourceModalOpen) return;
-            const canv = document.getElementById('twoSourceCanvas');
-            if (!canv) return;
-            const ctx = canv.getContext('2d');
-            const cw = canv.width, ch = canv.height;
-            ctx.fillStyle = '#f8fafc'; ctx.fillRect(0, 0, cw, ch);
+            const canv = document.getElementById('twoSourceCanvas'); if (!canv) return;
+            const ctx = canv.getContext('2d'), cw = canv.width, ch = canv.height;
+            ctx.fillStyle = '#f8fafc'; ctx.fillRect(0, 0, cw, ch); drawMainGrid(ctx, 0, 0, cw, ch, null, null, true);
             
-            drawMainGrid(ctx, 0, 0, cw, ch, null, null, true);
-
             let samplesDraw = Math.floor(sampleRate * totalTimeOnScreen);
-            
-            // Lấy dữ liệu trực tiếp từ buffer để vẽ mượt
-            let activeDataA = channelConfig.A.data;
-            let activeDataB = channelConfig.B.data;
-            let len = activeDataA.length;
-            let cIdxA = channelConfig.A.index;
-            let cIdxB = channelConfig.B.index;
+            let activeDataA = channelConfig.A.data, activeDataB = channelConfig.B.data;
+            let len = activeDataA.length, cIdxA = channelConfig.A.index, cIdxB = channelConfig.B.index;
 
             let offsetA = isTsPaused ? findZeroCrossingOffset({active:true, data: snapDataA}, snapDataA.length, samplesDraw) : 0;
             let startI = isTsPaused ? (snapDataA.length - offsetA - samplesDraw) : (cIdxA - samplesDraw);
@@ -1203,7 +1166,6 @@
             let step = Math.max(1, Math.floor(samplesDraw / cw));
             
             if (tsViewMode === 'overlay') {
-                // Vẽ kênh A
                 ctx.strokeStyle = '#ef4444'; ctx.beginPath();
                 for (let i = 0; i < samplesDraw; i+=step) {
                     let idx = isTsPaused ? Math.max(0, Math.min(snapDataA.length - 1, startI + i)) : ((cIdxA - samplesDraw + i) % len + len) % len;
@@ -1213,7 +1175,6 @@
                 }
                 ctx.stroke();
                 
-                // Vẽ kênh B
                 ctx.strokeStyle = '#3b82f6'; ctx.beginPath();
                 for (let i = 0; i < samplesDraw; i+=step) {
                     let idx = isTsPaused ? Math.max(0, Math.min(snapDataB.length - 1, startI + i)) : ((cIdxB - samplesDraw + i) % len + len) % len;
@@ -1233,67 +1194,7 @@
                 }
                 ctx.stroke();
             }
-            
-            // Tiếp tục vòng lặp vẽ mượt
             if (isTwoSourceModalOpen) requestAnimationFrame(calculatePhaseAndDrawLive);
-        }
-        function calculatePhaseAndDrawLive() {
-            if (!isTwoSourceModalOpen) return;
-            const canv = document.getElementById('twoSourceCanvas'); if (!canv) return;
-            const ctx = canv.getContext('2d'), cw = canv.width, ch = canv.height;
-            ctx.fillStyle = '#f8fafc'; ctx.fillRect(0, 0, cw, ch); drawMainGrid(ctx, 0, 0, cw, ch, null, null, true);
-            const fftSize = 4096;
-            if (!isTsPaused) {
-                let recA = new Float32Array(fftSize), recB = new Float32Array(fftSize), len = channelConfig.A.data.length, cAIdx = channelConfig.A.index, cBIdx = channelConfig.B.index;
-                for(let i=0; i<fftSize; i++) { recA[i] = channelConfig.A.data[((cAIdx - fftSize + i) % len + len) % len]; recB[i] = channelConfig.B.data[((cBIdx - fftSize + i) % len + len) % len]; }
-                snapDataA = recA; snapDataB = recB;
-                let fA = autoCorrelate(recA, sampleRate), fB = autoCorrelate(recB, sampleRate);
-                if (fA > 50 && fA < 3000) currentCalcFreqA = currentCalcFreqA * 0.7 + fA * 0.3; if (fB > 50 && fB < 3000) currentCalcFreqB = currentCalcFreqB * 0.7 + fB * 0.3;
-            }
-            let samplesDraw = Math.floor(sampleRate * totalTimeOnScreen), offsetA = findZeroCrossingOffset({active:true, data: snapDataA}, snapDataA.length, samplesDraw);
-            let diffFreq = Math.abs(currentCalcFreqA - currentCalcFreqB);
-            const warnText = document.getElementById('tsWarningText');
-            if (diffFreq > (currentCalcFreqA * 0.05) && !isTsPaused) { warnText.style.display = 'block'; } else { warnText.style.display = 'none'; }
-
-            if (!isTsPaused) {
-                let maxShift = Math.floor(sampleRate / currentCalcFreqA), bestCross = -Infinity, bestShift = 0;
-                for (let shift = -maxShift/2; shift < maxShift/2; shift++) {
-                    let sum = 0;
-                    for (let i = snapDataA.length - 2000; i < snapDataA.length; i++) { let bIdx = i + shift; if (bIdx >= 0 && bIdx < snapDataB.length) { sum += snapDataA[i] * snapDataB[bIdx]; } }
-                    if (sum > bestCross) { bestCross = sum; bestShift = shift; }
-                }
-                let timeShift = bestShift / sampleRate, periodA = 1.0 / currentCalcFreqA;
-                currentPhaseRad = (timeShift / periodA) * 2 * Math.PI;
-                while(currentPhaseRad > Math.PI) currentPhaseRad -= 2*Math.PI; while(currentPhaseRad < -Math.PI) currentPhaseRad += 2*Math.PI;
-                currentPhaseDeg = currentPhaseRad * (180 / Math.PI);
-            }
-
-            if (showTsResults) {
-                document.getElementById('hudFreqA').innerText = currentCalcFreqA.toFixed(1); document.getElementById('hudPerA').innerText = (1000/currentCalcFreqA).toFixed(2);
-                document.getElementById('hudFreqB').innerText = currentCalcFreqB.toFixed(1); document.getElementById('hudPerB').innerText = (1000/currentCalcFreqB).toFixed(2);
-                document.getElementById('hudPhaseRad').innerText = currentPhaseRad.toFixed(2); document.getElementById('hudPhaseDeg').innerText = Math.round(currentPhaseDeg);
-            }
-            if (showTsEquations) {
-                document.getElementById('eqFreqA').innerText = currentCalcFreqA.toFixed(1); document.getElementById('eqFreqB').innerText = currentCalcFreqB.toFixed(1);
-                let phaseStr = (currentPhaseRad >= 0 ? "+ " : "- ") + Math.abs(currentPhaseRad).toFixed(2); document.getElementById('eqPhase').innerText = phaseStr;
-                document.getElementById('eqSumLine').style.display = (tsViewMode === 'sum') ? 'block' : 'none';
-            }
-
-            ctx.beginPath(); ctx.lineWidth = 2.5; ctx.lineJoin = 'round';
-            let step = Math.max(1, Math.floor(samplesDraw / cw)), startI = snapDataA.length - offsetA - samplesDraw;
-            if (tsViewMode === 'overlay') {
-                ctx.strokeStyle = '#ef4444'; ctx.beginPath();
-                for (let i = 0; i < samplesDraw; i+=step) { let idx = Math.max(0, Math.min(snapDataA.length - 1, startI + i)), val = snapDataA[idx], x = (i/samplesDraw)*cw, y = ch/2 - (val * currentZoomY * ch/2); if (i===0) ctx.moveTo(x, y); else ctx.lineTo(x, y); }
-                ctx.stroke();
-                ctx.strokeStyle = '#3b82f6'; ctx.beginPath();
-                for (let i = 0; i < samplesDraw; i+=step) { let idx = Math.max(0, Math.min(snapDataB.length - 1, startI + i)), val = snapDataB[idx], x = (i/samplesDraw)*cw, y = ch/2 - (val * currentZoomY * ch/2); if (i===0) ctx.moveTo(x, y); else ctx.lineTo(x, y); }
-                ctx.stroke();
-            } else if (tsViewMode === 'sum') {
-                ctx.strokeStyle = '#8b5cf6'; ctx.beginPath();
-                for (let i = 0; i < samplesDraw; i+=step) { let idx = Math.max(0, Math.min(snapDataA.length - 1, startI + i)), val = snapDataA[idx] + snapDataB[idx], x = (i/samplesDraw)*cw, y = ch/2 - (val * (currentZoomY/2) * ch/2); if (i===0) ctx.moveTo(x, y); else ctx.lineTo(x, y); }
-                ctx.stroke();
-            }
-            if(!isTsPaused) requestAnimationFrame(calculatePhaseAndDrawLive);
         }
 
         function formatMathText(text) {
