@@ -128,6 +128,22 @@
         #fox-chat-box { position: absolute; bottom: 60px; right: 0; width: 330px; height: 450px; max-height: calc(100dvh - 100px); background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.7); display: flex; flex-direction: column; overflow: hidden; transform: scale(0.9) translateY(20px); opacity: 0; visibility: hidden; pointer-events: none; transition: all 0.3s; z-index: 10; }
         #fox-chat-widget.open #fox-chat-box { transform: scale(1) translateY(0); opacity: 1; visibility: visible; pointer-events: auto; }
         
+        /* CHẾ ĐỘ SÁNG (LIGHT THEME) CHO CHATBOX */
+        #fox-chat-box.light-theme { background: rgba(248, 250, 252, 0.98); border: 1px solid rgba(0,0,0,0.15); }
+        #fox-chat-box.light-theme .fox-chat-header { background: rgba(241, 245, 249, 0.95); border-bottom: 1px solid rgba(0,0,0,0.1); }
+        #fox-chat-box.light-theme .fox-header-title { color: #0f172a; }
+        #fox-chat-box.light-theme .fox-header-status { color: #64748b; }
+        #fox-chat-box.light-theme .fox-btn-icon { color: #475569; }
+        #fox-chat-box.light-theme .fox-btn-icon:hover { background: rgba(0, 0, 0, 0.08); color: #0f172a; }
+        #fox-chat-box.light-theme .fox-msg-bot .fox-msg-bubble { background: #ffffff; color: #0f172a; border: 1px solid #cbd5e1; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        #fox-chat-box.light-theme .fox-msg-bot .fox-msg-bubble b { color: #0284c7; }
+        #fox-chat-box.light-theme .fox-input-container { background: rgba(241, 245, 249, 0.98); border-top: 1px solid rgba(0,0,0,0.1); }
+        #fox-chat-box.light-theme .fox-input-box { background: #ffffff; border: 1px solid #cbd5e1; }
+        #fox-chat-box.light-theme #fox-chat-input { color: #0f172a; }
+        #fox-chat-box.light-theme #fox-chat-input::placeholder { color: #94a3b8; }
+        #fox-chat-box.light-theme .fox-footer-meta { color: #64748b; }
+        #fox-chat-box.light-theme .fox-typing-text { color: #64748b; }
+
         .fox-chat-header { padding: 10px 12px; background: rgba(30, 41, 59, 0.8); border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
         .fox-header-left { display: flex; align-items: center; gap: 8px; }
         .fox-avatar-container { width: 28px; height: 28px; border-radius: 6px; border: 1px solid rgba(249, 115, 22, 0.5); background: rgba(249, 115, 22, 0.1); display: flex; align-items: center; justify-content: center; padding: 2px; }
@@ -234,7 +250,7 @@
                 <button id="pauseButton" class="btn-green" disabled>Đo / Dừng</button>
                 <button id="resetButton" class="btn-orange">Làm mới</button>
                 <button id="btnAnalysis" class="btn-slate" disabled>Xử lý nguồn âm</button>
-                <button id="fullscreenButton" class="btn-slate">Mở rộng</button>
+                <button id="fullscreenButton" class="btn-slate" onclick="toggleFullScreen()">Mở rộng</button>
             </div>
 
             <div class="channel-row">
@@ -342,8 +358,8 @@
                     </div>
                 </div>
                 <div class="fox-header-actions">
-                    <button class="fox-btn-icon" id="themeToggleBtn" onclick="toggleChatTheme()" title="Đổi giao diện">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    <button class="fox-btn-icon" id="themeToggleBtn" onclick="toggleChatTheme()" title="Đổi giao diện Sáng / Tối">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                     </button>
                 </div>
             </div>
@@ -380,6 +396,28 @@
         document.addEventListener('contextmenu', function(e) {
             e.preventDefault();
         });
+
+        // --- 2. HÀM MỞ RỘNG TOÀN MÀN HÌNH (FULLSCREEN) ĐÃ HOÀN THIỆN ---
+        function toggleFullScreen() {
+            let elem = document.documentElement;
+            if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement && !document.msFullscreenElement) {
+                if (elem.requestFullscreen) {
+                    elem.requestFullscreen().catch(err => { console.log(err); });
+                } else if (elem.webkitRequestFullscreen) {
+                    elem.webkitRequestFullscreen();
+                } else if (elem.msRequestFullscreen) {
+                    elem.msRequestFullscreen();
+                }
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+            }
+        }
 
         const FOX_AVATAR_SVG = `<svg viewBox="0 0 100 100" fill="none"><polygon points="22,12 10,48 36,40" fill="#ff7a30"/><polygon points="23,19 16,44 32,38" fill="#1e293b"/><path d="M 19 36 Q 23 32 28 34" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round"/><polygon points="78,12 64,40 90,48" fill="#ff7a30"/><polygon points="77,19 68,38 84,44" fill="#1e293b"/><path d="M 81 36 Q 77 32 72 34" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round"/><polygon points="50,22 36,40 50,46" fill="#ff8f4a"/><polygon points="50,22 50,46 64,40" fill="#ff7a30"/><polygon points="36,40 10,48 20,68 38,58" fill="#d4380d"/><polygon points="64,40 38,58 50,46" fill="#e04006"/><polygon points="64,40 50,46 62,58" fill="#d4380d"/><polygon points="64,40 90,48 80,68 62,58" fill="#d4380d"/><polygon points="20,68 12,74 26,76 34,68" fill="#e2e8f0"/><polygon points="80,68 88,74 74,76 66,68" fill="#cbd5e1"/><polygon points="38,58 50,46 50,78 36,68" fill="#ff7a30"/><polygon points="62,58 50,46 50,78 64,68" fill="#e04006"/><polygon points="50,78 36,68 44,88 50,88" fill="#f8fafc"/><polygon points="50,78 64,68 56,88 50,88" fill="#e2e8f0"/><polygon points="50,88 45,82 55,82" fill="#0f172a"/><polygon points="25,48 50,54 75,48 71,59 50,65 29,59" fill="#090d16" stroke="rgba(56,189,248,0.5)" stroke-width="0.9"/><circle cx="34.5" cy="48" r="1.5" fill="#ffffff"/><circle cx="44.5" cy="60" r="1.5" fill="#ffffff"/><circle cx="54.5" cy="48" r="1.5" fill="#ffffff"/><circle cx="64.5" cy="60" r="1.5" fill="#ffffff"/></svg>`;
         const LICENSE_GAS_URL = "https://script.google.com/macros/s/AKfycbwC9gwiwBdIsfvv2nGZQNrkeR1O43GTW9lhMCu6fEn-LGjjbmMEcy-3153DZRkOaLdx3Q/exec";
@@ -564,7 +602,6 @@
             }
         }, 30000);
 
-        // --- 2. HÀM KIỂM TRA VÀ HIỂN THỊ THÔNG MINH MÃ QR TRÊN GITHUB PAGES ---
         function checkAndShowQR() {
             const qrPanel = document.getElementById('qrPanel'), qrImage = document.getElementById('qrImage');
             if (!qrImage || !qrPanel) return;
@@ -578,7 +615,7 @@
                 if (activeKey) { qrUrl += '?key=' + encodeURIComponent(activeKey); }
                 qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrUrl)}`;
             } else { 
-                qrPanel.style.display = 'none'; // Tự động ẩn trên local/máy tính
+                qrPanel.style.display = 'none'; 
             }
         }
 
@@ -761,7 +798,6 @@
             let freq = sampleRate / truePos; if (freq < 100 || freq > 1500) return -1; return freq;
         }
 
-        // HÀM TÍNH ĐỘ LỆCH PHA THỰC TẾ TỪ DỮ LIỆU ĐỒ THỊ BẰNG TƯƠNG QUAN CHÉO
         function calculatePhaseDifference(dataA, dataB, freq, sampleRate) {
             if (!dataA || !dataB || freq <= 0) return 0;
             const samplesPerCycle = sampleRate / freq;
@@ -870,7 +906,7 @@
             if (channelConfig.A.active) { btnStartA.textContent = "Kênh A (Hoạt động)"; btnStartA.className = "btn-red"; } else { btnStartA.textContent = "Kênh A (Khóa)"; btnStartA.className = "btn-slate"; } btnStartA.disabled = false;
             if (channelConfig.B.active) { btnStartB.textContent = "Kênh B (Hoạt động)"; btnStartB.className = "btn-blue"; } else { btnStartB.textContent = "Kênh B (Khóa)"; btnStartB.className = "btn-slate"; } btnStartB.disabled = false;
             if (channelConfig.A.active || channelConfig.B.active) { pauseButton.disabled = false; resetButton.disabled = false; if (isPaused) { infoMessageText.innerHTML = "Đã kết nối. Bấm <span class='info-badge'>Đo / Dừng</span> để khảo sát."; infoMessageText.style.color = "#0284c7"; } } 
-            else { pauseButton.disabled = true; resetButton.disabled = false; infoMessageText.innerHTML = "Nhấn vào <span class='info-badge'>Kênh A</span> hoặc <span class='info-badge'>Kênh B</span> để bật mic."; infoMessageText.style.color = "#0284c7"; }
+            else { pauseButton.disabled = true; resetButton.disabled = true; infoMessageText.innerHTML = "Nhấn vào <span class='info-badge'>Kênh A</span> hoặc <span class='info-badge'>Kênh B</span> để bật mic."; infoMessageText.style.color = "#0284c7"; }
             updateAnalysisButtonState();
             const gearBtn = document.querySelector('.license-gear-btn'); if (gearBtn) { gearBtn.style.display = isDemoMode ? 'inline-flex' : 'none'; }
         }
@@ -1337,7 +1373,12 @@
         }
 
         function toggleChat() { const widget = document.getElementById('fox-chat-widget'); widget.classList.toggle('open'); if (widget.classList.contains('open')) { setTimeout(() => document.getElementById('fox-chat-input').focus(), 300); } }
-        function toggleChatTheme() { document.getElementById('fox-chat-box').classList.toggle('light-theme'); }
+        
+        function toggleChatTheme() { 
+            const chatBox = document.getElementById('fox-chat-box');
+            chatBox.classList.toggle('light-theme'); 
+        }
+
         function updateFoxLiveFrequency(freq) { const freqTag = document.getElementById('foxLiveFreqTag'); if(freqTag) freqTag.innerText = freq.toFixed(1) + ' Hz'; }
 
         const chatInput = document.getElementById('fox-chat-input'), sendBtn = document.getElementById('foxSendBtn'), chatContent = document.getElementById('fox-chat-content');
