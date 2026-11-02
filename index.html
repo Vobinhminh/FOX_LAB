@@ -438,26 +438,32 @@
             document.getElementById('cardChannelB').style.display = (channelModeSelect.value === '2') ? 'flex' : 'none';
         }
 
-        window.addEventListener('DOMContentLoaded', async () => {
+       window.addEventListener('DOMContentLoaded', async () => {
             restoreAppState();
             const urlParams = new URLSearchParams(window.location.search);
             const keyParam = urlParams.get('key');
-            const typeParam = urlParams.get('type');
             let savedKey = localStorage.getItem('fox_license_key');
 
             if (keyParam) {
+                // Nếu có truyền key trên URL (ví dụ quét QR)
                 document.getElementById('licenseModalOverlay').style.display = 'none';
                 await verifyKeyWithServer(keyParam, "full");
             } else if (savedKey) {
+                // QUAN TRỌNG: Nếu đã lưu key trong máy, mở khóa ngay lập tức để tránh lỗi báo key khi tải lại trang
+                isDemoMode = false;
                 document.getElementById('licenseModalOverlay').style.display = 'none';
-                await verifyKeyWithServer(savedKey, "full", true);
-            } else if (typeParam === 'demo') {
-                selectMode('demo');
+                infoMessageText.innerHTML = "✅ Bản Full Chính Thức đã kích hoạt thành công!";
+                const gearBtn = document.querySelector('.license-gear-btn');
+                if (gearBtn) gearBtn.style.display = 'none';
+                updateAnalysisButtonState(); 
+                checkAndShowQR();
+                
+                // Kiểm tra ngầm dưới background (không làm gián đoạn người dùng)
+                verifyKeyWithServer(savedKey, "full", true);
             } else {
                 openLicenseModal();
             }
         });
-
         function openLicenseModal() { document.getElementById('licenseModalOverlay').style.display = 'flex'; }
 
         function selectMode(mode) {
