@@ -14,14 +14,12 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
     <style>
-        /* === ANIMATE-UI & TỐI ƯU GIAO DIỆN === */
         @keyframes animUI-fadeInUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
         @keyframes animUI-fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes animUI-slideDown { from { opacity: 0; transform: translateY(-8px) scaleY(0.95); } to { opacity: 1; transform: none; } }
         @keyframes statusPulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.85); } }
         @keyframes foxPulsePing { 0% { transform: scale(0.95); opacity: 0.8; } 70%, 100% { transform: scale(1.65); opacity: 0; } }
         @keyframes foxMsgFadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes dotFlashing { 0% { opacity: 0.2; } 20% { opacity: 1; } 100% { opacity: 0.2; } }
 
         html, body { margin: 0; padding: 0; width: 100%; height: 100%; height: 100dvh; background-color: #f1f5f9; font-family: 'Be Vietnam Pro', 'Inter', sans-serif; -webkit-font-smoothing: antialiased; overflow: hidden; position: fixed; display: flex; flex-direction: column; }
         button, input, select { font-family: inherit; outline: none; }
@@ -144,7 +142,6 @@
         .fox-msg-bot { justify-content: flex-start; }
         .fox-msg-avatar { width: 24px; height: 24px; border-radius: 4px; background: rgba(30, 41, 59, 0.9); border: 1px solid rgba(249, 115, 22, 0.4); display: flex; align-items: center; justify-content: center; flex-shrink: 0; padding: 2px; }
         
-        /* CSS CHO NÚT COPY TRONG KHUNG CHAT */
         .fox-msg-group { position: relative; display: flex; flex-direction: column; max-width: 85%; gap: 2px; }
         .fox-copy-btn { position: absolute; bottom: -18px; right: 0px; background: #cbd5e1; border: none; border-radius: 4px; color: #0f172a; cursor: pointer; font-size: 9px; padding: 2px 6px; font-weight: bold; opacity: 0; transition: opacity 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.2); }
         .fox-msg-group:hover .fox-copy-btn { opacity: 1; }
@@ -268,7 +265,7 @@
         </div>
 
         <div class="qr-panel" id="qrPanel">
-            <img id="qrImage" src="" alt="QR Code"><span class="scan-title">FOX-LAB</span>
+            <img id="qrImage" src="" alt="QR Code"><span class="scan-title">Daodongki</span>
         </div>
     </div>
 
@@ -307,16 +304,15 @@
                     <button id="btnModeSum" onclick="setTsMode('sum')">Tổng hợp (A+B)</button>
                 </div>
 
-                <!-- CỤM NÚT ĐÃ LÊN MÀU ĐẸP -->
-                <div class="flex items-center gap-2">
-                    <button id="tsPlayBtn" onclick="toggleTsPlay()" class="btn-orange" style="margin-left: 8px;">
-                        <i class="fa-solid fa-pause"></i> Dừng
+                <div style="display: flex; align-items: center; gap: 4px;">
+                    <button id="tsPlayBtn" onclick="toggleTsPlay()" class="btn-orange" style="margin-left: 4px;">
+                        ⏸ Dừng
                     </button>
                     <button id="tsResultBtn" onclick="showTsResultModal()" style="display: none !important; margin-left: 4px;" class="btn-blue">
-                        <i class="fa-solid fa-chart-bar"></i> Kết quả
+                        📊 Kết quả
                     </button>
                     <button id="tsEquationBtn" onclick="showTsEquationModal()" style="display: none !important; margin-left: 4px;" class="btn-slate">
-                        <i class="fa-solid fa-square-root-variable"></i> Phương trình
+                        📐 Phương trình
                     </button>
                 </div>
             </div>
@@ -384,10 +380,11 @@
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
                     </button>
                 </div>
-                <div class="fox-footer-meta">AI có thể cung cấp thông tin không chính xác. Hãy tự kiểm chứng.</div>
+                <div class="fox-footer-meta">Đo MCĐ Âm</div>
             </div>
         </div>
     </div>
+
     <script>
         const FOX_AVATAR_SVG = `<svg viewBox="0 0 100 100" fill="none"><polygon points="22,12 10,48 36,40" fill="#ff7a30"/><polygon points="23,19 16,44 32,38" fill="#1e293b"/><path d="M 19 36 Q 23 32 28 34" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round"/><polygon points="78,12 64,40 90,48" fill="#ff7a30"/><polygon points="77,19 68,38 84,44" fill="#1e293b"/><path d="M 81 36 Q 77 32 72 34" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round"/><polygon points="50,22 36,40 50,46" fill="#ff8f4a"/><polygon points="50,22 50,46 64,40" fill="#ff7a30"/><polygon points="36,40 10,48 20,68 38,58" fill="#d4380d"/><polygon points="64,40 38,58 50,46" fill="#e04006"/><polygon points="64,40 50,46 62,58" fill="#d4380d"/><polygon points="64,40 90,48 80,68 62,58" fill="#d4380d"/><polygon points="20,68 12,74 26,76 34,68" fill="#e2e8f0"/><polygon points="80,68 88,74 74,76 66,68" fill="#cbd5e1"/><polygon points="38,58 50,46 50,78 36,68" fill="#ff7a30"/><polygon points="62,58 50,46 50,78 64,68" fill="#e04006"/><polygon points="50,78 36,68 44,88 50,88" fill="#f8fafc"/><polygon points="50,78 64,68 56,88 50,88" fill="#e2e8f0"/><polygon points="50,88 45,82 55,82" fill="#0f172a"/><polygon points="25,48 50,54 75,48 71,59 50,65 29,59" fill="#090d16" stroke="rgba(56,189,248,0.5)" stroke-width="0.9"/><circle cx="34.5" cy="48" r="1.5" fill="#ffffff"/><circle cx="44.5" cy="60" r="1.5" fill="#ffffff"/><circle cx="54.5" cy="48" r="1.5" fill="#ffffff"/><circle cx="64.5" cy="60" r="1.5" fill="#ffffff"/></svg>`;
         const LICENSE_GAS_URL = "https://script.google.com/macros/s/AKfycbwC9gwiwBdIsfvv2nGZQNrkeR1O43GTW9lhMCu6fEn-LGjjbmMEcy-3153DZRkOaLdx3Q/exec";
@@ -545,8 +542,20 @@
                     forceLogout();
                 }
             } catch (e) {
-                if(!isSilent) alert("❌ Lỗi kết nối máy chủ! Chuyển về bản Demo.");
-                selectMode('demo');
+                // Sửa lỗi fix triệt để: Nếu ngoại mạng hoặc lỗi GAS khi đã lưu Key sẵn, vẫn cho phép chạy ổn định không bị kẹt
+                if (isSilent) {
+                    isDemoMode = false;
+                    document.getElementById('licenseModalOverlay').style.display = 'none';
+                    infoMessageText.innerHTML = "✅ Bản Full Chính Thức (Chế độ ngoại tuyến ổn định)";
+                    const gearBtn = document.querySelector('.license-gear-btn');
+                    if (gearBtn) gearBtn.style.display = 'none';
+                    updateAnalysisButtonState(); checkAndShowQR();
+                } else {
+                    alert("⚠️ Không thể kết nối máy chủ xác thực, nhưng Key đã được lưu trên thiết bị!");
+                    isDemoMode = false;
+                    document.getElementById('licenseModalOverlay').style.display = 'none';
+                    updateAnalysisButtonState();
+                }
             }
         }
 
@@ -1064,7 +1073,6 @@
             }
         }
 
-        // --- XỬ LÝ 2 NGUỒN ÂM (ĐÃ TỐI ƯU CÙNG TẦN SỐ MỚI TỔNG HỢP & KHÓA TẦN SỐ KHI DỪNG) ---
         function setTsMode(mode) {
             tsViewMode = mode;
             document.getElementById('btnModeOverlay').classList.toggle('active-mode', mode === 'overlay');
@@ -1105,7 +1113,7 @@
 
             const btn = document.getElementById('tsPlayBtn');
             if (btn) {
-                btn.innerHTML = '<i class="fa-solid fa-pause"></i> Dừng';
+                btn.innerHTML = '⏸ Dừng';
                 btn.className = "btn-orange";
             }
 
@@ -1134,7 +1142,7 @@
 
             if (!isTsPaused) {
                 if (btn) {
-                    btn.innerHTML = '<i class="fa-solid fa-pause"></i> Dừng';
+                    btn.innerHTML = '⏸ Dừng';
                     btn.className = "btn-orange";
                 }
                 if (resBtn) resBtn.style.setProperty('display', 'none', 'important');
@@ -1147,7 +1155,7 @@
                 requestAnimationFrame(calculatePhaseAndDrawLive);
             } else {
                 if (btn) {
-                    btn.innerHTML = '<i class="fa-solid fa-play"></i> Tiếp tục';
+                    btn.innerHTML = '▶ Tiếp tục';
                     btn.className = "btn-green";
                 }
                 if (resBtn) resBtn.style.setProperty('display', 'inline-flex', 'important');
@@ -1179,7 +1187,6 @@
 
                 let len = activeDataA.length, cIdxA = channelConfig.A.index, cIdxB = channelConfig.B.index;
                 
-                // KHI BẤM DỪNG -> KHÓA TẦN SỐ (KHÔNG TÍNH TOÁN LẠI NỮA)
                 if (!isTsPaused) {
                     let now = performance.now();
                     if (now - lastCorrelateTime > 300) {
@@ -1232,13 +1239,12 @@
                     ctx.stroke();
                 } 
                 else if (tsViewMode === 'sum') {
-                    // ĐIỀU KIỆN TỔNG HỢP: HAI SÓNG CÙNG TẦN SỐ (SAI SỐ <= 3.0Hz)
                     let diff = Math.abs(currentCalcFreqA - currentCalcFreqB);
                     let isSameFreq = (diff <= 3.0); 
 
                     if (currentCalcFreqA > 10 && currentCalcFreqB > 10 && !isSameFreq) {
                         document.getElementById('tsWarningText').style.display = 'block';
-                        document.getElementById('tsWarningTextلیسی`innerText = `⚠️ Cảnh báo: Hai nguồn khác tần số (${currentCalcFreqA.toFixed(1)}Hz và ${currentCalcFreqB.toFixed(1)}Hz). Không thể tổng hợp!`;
+                        document.getElementById('tsWarningText').innerText = `⚠️ Cảnh báo: Hai nguồn khác tần số (${currentCalcFreqA.toFixed(1)}Hz và ${currentCalcFreqB.toFixed(1)}Hz). Không thể tổng hợp!`;
                     } else {
                         document.getElementById('tsWarningText').style.display = 'none';
                         ctx.strokeStyle = '#8b5cf6'; ctx.beginPath();
@@ -1257,7 +1263,6 @@
             if (isTwoSourceModalOpen && !isTsPaused) requestAnimationFrame(calculatePhaseAndDrawLive);
         }
 
-        // --- FOX-LAB AI WIDGET & COPY CHAT ---
         function formatMathText(text) {
             if (!text) return '';
             let formatted = text
