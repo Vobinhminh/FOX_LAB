@@ -151,11 +151,11 @@
         .fox-msg-bot .fox-msg-bubble { background: rgba(30, 41, 59, 0.85); color: #f1f5f9; border: 1px solid rgba(255, 255, 255, 0.1); border-top-left-radius: 2px; }
         .fox-msg-bot .fox-msg-bubble b { color: var(--fox-cyan); font-weight: 600; }
         
-        fox-typing-indicator { display: inline-flex; align-items: center; gap: 4px; padding: 4px 0; flex-wrap: nowrap; overflow: hidden; max-width: 100%; }
+       .fox-typing-indicator { display: inline-flex; align-items: center; gap: 6px; padding: 2px 4px; flex-wrap: nowrap; width: auto; }
         .fox-typing-indicator span { width: 6px; height: 6px; background-color: var(--fox-cyan); border-radius: 50%; animation: dotFlashing 1.4s infinite linear both; flex-shrink: 0; }
         .fox-typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
         .fox-typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
-        .fox-typing-text { font-size: 11px; color: #94a3b8; margin-left: 6px; font-style: italic; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: inline-block; }
+        .fox-typing-text { font-size: 11px; color: #94a3b8; margin-left: 4px; font-style: italic; white-space: nowrap; display: inline-block; }
 
         /* Định dạng phân số chuyên nghiệp trong bong bóng chat AI */
         .math-fraction { display: inline-flex; flex-direction: column; vertical-align: middle; text-align: center; margin: 0 3px; font-size: 0.95em; }
@@ -1392,7 +1392,8 @@
         }
 
         function addTypingIndicator() {
-            const id = 'typing_' + Date.now(), row = document.createElement('div'); row.className = `fox-msg-row fox-msg-bot`; row.id = id;
+            const id = 'typing_' + Date.now(), row = document.createElement('div'); 
+            row.className = `fox-msg-row fox-msg-bot`; row.id = id;
             row.innerHTML = `<div class="fox-msg-avatar">${FOX_AVATAR_SVG}</div><div class="fox-msg-group"><div class="fox-msg-bubble"><div class="fox-typing-indicator"><span></span><span></span><span></span><span class="fox-typing-text">Fox-Lab đang phân tích...</span></div></div></div>`;
             chatContent.appendChild(row); chatContent.scrollTop = chatContent.scrollHeight; return id;
         }
