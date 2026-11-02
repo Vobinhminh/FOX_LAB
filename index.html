@@ -530,16 +530,23 @@
             }
         }, 30000);
 
-        function checkAndShowQR() {
+       function checkAndShowQR() {
             const qrPanel = document.getElementById('qrPanel'), qrImage = document.getElementById('qrImage');
             if (!qrImage || !qrPanel) return;
-            let isGithub = window.location.hostname.includes('github.io'), currentUrl = window.location.href.split('?')[0]; 
-            if (!isDemoMode && isGithub) {
+            
+            // Chỉ hiển thị QR khi ĐANG Ở TRÊN GITHUB VÀ ĐANG LÀ BẢN DEMO (hoặc chưa kích hoạt bản full)
+            let isGithub = window.location.hostname.includes('github.io');
+            let currentUrl = window.location.href.split('?')[0]; 
+            
+            if (isGithub && isDemoMode) {
                 qrPanel.style.display = 'flex';
                 let activeKey = localStorage.getItem('fox_license_key') || '', qrUrl = currentUrl;
                 if (activeKey) { qrUrl += '?key=' + encodeURIComponent(activeKey); }
                 qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrUrl)}`;
-            } else { qrPanel.style.display = 'none'; }
+            } else { 
+                // Các thiết bị khác, localhost hoặc khi đã kích hoạt bản full thì ẩn hoàn toàn
+                qrPanel.style.display = 'none'; 
+            }
         }
 
         let workletUrl = null;
