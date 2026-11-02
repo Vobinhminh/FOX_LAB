@@ -671,20 +671,53 @@
         }
         window.addEventListener('resize', resizeCanvas);
 
-        // === ZOOM VÀ TOUCH EVENT HOÀN CHỈNH ===
+       // === ZOOM VÀ TOUCH EVENT (THAY ĐỔI ĐỒNG THỜI CẢ 2 TRỤC) ===
         let initialPinchDistance = 0, initialPinchTime = 0, initialZoomY = 0;
 
         canvas.addEventListener('wheel', (e) => {
             e.preventDefault();
             isUserZoomed = true;
-            if (e.ctrlKey || e.shiftKey) { 
-                if (e.deltaY < 0) currentZoomY *= 1.15; else currentZoomY /= 1.15;
-                currentZoomY = Math.max(0.1, Math.min(currentZoomY, 50.0));
-            } else { 
-                if (e.deltaY < 0) totalTimeOnScreen *= 0.85; else totalTimeOnScreen *= 1.15;
-                totalTimeOnScreen = Math.max(0.0005, Math.min(totalTimeOnScreen, 5.0));
+            // Lăn chuột đồng thời phóng to/thu nhỏ cả thời gian và biên độ
+            if (e.deltaY < 0) {
+                totalTimeOnScreen *= 0.88;
+                currentZoomY *= 1.12;
+            } else {
+                totalTimeOnScreen *= 1.12;
+                currentZoomY /= 1.12;
             }
+            totalTimeOnScreen = Math.max(0.0005, Math.min(totalTimeOnScreen, 5.0));
+            currentZoomY = Math.max(0.1, Math.min(currentZoomY, 50.0));
             if (isPaused) drawFrame();
+        }, { passive: false });
+
+        canvas.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 2) {
+                e.preventDefault();
+                isUserZoomed = true;
+                let dx = e.touches[0].clientX - e.touches[1].clientX;
+                let dy = e.touches[0].clientY - e.touches[1].clientY;
+                initialPinchDistance = Math.sqrt(dx * dx + dy * dy);
+                initialPinchTime = totalTimeOnScreen;
+                initialZoomY = currentZoomY;
+            }
+        }, { passive: false });
+
+        canvas.addEventListener('touchmove', (e) => {
+            if (e.touches.length === 2) {
+                e.preventDefault();
+                let dx = e.touches[0].clientX - e.touches[1].clientX;
+                let dy = e.touches[0].clientY - e.touches[1].clientY;
+                let dist = Math.sqrt(dx * dx + dy * dy);
+                let scale = initialPinchDistance / dist;
+                
+                // Chụm/mở 2 ngón tay thay đổi đồng thời cả thời gian và biên độ
+                totalTimeOnScreen = initialPinchTime * scale;
+                currentZoomY = initialZoomY / scale;
+                
+                totalTimeOnScreen = Math.max(0.0005, Math.min(totalTimeOnScreen, 5.0));
+                currentZoomY = Math.max(0.1, Math.min(currentZoomY, 50.0));
+                if (isPaused) drawFrame();
+            }
         }, { passive: false });
 
         canvas.addEventListener('touchstart', (e) => {
@@ -951,7 +984,7 @@
             setTimeout(() => { overlay.style.display = 'none'; }, 300); 
         }
 
-        function processAndDrawFFT() {
+       function processAndDrawFFT() {
             const f0 = parseFloat(document.getElementById('fftTargetFreq').value);
             if (!f0 || f0 <= 0 || !channelConfig.A.data) return;
             const fftCanvas = document.getElementById('fftDisplayCanvas');
@@ -970,57 +1003,92 @@
             let magnitudes = computeFFT(recentData);
             let binFreq = sampleRate / fftSize;
             
-            // Vẽ lưới tọa độ
+            // --- VẼ LƯỚI TỌA ĐỘ DẠNG Ô VUÔNG CHUẨN ---
             fCtx.strokeStyle = '#e2e8f0'; fCtx.lineWidth = 1;
             fCtx.beginPath();
-            for(let i=1; i<10; i++) { let x = (i/10)*cw; fCtx.moveTo(x, 0); fCtx.lineTo(x, ch); }
-            for(let i=1; i<5; i++) { let y = (i/5)*ch; fCtx.moveTo(0, y); fCtx.lineTo(cw, y); }
+            let gridCols = 10, gridRows = 8;
+            for(let i=1; i<gridCols; i++) { let x = (i/gridCols)*cw; fCtx.moveTo(x, 0); fCtx.lineTo(x, ch - 25); }
+            for(let i=1; i<gridRows; i++) { let y = (i/gridRows)*(ch - 25); fCtx.moveTo(0, y); fCtx.lineTo(cw, y); }
             fCtx.stroke();
-            
+
+            // Vẽ trục tọa độ chính
+            fCtx.strokeStyle = '#64748b'; fCtx.lineWidth = 1.5;
+            fCtx.beginPath();
+            fCtx.moveTo(40, ch - 25); fCtx.lineTo(cw - 10, ch - 25); // Trục hoành (Tần số)
+            fCtx.moveTo(40, 10); fCtx.lineTo(40, ch - 25);           // Trục tung (Biên độ)
+            fCtx.stroke();
+
+            // Chia vạch và ghi nhãn trục Tần số (Hz)
+            fCtx.fillStyle = '#475569'; fCtx.font = '10px "Inter", sans-serif'; fCtx.textAlign = 'center';
+            let maxFreqShow = 5000;
+            for (let i = 0; i <= 5; i++) {
+                let freqVal = (maxFreqShow / 5) * i;
+                let x = 40 + (freqVal / maxFreqShow) * (cw - 50);
+                fCtx.beginPath(); fCtx.moveTo(x, ch - 25); fCtx.lineTo(x, ch - 20); fCtx.stroke();
+                fCtx.fillText(`${freqVal}Hz`, x, ch - 10);
+            }
+            // Nhãn tên trục hoành
+            fCtx.font = 'bold 11px "Inter", sans-serif'; fCtx.textAlign = 'right';
+            fCtx.fillText("Tần số (Hz) ➔", cw - 10, ch - 10);
+
+            // Chia vạch và ghi nhãn trục Biên độ
+            fCtx.textAlign = 'right'; fCtx.font = '10px "Inter", sans-serif';
+            let chartH = ch - 35;
+            for (let i = 0; i <= 4; i++) {
+                let y = 10 + (chartH / 4) * i;
+                let valLabel = (1.0 - i * 0.25).toFixed(2);
+                fCtx.fillText(valLabel, 35, y + 3);
+            }
+            // Nhãn tên trục tung
+            fCtx.save();
+            fCtx.translate(15, ch / 2);
+            fCtx.rotate(-Math.PI / 2);
+            fCtx.font = 'bold 11px "Inter", sans-serif'; fCtx.textAlign = 'center';
+            fCtx.fillText("Biên độ (A)", 0, 0);
+            fCtx.restore();
+
             let maxMag = 0;
-            let maxBins = Math.floor((5000 / binFreq)); 
+            let maxBins = Math.floor((maxFreqShow / binFreq)); 
             let limitBins = Math.min(magnitudes.length, maxBins);
             
             for (let i = 2; i < limitBins; i++) {
                 if (magnitudes[i] > maxMag) maxMag = magnitudes[i];
             }
             if (maxMag === 0) maxMag = 1;
-            
-            let yBase = ch - 30;
 
-            // 1. VẼ DÃY PHỔ TẦN SỐ LIÊN TỤC (MÀU XANH DƯƠNG)
+            // --- 1. VẼ DÃY PHỔ TẦN SỐ LIÊN TỤC (MÀU XANH DƯƠNG) ---
             fCtx.strokeStyle = '#3b82f6';
             fCtx.lineWidth = 1.5;
             fCtx.beginPath();
             for (let i = 2; i < limitBins; i++) {
                 let freq = i * binFreq;
-                let x = (freq / 5000) * cw; 
+                let x = 40 + (freq / maxFreqShow) * (cw - 50); 
                 let magNorm = magnitudes[i] / maxMag;
-                let y = yBase - (magNorm * (ch * 0.75));
+                let y = (ch - 25) - (magNorm * chartH);
                 if (i === 2) fCtx.moveTo(x, y);
                 else fCtx.lineTo(x, y);
             }
             fCtx.stroke();
 
-            // 2. ĐÁNH DẤU TẦN SỐ CHỌN VÀ CÁC HỌA ÂM (MÀU ĐỎ)
+            // --- 2. ĐÁNH DẤU TẦN SỐ CHỌN VÀ CÁC HỌA ÂM (MÀU ĐỎ) ---
             fCtx.font = 'bold 11px "Inter", sans-serif';
             fCtx.textAlign = 'center';
 
             for (let n = 1; n <= 5; n++) {
                 let targetFreq = f0 * n;
-                if (targetFreq > 5000) break;
+                if (targetFreq > maxFreqShow) break;
                 
                 let targetBin = Math.round(targetFreq / binFreq);
                 if (targetBin >= limitBins) continue;
 
-                let x = (targetFreq / 5000) * cw;
+                let x = 40 + (targetFreq / maxFreqShow) * (cw - 50);
                 let magNorm = magnitudes[targetBin] / maxMag;
-                let yPeak = yBase - (magNorm * (ch * 0.75));
+                let yPeak = (ch - 25) - (magNorm * chartH);
 
                 fCtx.strokeStyle = '#ef4444';
                 fCtx.lineWidth = 2.5;
                 fCtx.beginPath();
-                fCtx.moveTo(x, yBase);
+                fCtx.moveTo(x, ch - 25);
                 fCtx.lineTo(x, yPeak);
                 fCtx.stroke();
 
@@ -1030,15 +1098,9 @@
                 fCtx.fill();
 
                 fCtx.fillStyle = '#0f172a';
-                fCtx.fillText(`${n}f0 (${Math.round(targetFreq)}Hz)`, x, yPeak - 8);
+                fCtx.fillText(`${n}f0 (${Math.round(targetFreq)}Hz)`, x, Math.max(15, yPeak - 8));
             }
-
-            fCtx.fillStyle = '#64748b';
-            fCtx.font = '11px "Inter", sans-serif';
-            fCtx.textAlign = 'right';
-            fCtx.fillText("Tần số (Hz) ➔", cw - 10, ch - 10);
         }
-
         // --- XỬ LÝ 2 NGUỒN ÂM (TỐI ƯU KHÔNG LAG) ---
         function openTwoSourceModal() {
             if (isDemoMode) { alert("Chức năng Xử lý 2 Nguồn âm chỉ có trên bản Full."); return; }
