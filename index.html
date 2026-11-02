@@ -1117,9 +1117,9 @@
             }
         }
        // --- XỬ LÝ 2 NGUỒN ÂM (ĐÃ TỐI ƯU KHÔNG LAG & KHÓA KẾT QUẢ KHI CHƯA DỪNG) ---
-function openTwoSourceModal() {
+            function openTwoSourceModal() {
             isTwoSourceModalOpen = true;
-            isTsPaused = false; // Mặc định mở lên là chạy liên tục
+            isTsPaused = false; // Chạy liên tục mặc định khi mở
             
             const overlay = document.getElementById('twoSourceModalOverlay');
             if (overlay) {
@@ -1127,13 +1127,13 @@ function openTwoSourceModal() {
                 setTimeout(() => overlay.classList.add('animUI-visible'), 10);
             }
 
-            // 1. Khi đang chạy: Ẩn hoàn toàn nút Kết quả và Phương trình
+            // Ép ẩn hoàn toàn nút Kết quả và Phương trình khi đang chạy liên tục
             const resBtn = document.getElementById('tsResultBtn');
             const eqBtn = document.getElementById('tsEquationBtn');
-            if (resBtn) resBtn.style.display = 'none';
-            if (eqBtn) eqBtn.style.display = 'none';
+            if (resBtn) resBtn.style.setProperty('display', 'none', 'important');
+            if (eqBtn) eqBtn.style.setProperty('display', 'none', 'important');
 
-            // 2. Giao diện nút bấm hiển thị chữ Dừng
+            // Cập nhật giao diện nút Dừng
             const btn = document.getElementById('tsPlayBtn');
             if (btn) {
                 btn.innerHTML = '<i class="fa-solid fa-pause"></i> Dừng';
@@ -1145,14 +1145,14 @@ function openTwoSourceModal() {
 
         function closeTwoSourceModal() {
             isTwoSourceModalOpen = false;
-            isTsPaused = true; // Buộc dừng trạng thái chạy ngầm
+            isTsPaused = true;
             
             const overlay = document.getElementById('twoSourceModalOverlay');
             if (overlay) {
                 overlay.classList.remove('animUI-visible');
                 setTimeout(() => { 
                     overlay.style.display = 'none'; 
-                    // Kích hoạt lại vòng lặp canvas chính ngay lập tức, chống màn hình đen
+                    // Kích hoạt lại vòng lặp vẽ màn hình chính, chống lỗi màn hình đen
                     if (typeof startMainRenderLoop === 'function') {
                         startMainRenderLoop();
                     } else if (typeof drawCanvas === 'function') {
@@ -1169,25 +1169,25 @@ function openTwoSourceModal() {
             const eqBtn = document.getElementById('tsEquationBtn');
 
             if (!isTsPaused) {
-                // Đang CHẠY LIÊN TỤC -> Ẩn nút Kết quả và Phương trình
+                // 1. ĐANG CHẠY LIÊN TỤC -> Ẩn nút Kết quả & Phương trình
                 if (btn) {
                     btn.innerHTML = '<i class="fa-solid fa-pause"></i> Dừng';
                     btn.className = "px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded shadow text-sm font-medium transition";
                 }
-                if (resBtn) resBtn.style.display = 'none';
-                if (eqBtn) resBtn.style.display = 'none';
+                if (resBtn) resBtn.style.setProperty('display', 'none', 'important');
+                if (eqBtn) eqBtn.style.setProperty('display', 'none', 'important'); // Sửa lỗi gõ biến tại đây
 
                 requestAnimationFrame(calculatePhaseAndDrawLive);
             } else {
-                // Đã BẤM DỪNG -> HIỆN nút Kết quả và Phương trình để xem
+                // 2. ĐÃ BẤM DỪNG -> Hiện nút Kết quả & Phương trình
                 if (btn) {
                     btn.innerHTML = '<i class="fa-solid fa-play"></i> Tiếp tục';
                     btn.className = "px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded shadow text-sm font-medium transition";
                 }
-                if (resBtn) resBtn.style.display = 'inline-flex';
-                if (eqBtn) eqBtn.style.display = 'inline-flex';
+                if (resBtn) resBtn.style.setProperty('display', 'inline-flex', 'important');
+                if (eqBtn) eqBtn.style.setProperty('display', 'inline-flex', 'important'); // Sửa lỗi gõ biến tại đây
 
-                // Chụp lại dữ liệu tại thời điểm dừng
+                // Chụp lại dữ liệu snapshot tại thời điểm dừng
                 if (channelConfig.A && channelConfig.A.data) snapDataA = [...channelConfig.A.data];
                 if (channelConfig.B && channelConfig.B.data) snapDataB = [...channelConfig.B.data];
 
@@ -1195,6 +1195,74 @@ function openTwoSourceModal() {
             }
         }
 
+        function calculatePhaseAndDrawLive() {
+            if (!isTwoSourceModalOpen) return;
+            
+            const canv = document.getElementById('twoSourceCanvas'); 
+            if (canv) {
+                // Tự động giãn nở canvas full khung chứa y hệt đo 1 nguồn
+                canv.width = canv.parentElement.clientWidth;
+                canv.height = canv.parentElement.clientHeight;
+
+                const ctx = canv.getContext('2d'), cw = canv.width, ch = canv.height;
+                ctx.fillStyle = '#f8fafc'; 
+                ctx.fillRect(0, 0, cw, ch); 
+                
+                // Vẽ lưới full màn hình
+                drawMainGrid(ctx, 0, 0, cw, ch, null, null, true);
+                
+                let samplesDraw = Math.floor(sampleRate * totalTimeOnScreen);
+                let activeDataA = channelConfig.A ? channelConfig.A.data : null;
+                let activeDataB = channelConfig.B ? channelConfig.B.data : null;
+                if (!activeDataA || !activeDataB) return;
+
+                let len = activeDataA.length, cIdxA = channelConfig.A.index, cIdxB = channelConfig.B.index;
+
+                let offsetA = isTsPaused ? findZeroCrossingOffset({active:true, data: snapDataA}, snapDataA.length, samplesDraw) : 0;
+                let startI = isTsPaused ? (snapDataA.length - offsetA - samplesDraw) : (cIdxA - samplesDraw);
+
+                ctx.lineWidth = 2; ctx.lineJoin = 'round';
+                let step = Math.max(1, Math.floor(samplesDraw / (cw * 0.75))); 
+                
+                if (tsViewMode === 'overlay') {
+                    // Chế độ 2 kênh riêng
+                    ctx.strokeStyle = '#ef4444'; ctx.beginPath();
+                    for (let i = 0; i < samplesDraw; i+=step) {
+                        let idx = isTsPaused ? Math.max(0, Math.min(snapDataA.length - 1, startI + i)) : ((cIdxA - samplesDraw + i) % len + len) % len;
+                        let val = isTsPaused ? snapDataA[idx] : activeDataA[idx];
+                        let x = (i / samplesDraw) * cw, y = ch / 2 - (val * currentZoomY * ch / 2);
+                        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                    }
+                    ctx.stroke();
+                    
+                    ctx.strokeStyle = '#3b82f6'; ctx.beginPath();
+                    for (let i = 0; i < samplesDraw; i+=step) {
+                        let idx = isTsPaused ? Math.max(0, Math.min(snapDataB.length - 1, startI + i)) : ((cIdxB - samplesDraw + i) % len + len) % len;
+                        let val = isTsPaused ? snapDataB[idx] : activeDataB[idx];
+                        let x = (i / samplesDraw) * cw, y = ch / 2 - (val * currentZoomY * ch / 2);
+                        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                    }
+                    ctx.stroke();
+                } else if (tsViewMode === 'sum') {
+                    // Chế độ Gộp sóng (giữ nguyên trục tỷ lệ)
+                    ctx.strokeStyle = '#8b5cf6'; ctx.beginPath();
+                    for (let i = 0; i < samplesDraw; i+=step) {
+                        let idxA = isTsPaused ? Math.max(0, Math.min(snapDataA.length - 1, startI + i)) : ((cIdxA - samplesDraw + i) % len + len) % len;
+                        let idxB = isTsPaused ? Math.max(0, Math.min(snapDataB.length - 1, startI + i)) : ((cIdxB - samplesDraw + i) % len + len) % len;
+                        let val = (isTsPaused ? snapDataA[idxA] : activeDataA[idxA]) + (isTsPaused ? snapDataB[idxB] : activeDataB[idxB]);
+                        
+                        let x = (i / samplesDraw) * cw, y = ch / 2 - (val * currentZoomY * ch / 2);
+                        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                    }
+                    ctx.stroke();
+                }
+            }
+            
+            // Duy trì liên tục vòng lặp khi chưa bấm Dừng
+            if (isTwoSourceModalOpen && !isTsPaused) {
+                requestAnimationFrame(calculatePhaseAndDrawLive);
+            }
+        }
         let lastTsDrawTime = 0;
         function calculatePhaseAndDrawLive() {
             // Nếu đã đóng bảng Phân tích thì thoát hẳn
