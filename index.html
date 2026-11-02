@@ -266,56 +266,14 @@
     // URL của hệ thống quản lý Key & Mã QR / DeviceID
     const LICENSE_GAS_URL = "https://script.google.com/macros/s/AKfycbwC9gwiwBdIsfvv2nGZQNrkeR1O43GTW9lhMCu6fEn-LGjjbmMEcy-3153DZRkOaLdx3Q/exec";
     
+    // URL của hệ thống Chatbox AI
+    const CHAT_GAS_URL = "https://script.google.com/macros/s/AKfycbyStGo5ETWCHq3UxtQEWIFL-R2mpEHdeYuX53EgfPf8LtG2Dfe4Dbk1-i59hf8LcY2bdg/exec";
+    
     // CHỐNG THOÁT NHẦM TRANG
     window.addEventListener('beforeunload', function (e) {
         e.preventDefault();
         e.returnValue = ''; 
     });
-
-    document.addEventListener('keydown', function(e) {
-        if (
-            e.key === 'F12' ||
-            (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) ||
-            (e.ctrlKey && (e.key === 'U' || e.key === 'u'))
-        ) {
-            e.preventDefault();
-            return false;
-        }
-    });
-
-    document.addEventListener('contextmenu', function(e) {
-        e.preventDefault();
-    });
-
-    const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
-    if (!isMobileDevice) {
-        setInterval(function() {
-            const startTime = new Date().getTime();
-            debugger; 
-            const endTime = new Date().getTime();
-            
-            const threshold = 160;
-            const isWindowResized = (window.outerWidth - window.innerWidth > threshold || window.outerHeight - window.innerHeight > threshold);
-
-            if ((endTime - startTime > 100) || isWindowResized) {
-                let fakeCode = "function fakeAudioProcess_" + Math.floor(Math.random()*1000) + "() { return false; }";
-                
-                document.body.innerHTML = `
-                    <div style="color: #00FF00; background: #000; padding: 20px; font-family: monospace; height: 100vh;">
-                        <h2>[SYSTEM WARNING] UNAUTHORIZED ACCESS DETECTED</h2>
-                        <p>⚠️ Hệ thống bảo mật phát hiện công cụ gỡ lỗi đang mở trên máy tính. Vui lòng đóng lại!</p>
-                        <br>
-                        <code>
-                            var audioContext = null;<br>
-                            ${fakeCode}<br>
-                            // Access Denied
-                        </code>
-                    </div>
-                `;
-            }
-        }, 1000);
-    }
 </script>
 <body>
     <!-- POPUP CHỌN PHIÊN BẢN (DEMO / FULL) -->
@@ -452,9 +410,9 @@
                 </div>
 
                 <div style="display:flex; gap:6px;">
-                    <button id="btnTsPause" class="btn-orange" onclick="toggleTsPause()" style="display:none;">⏸ Dừng</button>
+                    <button id="btnTsPause" class="btn-orange" onclick="toggleTsPause()">⏸ Dừng</button>
                     <button id="btnTsResult" class="btn-slate" onclick="toggleTsResults()" style="display:none;">📊 Kết quả</button>
-                    <button id="btnTsEquation" class="btn-slate" onclick="toggleTsEquations()">∑ Phương trình</button>
+                    <button id="btnTsEquation" class="btn-slate" onclick="toggleTsEquations()" style="display:none;">∑ Phương trình</button>
                 </div>
             </div>
             <div class="fft-canvas-container" id="tsContainer">
@@ -537,7 +495,6 @@
         const canvas = document.getElementById('oscilloscope'), canvasCtx = canvas.getContext('2d', { alpha: false });
         const settingsDropdown = document.getElementById('settingsDropdown'), settingsMenu = document.getElementById('settingsMenu');
 
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbyStGo5ETWCHq3UxtQEWIFL-R2mpEHdeYuX53EgfPf8LtG2Dfe4Dbk1-i59hf8LcY2bdg/exec"; 
         let isDemoMode = true;
         let demoTimer = null;
         let demoChatCount = 0;
@@ -596,35 +553,28 @@
             await verifyKeyWithServer(keyInput, "full");
         }
 
-        // HÀM ÉP ĐĂNG XUẤT NẾU KEY BỊ XÓA HOẶC NGƯỜI DÙNG BẤM NÚT
         function forceLogout(isManual = false) {
             if (isManual) {
                 const confirmLogout = confirm("⚠️ Bạn có chắc chắn muốn xóa Key bản quyền và đăng xuất khỏi thiết bị này?");
-                if (!confirmLogout) return; // Hủy thao tác nếu người dùng chọn Cancel
+                if (!confirmLogout) return;
             }
             
             localStorage.removeItem('fox_license_key'); 
             isDemoMode = true;
-            
-            // Đóng dropdown cài đặt nếu đang mở
             document.getElementById('settingsDropdown').classList.remove('open');
 
-            // Tắt các Micro đang thu âm để bảo mật và tiết kiệm tài nguyên
             stopAudioChannel('A');
             stopAudioChannel('B');
             
-            // Hiện lại màn hình khóa
             document.getElementById('keyInputContainer').style.display = 'none';
             document.getElementById('licenseKeyInput').value = '';
             document.getElementById('licenseModalOverlay').style.display = 'flex'; 
             
-            // Hiện lại nút bánh răng nhập Key và đặt lại trạng thái chữ
             const gearBtn = document.querySelector('.license-gear-btn');
             if (gearBtn) gearBtn.style.display = 'inline-flex';
             infoMessageText.innerHTML = "Bản Dùng thử Demo (Khóa tính năng nâng cao).";
             infoMessageText.style.color = "#dc2626";
             
-            // Khóa chức năng đo đạc
             isPaused = true;
             clearTimeout(stopTimer);
             if(pauseButton) {
@@ -632,7 +582,6 @@
                 pauseButton.className = "btn-green";
             }
             
-            // Làm mới lại giao diện hiển thị
             updateUIState();
             checkAndShowQR(); 
             drawFrame(true);
@@ -657,7 +606,6 @@
                     document.getElementById('licenseModalOverlay').style.display = 'none';
                     infoMessageText.innerHTML = "✅ Bản Full Chính Thức đã kích hoạt thành công!";
                     
-                    // ẨN NÚT BÁNH RĂNG KHI THÀNH CÔNG
                     const gearBtn = document.querySelector('.license-gear-btn');
                     if (gearBtn) gearBtn.style.display = 'none';
                     
@@ -673,27 +621,22 @@
             }
         }
 
-        // TỰ ĐỘNG KIỂM TRA MỖI 30 GIÂY
         setInterval(async () => {
             let activeKey = localStorage.getItem('fox_license_key');
             if (activeKey && !isDemoMode) {
                 const deviceId = getDeviceId();
                 try {
-                    const response = await fetch(GAS_URL, {
+                    const response = await fetch(LICENSE_GAS_URL, {
                         method: 'POST',
                         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                         body: JSON.stringify({ action: "verifyKey", key: activeKey, deviceId: deviceId, type: "full" })
                     });
                     const result = await response.json();
-                    
-                    // Nếu Sheets báo Key bị xóa hoặc hết hạn -> Đẩy văng ra
                     if (result.status !== "success") {
                         alert("⚠️ Key bản quyền của bạn đã bị thu hồi hoặc xóa khỏi hệ thống. Ứng dụng sẽ khóa lại!");
                         forceLogout();
                     }
-                } catch (e) {
-                    // Lỗi mạng tạm thời thì bỏ qua, không văng oan
-                }
+                } catch (e) {}
             }
         }, 30000);
 
@@ -709,9 +652,7 @@
                 qrPanel.style.display = 'flex';
                 let activeKey = localStorage.getItem('fox_license_key') || '';
                 let qrUrl = currentUrl;
-                if (activeKey) {
-                    qrUrl += '?key=' + encodeURIComponent(activeKey);
-                }
+                if (activeKey) { qrUrl += '?key=' + encodeURIComponent(activeKey); }
                 qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrUrl)}`;
             } else {
                 qrPanel.style.display = 'none';
@@ -740,7 +681,6 @@
                 await ctx.audioWorklet.addModule(workletUrl);
                 return true;
             } catch (e) {
-                console.error("AudioWorklet load error:", e);
                 return false;
             }
         }
@@ -793,7 +733,7 @@
 
         settingsMenu.querySelectorAll('.settings-group-header').forEach(header => {
             header.addEventListener('click', (e) => {
-                if (header.textContent.includes('Xóa Key')) return; // Bỏ qua hiệu ứng nếu là nút Xóa Key
+                if (header.textContent.includes('Xóa Key')) return;
                 e.stopPropagation();
                 const group = header.parentElement;
                 settingsMenu.querySelectorAll('.settings-group').forEach(g => { if (g !== group) g.classList.remove('expanded'); });
@@ -807,12 +747,10 @@
             item.addEventListener('mouseenter', () => updateSettingsPill(item.parentElement, item, true));
             item.addEventListener('click', (e) => {
                 e.stopPropagation();
-
                 if (isDemoMode && item.dataset.target === 'speedSelect' && item.dataset.value === 'slow') {
                     alert("Tốc độ quét 'Chậm' chỉ hỗ trợ trên bản Full.");
                     return;
                 }
-
                 const targetSelect = document.getElementById(item.dataset.target);
                 item.parentElement.querySelectorAll('.settings-item').forEach(s => s.classList.remove('active'));
                 item.classList.add('active');
@@ -1036,7 +974,6 @@
 
         async function initAudioChannel(channelId, deviceId = null) {
             const mode = getActiveChannelMode();
-            
             if (mode === '1') stopAudioChannel((channelId === 'A') ? 'B' : 'A');
 
             if (!audioCtx) {
@@ -1051,9 +988,7 @@
             stopAudioChannel(channelId);
 
             const cfg = channelConfig[channelId];
-            if (!cfg.data || cfg.data.length !== sampleRate * 10) {
-                cfg.data = new Float32Array(sampleRate * 10);
-            }
+            if (!cfg.data || cfg.data.length !== sampleRate * 10) { cfg.data = new Float32Array(sampleRate * 10); }
             cfg.index = 0;
 
             try {
@@ -1065,8 +1000,7 @@
                 let audioConstraints = {
                     audio: (mode === '2' && isSharedDevice) ? {
                         deviceId: deviceId ? { exact: deviceId } : undefined,
-                        channelCount: 2, 
-                        ...baseConstraints
+                        channelCount: 2, ...baseConstraints
                     } : {
                         deviceId: deviceId ? { exact: deviceId } : undefined,
                         ...baseConstraints 
@@ -1087,8 +1021,6 @@
                         const channelSelector = audioCtx.createGain();
                         splitter.connect(channelSelector, (channelId === 'A') ? 0 : 1);
                         finalSourceNode = channelSelector;
-                    } else {
-                        finalSourceNode = cfg.source;
                     }
                 }
 
@@ -1099,9 +1031,7 @@
                 cfg.workletNode.port.onmessage = (event) => {
                     if (!isPaused && cfg.active && (!isTwoSourceModalOpen || !isTsPaused)) {
                         let inputChunk = event.data, len = cfg.data.length, currentIdx = cfg.index;
-                        for (let i = 0; i < inputChunk.length; i++) {
-                            cfg.data[(currentIdx + i) % len] = inputChunk[i];
-                        }
+                        for (let i = 0; i < inputChunk.length; i++) { cfg.data[(currentIdx + i) % len] = inputChunk[i]; }
                         cfg.index += inputChunk.length;
                     }
                 };
@@ -1126,7 +1056,6 @@
                     if (channelConfig.B.active) text += "<span class='channel-tag-b'>Kênh B</span>"; 
                     infoMessageText.innerHTML = text; 
                 }
-
             } catch (err) {
                 alert(`Lỗi Micro Kênh ${channelId}. Vui lòng kiểm tra quyền truy cập: ` + err.message);
             }
@@ -1201,14 +1130,12 @@
 
             const samplesNeeded = Math.floor(sampleRate * totalTimeOnScreen);
             
-            // VẼ KÊNH A
             drawMainGrid(canvasCtx, 0, boxA_Y, width, boxA_H, '#dc2626', channelConfig.A.active ? 'Biên độ' : 'Kênh A (Khóa)', true);
             if (channelConfig.A.active && channelConfig.A.data && channelConfig.A.index > samplesNeeded) {
                 let offset = isContinuousMode ? 0 : findZeroCrossingOffset(channelConfig.A, channelConfig.A.index, samplesNeeded);
                 drawWaveform(canvasCtx, channelConfig.A.data, channelConfig.A.index, offset, samplesNeeded, 0, boxA_Y, width, boxA_H, '#ef4444');
             }
 
-            // VẼ KÊNH B NẾU CHẾ ĐỘ 2 NGUỒN
             if (mode === '2') {
                 drawMainGrid(canvasCtx, 0, boxB_Y, width, boxB_H, '#2563eb', channelConfig.B.active ? 'Biên độ' : 'Kênh B (Khóa)', true);
                 if (channelConfig.B.active && channelConfig.B.data && channelConfig.B.index > samplesNeeded) {
@@ -1222,7 +1149,7 @@
             ctx.beginPath(); ctx.lineWidth = 2.5; ctx.strokeStyle = color; ctx.lineJoin = 'round';
             const len = dataArray.length; 
             let startIdx = currentIndex - offset - samplesNeeded;
-            let step = Math.max(1, Math.floor(samplesNeeded / (boxW * 2))); // Tối ưu vẽ
+            let step = Math.max(1, Math.floor(samplesNeeded / (boxW * 2)));
             for (let i = 0; i < samplesNeeded; i += step) {
                 let idx = ((startIdx + i) % len + len) % len;
                 let val = dataArray[idx];
@@ -1249,7 +1176,7 @@
             document.getElementById('fftModalOverlay').style.display = 'flex';
             const inputFreq = document.getElementById('fftTargetFreq');
             if (lockedFrequency > 20) inputFreq.value = Math.round(lockedFrequency);
-            setTimeout(processAndDrawFFT, 350); // Đợi anim xong
+            setTimeout(processAndDrawFFT, 350);
         }
 
         function closeFFTModal() {
@@ -1270,7 +1197,6 @@
             
             let fftSize = 4096, recentData = new Float32Array(fftSize), len = channelConfig.A.data.length, cIdx = channelConfig.A.index;
             for(let i=0; i<fftSize; i++) {
-                // Windowing (Hanning)
                 let multiplier = 0.5 * (1 - Math.cos(2 * Math.PI * i / (fftSize - 1)));
                 recentData[i] = channelConfig.A.data[((cIdx - fftSize + i) % len + len) % len] * multiplier;
             }
@@ -1278,7 +1204,6 @@
             let magnitudes = computeFFT(recentData);
             let binFreq = sampleRate / fftSize;
             
-            // Vẽ Grid
             fCtx.strokeStyle = '#e2e8f0'; fCtx.lineWidth = 1;
             fCtx.beginPath();
             for(let i=1; i<10; i++) { let x = (i/10)*cw; fCtx.moveTo(x, 0); fCtx.lineTo(x, ch); }
@@ -1317,17 +1242,26 @@
             });
         }
 
-        // --- CÁC HÀM XỬ LÝ 2 NGUỒN ÂM ---
+        // --- CÁC HÀM XỬ LÝ 2 NGUỒN ÂM (CHỈ HIỆN KHI BẤM DỪNG) ---
         function openTwoSourceModal() {
             if (isDemoMode) { alert("Chức năng Xử lý 2 Nguồn âm chỉ có trên bản Full."); return; }
             if (getActiveChannelMode() !== '2' || !channelConfig.A.active || !channelConfig.B.active) {
                 alert("Vui lòng bật cả Kênh A và Kênh B để sử dụng tính năng này!"); return;
             }
-            isTwoSourceModalOpen = true; isTsPaused = false;
+            isTwoSourceModalOpen = true; 
+            isTsPaused = true; // Bắt đầu ở trạng thái Dừng theo yêu cầu
+            showTsResults = false;
+            showTsEquations = false;
+            
             document.getElementById('twoSourceModalOverlay').classList.add('animUI-visible');
             document.getElementById('twoSourceModalOverlay').style.display = 'flex';
-            document.getElementById('btnTsPause').style.display = 'block';
+            
+            // Cập nhật trạng thái nút Dừng thành "Tiếp tục" và hiện nút Kết quả / Phương trình
+            let btnPause = document.getElementById('btnTsPause');
+            btnPause.textContent = "▶ Tiếp tục"; btnPause.className = "btn-green";
             document.getElementById('btnTsResult').style.display = 'block';
+            document.getElementById('btnTsEquation').style.display = 'block';
+            
             resizeCanvas(); 
         }
 
@@ -1352,8 +1286,16 @@
         function toggleTsPause() {
             isTsPaused = !isTsPaused;
             let btn = document.getElementById('btnTsPause');
-            if (isTsPaused) { btn.textContent = "▶ Tiếp tục"; btn.className = "btn-green"; } 
-            else { btn.textContent = "⏸ Dừng"; btn.className = "btn-orange"; }
+            if (isTsPaused) { 
+                btn.textContent = "▶ Tiếp tục"; btn.className = "btn-green"; 
+            } else { 
+                btn.textContent = "⏸ Dừng"; btn.className = "btn-orange"; 
+                // Khi tiếp tục chạy, ẩn tạm thời các bảng kết quả/phương trình cho đến khi bấm Dừng lại
+                showTsResults = false; showTsEquations = false;
+                document.getElementById('hudResults').style.display = 'none';
+                document.getElementById('hudEquations').style.display = 'none';
+                calculatePhaseAndDrawLive();
+            }
         }
 
         function toggleTsResults() {
@@ -1396,7 +1338,6 @@
             let samplesDraw = Math.floor(sampleRate * totalTimeOnScreen);
             let offsetA = findZeroCrossingOffset({active:true, data: snapDataA}, snapDataA.length, samplesDraw);
             
-            // Xử lý cảnh báo phách
             let diffFreq = Math.abs(currentCalcFreqA - currentCalcFreqB);
             const warnText = document.getElementById('tsWarningText');
             if (diffFreq > (currentCalcFreqA * 0.05) && !isTsPaused) {
@@ -1405,7 +1346,6 @@
                 warnText.style.display = 'none';
             }
 
-            // Tính Độ Lệch Pha (Cross-correlation)
             if (!isTsPaused) {
                 let maxShift = Math.floor(sampleRate / currentCalcFreqA);
                 let bestCross = -Infinity, bestShift = 0;
@@ -1421,37 +1361,29 @@
                 let timeShift = bestShift / sampleRate;
                 let periodA = 1.0 / currentCalcFreqA;
                 currentPhaseRad = (timeShift / periodA) * 2 * Math.PI;
-                // Chuẩn hóa về [-pi, pi]
                 while(currentPhaseRad > Math.PI) currentPhaseRad -= 2*Math.PI;
                 while(currentPhaseRad < -Math.PI) currentPhaseRad += 2*Math.PI;
                 currentPhaseDeg = currentPhaseRad * (180 / Math.PI);
             }
 
-            // Cập nhật UI HUD
-            if (showTsResults) {
-                document.getElementById('hudFreqA').innerText = currentCalcFreqA.toFixed(1);
-                document.getElementById('hudPerA').innerText = (1000/currentCalcFreqA).toFixed(2);
-                document.getElementById('hudFreqB').innerText = currentCalcFreqB.toFixed(1);
-                document.getElementById('hudPerB').innerText = (1000/currentCalcFreqB).toFixed(2);
-                document.getElementById('hudPhaseRad').innerText = currentPhaseRad.toFixed(2);
-                document.getElementById('hudPhaseDeg').innerText = Math.round(currentPhaseDeg);
-            }
-            
-            if (showTsEquations) {
-                document.getElementById('eqFreqA').innerText = currentCalcFreqA.toFixed(1);
-                document.getElementById('eqFreqB').innerText = currentCalcFreqB.toFixed(1);
-                let phaseStr = (currentPhaseRad >= 0 ? "+ " : "- ") + Math.abs(currentPhaseRad).toFixed(2);
-                document.getElementById('eqPhase').innerText = phaseStr;
-                document.getElementById('eqSumLine').style.display = (tsViewMode === 'sum') ? 'block' : 'none';
-            }
+            document.getElementById('hudFreqA').innerText = currentCalcFreqA.toFixed(1);
+            document.getElementById('hudPerA').innerText = (1000/currentCalcFreqA).toFixed(2);
+            document.getElementById('hudFreqB').innerText = currentCalcFreqB.toFixed(1);
+            document.getElementById('hudPerB').innerText = (1000/currentCalcFreqB).toFixed(2);
+            document.getElementById('hudPhaseRad').innerText = currentPhaseRad.toFixed(2);
+            document.getElementById('hudPhaseDeg').innerText = Math.round(currentPhaseDeg);
 
-            // Vẽ đồ thị
+            document.getElementById('eqFreqA').innerText = currentCalcFreqA.toFixed(1);
+            document.getElementById('eqFreqB').innerText = currentCalcFreqB.toFixed(1);
+            let phaseStr = (currentPhaseRad >= 0 ? "+ " : "- ") + Math.abs(currentPhaseRad).toFixed(2);
+            document.getElementById('eqPhase').innerText = phaseStr;
+            document.getElementById('eqSumLine').style.display = (tsViewMode === 'sum') ? 'block' : 'none';
+
             ctx.beginPath(); ctx.lineWidth = 2.5; ctx.lineJoin = 'round';
             let step = Math.max(1, Math.floor(samplesDraw / cw));
             let startI = snapDataA.length - offsetA - samplesDraw;
             
             if (tsViewMode === 'overlay') {
-                // Kênh A (Đỏ)
                 ctx.strokeStyle = '#ef4444'; ctx.beginPath();
                 for (let i = 0; i < samplesDraw; i+=step) {
                     let idx = Math.max(0, Math.min(snapDataA.length - 1, startI + i));
@@ -1460,7 +1392,6 @@
                 }
                 ctx.stroke();
                 
-                // Kênh B (Xanh)
                 ctx.strokeStyle = '#3b82f6'; ctx.beginPath();
                 for (let i = 0; i < samplesDraw; i+=step) {
                     let idx = Math.max(0, Math.min(snapDataB.length - 1, startI + i));
@@ -1469,7 +1400,6 @@
                 }
                 ctx.stroke();
             } else if (tsViewMode === 'sum') {
-                // Tổng Hợp (Tím)
                 ctx.strokeStyle = '#8b5cf6'; ctx.beginPath();
                 for (let i = 0; i < samplesDraw; i+=step) {
                     let idx = Math.max(0, Math.min(snapDataA.length - 1, startI + i));
@@ -1498,7 +1428,7 @@
         chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter' && !sendBtn.disabled) sendFoxMessage(); });
         sendBtn.addEventListener('click', sendFoxMessage);
 
-        function sendFoxMessage() {
+        async function sendFoxMessage() {
             const text = chatInput.value.trim(); if (!text) return;
             
             if (isDemoMode) {
@@ -1511,8 +1441,23 @@
             }
 
             addChatMessage('user', text); chatInput.value = ''; sendBtn.disabled = true;
-            document.getElementById('foxStatusText').innerText = "Đang phân tích...";
-            setTimeout(() => { generateFoxResponse(text); }, 600 + Math.random() * 600);
+            document.getElementById('foxStatusText').innerText = "AI đang trả lời...";
+            
+            let currentFreq = lockedFrequency || detectedFrequency;
+
+            try {
+                const response = await fetch(CHAT_GAS_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ message: text, frequency: currentFreq })
+                });
+                const result = await response.json();
+                document.getElementById('foxStatusText').innerText = "Trực tuyến";
+                addChatMessage('bot', result.reply || "Fox-Lab AI đã ghi nhận câu hỏi của thầy.");
+            } catch (e) {
+                document.getElementById('foxStatusText').innerText = "Trực tuyến";
+                addChatMessage('bot', `Fox-Lab AI hiện tại đang đo đạc tần số <b>${currentFreq.toFixed(1)} Hz</b>. (Phản hồi tự động do lỗi kết nối chat GAS).`);
+            }
         }
 
         function addChatMessage(sender, text) {
@@ -1522,25 +1467,6 @@
             html += `<div class="fox-msg-group"><div class="fox-msg-bubble">${text}</div></div>`;
             row.innerHTML = html; chatContent.appendChild(row); chatContent.scrollTop = chatContent.scrollHeight;
         }
-
-        function generateFoxResponse(query) {
-            const q = query.toLowerCase(); let response = "";
-            let currentFreq = lockedFrequency || detectedFrequency;
-            if (q.includes('tần số') || q.includes('hz')) {
-                response = `Tần số hiện tại Fox-Lab ghi nhận là <b>${currentFreq.toFixed(1)} Hz</b>. Nếu cần ổn định hơn, bạn hãy đảm bảo nguồn âm (âm thoa/loa) đủ lớn và áp sát micro nhé!`;
-            } else if (q.includes('họa âm') || q.includes('fft')) {
-                response = `Để phân tích họa âm, bạn cần sử dụng bản Full và bấm vào nút <b>Phân tích FFT</b>. Hệ thống sẽ lọc ra 5 họa âm đầu tiên của âm cơ bản f0.`;
-            } else if (q.includes('phách') || q.includes('2 nguồn')) {
-                response = `Khi chọn chế độ <b>2 Nguồn âm</b>, bạn có thể quan sát hiện tượng Sóng Phách nếu 2 nguồn chênh lệch tần số, hoặc Giao thoa nếu cùng tần số. Bấm nút "∑ Phương trình" để xem toán học.`;
-            } else if (q.includes('cảm ơn') || q.includes('thank')) {
-                response = `Không có chi! Fox-Lab luôn sẵn sàng đồng hành cùng bạn trong các bài thí nghiệm Vật lý. Cần hỏi gì thêm cứ gõ vào đây nhé.`;
-            } else {
-                response = `Fox-Lab AI hiện tại là phiên bản thử nghiệm. Bạn đang đo đạc tần số <b>${currentFreq.toFixed(1)} Hz</b>. Bạn muốn tìm hiểu sâu hơn về hiện tượng vật lý nào của sóng này?`;
-            }
-            document.getElementById('foxStatusText').innerText = "Trực tuyến";
-            addChatMessage('bot', response);
-        }
-
     </script>
 </body>
 </html>
