@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Dao động ký (Oscilloscope) - Sóng âm (FOX-Lab)</title>
+    <title>Dao động ký (Oscilloscope) - Sóng âm (Fox_lab)</title>
     <link rel="icon" type="image/png" href="./icon-512.png">
     <link rel="apple-touch-icon" href="./icon-512.png">
     <link rel="manifest" href="./manifest.json">
@@ -102,6 +102,9 @@
         .hud-highlight { color: #facc15; font-weight: bold; }
         .hud-eq { color: #10b981; font-style: italic; }
         .math-symbol { font-family: "Times New Roman", Times, serif; font-style: italic; font-size: 14.5px; }
+        .math-fraction { display: inline-flex; flex-direction: column; vertical-align: middle; text-align: center; margin: 0 3px; font-size: 0.95em; }
+        .math-numerator { border-bottom: 1px solid currentColor; padding-bottom: 1px; }
+        .math-denominator { padding-top: 1px; }
 
         .ts-mode-toggle { display: flex; gap: 4px; background: #0f172a; padding: 3px; border-radius: 6px; border: 1px solid #334155; position: relative; overflow: hidden; }
         .ts-mode-pill { position: absolute; top: 3px; bottom: 3px; left: 0; width: 0; background: linear-gradient(135deg, #3b82f6, #2563eb); border-radius: 4px; pointer-events: none; z-index: 1; transition: transform 0.24s ease, width 0.24s ease; opacity: 0; }
@@ -156,10 +159,6 @@
         .fox-typing-indicator { display: inline-flex; align-items: center; width: auto; white-space: nowrap; }
         .fox-typing-text { font-size: 11px; color: #94a3b8; font-style: italic; margin-left: 6px; }
 
-        .math-fraction { display: inline-flex; flex-direction: column; vertical-align: middle; text-align: center; margin: 0 3px; font-size: 0.95em; }
-        .math-numerator { border-bottom: 1px solid currentColor; padding-bottom: 1px; }
-        .math-denominator { padding-top: 1px; }
-
         .fox-input-container { padding: 10px; background: rgba(15, 23, 42, 0.95); border-top: 1px solid rgba(255, 255, 255, 0.1); display: flex; flex-direction: column; gap: 4px; flex-shrink: 0; }
         .fox-input-box { display: flex; align-items: center; background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 20px; padding: 4px 6px 4px 12px; }
         #fox-chat-input { flex: 1; background: transparent; border: none; color: #f8fafc; font-size: 12px; outline: none; padding: 6px 0; }
@@ -168,18 +167,9 @@
         .fox-send-btn svg { width: 12px; height: 12px; margin-left: 2px; }
         .fox-footer-meta { font-size: 9px; color: var(--fox-text-muted); text-align: center; }
         .fox-freq-tag { color: var(--fox-cyan); font-weight: 600; }
-
-        #fox-chat-box.light-theme { background: rgba(255, 255, 255, 0.95); border: 1px solid rgba(0,0,0,0.1); box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.15); }
-        #fox-chat-box.light-theme .fox-chat-header { background: rgba(241, 245, 249, 0.9); border-bottom: 1px solid #cbd5e1; }
-        #fox-chat-box.light-theme .fox-header-title { color: #0f172a; }
-        #fox-chat-box.light-theme .fox-msg-bot .fox-msg-bubble { background: #f1f5f9; color: #1e293b; border: 1px solid #e2e8f0; }
-        #fox-chat-box.light-theme .fox-input-container { background: rgba(248, 250, 252, 0.95); border-top: 1px solid #cbd5e1; }
-        #fox-chat-box.light-theme .fox-input-box { background: #ffffff; border: 1px solid #cbd5e1; }
-        #fox-chat-box.light-theme #fox-chat-input { color: #0f172a; }
     </style>
 </head>
 <body>
-    <!-- POPUP CHỌN PHIÊN BẢN (DEMO / FULL) -->
     <div id="licenseModalOverlay" class="license-modal-overlay">
         <div class="license-selection-box">
             <h2>⚛️ DAO ĐỘNG KÝ_FOX-LAB</h2>
@@ -264,14 +254,14 @@
             </div>
         </div>
 
+        <!-- Panel QR Code chỉ hiển thị thông minh khi chạy trên Github Pages -->
         <div class="qr-panel" id="qrPanel">
-            <img id="qrImage" src="" alt="QR Code"><span class="scan-title">FOX_LAB</span>
+            <img id="qrImage" src="" alt="QR Code"><span class="scan-title">Daodongki</span>
         </div>
     </div>
 
     <canvas id="oscilloscope"></canvas>
     
-    <!-- FFT MODAL -->
     <div id="fftModalOverlay" class="modal-overlay">
         <div id="fftModal" class="modal-content" onclick="event.stopPropagation()">
             <div class="modal-header">
@@ -290,7 +280,6 @@
         </div>
     </div>
 
-    <!-- MODAL XỬ LÝ 2 NGUỒN ÂM -->
     <div id="twoSourceModalOverlay" class="modal-overlay">
         <div id="twoSourceModal" class="modal-content" onclick="event.stopPropagation()">
             <div class="modal-header">
@@ -305,15 +294,9 @@
                 </div>
 
                 <div style="display: flex; align-items: center; gap: 4px;">
-                    <button id="tsPlayBtn" onclick="toggleTsPlay()" class="btn-orange" style="margin-left: 4px;">
-                        ⏸ Dừng
-                    </button>
-                    <button id="tsResultBtn" onclick="showTsResultModal()" style="display: none !important; margin-left: 4px;" class="btn-blue">
-                        📊 Kết quả
-                    </button>
-                    <button id="tsEquationBtn" onclick="showTsEquationModal()" style="display: none !important; margin-left: 4px;" class="btn-slate">
-                        📐 Phương trình
-                    </button>
+                    <button id="tsPlayBtn" onclick="toggleTsPlay()" class="btn-orange" style="margin-left: 4px;">⏸ Dừng</button>
+                    <button id="tsResultBtn" onclick="showTsResultModal()" style="display: none !important; margin-left: 4px;" class="btn-blue">📊 Kết quả</button>
+                    <button id="tsEquationBtn" onclick="showTsEquationModal()" style="display: inline-flex !important; margin-left: 4px;" class="btn-slate">📐 Phương trình</button>
                 </div>
             </div>
 
@@ -341,7 +324,6 @@
         </div>
     </div>
 
-    <!-- FOX-LAB AI WIDGET -->
     <div id="fox-chat-widget">
         <div class="fox-trigger-wrapper">
             <div class="fox-ping-ring"></div>
@@ -355,7 +337,7 @@
                 <div class="fox-header-left">
                     <div class="fox-avatar-container" id="header-fox-icon-container"></div>
                     <div class="fox-header-info">
-                        <div class="fox-header-title">FOX-Lab AI</div>
+                        <div class="fox-header-title">Fox_lab AI</div>
                         <div class="fox-header-status"><span class="fox-status-dot"></span><span id="foxStatusText">Trực tuyến</span></div>
                     </div>
                 </div>
@@ -369,7 +351,7 @@
                 <div class="fox-msg-row fox-msg-bot">
                     <div class="fox-msg-avatar" id="msg-fox-icon-container"></div>
                     <div class="fox-msg-group">
-                        <div class="fox-msg-bubble">Chào em! Thầy là <b>FOX-Lab AI</b>, trợ lý ảo hướng dẫn thí nghiệm Vật lý. Em đang khảo sát với tần số <span id="foxLiveFreqTag" class="fox-freq-tag">0.0 Hz</span>. Em cần hỗ trợ gì?</div>
+                        <div class="fox-msg-bubble">Chào em! Thầy là <b>Fox_lab AI</b>, trợ lý ảo hướng dẫn thí nghiệm Vật lý. Em đang khảo sát với tần số <span id="foxLiveFreqTag" class="fox-freq-tag">0.0 Hz</span>. Em cần hỗ trợ gì?</div>
                     </div>
                 </div>
             </div>
@@ -386,6 +368,19 @@
     </div>
 
     <script>
+        // --- 1. CHẶN PHÍM F12 VÀ CHUỘT PHẢI BẢO VỆ MÃ NGUỒN ---
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F12' || 
+                (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j')) || 
+                (e.ctrlKey && (e.key === 'U' || e.key === 'u'))) {
+                e.preventDefault();
+                return false;
+            }
+        });
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+        });
+
         const FOX_AVATAR_SVG = `<svg viewBox="0 0 100 100" fill="none"><polygon points="22,12 10,48 36,40" fill="#ff7a30"/><polygon points="23,19 16,44 32,38" fill="#1e293b"/><path d="M 19 36 Q 23 32 28 34" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round"/><polygon points="78,12 64,40 90,48" fill="#ff7a30"/><polygon points="77,19 68,38 84,44" fill="#1e293b"/><path d="M 81 36 Q 77 32 72 34" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round"/><polygon points="50,22 36,40 50,46" fill="#ff8f4a"/><polygon points="50,22 50,46 64,40" fill="#ff7a30"/><polygon points="36,40 10,48 20,68 38,58" fill="#d4380d"/><polygon points="64,40 38,58 50,46" fill="#e04006"/><polygon points="64,40 50,46 62,58" fill="#d4380d"/><polygon points="64,40 90,48 80,68 62,58" fill="#d4380d"/><polygon points="20,68 12,74 26,76 34,68" fill="#e2e8f0"/><polygon points="80,68 88,74 74,76 66,68" fill="#cbd5e1"/><polygon points="38,58 50,46 50,78 36,68" fill="#ff7a30"/><polygon points="62,58 50,46 50,78 64,68" fill="#e04006"/><polygon points="50,78 36,68 44,88 50,88" fill="#f8fafc"/><polygon points="50,78 64,68 56,88 50,88" fill="#e2e8f0"/><polygon points="50,88 45,82 55,82" fill="#0f172a"/><polygon points="25,48 50,54 75,48 71,59 50,65 29,59" fill="#090d16" stroke="rgba(56,189,248,0.5)" stroke-width="0.9"/><circle cx="34.5" cy="48" r="1.5" fill="#ffffff"/><circle cx="44.5" cy="60" r="1.5" fill="#ffffff"/><circle cx="54.5" cy="48" r="1.5" fill="#ffffff"/><circle cx="64.5" cy="60" r="1.5" fill="#ffffff"/></svg>`;
         const LICENSE_GAS_URL = "https://script.google.com/macros/s/AKfycbwC9gwiwBdIsfvv2nGZQNrkeR1O43GTW9lhMCu6fEn-LGjjbmMEcy-3153DZRkOaLdx3Q/exec";
         const CHAT_GAS_URL = "https://script.google.com/macros/s/AKfycbyStGo5ETWCHq3UxtQEWIFL-R2mpEHdeYuX53EgfPf8LtG2Dfe4Dbk1-i59hf8LcY2bdg/exec";
@@ -542,7 +537,6 @@
                     forceLogout();
                 }
             } catch (e) {
-                // Sửa lỗi fix triệt để: Nếu ngoại mạng hoặc lỗi GAS khi đã lưu Key sẵn, vẫn cho phép chạy ổn định không bị kẹt
                 if (isSilent) {
                     isDemoMode = false;
                     document.getElementById('licenseModalOverlay').style.display = 'none';
@@ -570,6 +564,7 @@
             }
         }, 30000);
 
+        // --- 2. HÀM KIỂM TRA VÀ HIỂN THỊ THÔNG MINH MÃ QR TRÊN GITHUB PAGES ---
         function checkAndShowQR() {
             const qrPanel = document.getElementById('qrPanel'), qrImage = document.getElementById('qrImage');
             if (!qrImage || !qrPanel) return;
@@ -583,7 +578,7 @@
                 if (activeKey) { qrUrl += '?key=' + encodeURIComponent(activeKey); }
                 qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrUrl)}`;
             } else { 
-                qrPanel.style.display = 'none'; 
+                qrPanel.style.display = 'none'; // Tự động ẩn trên local/máy tính
             }
         }
 
@@ -764,6 +759,31 @@
             let truePos = maxpos;
             if (maxpos > 0 && maxpos < halfSize - 1) { let x1 = c[maxpos - 1], x2 = c[maxpos], x3 = c[maxpos + 1], a = (x1 + x3 - 2 * x2) / 2, b = (x3 - x1) / 2; if (a < 0) truePos = maxpos - b / (2 * a); }
             let freq = sampleRate / truePos; if (freq < 100 || freq > 1500) return -1; return freq;
+        }
+
+        // HÀM TÍNH ĐỘ LỆCH PHA THỰC TẾ TỪ DỮ LIỆU ĐỒ THỊ BẰNG TƯƠNG QUAN CHÉO
+        function calculatePhaseDifference(dataA, dataB, freq, sampleRate) {
+            if (!dataA || !dataB || freq <= 0) return 0;
+            const samplesPerCycle = sampleRate / freq;
+            let maxCorr = -999999, bestShift = 0;
+            let searchLimit = Math.min(Math.floor(samplesPerCycle), 200);
+            
+            for (let shift = -searchLimit; shift <= searchLimit; shift++) {
+                let corr = 0, count = 0;
+                for (let i = 200; i < 2000; i++) {
+                    let idxA = i, idxB = i + shift;
+                    if (idxB >= 0 && idxB < dataB.length) {
+                        corr += dataA[idxA] * dataB[idxB];
+                        count++;
+                    }
+                }
+                if (count > 0) corr /= count;
+                if (corr > maxCorr) { maxCorr = corr; bestShift = shift; }
+            }
+            let phaseRad = (bestShift / samplesPerCycle) * 2 * Math.PI;
+            while (phaseRad > Math.PI) phaseRad -= 2 * Math.PI;
+            while (phaseRad < -Math.PI) phaseRad += 2 * Math.PI;
+            return phaseRad;
         }
 
         function computeFFT(realArray) {
@@ -1088,8 +1108,40 @@
 
         function showTsEquationModal() {
             const el = document.getElementById('hudEquations');
-            showTsEquations = !showTsEquations;
-            el.style.display = showTsEquations ? 'block' : 'none';
+            if (el) {
+                showTsEquations = !showTsEquations;
+                el.style.display = showTsEquations ? 'block' : 'none';
+            }
+        }
+
+        function updateEquationsHUD(freqA, freqB, phaseRad) {
+            const eqFreqA = document.getElementById('eqFreqA');
+            const eqFreqB = document.getElementById('eqFreqB');
+            if (eqFreqA) eqFreqA.innerText = freqA > 0 ? freqA.toFixed(1) : "0.0";
+            if (eqFreqB) eqFreqB.innerText = freqB > 0 ? freqB.toFixed(1) : "0.0";
+            
+            const eqPhase = document.getElementById('eqPhase');
+            if (eqPhase) {
+                let phaseStr = phaseRad >= 0 ? ` + ${phaseRad.toFixed(2)}` : ` - ${Math.abs(phaseRad).toFixed(2)}`;
+                eqPhase.innerText = phaseStr;
+            }
+
+            const hudPhaseRad = document.getElementById('hudPhaseRad');
+            const hudPhaseDeg = document.getElementById('hudPhaseDeg');
+            if (hudPhaseRad && hudPhaseDeg) {
+                hudPhaseRad.innerText = phaseRad.toFixed(2);
+                hudPhaseDeg.innerText = Math.round(phaseRad * 180 / Math.PI);
+            }
+
+            const sumLine = document.getElementById('eqSumLine');
+            if (sumLine) {
+                let diff = Math.abs(freqA - freqB);
+                if (freqA > 10 && freqB > 10 && diff > 3.0) {
+                    sumLine.innerHTML = `Tổng hợp: <span class="math-symbol" style="color:#f87171;">⚠️ Tạo Sóng Phách (f<sub>1</sub> ≠ f<sub>2</sub>)</span>`;
+                } else {
+                    sumLine.innerHTML = `Tổng hợp: <span class="math-symbol">u = u<sub>A</sub> + u<sub>B</sub> = 2A·cos(<span class="math-fraction"><span class="math-numerator">Δφ</span><span class="math-denominator">2</span></span>)·cos(2πft + <span class="math-fraction"><span class="math-numerator">φ<sub>A</sub> + φ<sub>B</sub></span><span class="math-denominator">2</span></span>)</span>`;
+                }
+            }
         }
 
         function openTwoSourceModal() {
@@ -1107,7 +1159,7 @@
             const resBtn = document.getElementById('tsResultBtn');
             const eqBtn = document.getElementById('tsEquationBtn');
             if (resBtn) resBtn.style.setProperty('display', 'none', 'important');
-            if (eqBtn) eqBtn.style.setProperty('display', 'none', 'important');
+            if (eqBtn) eqBtn.style.setProperty('display', 'inline-flex', 'important');
             document.getElementById('hudResults').style.display = 'none';
             document.getElementById('hudEquations').style.display = 'none';
 
@@ -1146,7 +1198,7 @@
                     btn.className = "btn-orange";
                 }
                 if (resBtn) resBtn.style.setProperty('display', 'none', 'important');
-                if (eqBtn) resBtn.style.setProperty('display', 'none', 'important');
+                if (eqBtn) resBtn.style.setProperty('display', 'inline-flex', 'important');
                 
                 showTsResults = false; showTsEquations = false;
                 document.getElementById('hudResults').style.display = 'none';
@@ -1208,6 +1260,10 @@
                         document.getElementById('hudFreqB').innerText = currentCalcFreqB > 0 ? currentCalcFreqB.toFixed(1) : "0.0";
                         document.getElementById('hudPerA').innerText = currentCalcFreqA > 0 ? (1000/currentCalcFreqA).toFixed(2) : "0.00";
                         document.getElementById('hudPerB').innerText = currentCalcFreqB > 0 ? (1000/currentCalcFreqB).toFixed(2) : "0.00";
+                        
+                        let avgFreq = (currentCalcFreqA + currentCalcFreqB) / 2;
+                        let calculatedPhase = calculatePhaseDifference(activeDataA, activeDataB, avgFreq > 0 ? avgFreq : 440, sampleRate);
+                        updateEquationsHUD(currentCalcFreqA, currentCalcFreqB, calculatedPhase);
                     }
                 }
 
@@ -1298,10 +1354,10 @@
                 const response = await fetch(CHAT_GAS_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ message: text, frequency: currentFreq }) });
                 const result = await response.json();
                 removeTypingIndicator(thinkingId); document.getElementById('foxStatusText').innerText = "Trực tuyến";
-                addChatMessage('bot', result.reply || "Fox-Lab AI đã ghi nhận câu hỏi của thầy.");
+                addChatMessage('bot', result.reply || "Fox_lab AI đã ghi nhận câu hỏi của thầy.");
             } catch (e) {
                 removeTypingIndicator(thinkingId); document.getElementById('foxStatusText').innerText = "Trực tuyến";
-                addChatMessage('bot', `Fox-Lab AI hiện tại đang đo đạc tần số <b>${currentFreq.toFixed(1)} Hz</b>. (Phản hồi tự động do kết nối mạng tạm thời).`);
+                addChatMessage('bot', `Fox_lab AI hiện tại đang đo đạc tần số <b>${currentFreq.toFixed(1)} Hz</b>. (Phản hồi tự động do kết nối mạng tạm thời).`);
             }
         }
 
@@ -1328,7 +1384,7 @@
         function addTypingIndicator() {
             const id = 'typing_' + Date.now(), row = document.createElement('div');
             row.className = 'fox-msg-row fox-msg-bot'; row.id = id;
-            row.innerHTML = '<div class="fox-msg-avatar">' + FOX_AVATAR_SVG + '</div><div class="fox-msg-group"><div class="fox-msg-bubble"><div class="fox-typing-indicator"><span class="fox-typing-text">Fox-Lab đang phân tích...</span></div></div></div>';
+            row.innerHTML = '<div class="fox-msg-avatar">' + FOX_AVATAR_SVG + '</div><div class="fox-msg-group"><div class="fox-msg-bubble"><div class="fox-typing-indicator"><span class="fox-typing-text">Fox_lab đang phân tích...</span></div></div></div>';
             chatContent.appendChild(row); chatContent.scrollTop = chatContent.scrollHeight; return id;
         }
         
