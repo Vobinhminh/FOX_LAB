@@ -511,6 +511,12 @@
     <script>
         const FOX_AVATAR_SVG = `<svg viewBox="0 0 100 100" fill="none"><polygon points="22,12 10,48 36,40" fill="#ff7a30"/><polygon points="23,19 16,44 32,38" fill="#1e293b"/><path d="M 19 36 Q 23 32 28 34" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round"/><polygon points="78,12 64,40 90,48" fill="#ff7a30"/><polygon points="77,19 68,38 84,44" fill="#1e293b"/><path d="M 81 36 Q 77 32 72 34" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round"/><polygon points="50,22 36,40 50,46" fill="#ff8f4a"/><polygon points="50,22 50,46 64,40" fill="#ff7a30"/><polygon points="36,40 10,48 20,68 38,58" fill="#d4380d"/><polygon points="64,40 38,58 50,46" fill="#e04006"/><polygon points="64,40 50,46 62,58" fill="#d4380d"/><polygon points="64,40 90,48 80,68 62,58" fill="#d4380d"/><polygon points="20,68 12,74 26,76 34,68" fill="#e2e8f0"/><polygon points="80,68 88,74 74,76 66,68" fill="#cbd5e1"/><polygon points="38,58 50,46 50,78 36,68" fill="#ff7a30"/><polygon points="62,58 50,46 50,78 64,68" fill="#e04006"/><polygon points="50,78 36,68 44,88 50,88" fill="#f8fafc"/><polygon points="50,78 64,68 56,88 50,88" fill="#e2e8f0"/><polygon points="50,88 45,82 55,82" fill="#0f172a"/><polygon points="25,48 50,54 75,48 71,59 50,65 29,59" fill="#090d16" stroke="rgba(56,189,248,0.5)" stroke-width="0.9"/><circle cx="34.5" cy="48" r="1.5" fill="#ffffff"/><circle cx="44.5" cy="60" r="1.5" fill="#ffffff"/><circle cx="54.5" cy="48" r="1.5" fill="#ffffff"/><circle cx="64.5" cy="60" r="1.5" fill="#ffffff"/></svg>`;
 
+        // CHỐNG THOÁT NHẦM TRANG
+        window.addEventListener('beforeunload', function (e) {
+            e.preventDefault();
+            e.returnValue = ''; 
+        });
+
         const btnStartA = document.getElementById('btnStartA'), btnStartB = document.getElementById('btnStartB');
         const pauseButton = document.getElementById('pauseButton'), resetButton = document.getElementById('resetButton');
         const btnAnalysis = document.getElementById('btnAnalysis'), infoMessageText = document.getElementById('infoMessageText');
@@ -601,9 +607,7 @@
                     checkAndShowQR();
                 } else {
                     if(!isSilent) alert(`❌ ${result.message}\nVui lòng liên hệ tác giả nhận Key bản Full!`);
-                    localStorage.removeItem('fox_license_key'); 
-                    openLicenseModal();
-                    selectMode('demo');
+                    forceLogout();
                 }
             } catch (e) {
                 if(!isSilent) alert("❌ Lỗi kết nối máy chủ! Chuyển về bản Demo.");
@@ -611,14 +615,55 @@
             }
         }
 
+        function forceLogout() {
+            localStorage.removeItem('fox_license_key'); 
+            isDemoMode = true;
+            
+            document.getElementById('keyInputContainer').style.display = 'none';
+            document.getElementById('licenseKeyInput').value = '';
+            document.getElementById('licenseModalOverlay').style.display = 'flex'; 
+            
+            isPaused = true;
+            clearTimeout(stopTimer);
+            const btnPause = document.getElementById('pauseButton');
+            if(btnPause) {
+                btnPause.textContent = "Đo / Dừng"; 
+                btnPause.className = "btn-green";
+            }
+            
+            updateUIState();
+            checkAndShowQR(); 
+        }
+
+        setInterval(async () => {
+            let activeKey = localStorage.getItem('fox_license_key');
+            if (activeKey && !isDemoMode) {
+                const deviceId = getDeviceId();
+                try {
+                    const response = await fetch(GAS_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                        body: JSON.stringify({ action: "verifyKey", key: activeKey, deviceId: deviceId, type: "full" })
+                    });
+                    const result = await response.json();
+                    
+                    if (result.status !== "success") {
+                        alert("⚠️ Key bản quyền của bạn đã bị thu hồi hoặc xóa khỏi hệ thống. Ứng dụng sẽ khóa lại!");
+                        forceLogout();
+                    }
+                } catch (e) {}
+            }
+        }, 30000);
+
         function checkAndShowQR() {
             const qrPanel = document.getElementById('qrPanel');
             const qrImage = document.getElementById('qrImage');
             if (!qrImage || !qrPanel) return;
 
+            let isGithub = window.location.hostname.includes('github.io');
             let currentUrl = window.location.href.split('?')[0]; 
             
-            if (!isDemoMode && currentUrl.includes('github.io')) {
+            if (!isDemoMode && isGithub) {
                 qrPanel.style.display = 'flex';
                 let activeKey = localStorage.getItem('fox_license_key') || '';
                 let qrUrl = currentUrl;
