@@ -151,9 +151,9 @@
         .fox-msg-bot .fox-msg-bubble { background: rgba(30, 41, 59, 0.85); color: #f1f5f9; border: 1px solid rgba(255, 255, 255, 0.1); border-top-left-radius: 2px; }
         .fox-msg-bot .fox-msg-bubble b { color: var(--fox-cyan); font-weight: 600; }
         
-.fox-typing-indicator { display: inline-flex; align-items: center; gap: 0px; padding: 2px 0; width: auto; white-space: nowrap; }
-        .fox-typing-indicator span { display: none; } /* Ẩn hoàn toàn các dấu chấm động */
-        .fox-typing-text { font-size: 11px; color: #94a3b8; font-style: italic; white-space: nowrap; display: inline-block; margin-left: 0; }
+        .fox-msg-bubble { display: inline-block; padding: 8px 12px; border-radius: 12px; background-color: var(--fox-panel-bg); color: var(--fox-text); max-width: 85%; width: auto; word-break: break-word; }
+        .fox-typing-indicator { display: inline-flex; align-items: center; width: auto; white-space: nowrap; }
+        .fox-typing-text { font-size: 11px; color: #94a3b8; font-style: italic; white-space: nowrap; display: inline-block; }
 
         /* Định dạng phân số chuyên nghiệp trong bong bóng chat AI */
         .math-fraction { display: inline-flex; flex-direction: column; vertical-align: middle; text-align: center; margin: 0 3px; font-size: 0.95em; }
