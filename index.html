@@ -1336,7 +1336,7 @@
             if(!isTsPaused && isTwoSourceModalOpen) { tsAnimFrameId = requestAnimationFrame(calculatePhaseAndDrawLive); }
         }
 
-        // --- FOX-LAB AI WIDGET (ĐÃ CẬP NHẬT HIỆN THỊ TOÁN HỌC & HIỆU ỨNG GÕ CHỮ NẰM NGANG) ---
+        // --- FOX-LAB AI WIDGET ---
         function toggleChat() {
             const widget = document.getElementById('fox-chat-widget');
             widget.classList.toggle('open');
@@ -1384,16 +1384,27 @@
             }
         }
 
+        // --- HÀM LÀM SẠCH VÀ CHUYỂN ĐỔI KÝ HIỆU TOÁN HỌC LATEX THÀNH CHUẨN ĐẸP ---
         function formatMathText(text) {
             if (!text) return '';
             return text
-                .replace(/\$([a-zA-Z])_([0-9a-zA-Z]+)\$/g, '<span class="math-symbol">$1<sub>$2</sub></span>')
-                .replace(/\$([^$]+)\$/g, (match, p1) => {
-                    let formatted = p1
-                        .replace(/([a-zA-Z])_([0-9a-zA-Z]+)/g, '$1<sub>$2</sub>')
-                        .replace(/\*/g, '·');
-                    return `<span class="math-symbol">${formatted}</span>`;
-                })
+                // Xử lý các phân số \frac{A}{B} thành dạng (A)/(B)
+                .replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '($1)/($2)')
+                // Chuyển đổi các ký hiệu LaTeX Hy Lạp và toán học
+                .replace(/\\omega/g, 'ω')
+                .replace(/\\lambda/g, 'λ')
+                .replace(/\\pi/g, 'π')
+                .replace(/\\varphi/g, 'φ')
+                .replace(/\\Delta/g, 'Δ')
+                .replace(/\\cos/g, 'cos')
+                .replace(/\\sin/g, 'sin')
+                .replace(/\\tan/g, 'tan')
+                .replace(/\\left\(/g, '(')
+                .replace(/\\right\)/g, ')')
+                .replace(/\\left\[/g, '[')
+                .replace(/\\right\]/g, ']')
+                .replace(/\\cdot/g, '·')
+                .replace(/\\([a-zA-Z]+)/g, '$1') // Dọn dẹp các lệnh gạch chéo còn lại
                 .replace(/\n/g, '<br>');
         }
 
@@ -1429,7 +1440,7 @@
                         if (isTag) {
                             typeWriter();
                         } else {
-                            setTimeout(typeWriter, 12);
+                            setTimeout(typeWriter, 12); // Hiệu ứng chạy chữ ngang mượt mà
                         }
                     } else {
                         bubbleEl.innerHTML = formattedHTML;
@@ -1447,6 +1458,7 @@
         function addTypingIndicator() {
             const id = 'typing_' + Date.now();
             const row = document.createElement('div'); row.className = `fox-msg-row fox-msg-bot`; row.id = id;
+            // Đã thiết lập hiệu ứng ngang trực quan cho dòng trạng thái suy nghĩ
             row.innerHTML = `<div class="fox-msg-avatar">${FOX_AVATAR_SVG}</div>
                              <div class="fox-msg-group">
                                  <div class="fox-msg-bubble">
