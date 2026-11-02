@@ -1207,9 +1207,19 @@ function openTwoSourceModal() {
             }
             lastTsDrawTime = now;
 
-            const canv = document.getElementById('twoSourceCanvas'); if (!canv) return;
+            const canv = document.getElementById('twoSourceCanvas'); 
+            if (!canv) return;
+            
+            // Đảm bảo canvas nhận diện đúng kích thước khung chứa full màn hình y hệt chế độ đo 1 nguồn
+            canv.width = canv.parentElement.clientWidth;
+            canv.height = canv.parentElement.clientHeight;
+
             const ctx = canv.getContext('2d'), cw = canv.width, ch = canv.height;
-            ctx.fillStyle = '#f8fafc'; ctx.fillRect(0, 0, cw, ch); drawMainGrid(ctx, 0, 0, cw, ch, null, null, true);
+            ctx.fillStyle = '#f8fafc'; 
+            ctx.fillRect(0, 0, cw, ch); 
+            
+            // Gọi hàm vẽ lưới với toàn bộ chiều rộng và chiều cao (cw, ch) để lưới giãn nở full màn hình
+            drawMainGrid(ctx, 0, 0, cw, ch, null, null, true);
             
             let samplesDraw = Math.floor(sampleRate * totalTimeOnScreen);
             let activeDataA = channelConfig.A.data, activeDataB = channelConfig.B.data;
