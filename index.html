@@ -261,6 +261,14 @@
     </style>
 </head>
 <script>
+    const FOX_AVATAR_SVG = `<svg viewBox="0 0 100 100" fill="none"><polygon points="22,12 10,48 36,40" fill="#ff7a30"/><polygon points="23,19 16,44 32,38" fill="#1e293b"/><path d="M 19 36 Q 23 32 28 34" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round"/><polygon points="78,12 64,40 90,48" fill="#ff7a30"/><polygon points="77,19 68,38 84,44" fill="#1e293b"/><path d="M 81 36 Q 77 32 72 34" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round"/><polygon points="50,22 36,40 50,46" fill="#ff8f4a"/><polygon points="50,22 50,46 64,40" fill="#ff7a30"/><polygon points="36,40 10,48 20,68 38,58" fill="#d4380d"/><polygon points="64,40 38,58 50,46" fill="#e04006"/><polygon points="64,40 50,46 62,58" fill="#d4380d"/><polygon points="64,40 90,48 80,68 62,58" fill="#d4380d"/><polygon points="20,68 12,74 26,76 34,68" fill="#e2e8f0"/><polygon points="80,68 88,74 74,76 66,68" fill="#cbd5e1"/><polygon points="38,58 50,46 50,78 36,68" fill="#ff7a30"/><polygon points="62,58 50,46 50,78 64,68" fill="#e04006"/><polygon points="50,78 36,68 44,88 50,88" fill="#f8fafc"/><polygon points="50,78 64,68 56,88 50,88" fill="#e2e8f0"/><polygon points="50,88 45,82 55,82" fill="#0f172a"/><polygon points="25,48 50,54 75,48 71,59 50,65 29,59" fill="#090d16" stroke="rgba(56,189,248,0.5)" stroke-width="0.9"/><circle cx="34.5" cy="48" r="1.5" fill="#ffffff"/><circle cx="44.5" cy="60" r="1.5" fill="#ffffff"/><circle cx="54.5" cy="48" r="1.5" fill="#ffffff"/><circle cx="64.5" cy="60" r="1.5" fill="#ffffff"/></svg>`;
+
+    // CHỐNG THOÁT NHẦM TRANG
+    window.addEventListener('beforeunload', function (e) {
+        e.preventDefault();
+        e.returnValue = ''; 
+    });
+
     document.addEventListener('keydown', function(e) {
         if (
             e.key === 'F12' ||
@@ -329,7 +337,7 @@
 
             <div class="contact-box">
                 📌 <b>Cần nhận bản Full chính thức?</b><br>
-                Liên hệ tác giả / Giáo viên hướng dẫn:VÕ BÌNH MINH<br>
+                Liên hệ tác giả / Giáo viên hướng dẫn: VÕ BÌNH MINH<br>
                 • Điện thoại / Zalo: <b>0939323579</b><br>
             </div>
         </div>
@@ -366,6 +374,12 @@
                             <div class="settings-group-items">
                                 <div class="settings-item active" data-target="speedSelect" data-value="fast">Nhanh</div>
                                 <div class="settings-item" data-target="speedSelect" data-value="slow">Chậm</div>
+                            </div>
+                        </div>
+                        <!-- NÚT XÓA KEY / ĐĂNG XUẤT -->
+                        <div class="settings-group" id="groupLicense">
+                            <div class="settings-group-header" onclick="forceLogout(true)" style="color: #ef4444; border-top: 1px solid #1e293b;">
+                                <span>🚪 Xóa Key / Đăng xuất</span>
                             </div>
                         </div>
                     </div>
@@ -489,34 +503,29 @@
                     <button class="fox-btn-icon" id="themeToggleBtn" onclick="toggleChatTheme()" title="Đổi giao diện">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                     </button>
-                    <button class="fox-btn-icon" onclick="toggleChat()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
                 </div>
             </div>
             <div id="fox-chat-content">
                 <div class="fox-msg-row fox-msg-bot">
                     <div class="fox-msg-avatar" id="msg-fox-icon-container"></div>
-                    <div class="fox-msg-group"><div class="fox-msg-bubble">Chào em! Thầy là <strong>FOX-Lab AI</strong>. Em có câu hỏi nào về dao động ký hoặc bài Sóng âm không?</div></div>
+                    <div class="fox-msg-group">
+                        <div class="fox-msg-bubble">Chào em! Thầy là <b>FOX-Lab AI</b>, trợ lý ảo hướng dẫn thí nghiệm Vật lý. Em đang khảo sát với tần số <span id="foxLiveFreqTag" class="fox-freq-tag">0.0 Hz</span>. Em cần hỗ trợ gì?</div>
+                    </div>
                 </div>
             </div>
             <div class="fox-input-container">
                 <div class="fox-input-box">
-                    <input type="text" id="fox-chat-input" placeholder="Hỏi FOX-Lab..." autocomplete="off">
-                    <button class="fox-send-btn" id="foxSendBtn" onclick="sendChatMessage()" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg></button>
+                    <input type="text" id="fox-chat-input" placeholder="Hỏi AI về kết quả đo đạc..." autocomplete="off">
+                    <button class="fox-send-btn" id="foxSendBtn" disabled>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                    </button>
                 </div>
-                <div class="fox-footer-meta">Tần số bám: <span class="fox-freq-tag" id="foxLiveFreqTag">440.0 Hz</span></div>
+                <div class="fox-footer-meta">AI có thể cung cấp thông tin không chính xác. Hãy tự kiểm chứng.</div>
             </div>
         </div>
     </div>
 
     <script>
-        const FOX_AVATAR_SVG = `<svg viewBox="0 0 100 100" fill="none"><polygon points="22,12 10,48 36,40" fill="#ff7a30"/><polygon points="23,19 16,44 32,38" fill="#1e293b"/><path d="M 19 36 Q 23 32 28 34" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round"/><polygon points="78,12 64,40 90,48" fill="#ff7a30"/><polygon points="77,19 68,38 84,44" fill="#1e293b"/><path d="M 81 36 Q 77 32 72 34" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round"/><polygon points="50,22 36,40 50,46" fill="#ff8f4a"/><polygon points="50,22 50,46 64,40" fill="#ff7a30"/><polygon points="36,40 10,48 20,68 38,58" fill="#d4380d"/><polygon points="64,40 38,58 50,46" fill="#e04006"/><polygon points="64,40 50,46 62,58" fill="#d4380d"/><polygon points="64,40 90,48 80,68 62,58" fill="#d4380d"/><polygon points="20,68 12,74 26,76 34,68" fill="#e2e8f0"/><polygon points="80,68 88,74 74,76 66,68" fill="#cbd5e1"/><polygon points="38,58 50,46 50,78 36,68" fill="#ff7a30"/><polygon points="62,58 50,46 50,78 64,68" fill="#e04006"/><polygon points="50,78 36,68 44,88 50,88" fill="#f8fafc"/><polygon points="50,78 64,68 56,88 50,88" fill="#e2e8f0"/><polygon points="50,88 45,82 55,82" fill="#0f172a"/><polygon points="25,48 50,54 75,48 71,59 50,65 29,59" fill="#090d16" stroke="rgba(56,189,248,0.5)" stroke-width="0.9"/><circle cx="34.5" cy="48" r="1.5" fill="#ffffff"/><circle cx="44.5" cy="60" r="1.5" fill="#ffffff"/><circle cx="54.5" cy="48" r="1.5" fill="#ffffff"/><circle cx="64.5" cy="60" r="1.5" fill="#ffffff"/></svg>`;
-
-        // CHỐNG THOÁT NHẦM TRANG
-        window.addEventListener('beforeunload', function (e) {
-            e.preventDefault();
-            e.returnValue = ''; 
-        });
-
         const btnStartA = document.getElementById('btnStartA'), btnStartB = document.getElementById('btnStartB');
         const pauseButton = document.getElementById('pauseButton'), resetButton = document.getElementById('resetButton');
         const btnAnalysis = document.getElementById('btnAnalysis'), infoMessageText = document.getElementById('infoMessageText');
@@ -584,6 +593,48 @@
             await verifyKeyWithServer(keyInput, "full");
         }
 
+        // HÀM ÉP ĐĂNG XUẤT NẾU KEY BỊ XÓA HOẶC NGƯỜI DÙNG BẤM NÚT
+        function forceLogout(isManual = false) {
+            if (isManual) {
+                const confirmLogout = confirm("⚠️ Bạn có chắc chắn muốn xóa Key bản quyền và đăng xuất khỏi thiết bị này?");
+                if (!confirmLogout) return; // Hủy thao tác nếu người dùng chọn Cancel
+            }
+            
+            localStorage.removeItem('fox_license_key'); 
+            isDemoMode = true;
+            
+            // Đóng dropdown cài đặt nếu đang mở
+            document.getElementById('settingsDropdown').classList.remove('open');
+
+            // Tắt các Micro đang thu âm để bảo mật và tiết kiệm tài nguyên
+            stopAudioChannel('A');
+            stopAudioChannel('B');
+            
+            // Hiện lại màn hình khóa
+            document.getElementById('keyInputContainer').style.display = 'none';
+            document.getElementById('licenseKeyInput').value = '';
+            document.getElementById('licenseModalOverlay').style.display = 'flex'; 
+            
+            // Hiện lại nút bánh răng nhập Key và đặt lại trạng thái chữ
+            const gearBtn = document.querySelector('.license-gear-btn');
+            if (gearBtn) gearBtn.style.display = 'inline-flex';
+            infoMessageText.innerHTML = "Bản Dùng thử Demo (Khóa tính năng nâng cao).";
+            infoMessageText.style.color = "#dc2626";
+            
+            // Khóa chức năng đo đạc
+            isPaused = true;
+            clearTimeout(stopTimer);
+            if(pauseButton) {
+                pauseButton.textContent = "Đo / Dừng"; 
+                pauseButton.className = "btn-green";
+            }
+            
+            // Làm mới lại giao diện hiển thị
+            updateUIState();
+            checkAndShowQR(); 
+            drawFrame(true);
+        }
+
         async function verifyKeyWithServer(key, type, isSilent = false) {
             if(!isSilent) infoMessageText.innerHTML = "Đang kiểm tra Key bản Full với Google Sheets...";
             const deviceId = getDeviceId();
@@ -603,6 +654,10 @@
                     document.getElementById('licenseModalOverlay').style.display = 'none';
                     infoMessageText.innerHTML = "✅ Bản Full Chính Thức đã kích hoạt thành công!";
                     
+                    // ẨN NÚT BÁNH RĂNG KHI THÀNH CÔNG
+                    const gearBtn = document.querySelector('.license-gear-btn');
+                    if (gearBtn) gearBtn.style.display = 'none';
+                    
                     updateAnalysisButtonState();
                     checkAndShowQR();
                 } else {
@@ -615,26 +670,7 @@
             }
         }
 
-        function forceLogout() {
-            localStorage.removeItem('fox_license_key'); 
-            isDemoMode = true;
-            
-            document.getElementById('keyInputContainer').style.display = 'none';
-            document.getElementById('licenseKeyInput').value = '';
-            document.getElementById('licenseModalOverlay').style.display = 'flex'; 
-            
-            isPaused = true;
-            clearTimeout(stopTimer);
-            const btnPause = document.getElementById('pauseButton');
-            if(btnPause) {
-                btnPause.textContent = "Đo / Dừng"; 
-                btnPause.className = "btn-green";
-            }
-            
-            updateUIState();
-            checkAndShowQR(); 
-        }
-
+        // TỰ ĐỘNG KIỂM TRA MỖI 30 GIÂY
         setInterval(async () => {
             let activeKey = localStorage.getItem('fox_license_key');
             if (activeKey && !isDemoMode) {
@@ -647,11 +683,14 @@
                     });
                     const result = await response.json();
                     
+                    // Nếu Sheets báo Key bị xóa hoặc hết hạn -> Đẩy văng ra
                     if (result.status !== "success") {
                         alert("⚠️ Key bản quyền của bạn đã bị thu hồi hoặc xóa khỏi hệ thống. Ứng dụng sẽ khóa lại!");
                         forceLogout();
                     }
-                } catch (e) {}
+                } catch (e) {
+                    // Lỗi mạng tạm thời thì bỏ qua, không văng oan
+                }
             }
         }, 30000);
 
@@ -751,6 +790,7 @@
 
         settingsMenu.querySelectorAll('.settings-group-header').forEach(header => {
             header.addEventListener('click', (e) => {
+                if (header.textContent.includes('Xóa Key')) return; // Bỏ qua hiệu ứng nếu là nút Xóa Key
                 e.stopPropagation();
                 const group = header.parentElement;
                 settingsMenu.querySelectorAll('.settings-group').forEach(g => { if (g !== group) g.classList.remove('expanded'); });
@@ -941,7 +981,6 @@
             ctx.lineWidth = 2; ctx.strokeStyle = '#334155'; ctx.beginPath();
             let centerY = boxY + boxH / 2, centerX = boxX + boxW / 2; 
             
-            // Trục Ox và Oy giữ nguyên ở chính giữa đồ thị
             ctx.moveTo(boxX, centerY); ctx.lineTo(boxX + boxW, centerY); 
             ctx.moveTo(centerX, boxY); ctx.lineTo(centerX, boxY + boxH); 
             
@@ -960,7 +999,6 @@
             for (let i = 1; i < 8; i++) { if (i !== 4) { if (!drawYLabels && i % 2 !== 0) continue; drawLabelWithPill(ctx, parseFloat((maxY - i * valPerStep).toFixed(2)).toString().replace('.', ','), centerX + 8, boxY + i * stepGridY, 'left', 'middle'); } }
             drawLabelWithPill(ctx, "0", centerX + 8, centerY + 8, 'left', 'top'); 
             
-            // Xử lý vị trí tên đồ thị
             if (titleText) {
                 let textPosX = (titleText === 'Biên độ') ? (centerX + 6) : (boxX + 8);
                 drawLabelWithPill(ctx, titleText, textPosX, boxY + 8, 'left', 'top', titleColor);
@@ -989,20 +1027,13 @@
             else { pauseButton.disabled = true; resetButton.disabled = false; infoMessageText.innerHTML = "Nhấn vào <span class='info-badge'>Kênh A</span> hoặc <span class='info-badge'>Kênh B</span> để bật mic."; infoMessageText.style.color = "#0284c7"; }
             updateAnalysisButtonState();
             
-            // Ẩn nút "Nhập Key" sau khi kích hoạt bản Full thành công
             const gearBtn = document.querySelector('.license-gear-btn');
-            if (gearBtn) {
-                gearBtn.style.display = isDemoMode ? 'inline-flex' : 'none';
-            }
+            if (gearBtn) { gearBtn.style.display = isDemoMode ? 'inline-flex' : 'none'; }
         }
 
-        // ==========================================
-        // KHỐI HÀM INIT AUDIO (SMART USB/STEREO DETECT)
-        // ==========================================
         async function initAudioChannel(channelId, deviceId = null) {
             const mode = getActiveChannelMode();
             
-            // Nếu chế độ 1 nguồn thì tự động tắt nguồn âm kia
             if (mode === '1') stopAudioChannel((channelId === 'A') ? 'B' : 'A');
 
             if (!audioCtx) {
@@ -1023,23 +1054,19 @@
             cfg.index = 0;
 
             try {
-                // Đọc ID thiết bị đang được chọn
                 const idA = micSelectA ? micSelectA.value : '';
                 const idB = micSelectB ? micSelectB.value : '';
-                
-                // NHẬN DIỆN THÔNG MINH (SharedDevice)
                 const isSharedDevice = (idA === idB);
-
                 const baseConstraints = { echoCancellation: false, noiseSuppression: false, autoGainControl: false };
 
                 let audioConstraints = {
                     audio: (mode === '2' && isSharedDevice) ? {
                         deviceId: deviceId ? { exact: deviceId } : undefined,
-                        channelCount: 2, // Yêu cầu HĐH cấp 2 kênh Stereo
+                        channelCount: 2, 
                         ...baseConstraints
                     } : {
                         deviceId: deviceId ? { exact: deviceId } : undefined,
-                        ...baseConstraints // Cấp luồng Mono thông thường
+                        ...baseConstraints 
                     }
                 };
 
@@ -1163,348 +1190,354 @@
             const mode = getActiveChannelMode();
             let boxA_Y = 0, boxA_H = height, boxB_Y = 0, boxB_H = 0;
             if (mode === '2') { boxA_H = height / 2; boxB_Y = height / 2; boxB_H = height / 2; }
+            if (isReset) { 
+                drawMainGrid(canvasCtx, 0, boxA_Y, width, boxA_H, '#dc2626', 'Kênh A (Chưa bật)', true); 
+                if (mode === '2') drawMainGrid(canvasCtx, 0, boxB_Y, width, boxB_H, '#2563eb', 'Kênh B (Chưa bật)', true); 
+                return; 
+            }
 
-            drawMainGrid(canvasCtx, 0, boxA_Y, width, boxA_H, mode==='2' ? '#ef4444' : '#1e293b', mode==='2' ? 'Kênh A (Đỏ)' : 'Biên độ', true);
-            if (mode === '2') { canvasCtx.strokeStyle = '#cbd5e1'; canvasCtx.lineWidth = 2; canvasCtx.beginPath(); canvasCtx.moveTo(0, boxB_Y); canvasCtx.lineTo(width, boxB_Y); canvasCtx.stroke(); drawMainGrid(canvasCtx, 0, boxB_Y, width, boxB_H, '#3b82f6', 'Kênh B (Xanh)', true); }
+            const samplesNeeded = Math.floor(sampleRate * totalTimeOnScreen);
+            
+            // VẼ KÊNH A
+            drawMainGrid(canvasCtx, 0, boxA_Y, width, boxA_H, '#dc2626', channelConfig.A.active ? 'Biên độ' : 'Kênh A (Khóa)', true);
+            if (channelConfig.A.active && channelConfig.A.data && channelConfig.A.index > samplesNeeded) {
+                let offset = isContinuousMode ? 0 : findZeroCrossingOffset(channelConfig.A, channelConfig.A.index, samplesNeeded);
+                drawWaveform(canvasCtx, channelConfig.A.data, channelConfig.A.index, offset, samplesNeeded, 0, boxA_Y, width, boxA_H, '#ef4444');
+            }
 
-            if (audioCtx && !isReset) {
-                const samplesNeeded = Math.floor(totalTimeOnScreen * sampleRate), step = Math.max(1, Math.floor(samplesNeeded / (width * 2))), sliceWidth = (width / samplesNeeded) * step;
-                let refCfg = channelConfig.A.active ? channelConfig.A : (channelConfig.B.active ? channelConfig.B : null);
-                let sharedTriggerOffset = (refCfg && refCfg.index > samplesNeeded) ? findZeroCrossingOffset(refCfg, refCfg.index, samplesNeeded) : 0;
-                
-                ['A', 'B'].forEach(ch => {
-                    const cfg = channelConfig[ch]; if (mode === '1' && ch === 'B') return;
-                    if (cfg.active && cfg.index > 0 && cfg.data) {
-                        const len = cfg.data.length, availableSamples = Math.min(cfg.index, len - 4096); if (availableSamples <= 0) return;
-                        let currentBoxY = (ch === 'A') ? boxA_Y : boxB_Y, currentBoxH = (ch === 'A') ? boxA_H : boxB_H, graphCenterY = currentBoxY + currentBoxH / 2, drawHeight = currentBoxH / 2.2; 
-                        const triggerOffset = (cfg === refCfg) ? sharedTriggerOffset : Math.min(sharedTriggerOffset, Math.max(0, availableSamples - samplesNeeded)), endIndex = cfg.index - triggerOffset, startIndex = endIndex - samplesNeeded;
-                        
-                        canvasCtx.save(); canvasCtx.beginPath(); canvasCtx.rect(0, currentBoxY, width, currentBoxH); canvasCtx.clip();
-                        canvasCtx.lineWidth = 2.5; canvasCtx.lineJoin = 'round'; canvasCtx.strokeStyle = cfg.color; canvasCtx.beginPath();
-                        let x = 0, hasMoved = false;
-                        for (let i = startIndex; i < endIndex; i += step) {
-                            if (i < 0 || i < cfg.index - availableSamples || i >= cfg.index) { x += sliceWidth; continue; }
-                            let bufIdx = ((i % len) + len) % len, v = cfg.data[bufIdx];
-                            if (step > 2) {
-                                let maxV = v, minV = v; for (let j = 1; j < step; j++) { if (i + j < endIndex && i + j < cfg.index) { let tempV = cfg.data[((i + j) % len + len) % len]; if (tempV > maxV) maxV = tempV; if (tempV < minV) minV = tempV; } }
-                                let yMin = graphCenterY - (minV * currentZoomY * drawHeight); if (!hasMoved) { canvasCtx.moveTo(x, yMin); hasMoved = true; } else canvasCtx.lineTo(x, yMin);
-                                let yMax = graphCenterY - (maxV * currentZoomY * drawHeight); canvasCtx.lineTo(x, yMax); x += sliceWidth;
-                            } else { let y = graphCenterY - (v * currentZoomY * drawHeight); if (!hasMoved) { canvasCtx.moveTo(x, y); hasMoved = true; } else canvasCtx.lineTo(x, y); x += sliceWidth; }
-                            if (x > width) break;
-                        }
-                        canvasCtx.stroke(); canvasCtx.restore();
-                    }
-                });
+            // VẼ KÊNH B NẾU CHẾ ĐỘ 2 NGUỒN
+            if (mode === '2') {
+                drawMainGrid(canvasCtx, 0, boxB_Y, width, boxB_H, '#2563eb', channelConfig.B.active ? 'Biên độ' : 'Kênh B (Khóa)', true);
+                if (channelConfig.B.active && channelConfig.B.data && channelConfig.B.index > samplesNeeded) {
+                    let offset = isContinuousMode ? 0 : findZeroCrossingOffset(channelConfig.B, channelConfig.B.index, samplesNeeded);
+                    drawWaveform(canvasCtx, channelConfig.B.data, channelConfig.B.index, offset, samplesNeeded, 0, boxB_Y, width, boxB_H, '#3b82f6');
+                }
             }
         }
 
-        function draw(timestamp) {
-            if (isPaused && !isTwoSourceModalOpen) {
-                if (animFrameId) { cancelAnimationFrame(animFrameId); animFrameId = null; }
-                return;
-            }
-            animFrameId = requestAnimationFrame(draw);
-            if (!timestamp) timestamp = performance.now();
-            let elapsed = timestamp - lastDrawTime, interval = 1000 / targetFPS;
-            if (elapsed > interval) { lastDrawTime = timestamp - (elapsed % interval); drawFrame(); }
-        }
-
-        function extractWindowData(cfg, samplesNeeded, triggerOffset) {
-            let res = new Float32Array(samplesNeeded); if (!cfg || !cfg.active || !cfg.data) return res;
-            let len = cfg.data.length, available = Math.min(cfg.index, len - 4096); if(available <= samplesNeeded) return res;
-            let actualOffset = Math.min(triggerOffset, Math.max(0, available - samplesNeeded)), endIndex = cfg.index - actualOffset, startIndex = endIndex - samplesNeeded;
-            for(let i=0; i<samplesNeeded; i++) { res[i] = cfg.data[((startIndex + i) % len + len) % len]; } return res;
-        }
-        function findFirstZeroCrossing(arr) {
-            let max = 0; for(let i=0; i<arr.length; i++) { if(Math.abs(arr[i])>max) max = Math.abs(arr[i]); } if(max < 0.01) return -1; 
-            for(let i=1; i<arr.length-1; i++) { if(arr[i-1] <= 0 && arr[i] > 0 && arr[i+1] > arr[i]) return i; } return -1;
-        }
-        function calculateFreqFromArray(arr, sampleRate) {
-            let zc1 = findFirstZeroCrossing(arr); if(zc1 < 0) return 0;
-            let zc2 = -1; for(let i=zc1+10; i<arr.length-1; i++) { if(arr[i-1] <= 0 && arr[i] > 0 && arr[i+1] > arr[i]) { zc2 = i; break; } }
-            if(zc2 > zc1) return sampleRate / (zc2 - zc1);
-            return autoCorrelate(arr, sampleRate) > 0 ? autoCorrelate(arr, sampleRate) : 0;
-        }
-
-        function drawWaveformRaw(ctx, arr, boxX, boxY, boxW, boxH, color, strokeWidth = 2) {
-            if(!arr || arr.length === 0) return;
-            ctx.strokeStyle = color; ctx.lineWidth = strokeWidth; ctx.lineJoin = 'round'; ctx.beginPath();
-            let step = Math.max(1, Math.floor(arr.length / (boxW * 2))), sliceWidth = (boxW / arr.length) * step;
-            let x = boxX, hasMoved = false, graphCenterY = boxY + boxH/2, graphDrawHeight = boxH / 2.2;
-            for(let i=0; i<arr.length; i+=step) {
-                let v = arr[i];
-                if(step > 2) {
-                    let min = v, max = v; for(let j=1; j<step && i+j<arr.length; j++) { let tv = arr[i+j]; if(tv < min) min = tv; if(tv > max) max = tv; }
-                    let y1 = graphCenterY - (min * currentZoomY * graphDrawHeight), y2 = graphCenterY - (max * currentZoomY * graphDrawHeight);
-                    if(!hasMoved) { ctx.moveTo(x, y1); hasMoved = true; } else { ctx.lineTo(x, y1); } ctx.lineTo(x, y2);
-                } else { let y = graphCenterY - (v * currentZoomY * graphDrawHeight); if(!hasMoved) { ctx.moveTo(x, y); hasMoved = true; } else { ctx.lineTo(x, y); } }
-                x += sliceWidth; if(x > boxX + boxW) break;
+        function drawWaveform(ctx, dataArray, currentIndex, offset, samplesNeeded, boxX, boxY, boxW, boxH, color) {
+            ctx.beginPath(); ctx.lineWidth = 2.5; ctx.strokeStyle = color; ctx.lineJoin = 'round';
+            const len = dataArray.length; 
+            let startIdx = currentIndex - offset - samplesNeeded;
+            let step = Math.max(1, Math.floor(samplesNeeded / (boxW * 2))); // Tối ưu vẽ
+            for (let i = 0; i < samplesNeeded; i += step) {
+                let idx = ((startIdx + i) % len + len) % len;
+                let val = dataArray[idx];
+                let x = boxX + (i / samplesNeeded) * boxW;
+                let y = boxY + boxH / 2 - (val * currentZoomY * boxH / 2);
+                y = Math.max(boxY, Math.min(boxY + boxH, y));
+                if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
             }
             ctx.stroke();
         }
 
+        function draw() {
+            if (!isPaused && targetFPS > 0) {
+                let now = performance.now();
+                if (now - lastDrawTime > (1000 / targetFPS)) { drawFrame(); lastDrawTime = now; }
+            }
+            animFrameId = requestAnimationFrame(draw);
+        }
+
+        // --- CÁC HÀM XỬ LÝ FFT (HỌA ÂM) ---
+        function openFFTModal() {
+            if (isDemoMode) { alert("Chức năng Phân tích Họa âm FFT chỉ có trên bản Full."); return; }
+            document.getElementById('fftModalOverlay').classList.add('animUI-visible');
+            document.getElementById('fftModalOverlay').style.display = 'flex';
+            const inputFreq = document.getElementById('fftTargetFreq');
+            if (lockedFrequency > 20) inputFreq.value = Math.round(lockedFrequency);
+            setTimeout(processAndDrawFFT, 350); // Đợi anim xong
+        }
+
+        function closeFFTModal() {
+            const overlay = document.getElementById('fftModalOverlay');
+            overlay.classList.remove('animUI-visible');
+            setTimeout(() => { overlay.style.display = 'none'; }, 300);
+        }
+
+        function processAndDrawFFT() {
+            const f0 = parseFloat(document.getElementById('fftTargetFreq').value);
+            if (!f0 || f0 <= 0 || !channelConfig.A.data) return;
+            const fftCanvas = document.getElementById('fftDisplayCanvas');
+            const fCtx = fftCanvas.getContext('2d');
+            const cw = fftCanvas.parentElement.clientWidth - 12, ch = fftCanvas.parentElement.clientHeight - 12;
+            fftCanvas.width = cw; fftCanvas.height = ch;
+            
+            fCtx.fillStyle = '#f8fafc'; fCtx.fillRect(0, 0, cw, ch);
+            
+            let fftSize = 4096, recentData = new Float32Array(fftSize), len = channelConfig.A.data.length, cIdx = channelConfig.A.index;
+            for(let i=0; i<fftSize; i++) {
+                // Windowing (Hanning)
+                let multiplier = 0.5 * (1 - Math.cos(2 * Math.PI * i / (fftSize - 1)));
+                recentData[i] = channelConfig.A.data[((cIdx - fftSize + i) % len + len) % len] * multiplier;
+            }
+            
+            let magnitudes = computeFFT(recentData);
+            let binFreq = sampleRate / fftSize;
+            
+            // Vẽ Grid
+            fCtx.strokeStyle = '#e2e8f0'; fCtx.lineWidth = 1;
+            fCtx.beginPath();
+            for(let i=1; i<10; i++) { let x = (i/10)*cw; fCtx.moveTo(x, 0); fCtx.lineTo(x, ch); }
+            for(let i=1; i<5; i++) { let y = (i/5)*ch; fCtx.moveTo(0, y); fCtx.lineTo(cw, y); }
+            fCtx.stroke();
+            
+            let maxMag = 0, harmonics = [];
+            for (let i = 1; i <= 5; i++) {
+                let targetFreq = f0 * i;
+                let targetBin = Math.round(targetFreq / binFreq);
+                let localMax = 0;
+                for (let b = Math.max(0, targetBin - 5); b <= Math.min(magnitudes.length - 1, targetBin + 5); b++) {
+                    if (magnitudes[b] > localMax) localMax = magnitudes[b];
+                }
+                harmonics.push({ freq: targetFreq, mag: localMax, index: i });
+                if (localMax > maxMag) maxMag = localMax;
+            }
+            
+            if (maxMag === 0) maxMag = 1;
+            
+            fCtx.font = 'bold 12px "Inter", sans-serif'; fCtx.textAlign = 'center';
+            let barW = Math.min(40, (cw / 5) * 0.6);
+            let spacing = cw / 5;
+            
+            harmonics.forEach((h, i) => {
+                let cx = (i + 0.5) * spacing;
+                let hPx = (h.mag / maxMag) * (ch * 0.7);
+                let yStart = ch - 30;
+                
+                fCtx.fillStyle = (i === 0) ? '#3b82f6' : '#8b5cf6';
+                fCtx.fillRect(cx - barW/2, yStart - hPx, barW, hPx);
+                
+                fCtx.fillStyle = '#0f172a';
+                fCtx.fillText(`${i+1}f0`, cx, ch - 10);
+                fCtx.fillText(`${Math.round(h.freq)}Hz`, cx, yStart - hPx - 5);
+            });
+        }
+
+        // --- CÁC HÀM XỬ LÝ 2 NGUỒN ÂM ---
         function openTwoSourceModal() {
             if (isDemoMode) { alert("Chức năng Xử lý 2 Nguồn âm chỉ có trên bản Full."); return; }
-            if (!channelConfig.A.active || !channelConfig.B.active) return;
-            const overlay = document.getElementById('twoSourceModalOverlay');
-            overlay.style.display = 'flex';
-            requestAnimationFrame(() => requestAnimationFrame(() => overlay.classList.add('animUI-visible')));
-            isTwoSourceModalOpen = true; 
-            const btnPause = document.getElementById('btnTsPause'), btnResult = document.getElementById('btnTsResult');
-            showTsResults = false; showTsEquations = false;
-            document.getElementById('hudResults').style.display = 'none'; 
-            document.getElementById('hudEquations').style.display = 'none';
-            btnResult.className = "btn-slate"; document.getElementById('btnTsEquation').className = "btn-slate";
-
-            if (isContinuousMode) {
-                isTsPaused = false; btnPause.style.display = "inline-block"; btnPause.innerHTML = "⏸ Dừng"; btnPause.className = "btn-orange"; btnResult.style.display = "none"; 
-            } else {
-                isTsPaused = true; btnPause.style.display = "none"; btnResult.style.display = "inline-block"; 
-                const samplesNeeded = Math.floor(totalTimeOnScreen * sampleRate);
-                let sharedOffset = findZeroCrossingOffset(channelConfig.A, channelConfig.A.index, samplesNeeded);
-                snapDataA = extractWindowData(channelConfig.A, samplesNeeded, sharedOffset);
-                snapDataB = extractWindowData(channelConfig.B, samplesNeeded, sharedOffset);
+            if (getActiveChannelMode() !== '2' || !channelConfig.A.active || !channelConfig.B.active) {
+                alert("Vui lòng bật cả Kênh A và Kênh B để sử dụng tính năng này!"); return;
             }
-            const container = document.getElementById('tsContainer'), canv = document.getElementById('twoSourceCanvas');
-            canv.width = container.clientWidth - 12; canv.height = container.clientHeight - 12;
-            setTsMode('overlay');
-            requestAnimationFrame(() => { if (typeof updateTsModePill === 'function') updateTsModePill(document.getElementById('btnModeOverlay'), false); });
-            if (isPaused || isTsPaused) calculatePhaseAndDrawLive();
+            isTwoSourceModalOpen = true; isTsPaused = false;
+            document.getElementById('twoSourceModalOverlay').classList.add('animUI-visible');
+            document.getElementById('twoSourceModalOverlay').style.display = 'flex';
+            document.getElementById('btnTsPause').style.display = 'block';
+            document.getElementById('btnTsResult').style.display = 'block';
+            resizeCanvas(); 
         }
 
         function closeTwoSourceModal() {
+            isTwoSourceModalOpen = false;
             const overlay = document.getElementById('twoSourceModalOverlay');
             overlay.classList.remove('animUI-visible');
-            setTimeout(() => { overlay.style.display = 'none'; isTwoSourceModalOpen = false; setTimeout(resizeCanvas, 50); if(isPaused) drawFrame(); }, 300);
-        }
-
-        function toggleTsPause() {
-            isTsPaused = !isTsPaused;
-            const btnPause = document.getElementById('btnTsPause'), btnResult = document.getElementById('btnTsResult');
-            if (isTsPaused) {
-                btnPause.innerHTML = "▶ Tiếp tục"; btnPause.className = "btn-green"; btnResult.style.display = "inline-block";
-                const samplesNeeded = Math.floor(totalTimeOnScreen * sampleRate);
-                let sharedOffset = findZeroCrossingOffset(channelConfig.A, channelConfig.A.index, samplesNeeded);
-                snapDataA = extractWindowData(channelConfig.A, samplesNeeded, sharedOffset); snapDataB = extractWindowData(channelConfig.B, samplesNeeded, sharedOffset);
-            } else {
-                btnPause.innerHTML = "⏸ Dừng"; btnPause.className = "btn-orange"; btnResult.style.display = "none"; 
-                showTsResults = false; document.getElementById('hudResults').style.display = 'none'; btnResult.className = "btn-slate";
-            }
-            calculatePhaseAndDrawLive();
+            setTimeout(() => { overlay.style.display = 'none'; }, 300);
         }
 
         function setTsMode(mode) {
             tsViewMode = mode;
-            const btnOverlay = document.getElementById('btnModeOverlay'), btnSum = document.getElementById('btnModeSum');
-            btnOverlay.classList.remove('active-mode'); btnSum.classList.remove('active-mode');
-            const activeBtn = (mode === 'overlay') ? btnOverlay : btnSum;
-            activeBtn.classList.add('active-mode');
-            if (typeof updateTsModePill === 'function') updateTsModePill(activeBtn, true);
-            if(isPaused || isTsPaused) calculatePhaseAndDrawLive();
+            document.getElementById('btnModeOverlay').classList.remove('active-mode');
+            document.getElementById('btnModeSum').classList.remove('active-mode');
+            if (mode === 'overlay') document.getElementById('btnModeOverlay').classList.add('active-mode');
+            else document.getElementById('btnModeSum').classList.add('active-mode');
+            
+            let btn = (mode === 'overlay') ? document.getElementById('btnModeOverlay') : document.getElementById('btnModeSum');
+            updateTsModePill(btn, true);
         }
-        function toggleTsResults() { showTsResults = !showTsResults; document.getElementById('btnTsResult').className = showTsResults ? "btn-blue" : "btn-slate"; document.getElementById('hudResults').style.display = showTsResults ? "block" : "none"; if(isPaused || isTsPaused) calculatePhaseAndDrawLive(); }
-        function toggleTsEquations() { showTsEquations = !showTsEquations; document.getElementById('btnTsEquation').className = showTsEquations ? "btn-purple" : "btn-slate"; document.getElementById('hudEquations').style.display = showTsEquations ? "block" : "none"; if(isPaused || isTsPaused) calculatePhaseAndDrawLive(); }
+
+        function toggleTsPause() {
+            isTsPaused = !isTsPaused;
+            let btn = document.getElementById('btnTsPause');
+            if (isTsPaused) { btn.textContent = "▶ Tiếp tục"; btn.className = "btn-green"; } 
+            else { btn.textContent = "⏸ Dừng"; btn.className = "btn-orange"; }
+        }
+
+        function toggleTsResults() {
+            showTsResults = !showTsResults;
+            document.getElementById('hudResults').style.display = showTsResults ? 'block' : 'none';
+        }
+
+        function toggleTsEquations() {
+            showTsEquations = !showTsEquations;
+            document.getElementById('hudEquations').style.display = showTsEquations ? 'block' : 'none';
+        }
 
         function calculatePhaseAndDrawLive() {
-            const canv = document.getElementById('twoSourceCanvas'), ctx = canv.getContext('2d', { alpha: false }); if(!canv) return;
-            const cw = canv.width, ch = canv.height; ctx.fillStyle = '#f8fafc'; ctx.fillRect(0, 0, cw, ch);
+            if (!isTwoSourceModalOpen) return;
+            const canv = document.getElementById('twoSourceCanvas');
+            if (!canv) return;
+            const ctx = canv.getContext('2d');
+            const cw = canv.width, ch = canv.height;
+            ctx.fillStyle = '#f8fafc'; ctx.fillRect(0, 0, cw, ch);
             
-            const samplesNeeded = Math.floor(totalTimeOnScreen * sampleRate);
-            let dataA, dataB;
-            if (isTsPaused) { dataA = snapDataA; dataB = snapDataB; } 
-            else {
-                let sharedOffset = findZeroCrossingOffset(channelConfig.A, channelConfig.A.index, samplesNeeded);
-                dataA = extractWindowData(channelConfig.A, samplesNeeded, sharedOffset); dataB = extractWindowData(channelConfig.B, samplesNeeded, sharedOffset);
-            }
-            
-            if (dataA.length > 0 && dataB.length > 0 && (isTsPaused || Math.random() < 0.15)) {
-                let fA = calculateFreqFromArray(dataA, sampleRate), fB = calculateFreqFromArray(dataB, sampleRate);
-                if(fA > 0) currentCalcFreqA = fA; if(fB > 0) currentCalcFreqB = fB;
-                let zcA = findFirstZeroCrossing(dataA), zcB = findFirstZeroCrossing(dataB);
-                if (zcA >= 0 && zcB >= 0) {
-                    let deltaT_sec = (zcB - zcA) / sampleRate; let phaseRad = 2 * Math.PI * currentCalcFreqA * deltaT_sec;
-                    phaseRad = phaseRad % (2 * Math.PI); if (phaseRad < -Math.PI) phaseRad += 2 * Math.PI; if (phaseRad > Math.PI) phaseRad -= 2 * Math.PI;
-                    currentPhaseRad = phaseRad; currentPhaseDeg = phaseRad * (180 / Math.PI);
+            drawMainGrid(ctx, 0, 0, cw, ch, null, null, true);
+
+            const fftSize = 4096;
+            if (!isTsPaused) {
+                let recA = new Float32Array(fftSize), recB = new Float32Array(fftSize);
+                let len = channelConfig.A.data.length;
+                let cAIdx = channelConfig.A.index, cBIdx = channelConfig.B.index;
+                
+                for(let i=0; i<fftSize; i++) {
+                    recA[i] = channelConfig.A.data[((cAIdx - fftSize + i) % len + len) % len];
+                    recB[i] = channelConfig.B.data[((cBIdx - fftSize + i) % len + len) % len];
                 }
+                
+                snapDataA = recA; snapDataB = recB;
+                let fA = autoCorrelate(recA, sampleRate), fB = autoCorrelate(recB, sampleRate);
+                if (fA > 50 && fA < 3000) currentCalcFreqA = currentCalcFreqA * 0.7 + fA * 0.3;
+                if (fB > 50 && fB < 3000) currentCalcFreqB = currentCalcFreqB * 0.7 + fB * 0.3;
             }
 
-            if(showTsResults) {
-                document.getElementById('hudFreqA').textContent = currentCalcFreqA.toFixed(1); document.getElementById('hudPerA').textContent = (1000/currentCalcFreqA).toFixed(2);
-                document.getElementById('hudFreqB').textContent = currentCalcFreqB.toFixed(1); document.getElementById('hudPerB').textContent = (1000/currentCalcFreqB).toFixed(2);
-                document.getElementById('hudPhaseRad').textContent = Math.abs(currentPhaseRad).toFixed(2); document.getElementById('hudPhaseDeg').textContent = Math.abs(currentPhaseDeg).toFixed(0);
+            let samplesDraw = Math.floor(sampleRate * totalTimeOnScreen);
+            let offsetA = findZeroCrossingOffset({active:true, data: snapDataA}, snapDataA.length, samplesDraw);
+            
+            // Xử lý cảnh báo phách
+            let diffFreq = Math.abs(currentCalcFreqA - currentCalcFreqB);
+            const warnText = document.getElementById('tsWarningText');
+            if (diffFreq > (currentCalcFreqA * 0.05) && !isTsPaused) {
+                warnText.style.display = 'block';
+            } else {
+                warnText.style.display = 'none';
             }
-            if(showTsEquations) {
-                document.getElementById('eqFreqA').textContent = currentCalcFreqA.toFixed(1); document.getElementById('eqFreqB').textContent = currentCalcFreqB.toFixed(1);
-                let pSign = currentPhaseRad >= 0 ? "+" : "-"; document.getElementById('eqPhase').textContent = `${pSign} ${Math.abs(currentPhaseRad).toFixed(2)}`;
-                if(tsViewMode === 'sum') document.getElementById('eqSumLine').style.display = 'block'; else document.getElementById('eqSumLine').style.display = 'none';
+
+            // Tính Độ Lệch Pha (Cross-correlation)
+            if (!isTsPaused) {
+                let maxShift = Math.floor(sampleRate / currentCalcFreqA);
+                let bestCross = -Infinity, bestShift = 0;
+                for (let shift = -maxShift/2; shift < maxShift/2; shift++) {
+                    let sum = 0;
+                    for (let i = snapDataA.length - 2000; i < snapDataA.length; i++) {
+                        let bIdx = i + shift;
+                        if (bIdx >= 0 && bIdx < snapDataB.length) { sum += snapDataA[i] * snapDataB[bIdx]; }
+                    }
+                    if (sum > bestCross) { bestCross = sum; bestShift = shift; }
+                }
+                
+                let timeShift = bestShift / sampleRate;
+                let periodA = 1.0 / currentCalcFreqA;
+                currentPhaseRad = (timeShift / periodA) * 2 * Math.PI;
+                // Chuẩn hóa về [-pi, pi]
+                while(currentPhaseRad > Math.PI) currentPhaseRad -= 2*Math.PI;
+                while(currentPhaseRad < -Math.PI) currentPhaseRad += 2*Math.PI;
+                currentPhaseDeg = currentPhaseRad * (180 / Math.PI);
+            }
+
+            // Cập nhật UI HUD
+            if (showTsResults) {
+                document.getElementById('hudFreqA').innerText = currentCalcFreqA.toFixed(1);
+                document.getElementById('hudPerA').innerText = (1000/currentCalcFreqA).toFixed(2);
+                document.getElementById('hudFreqB').innerText = currentCalcFreqB.toFixed(1);
+                document.getElementById('hudPerB').innerText = (1000/currentCalcFreqB).toFixed(2);
+                document.getElementById('hudPhaseRad').innerText = currentPhaseRad.toFixed(2);
+                document.getElementById('hudPhaseDeg').innerText = Math.round(currentPhaseDeg);
             }
             
-            ctx.save(); ctx.beginPath(); ctx.rect(0, 0, cw, ch); ctx.clip(); drawMainGrid(ctx, 0, 0, cw, ch, '#1e293b', null, true); document.getElementById('tsWarningText').style.display = 'none';
+            if (showTsEquations) {
+                document.getElementById('eqFreqA').innerText = currentCalcFreqA.toFixed(1);
+                document.getElementById('eqFreqB').innerText = currentCalcFreqB.toFixed(1);
+                let phaseStr = (currentPhaseRad >= 0 ? "+ " : "- ") + Math.abs(currentPhaseRad).toFixed(2);
+                document.getElementById('eqPhase').innerText = phaseStr;
+                document.getElementById('eqSumLine').style.display = (tsViewMode === 'sum') ? 'block' : 'none';
+            }
 
+            // Vẽ đồ thị
+            ctx.beginPath(); ctx.lineWidth = 2.5; ctx.lineJoin = 'round';
+            let step = Math.max(1, Math.floor(samplesDraw / cw));
+            let startI = snapDataA.length - offsetA - samplesDraw;
+            
             if (tsViewMode === 'overlay') {
-                drawWaveformRaw(ctx, dataA, 0, 0, cw, ch, '#ef4444', 2.5); drawWaveformRaw(ctx, dataB, 0, 0, cw, ch, '#3b82f6', 2.5);
-                ctx.fillStyle = 'rgba(241, 245, 249, 0.9)'; ctx.fillRect(10, 10, 210, 22); ctx.font = 'bold 11px "Be Vietnam Pro", sans-serif'; 
-                ctx.fillStyle = '#ef4444'; ctx.fillText("Kênh A (Đỏ)", 16, 25); ctx.fillStyle = '#3b82f6'; ctx.fillText(" | Kênh B (Xanh)", 85, 25);
-            } else {
-                let dataSum = new Float32Array(samplesNeeded); for(let i=0; i<samplesNeeded; i++) dataSum[i] = dataA[i] + dataB[i];
-                drawWaveformRaw(ctx, dataSum, 0, 0, cw, ch, '#10b981', 3.0); 
-                ctx.fillStyle = 'rgba(241, 245, 249, 0.9)'; ctx.fillRect(10, 10, 170, 22); ctx.font = 'bold 11px "Be Vietnam Pro", sans-serif'; 
-                ctx.fillStyle = '#10b981'; ctx.fillText("Đồ thị Tổng hợp (A + B)", 16, 25);
-                if (Math.abs(currentCalcFreqA - currentCalcFreqB) > 15 && currentCalcFreqA > 50 && currentCalcFreqB > 50) { document.getElementById('tsWarningText').style.display = 'block'; }
-            }
-            ctx.restore();
-        }
-
-        function openFFTModal() {
-            if (isDemoMode) { alert("Chức năng Phân tích FFT chỉ có trên bản Full."); return; }
-            if (!channelConfig.A.active && !channelConfig.B.active) return;
-            const overlay = document.getElementById('fftModalOverlay');
-            overlay.style.display = 'flex';
-            requestAnimationFrame(() => requestAnimationFrame(() => overlay.classList.add('animUI-visible')));
-            document.getElementById('fftTargetFreq').value = (lockedFrequency > 0) ? Math.round(lockedFrequency) : 440;
-            const container = document.querySelector('.fft-canvas-container'), canv = document.getElementById('fftDisplayCanvas');
-            canv.width = container.clientWidth - 12; canv.height = container.clientHeight - 12; processAndDrawFFT();
-        }
-        
-        function closeFFTModal() {
-            const overlay = document.getElementById('fftModalOverlay');
-            overlay.classList.remove('animUI-visible');
-            setTimeout(() => { overlay.style.display = 'none'; setTimeout(resizeCanvas, 50); }, 300);
-        }
-
-        function processAndDrawFFT() {
-            let activeCfg = channelConfig.A.active ? channelConfig.A : channelConfig.B; if (!activeCfg.active || activeCfg.index < 8192) return;
-            const N = 8192; let rawData = new Float32Array(N), len = activeCfg.data.length, currentIdx = activeCfg.index;
-            for(let i = 0; i < N; i++) { let multiplier = 0.5 * (1 - Math.cos(2 * Math.PI * i / (N - 1))); rawData[i] = activeCfg.data[((currentIdx - N + i) % len + len) % len] * multiplier; }
-            let magnitudes = computeFFT(rawData);
-            const fftCanv = document.getElementById('fftDisplayCanvas'), ctx = fftCanv.getContext('2d', { alpha: false });
-            const cw = fftCanv.width, ch = fftCanv.height; ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, cw, ch);
-            let baseFreq = parseFloat(document.getElementById('fftTargetFreq').value) || 440, maxDrawFreq = baseFreq * 5.8, maxBin = Math.floor((maxDrawFreq / sampleRate) * N);
-            let maxMag = 0.001; for(let i=1; i<maxBin; i++) { if(magnitudes[i] > maxMag) maxMag = magnitudes[i]; }
-            const chartBottom = ch - 30; ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 1; ctx.beginPath();
-            for(let i = 0; i <= 10; i++) { let x = i * (cw / 10); ctx.moveTo(x, 0); ctx.lineTo(x, chartBottom); }
-            for(let i = 0; i <= 6; i++) { let y = i * (chartBottom / 6); ctx.moveTo(0, y); ctx.lineTo(cw, y); }
-            ctx.stroke(); ctx.strokeStyle = '#334155'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(0, chartBottom); ctx.lineTo(cw, chartBottom); ctx.stroke();
-            ctx.fillStyle = '#0f172a'; ctx.font = 'bold 11px "Be Vietnam Pro", sans-serif'; ctx.textAlign = 'center';
-            for(let i = 1; i <= 5; i++) { let fVal = Math.round(i * baseFreq), xPos = (fVal / maxDrawFreq) * cw; if (xPos < cw - 20) { ctx.fillText(fVal + " Hz", xPos, chartBottom + 16); ctx.strokeStyle = '#3b82f6'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(xPos, chartBottom); ctx.lineTo(xPos, chartBottom + 5); ctx.stroke(); } }
-            const binWidth = cw / maxBin, tolerance = baseFreq * 0.15;
-            for(let i = 1; i < maxBin; i++) {
-                let freq = i * (sampleRate / N), isHarmonic = false, harmonicNum = Math.round(freq / baseFreq);
-                if(harmonicNum >= 1 && harmonicNum <= 5 && Math.abs(freq - harmonicNum * baseFreq) < tolerance) isHarmonic = true;
-                let mag = magnitudes[i], barHeight = (mag / maxMag) * (chartBottom - 25), x = i * binWidth;
-                if(barHeight > 1) {
-                    ctx.fillStyle = isHarmonic ? '#ef4444' : '#38bdf8'; ctx.fillRect(x - (binWidth > 2 ? binWidth/2 : 0), chartBottom - barHeight, Math.max(2, binWidth), barHeight);
-                    if (isHarmonic && barHeight > 15 && mag > magnitudes[i-1] && mag > magnitudes[i+1]) { ctx.fillStyle = '#ef4444'; ctx.font = 'bold 11px "Be Vietnam Pro", sans-serif'; ctx.fillText("H" + harmonicNum, x, chartBottom - barHeight - 4); }
+                // Kênh A (Đỏ)
+                ctx.strokeStyle = '#ef4444'; ctx.beginPath();
+                for (let i = 0; i < samplesDraw; i+=step) {
+                    let idx = Math.max(0, Math.min(snapDataA.length - 1, startI + i));
+                    let val = snapDataA[idx], x = (i/samplesDraw)*cw, y = ch/2 - (val * currentZoomY * ch/2);
+                    if (i===0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
                 }
-            }
-        }
-
-        let isChatLightMode = false;
-
-        function toggleChatTheme() {
-            const chatBox = document.getElementById('fox-chat-box'), toggleBtn = document.getElementById('themeToggleBtn');
-            isChatLightMode = !isChatLightMode;
-            if (isChatLightMode) {
-                chatBox.classList.add('light-theme');
-                toggleBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>`;
-            } else {
-                chatBox.classList.remove('light-theme');
-                toggleBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>`;
-            }
-        }
-
-        function toggleChat() { 
-            const widget = document.getElementById("fox-chat-widget"); 
-            if(widget.classList.toggle("open")) { setTimeout(() => document.getElementById("fox-chat-input").focus(), 150); } 
-        }
-
-        function updateFoxLiveFrequency(freq) { 
-            if(freq > 0) { 
-                document.getElementById("foxLiveFreqTag").textContent = freq.toFixed(1) + " Hz"; 
-                document.getElementById("foxStatusText").textContent = `Trực tuyến`; 
-            } 
-        }
-
-        function parseBotReply(text) {
-            if (!text) return "";
-            let html = text.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\$\$/g, "").replace(/\$/g, "");
-            html = html.replace(/\\left\(/g, "(").replace(/\\right\)/g, ")").replace(/\\left\[/g, "[").replace(/\\right\]/g, "]");
-            html = html.replace(/\\left/g, "").replace(/\\right/g, ""); 
-            html = html.replace(/\\(cos|sin|tan|cot|ln|log|exp)\b/g, "$1").replace(/\\(text|mathrm|mathbf)\{([^}]+)\}/g, "$2");
-            
-            function isWrapped(s) { if (!s.startsWith('(') || !s.endsWith(')')) return false; let d = 0; for (let i = 0; i < s.length; i++) { if (s[i] === '(') d++; else if (s[i] === ')') d--; if (d === 0 && i < s.length - 1) return false; } return d === 0; }
-            function hasAddSub(s) { let d = 0; for (let i = 0; i < s.length; i++) { const ch = s[i]; if (ch === '(' || ch === '[' || ch === '{') d++; else if (ch === ')' || ch === ']' || ch === '}') d--; else if (d === 0 && (ch === '+' || ch === '-')) { if (i > 0 && s[i - 1] !== 'e' && s[i - 1] !== 'E') return true; } } return false; }
-            function isSimpleToken(s) { if (/^\d+(\.\d+)?$/.test(s)) return true; if (/^[a-zA-Z]$/.test(s)) return true; if (/^[a-zA-Z]_(?:[a-zA-Z0-9]+|\{[a-zA-Z0-9]+\})$/.test(s)) return true; if (/^\\[a-zA-Z]+(?:_(?:[a-zA-Z0-9]+|\{[a-zA-Z0-9]+\}))?$/.test(s)) return true; if (/^[πωλΔφαβγ]$/.test(s)) return true; if (/^[πωλΔφαβγ]_(?:[a-zA-Z0-9]+|\{[a-zA-Z0-9]+\})$/.test(s)) return true; return false; }
-            function formatFrac(num, den) { num = num.trim(); den = den.trim(); const needNumParen = !isWrapped(num) && (hasAddSub(num) || num.includes('/')); const needDenParen = !isWrapped(den) && (!isSimpleToken(den) || den.includes('/')); return (needNumParen ? '(' + num + ')' : num) + '/' + (needDenParen ? '(' + den + ')' : den); }
-            function replaceFrac(str) {
-                let idx = 0;
-                while ((idx = str.indexOf('\\frac', idx)) !== -1) {
-                    let p = idx + 5; while (p < str.length && /\s/.test(str[p])) p++; if (str[p] !== '{') { idx += 5; continue; }
-                    let numStart = p + 1, depth = 1; p++; while (p < str.length && depth > 0) { if (str[p] === '{') depth++; else if (str[p] === '}') depth--; p++; }
-                    if (depth !== 0) { idx += 5; continue; }
-                    let num = str.substring(numStart, p - 1); while (p < str.length && /\s/.test(str[p])) p++; if (str[p] !== '{') { idx += 5; continue; }
-                    let denStart = p + 1; depth = 1; p++; while (p < str.length && depth > 0) { if (str[p] === '{') depth++; else if (str[p] === '}') depth--; p++; }
-                    if (depth !== 0) { idx += 5; continue; }
-                    let den = str.substring(denStart, p - 1); num = replaceFrac(num); den = replaceFrac(den);
-                    let formatted = formatFrac(num, den); str = str.substring(0, idx) + formatted + str.substring(p); idx += formatted.length;
+                ctx.stroke();
+                
+                // Kênh B (Xanh)
+                ctx.strokeStyle = '#3b82f6'; ctx.beginPath();
+                for (let i = 0; i < samplesDraw; i+=step) {
+                    let idx = Math.max(0, Math.min(snapDataB.length - 1, startI + i));
+                    let val = snapDataB[idx], x = (i/samplesDraw)*cw, y = ch/2 - (val * currentZoomY * ch/2);
+                    if (i===0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
                 }
-                return str;
+                ctx.stroke();
+            } else if (tsViewMode === 'sum') {
+                // Tổng Hợp (Tím)
+                ctx.strokeStyle = '#8b5cf6'; ctx.beginPath();
+                for (let i = 0; i < samplesDraw; i+=step) {
+                    let idx = Math.max(0, Math.min(snapDataA.length - 1, startI + i));
+                    let val = snapDataA[idx] + snapDataB[idx];
+                    let x = (i/samplesDraw)*cw, y = ch/2 - (val * (currentZoomY/2) * ch/2);
+                    if (i===0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                }
+                ctx.stroke();
             }
-
-            html = replaceFrac(html);
-            html = html.replace(/\\sqrt\{([^}]+)\}/g, "√($1)");
-            const reps = { "\\\\cdot":"·", "\\\\pi":"π", "\\\\Delta":"Δ", "\\\\lambda":"λ", "\\\\omega":"ω", "\\\\varphi":"φ", "\\\\phi":"φ", "\\\\alpha":"α", "\\\\beta":"β", "\\\\gamma":"γ", "\\\\approx":"≈", "\\\\pm":"±", "\\\\times":"×", "\\\\div":"÷", "\\\\leq?\\b":"≤", "\\\\geq?\\b":"≥", "\\\\neq":"≠", "\\\\rightarrow":"→", "\\\\Rightarrow":"⇒", "\\\\infty":"∞", "\\\\circ":"°" };
-            for(let k in reps) html = html.replace(new RegExp(k, 'g'), reps[k]);
             
-            html = html.replace(/\*\*(.*?)\*\*/g, "<b>$1</b>").replace(/\*(.*?)\*/g, "<i>$1</i>");
-            html = html.replace(/_\{([^}]+)\}/g, "<sub>$1</sub>").replace(/_([a-zA-Z0-9]+)/g, "<sub>$1</sub>");
-            html = html.replace(/\^\{([^}]+)\}/g, "<sup>$1</sup>").replace(/\^([a-zA-Z0-9]+)/g, "<sup>$1</sup>");
-            html = html.replace(/\\\[/g, "").replace(/\\\]/g, "").replace(/\\\(/g, "").replace(/\\\)/g, "");
-            html = html.replace(/\n/g, "<br>");
-            return html;
+            if(!isTsPaused) requestAnimationFrame(calculatePhaseAndDrawLive);
         }
 
-        async function sendChatMessage() {
-            const input = document.getElementById('fox-chat-input'), btn = document.getElementById('foxSendBtn'), content = document.getElementById('fox-chat-content');
-            const msg = input.value.trim(); if(!msg) return;
+        // --- FOX-LAB AI WIDGET ---
+        function toggleChat() {
+            const widget = document.getElementById('fox-chat-widget');
+            widget.classList.toggle('open');
+            if (widget.classList.contains('open')) { setTimeout(() => document.getElementById('fox-chat-input').focus(), 300); }
+        }
+
+        function toggleChatTheme() { document.getElementById('fox-chat-box').classList.toggle('light-theme'); }
+        function updateFoxLiveFrequency(freq) { const freqTag = document.getElementById('foxLiveFreqTag'); if(freqTag) freqTag.innerText = freq.toFixed(1) + ' Hz'; }
+
+        const chatInput = document.getElementById('fox-chat-input'), sendBtn = document.getElementById('foxSendBtn'), chatContent = document.getElementById('fox-chat-content');
+        chatInput.addEventListener('input', () => { sendBtn.disabled = chatInput.value.trim() === ''; });
+        chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter' && !sendBtn.disabled) sendFoxMessage(); });
+        sendBtn.addEventListener('click', sendFoxMessage);
+
+        function sendFoxMessage() {
+            const text = chatInput.value.trim(); if (!text) return;
             
             if (isDemoMode) {
-                demoChatCount++;
-                if (demoChatCount > MAX_DEMO_CHAT) {
-                    content.innerHTML += `<div class="fox-msg-row fox-msg-bot"><div class="fox-msg-avatar">${FOX_AVATAR_SVG}</div><div class="fox-msg-group"><div class="fox-msg-bubble" style="color:#ef4444;">Bạn đã hết 3 lượt hỏi thử trong Bản Demo. Hãy kích hoạt Key bản Full để tiếp tục nhé.</div></div></div>`;
-                    content.scrollTop = content.scrollHeight;
-                    input.value = '';
+                if (demoChatCount >= MAX_DEMO_CHAT) {
+                    alert("⚠️ Bản Demo chỉ cho phép hỏi AI tối đa 3 lần. Vui lòng nhập Key Bản Full để sử dụng tiếp!");
+                    openLicenseModal();
                     return;
                 }
+                demoChatCount++;
             }
 
-            input.value = ''; btn.disabled = true;
-            content.innerHTML += `<div class="fox-msg-row fox-msg-user"><div class="fox-msg-group"><div class="fox-msg-bubble">${msg}</div></div></div>`;
-            content.scrollTop = content.scrollHeight;
-
-            const typingId = 'typing-' + Date.now();
-            content.innerHTML += `<div class="fox-msg-row fox-msg-bot" id="${typingId}"><div class="fox-msg-avatar">${FOX_AVATAR_SVG}</div><div class="fox-msg-group"><div class="fox-msg-bubble" style="color:#94a3b8; font-style:italic;">Đang suy nghĩ...</div></div></div>`;
-            content.scrollTop = content.scrollHeight;
-
-            try {
-                let currentFreq = document.getElementById('foxLiveFreqTag').textContent;
-                
-                const response = await fetch(GAS_URL, {
-                    method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ message: msg, currentFrequency: currentFreq })
-                });
-                
-                const data = await response.json(); document.getElementById(typingId).remove();
-                let rawReply = data.reply || data.message || "Xin lỗi, thầy chưa hiểu ý em.";
-                content.innerHTML += `<div class="fox-msg-row fox-msg-bot"><div class="fox-msg-avatar">${FOX_AVATAR_SVG}</div><div class="fox-msg-group"><div class="fox-msg-bubble">${parseBotReply(rawReply)}</div></div></div>`;
-            } catch (error) {
-                document.getElementById(typingId).remove();
-                content.innerHTML += `<div class="fox-msg-row fox-msg-bot"><div class="fox-msg-avatar">${FOX_AVATAR_SVG}</div><div class="fox-msg-group"><div class="fox-msg-bubble" style="color:#ef4444;">Lỗi kết nối API! Vui lòng kiểm tra lại đường dẫn máy chủ.</div></div></div>`;
-            }
-            btn.disabled = false; content.scrollTop = content.scrollHeight; input.focus();
+            addChatMessage('user', text); chatInput.value = ''; sendBtn.disabled = true;
+            document.getElementById('foxStatusText').innerText = "Đang phân tích...";
+            setTimeout(() => { generateFoxResponse(text); }, 600 + Math.random() * 600);
         }
 
-        document.getElementById('fox-chat-input').addEventListener('keypress', function(e) { if (e.key === 'Enter') sendChatMessage(); });
-        document.getElementById('fox-chat-input').addEventListener('input', function(e) { document.getElementById('foxSendBtn').disabled = e.target.value.trim() === ''; });
+        function addChatMessage(sender, text) {
+            const row = document.createElement('div'); row.className = `fox-msg-row ${sender === 'user' ? 'fox-msg-user' : 'fox-msg-bot'}`;
+            let html = '';
+            if (sender === 'bot') html += `<div class="fox-msg-avatar">${FOX_AVATAR_SVG}</div>`;
+            html += `<div class="fox-msg-group"><div class="fox-msg-bubble">${text}</div></div>`;
+            row.innerHTML = html; chatContent.appendChild(row); chatContent.scrollTop = chatContent.scrollHeight;
+        }
+
+        function generateFoxResponse(query) {
+            const q = query.toLowerCase(); let response = "";
+            let currentFreq = lockedFrequency || detectedFrequency;
+            if (q.includes('tần số') || q.includes('hz')) {
+                response = `Tần số hiện tại Fox-Lab ghi nhận là <b>${currentFreq.toFixed(1)} Hz</b>. Nếu cần ổn định hơn, bạn hãy đảm bảo nguồn âm (âm thoa/loa) đủ lớn và áp sát micro nhé!`;
+            } else if (q.includes('họa âm') || q.includes('fft')) {
+                response = `Để phân tích họa âm, bạn cần sử dụng bản Full và bấm vào nút <b>Phân tích FFT</b>. Hệ thống sẽ lọc ra 5 họa âm đầu tiên của âm cơ bản f0.`;
+            } else if (q.includes('phách') || q.includes('2 nguồn')) {
+                response = `Khi chọn chế độ <b>2 Nguồn âm</b>, bạn có thể quan sát hiện tượng Sóng Phách nếu 2 nguồn chênh lệch tần số, hoặc Giao thoa nếu cùng tần số. Bấm nút "∑ Phương trình" để xem toán học.`;
+            } else if (q.includes('cảm ơn') || q.includes('thank')) {
+                response = `Không có chi! Fox-Lab luôn sẵn sàng đồng hành cùng bạn trong các bài thí nghiệm Vật lý. Cần hỏi gì thêm cứ gõ vào đây nhé.`;
+            } else {
+                response = `Fox-Lab AI hiện tại là phiên bản thử nghiệm. Bạn đang đo đạc tần số <b>${currentFreq.toFixed(1)} Hz</b>. Bạn muốn tìm hiểu sâu hơn về hiện tượng vật lý nào của sóng này?`;
+            }
+            document.getElementById('foxStatusText').innerText = "Trực tuyến";
+            addChatMessage('bot', response);
+        }
+
     </script>
 </body>
 </html>
