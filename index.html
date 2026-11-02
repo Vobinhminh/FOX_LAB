@@ -168,9 +168,18 @@
         .fox-send-btn svg { width: 12px; height: 12px; margin-left: 2px; }
         .fox-footer-meta { font-size: 9px; color: var(--fox-text-muted); text-align: center; }
         .fox-freq-tag { color: var(--fox-cyan); font-weight: 600; }
+
+        #fox-chat-box.light-theme { background: rgba(255, 255, 255, 0.95); border: 1px solid rgba(0,0,0,0.1); box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.15); }
+        #fox-chat-box.light-theme .fox-chat-header { background: rgba(241, 245, 249, 0.9); border-bottom: 1px solid #cbd5e1; }
+        #fox-chat-box.light-theme .fox-header-title { color: #0f172a; }
+        #fox-chat-box.light-theme .fox-msg-bot .fox-msg-bubble { background: #f1f5f9; color: #1e293b; border: 1px solid #e2e8f0; }
+        #fox-chat-box.light-theme .fox-input-container { background: rgba(248, 250, 252, 0.95); border-top: 1px solid #cbd5e1; }
+        #fox-chat-box.light-theme .fox-input-box { background: #ffffff; border: 1px solid #cbd5e1; }
+        #fox-chat-box.light-theme #fox-chat-input { color: #0f172a; }
     </style>
 </head>
 <body>
+    <!-- POPUP CHỌN PHIÊN BẢN (DEMO / FULL) -->
     <div id="licenseModalOverlay" class="license-modal-overlay">
         <div class="license-selection-box">
             <h2>⚛️ DAO ĐỘNG KÝ_FOX-LAB</h2>
@@ -262,6 +271,7 @@
 
     <canvas id="oscilloscope"></canvas>
     
+    <!-- FFT MODAL -->
     <div id="fftModalOverlay" class="modal-overlay">
         <div id="fftModal" class="modal-content" onclick="event.stopPropagation()">
             <div class="modal-header">
@@ -280,6 +290,7 @@
         </div>
     </div>
 
+    <!-- MODAL XỬ LÝ 2 NGUỒN ÂM -->
     <div id="twoSourceModalOverlay" class="modal-overlay">
         <div id="twoSourceModal" class="modal-content" onclick="event.stopPropagation()">
             <div class="modal-header">
@@ -294,9 +305,15 @@
                 </div>
 
                 <div style="display: flex; align-items: center; gap: 4px;">
-                    <button id="tsPlayBtn" onclick="toggleTsPlay()" class="btn-orange" style="margin-left: 4px;">⏸ Dừng</button>
-                    <button id="tsResultBtn" onclick="showTsResultModal()" style="display: none !important; margin-left: 4px;" class="btn-blue">📊 Kết quả</button>
-                    <button id="tsEquationBtn" onclick="showTsEquationModal()" style="display: none !important; margin-left: 4px;" class="btn-slate">📐 Phương trình</button>
+                    <button id="tsPlayBtn" onclick="toggleTsPlay()" class="btn-orange" style="margin-left: 4px;">
+                        ⏸ Dừng
+                    </button>
+                    <button id="tsResultBtn" onclick="showTsResultModal()" style="display: none !important; margin-left: 4px;" class="btn-blue">
+                        📊 Kết quả
+                    </button>
+                    <button id="tsEquationBtn" onclick="showTsEquationModal()" style="display: none !important; margin-left: 4px;" class="btn-slate">
+                        📐 Phương trình
+                    </button>
                 </div>
             </div>
 
@@ -324,6 +341,7 @@
         </div>
     </div>
 
+    <!-- FOX-LAB AI WIDGET -->
     <div id="fox-chat-widget">
         <div class="fox-trigger-wrapper">
             <div class="fox-ping-ring"></div>
@@ -366,6 +384,7 @@
             </div>
         </div>
     </div>
+
     <script>
         const FOX_AVATAR_SVG = `<svg viewBox="0 0 100 100" fill="none"><polygon points="22,12 10,48 36,40" fill="#ff7a30"/><polygon points="23,19 16,44 32,38" fill="#1e293b"/><path d="M 19 36 Q 23 32 28 34" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round"/><polygon points="78,12 64,40 90,48" fill="#ff7a30"/><polygon points="77,19 68,38 84,44" fill="#1e293b"/><path d="M 81 36 Q 77 32 72 34" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round"/><polygon points="50,22 36,40 50,46" fill="#ff8f4a"/><polygon points="50,22 50,46 64,40" fill="#ff7a30"/><polygon points="36,40 10,48 20,68 38,58" fill="#d4380d"/><polygon points="64,40 38,58 50,46" fill="#e04006"/><polygon points="64,40 50,46 62,58" fill="#d4380d"/><polygon points="64,40 90,48 80,68 62,58" fill="#d4380d"/><polygon points="20,68 12,74 26,76 34,68" fill="#e2e8f0"/><polygon points="80,68 88,74 74,76 66,68" fill="#cbd5e1"/><polygon points="38,58 50,46 50,78 36,68" fill="#ff7a30"/><polygon points="62,58 50,46 50,78 64,68" fill="#e04006"/><polygon points="50,78 36,68 44,88 50,88" fill="#f8fafc"/><polygon points="50,78 64,68 56,88 50,88" fill="#e2e8f0"/><polygon points="50,88 45,82 55,82" fill="#0f172a"/><polygon points="25,48 50,54 75,48 71,59 50,65 29,59" fill="#090d16" stroke="rgba(56,189,248,0.5)" stroke-width="0.9"/><circle cx="34.5" cy="48" r="1.5" fill="#ffffff"/><circle cx="44.5" cy="60" r="1.5" fill="#ffffff"/><circle cx="54.5" cy="48" r="1.5" fill="#ffffff"/><circle cx="64.5" cy="60" r="1.5" fill="#ffffff"/></svg>`;
         const LICENSE_GAS_URL = "https://script.google.com/macros/s/AKfycbwC9gwiwBdIsfvv2nGZQNrkeR1O43GTW9lhMCu6fEn-LGjjbmMEcy-3153DZRkOaLdx3Q/exec";
@@ -523,6 +542,7 @@
                     forceLogout();
                 }
             } catch (e) {
+                // Sửa lỗi fix triệt để: Nếu ngoại mạng hoặc lỗi GAS khi đã lưu Key sẵn, vẫn cho phép chạy ổn định không bị kẹt
                 if (isSilent) {
                     isDemoMode = false;
                     document.getElementById('licenseModalOverlay').style.display = 'none';
@@ -1072,30 +1092,6 @@
             el.style.display = showTsEquations ? 'block' : 'none';
         }
 
-        // HÀM CẬP NHẬT PHƯƠNG TRÌNH DAO ĐỘNG CHUẨN TOÁN HỌC VÀO HUD
-        function updateEquationsHUD(freqA, freqB, phaseRad) {
-            document.getElementById('eqFreqA').innerText = freqA > 0 ? freqA.toFixed(1) : "0.0";
-            document.getElementById('eqFreqB').innerText = freqB > 0 ? freqB.toFixed(1) : "0.0";
-            
-            let phaseStr = "";
-            if (phaseRad >= 0) {
-                phaseStr = ` + ${phaseRad.toFixed(2)}`;
-            } else {
-                phaseStr = ` - ${Math.abs(phaseRad).toFixed(2)}`;
-            }
-            document.getElementById('eqPhase').innerText = phaseStr;
-
-            const sumLine = document.getElementById('eqSumLine');
-            if (sumLine) {
-                let diff = Math.abs(freqA - freqB);
-                if (freqA > 10 && freqB > 10 && diff > 3.0) {
-                    sumLine.innerHTML = `Tổng hợp: <span class="math-symbol" style="color:#f87171;">⚠️ Tạo Sóng Phách (f<sub>1</sub> ≠ f<sub>2</sub>)</span>`;
-                } else {
-                    sumLine.innerHTML = `Tổng hợp: <span class="math-symbol">u = u<sub>A</sub> + u<sub>B</sub> = 2A·cos(\\frac{\\Delta\\varphi}{2})·cos(2\\pi ft + \\frac{\\varphi_A + \\varphi_B}{2})</span>`;
-                }
-            }
-        }
-
         function openTwoSourceModal() {
             isTwoSourceModalOpen = true;
             isTsPaused = false; 
@@ -1212,9 +1208,6 @@
                         document.getElementById('hudFreqB').innerText = currentCalcFreqB > 0 ? currentCalcFreqB.toFixed(1) : "0.0";
                         document.getElementById('hudPerA').innerText = currentCalcFreqA > 0 ? (1000/currentCalcFreqA).toFixed(2) : "0.00";
                         document.getElementById('hudPerB').innerText = currentCalcFreqB > 0 ? (1000/currentCalcFreqB).toFixed(2) : "0.00";
-                        
-                        // Cập nhật phương trình dao động chuẩn toán học
-                        updateEquationsHUD(currentCalcFreqA, currentCalcFreqB, 0.0);
                     }
                 }
 
