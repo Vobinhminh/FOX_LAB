@@ -1117,21 +1117,23 @@
             }
         }
        // --- XỬ LÝ 2 NGUỒN ÂM (ĐÃ TỐI ƯU KHÔNG LAG & KHÓA KẾT QUẢ KHI CHƯA DỪNG) ---
-        function openTwoSourceModal() {
+function openTwoSourceModal() {
             isTwoSourceModalOpen = true;
             isTsPaused = false; // Mặc định mở lên là chạy liên tục
             
             const overlay = document.getElementById('twoSourceModalOverlay');
-            overlay.style.display = 'flex';
-            setTimeout(() => overlay.classList.add('animUI-visible'), 10);
+            if (overlay) {
+                overlay.style.display = 'flex';
+                setTimeout(() => overlay.classList.add('animUI-visible'), 10);
+            }
 
-            // Khi mới mở (đang chạy liên tục), ẩn nút Kết quả và Phương trình đi
-            const resBtn = document.getElementById('tsResultBtn'); // Hoặc id nút Kết quả của thầy
-            const eqBtn = document.getElementById('tsEquationBtn');  // Hoặc id nút Phương trình của thầy
+            // 1. Khi đang chạy: Ẩn hoàn toàn nút Kết quả và Phương trình
+            const resBtn = document.getElementById('tsResultBtn');
+            const eqBtn = document.getElementById('tsEquationBtn');
             if (resBtn) resBtn.style.display = 'none';
             if (eqBtn) eqBtn.style.display = 'none';
 
-            // Cập nhật lại giao diện nút Dừng/Tiếp tục
+            // 2. Giao diện nút bấm hiển thị chữ Dừng
             const btn = document.getElementById('tsPlayBtn');
             if (btn) {
                 btn.innerHTML = '<i class="fa-solid fa-pause"></i> Dừng';
@@ -1141,24 +1143,43 @@
             requestAnimationFrame(calculatePhaseAndDrawLive);
         }
 
+        function closeTwoSourceModal() {
+            isTwoSourceModalOpen = false;
+            isTsPaused = true; // Buộc dừng trạng thái chạy ngầm
+            
+            const overlay = document.getElementById('twoSourceModalOverlay');
+            if (overlay) {
+                overlay.classList.remove('animUI-visible');
+                setTimeout(() => { 
+                    overlay.style.display = 'none'; 
+                    // Kích hoạt lại vòng lặp canvas chính ngay lập tức, chống màn hình đen
+                    if (typeof startMainRenderLoop === 'function') {
+                        startMainRenderLoop();
+                    } else if (typeof drawCanvas === 'function') {
+                        requestAnimationFrame(drawCanvas);
+                    }
+                }, 300);
+            }
+        }
+
         function toggleTsPlay() {
             isTsPaused = !isTsPaused;
             const btn = document.getElementById('tsPlayBtn');
-            const resBtn = document.getElementById('tsResultBtn'); // Nút Kết quả
-            const eqBtn = document.getElementById('tsEquationBtn');  // Nút Phương trình
+            const resBtn = document.getElementById('tsResultBtn');
+            const eqBtn = document.getElementById('tsEquationBtn');
 
             if (!isTsPaused) {
-                // Đang CHẠY LIÊN TỤC -> Ẩn nút Kết quả và Phương trình đi
+                // Đang CHẠY LIÊN TỤC -> Ẩn nút Kết quả và Phương trình
                 if (btn) {
                     btn.innerHTML = '<i class="fa-solid fa-pause"></i> Dừng';
                     btn.className = "px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded shadow text-sm font-medium transition";
                 }
                 if (resBtn) resBtn.style.display = 'none';
-                if (eqBtn) eqBtn.style.display = 'none';
+                if (eqBtn) resBtn.style.display = 'none';
 
                 requestAnimationFrame(calculatePhaseAndDrawLive);
             } else {
-                // Đã BẤM DỪNG -> HIỆN ra nút Kết quả và Phương trình để học sinh xem
+                // Đã BẤM DỪNG -> HIỆN nút Kết quả và Phương trình để xem
                 if (btn) {
                     btn.innerHTML = '<i class="fa-solid fa-play"></i> Tiếp tục';
                     btn.className = "px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded shadow text-sm font-medium transition";
@@ -1166,7 +1187,7 @@
                 if (resBtn) resBtn.style.display = 'inline-flex';
                 if (eqBtn) eqBtn.style.display = 'inline-flex';
 
-                // Lưu lại dữ liệu tại thời điểm dừng
+                // Chụp lại dữ liệu tại thời điểm dừng
                 if (channelConfig.A && channelConfig.A.data) snapDataA = [...channelConfig.A.data];
                 if (channelConfig.B && channelConfig.B.data) snapDataB = [...channelConfig.B.data];
 
@@ -1178,7 +1199,7 @@
         function calculatePhaseAndDrawLive() {
             if (!isTwoSourceModalOpen) return;
             
-            // Giới hạn tốc độ khung hình (giữ ở mức ~30fps) giúp chống giật lag tuyệt đối khi chạy liên tục
+            // Giới hạn tốc độ khung hình (~30fps) chống giật lag tuyệt đối khi chạy liên tục
             let now = performance.now();
             if (!isTsPaused && (now - lastTsDrawTime < 33)) {
                 requestAnimationFrame(calculatePhaseAndDrawLive);
@@ -1198,16 +1219,16 @@
             let startI = isTsPaused ? (snapDataA.length - offsetA - samplesDraw) : (cIdxA - samplesDraw);
 
             ctx.lineWidth = 2; ctx.lineJoin = 'round';
-            // Tăng bước nhảy (step) theo chiều rộng màn hình để giảm tải vẽ pixel, loại bỏ hoàn toàn hiện tượng lag
             let step = Math.max(1, Math.floor(samplesDraw / (cw * 0.75)));
             
             if (tsViewMode === 'overlay') {
+                // 1. Chế độ vẽ 2 kênh riêng biệt (Overlay)
                 ctx.strokeStyle = '#ef4444'; ctx.beginPath();
                 for (let i = 0; i < samplesDraw; i+=step) {
                     let idx = isTsPaused ? Math.max(0, Math.min(snapDataA.length - 1, startI + i)) : ((cIdxA - samplesDraw + i) % len + len) % len;
                     let val = isTsPaused ? snapDataA[idx] : activeDataA[idx];
-                    let x = (i/samplesDraw)*cw, y = ch/2 - (val * currentZoomY * ch/2);
-                    if (i===0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                    let x = (i / samplesDraw) * cw, y = ch / 2 - (val * currentZoomY * ch / 2);
+                    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
                 }
                 ctx.stroke();
                 
@@ -1215,18 +1236,21 @@
                 for (let i = 0; i < samplesDraw; i+=step) {
                     let idx = isTsPaused ? Math.max(0, Math.min(snapDataB.length - 1, startI + i)) : ((cIdxB - samplesDraw + i) % len + len) % len;
                     let val = isTsPaused ? snapDataB[idx] : activeDataB[idx];
-                    let x = (i/samplesDraw)*cw, y = ch/2 - (val * currentZoomY * ch/2);
-                    if (i===0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                    let x = (i / samplesDraw) * cw, y = ch / 2 - (val * currentZoomY * ch / 2);
+                    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
                 }
                 ctx.stroke();
             } else if (tsViewMode === 'sum') {
+                // 2. Chế độ Gộp sóng (Sum): Giữ nguyên trục tỉ lệ y hệt, không bị gom nhỏ biên độ
                 ctx.strokeStyle = '#8b5cf6'; ctx.beginPath();
                 for (let i = 0; i < samplesDraw; i+=step) {
                     let idxA = isTsPaused ? Math.max(0, Math.min(snapDataA.length - 1, startI + i)) : ((cIdxA - samplesDraw + i) % len + len) % len;
                     let idxB = isTsPaused ? Math.max(0, Math.min(snapDataB.length - 1, startI + i)) : ((cIdxB - samplesDraw + i) % len + len) % len;
                     let val = (isTsPaused ? snapDataA[idxA] : activeDataA[idxA]) + (isTsPaused ? snapDataB[idxB] : activeDataB[idxB]);
-                    let x = (i/samplesDraw)*cw, y = ch/2 - (val * (currentZoomY/2) * ch/2);
-                    if (i===0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                    
+                    let x = (i / samplesDraw) * cw, y = ch / 2 - (val * currentZoomY * ch / 2);
+                    
+                    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
                 }
                 ctx.stroke();
             }
