@@ -1155,9 +1155,9 @@
             }
             animFrameId = requestAnimationFrame(draw);
         }
-        draw(); // Bắt đầu vòng lặp nền
+        draw();
 
-        // --- CÁC HÀM XỬ LÝ 2 NGUỒN ÂM (ĐÃ TỐI ƯU KHÔNG BỊ LAG / ĐEN MÀN HÌNH) ---
+        // --- CÁC HÀM XỬ LÝ 2 NGUỒN ÂM ---
         function openTwoSourceModal() {
             if (isDemoMode) { alert("Chức năng Xử lý 2 Nguồn âm chỉ có trên bản Full."); return; }
             if (getActiveChannelMode() !== '2' || !channelConfig.A.active || !channelConfig.B.active) {
@@ -1177,7 +1177,7 @@
             document.getElementById('btnTsEquation').style.display = 'block';
             
             resizeCanvas();
-            calculatePhaseAndDrawLive(); // Vẽ khung hình tĩnh ban đầu khi mở modal
+            calculatePhaseAndDrawLive();
         }
 
         function closeTwoSourceModal() {
@@ -1189,7 +1189,7 @@
             setTimeout(() => { 
                 overlay.style.display = 'none'; 
                 resizeCanvas();
-                drawFrame(true); // Làm mới màn hình nền mượt mà
+                drawFrame(true); 
             }, 300);
         }
 
@@ -1336,7 +1336,7 @@
             if(!isTsPaused && isTwoSourceModalOpen) { tsAnimFrameId = requestAnimationFrame(calculatePhaseAndDrawLive); }
         }
 
-        // --- FOX-LAB AI WIDGET ---
+        // --- FOX-LAB AI WIDGET (ĐÃ CẬP NHẬT HIỆN THỊ TOÁN HỌC & HIỆU ỨNG GÕ CHỮ NẰM NGANG) ---
         function toggleChat() {
             const widget = document.getElementById('fox-chat-widget');
             widget.classList.toggle('open');
@@ -1384,12 +1384,64 @@
             }
         }
 
+        function formatMathText(text) {
+            if (!text) return '';
+            return text
+                .replace(/\$([a-zA-Z])_([0-9a-zA-Z]+)\$/g, '<span class="math-symbol">$1<sub>$2</sub></span>')
+                .replace(/\$([^$]+)\$/g, (match, p1) => {
+                    let formatted = p1
+                        .replace(/([a-zA-Z])_([0-9a-zA-Z]+)/g, '$1<sub>$2</sub>')
+                        .replace(/\*/g, '·');
+                    return `<span class="math-symbol">${formatted}</span>`;
+                })
+                .replace(/\n/g, '<br>');
+        }
+
         function addChatMessage(sender, text) {
-            const row = document.createElement('div'); row.className = `fox-msg-row ${sender === 'user' ? 'fox-msg-user' : 'fox-msg-bot'}`;
+            const row = document.createElement('div'); 
+            row.className = `fox-msg-row ${sender === 'user' ? 'fox-msg-user' : 'fox-msg-bot'}`;
+            
             let html = '';
-            if (sender === 'bot') html += `<div class="fox-msg-avatar">${FOX_AVATAR_SVG}</div>`;
-            html += `<div class="fox-msg-group"><div class="fox-msg-bubble">${text}</div></div>`;
-            row.innerHTML = html; chatContent.appendChild(row); chatContent.scrollTop = chatContent.scrollHeight;
+            if (sender === 'bot') {
+                html += `<div class="fox-msg-avatar">${FOX_AVATAR_SVG}</div>`;
+                html += `<div class="fox-msg-group"><div class="fox-msg-bubble type-effect-bubble"></div></div>`;
+                row.innerHTML = html;
+                chatContent.appendChild(row);
+                
+                const bubbleEl = row.querySelector('.fox-msg-bubble');
+                const formattedHTML = formatMathText(text);
+                
+                let i = 0;
+                let isTag = false;
+                let currentText = "";
+                
+                function typeWriter() {
+                    if (i < formattedHTML.length) {
+                        let char = formattedHTML.charAt(i);
+                        if (char === '<') isTag = true;
+                        currentText += char;
+                        if (char === '>') isTag = false;
+                        
+                        bubbleEl.innerHTML = currentText;
+                        chatContent.scrollTop = chatContent.scrollHeight;
+                        
+                        i++;
+                        if (isTag) {
+                            typeWriter();
+                        } else {
+                            setTimeout(typeWriter, 12);
+                        }
+                    } else {
+                        bubbleEl.innerHTML = formattedHTML;
+                    }
+                }
+                typeWriter();
+            } else {
+                html += `<div class="fox-msg-group"><div class="fox-msg-bubble">${text}</div></div>`;
+                row.innerHTML = html;
+                chatContent.appendChild(row);
+            }
+            chatContent.scrollTop = chatContent.scrollHeight;
         }
 
         function addTypingIndicator() {
