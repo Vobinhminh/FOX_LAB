@@ -438,18 +438,25 @@
             document.getElementById('cardChannelB').style.display = (channelModeSelect.value === '2') ? 'flex' : 'none';
         }
 
-       window.addEventListener('DOMContentLoaded', async () => {
+      window.addEventListener('DOMContentLoaded', async () => {
             restoreAppState();
             const urlParams = new URLSearchParams(window.location.search);
             const keyParam = urlParams.get('key');
+            
+            // XỬ LÝ QUÉT QR TRÊN ĐIỆN THOẠI: Nếu có key trên URL, lưu ngay vào máy để chống mất khi F5
+            if (keyParam) {
+                localStorage.setItem('fox_license_key', keyParam);
+                // Dọn sạch tham số ?key= trên URL điện thoại để tránh lỗi khi tải lại trang sau này
+                if (window.history && window.history.replaceState) {
+                    const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+                    window.history.replaceState({path: cleanUrl}, '', cleanUrl);
+                }
+            }
+
             let savedKey = localStorage.getItem('fox_license_key');
 
-            if (keyParam) {
-                // Nếu có truyền key trên URL (ví dụ quét QR)
-                document.getElementById('licenseModalOverlay').style.display = 'none';
-                await verifyKeyWithServer(keyParam, "full");
-            } else if (savedKey) {
-                // QUAN TRỌNG: Nếu đã lưu key trong máy, mở khóa ngay lập tức để tránh lỗi báo key khi tải lại trang
+            if (savedKey) {
+                // Đã có key lưu trong máy (hoặc vừa lấy từ QR xong) -> Mở khóa ngay lập tức
                 isDemoMode = false;
                 document.getElementById('licenseModalOverlay').style.display = 'none';
                 infoMessageText.innerHTML = "✅ Bản Full Chính Thức đã kích hoạt thành công!";
@@ -458,25 +465,15 @@
                 updateAnalysisButtonState(); 
                 checkAndShowQR();
                 
-                // Kiểm tra ngầm dưới background (không làm gián đoạn người dùng)
+                // Kiểm tra ngầm dưới background
                 verifyKeyWithServer(savedKey, "full", true);
+            } else if (keyParam) {
+                document.getElementById('licenseModalOverlay').style.display = 'none';
+                await verifyKeyWithServer(keyParam, "full");
             } else {
                 openLicenseModal();
             }
         });
-        function openLicenseModal() { document.getElementById('licenseModalOverlay').style.display = 'flex'; }
-
-        function selectMode(mode) {
-            if (mode === 'demo') {
-                isDemoMode = true; 
-                document.getElementById('licenseModalOverlay').style.display = 'none'; 
-                infoMessageText.innerHTML = 'Bản Dùng thử Demo (Khóa tính năng nâng cao).';
-                updateAnalysisButtonState(); 
-                checkAndShowQR();
-            } else if (mode === 'full') {
-                document.getElementById('keyInputContainer').style.display = 'block';
-            }
-        }
 
         async function verifyEnteredKey() {
             const keyInput = document.getElementById('licenseKeyInput').value.trim();
