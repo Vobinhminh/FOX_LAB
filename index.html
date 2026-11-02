@@ -455,11 +455,13 @@
 
         function openLicenseModal() { document.getElementById('licenseModalOverlay').style.display = 'flex'; }
 
-        function selectMode(mode) {
+       function selectMode(mode) {
             if (mode === 'demo') {
-                isDemoMode = true; document.getElementById('licenseModalOverlay').style.display = 'none';
+                isDemoMode = true; 
+                document.getElementById('licenseModalOverlay').style.display = 'none'; // Ẩn bảng chọn
                 infoMessageText.innerHTML = `Bản Dùng thử Demo (Khóa tính năng nâng cao).`;
-                updateAnalysisButtonState(); checkAndShowQR();
+                updateAnalysisButtonState(); 
+                checkAndShowQR();
             } else if (mode === 'full') {
                 document.getElementById('keyInputContainer').style.display = 'block';
             }
