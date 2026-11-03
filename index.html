@@ -76,6 +76,11 @@
         .settings-slider-pill { position: absolute; top: 4px; bottom: 4px; left: 0; width: 0; background: linear-gradient(135deg, #3b82f6, #2563eb); border-radius: 4px; pointer-events: none; z-index: 1; transition: transform 0.24s ease, width 0.24s ease; opacity: 0; }
         .settings-item { flex: 1; padding: 6px 4px; font-size: 11px; color: #94a3b8; cursor: pointer; border-radius: 4px; text-align: center; font-weight: 600; position: relative; z-index: 2; background: transparent !important; }
         .settings-item.active { color: #ffffff; font-weight: 700; }
+        
+        .settings-action-btn { padding: 8px 10px; font-size: 11.5px; color: #f8fafc; cursor: pointer; border-radius: 4px; text-align: left; font-weight: 600; background: #1e293b; border: 1px solid #334155; transition: 0.2s; display: block; width: 100%; box-sizing: border-box; }
+        .settings-action-btn:hover { background: #334155; border-color: #475569; }
+        .settings-action-btn.btn-danger { color: #fca5a5; border-color: #7f1d1d; }
+        .settings-action-btn.btn-danger:hover { background: #7f1d1d; color: #fff; }
 
         .license-modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; background: rgba(15, 23, 42, 0.95); z-index: 200000; display: flex; align-items: center; justify-content: center; padding: 15px; box-sizing: border-box; }
         .license-selection-box { background: #ffffff; width: 100%; max-width: 450px; border-radius: 12px; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3); text-align: center; box-sizing: border-box; }
@@ -196,6 +201,11 @@
             </div>
             <div id="keyInputContainer" style="display:none; margin-bottom: 15px;">
                 <input type="text" id="licenseKeyInput" placeholder="Nhập mã Key bản quyền..." style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; box-sizing: border-box; margin-bottom: 8px;">
+                
+                <div style="color: #dc2626; font-size: 11px; font-weight: bold; margin-bottom: 8px; text-align: center; background: #fee2e2; padding: 6px; border-radius: 4px; border: 1px dashed #f87171;">
+                    ⚠️ LƯU Ý: KHÔNG DÙNG TAB ẨN DANH!<br>Nếu dùng tab ẩn danh, bạn sẽ mất bản quyền ngay khi đóng trình duyệt.
+                </div>
+
                 <button class="btn-green" style="width: 100%; padding: 10px;" onclick="verifyEnteredKey()">Xác thực & Mở khóa</button>
             </div>
             <div class="contact-box">
@@ -239,11 +249,19 @@
                                 <div class="settings-item" data-target="speedSelect" data-value="slow">Chậm</div>
                             </div>
                         </div>
+                        
+                        <!-- NÂNG CẤP MENU QUẢN LÝ BẢN QUYỀN -->
                         <div class="settings-group" id="groupLicense">
-                            <div class="settings-group-header" onclick="forceLogout(true)" style="color: #ef4444; border-top: 1px solid #1e293b;">
-                                <span>🚪 Xóa Key / Đăng xuất</span>
+                            <div class="settings-group-header" data-group="license" style="color: #38bdf8; border-top: 1px solid #1e293b;">
+                                <span>🔑 Quản lý Bản quyền</span><span class="group-arrow">›</span>
+                            </div>
+                            <div class="settings-group-items" style="flex-direction: column; gap: 6px; padding: 8px;">
+                                <div class="settings-action-btn" onclick="handleLicenseAction('change')">🔄 Đổi thiết bị (Đăng nhập máy khác)</div>
+                                <div class="settings-action-btn" onclick="handleLicenseAction('logout')">🚪 Đăng xuất (Tạm thời)</div>
+                                <div class="settings-action-btn btn-danger" onclick="handleLicenseAction('delete')">🗑 Xóa Key vĩnh viễn</div>
                             </div>
                         </div>
+
                     </div>
                 </div>
                 
@@ -318,19 +336,21 @@
             <div class="fft-canvas-container" id="tsContainer">
                 <canvas id="twoSourceCanvas" class="modal-display-canvas"></canvas>
                 
+                <!-- BỔ SUNG CỘT BIÊN ĐỘ VÀO BẢNG ĐỐI CHIẾU -->
                 <div id="hudResults" class="hud-overlay">
                     <div class="hud-title">BẢNG KẾT QUẢ ĐỐI CHIẾU</div>
-                    <div>Tần số Kênh A: <span class="hud-highlight" id="hudFreqA">0</span> Hz &nbsp;|&nbsp; Chu kỳ T<sub>A</sub> = <span class="hud-highlight" id="hudPerA">0</span> ms</div>
-                    <div>Tần số Kênh B: <span class="hud-highlight" id="hudFreqB">0</span> Hz &nbsp;|&nbsp; Chu kỳ T<sub>B</sub> = <span class="hud-highlight" id="hudPerB">0</span> ms</div>
+                    <div>Tần số Kênh A: <span class="hud-highlight" id="hudFreqA">0.0</span> Hz &nbsp;|&nbsp; Chu kỳ T<sub>A</sub> = <span class="hud-highlight" id="hudPerA">0.00</span> ms &nbsp;|&nbsp; Biên độ A: <span class="hud-highlight" id="hudAmpA">0.00</span></div>
+                    <div>Tần số Kênh B: <span class="hud-highlight" id="hudFreqB">0.0</span> Hz &nbsp;|&nbsp; Chu kỳ T<sub>B</sub> = <span class="hud-highlight" id="hudPerB">0.00</span> ms &nbsp;|&nbsp; Biên độ B: <span class="hud-highlight" id="hudAmpB">0.00</span></div>
                     <div style="margin-top:4px; padding-top:4px; border-top:1px dashed rgba(255,255,255,0.2);">
                         Độ lệch pha Δφ: <span class="hud-highlight" id="hudPhaseRad">0.00</span> rad (<span class="hud-highlight" id="hudPhaseDeg">0</span>°)
                     </div>
                 </div>
 
+                <!-- BỔ SUNG SỐ LIỆU VÀO PHƯƠNG TRÌNH TỔNG HỢP -->
                 <div id="hudEquations" class="hud-overlay" style="top: auto; bottom: 16px; left: 16px;">
                     <div class="hud-title">PHƯƠNG TRÌNH DAO ĐỘNG</div>
-                    <div class="hud-eq">Kênh A: <span class="math-symbol">u<sub>A</sub> = A<sub>A</sub>cos(2π·<span id="eqFreqA">0</span>·t)</span></div>
-                    <div class="hud-eq">Kênh B: <span class="math-symbol">u<sub>B</sub> = A<sub>B</sub>cos(2π·<span id="eqFreqB">0</span>·t <span id="eqPhase">+ 0.00</span>)</span></div>
+                    <div class="hud-eq">Kênh A: <span class="math-symbol">u<sub>A</sub> = <span id="eqAmpA">A</span>·cos(2π·<span id="eqFreqA">0</span>·t)</span></div>
+                    <div class="hud-eq">Kênh B: <span class="math-symbol">u<sub>B</sub> = <span id="eqAmpB">A</span>·cos(2π·<span id="eqFreqB">0</span>·t <span id="eqPhase">+ 0.00</span>)</span></div>
                     <div class="hud-eq" id="eqSumLine" style="margin-top:4px;">Tổng hợp: <span class="math-symbol">u = u<sub>A</sub> + u<sub>B</sub></span></div>
                 </div>
 
@@ -366,7 +386,7 @@
                 <div class="fox-msg-row fox-msg-bot">
                     <div class="fox-msg-avatar" id="msg-fox-icon-container"></div>
                     <div class="fox-msg-group">
-                        <div class="fox-msg-bubble">Xin chào quý Thầy/cô và các em học sinh! Mình là <b>Fox_lab AI</b>, trợ lý ảo hướng dẫn thí nghiệm Vật lý. Em đang khảo sát với tần số <span id="foxLiveFreqTag" class="fox-freq-tag">0.0 Hz</span>. Em cần hỗ trợ gì?</div>
+                        <div class="fox-msg-bubble">Xin chào quý Thầy/Cô và các em học sinh! Mình là <b>Fox_lab AI</b>, trợ lý ảo hướng dẫn thí nghiệm Vật lý. Em đang khảo sát với tần số <span id="foxLiveFreqTag" class="fox-freq-tag">0.0 Hz</span>. Em cần hỗ trợ gì?</div>
                     </div>
                 </div>
             </div>
@@ -377,11 +397,11 @@
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
                     </button>
                 </div>
-                <div class="fox-footer-meta">FOX-LAB</div>
+                <div class="fox-footer-meta">FOX_LAB</div>
             </div>
         </div>
-     </div>
-     <script>
+    </div>
+    <script>
         // --- 0. TỰ ĐỘNG KIỂM TRA PHIÊN BẢN QUA GITHUB ---
         async function checkAppVersion() {
             try {
@@ -401,44 +421,35 @@
                     }
                     window.location.reload(true);
                 }
-            } catch (e) {
-                console.log('Chưa thể kiểm tra phiên bản:', e);
-            }
+            } catch (e) { console.log('Chưa thể kiểm tra phiên bản:', e); }
         }
         checkAppVersion();
 
         // --- 1. CHẶN PHÍM F12 VÀ CHUỘT PHẢI BẢO VỆ MÃ NGUỒN ---
         document.addEventListener('keydown', function(e) {
-            if (e.key === 'F12' || 
-                (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j')) || 
-                (e.ctrlKey && (e.key === 'U' || e.key === 'u'))) {
-                e.preventDefault();
-                return false;
+            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j')) || (e.ctrlKey && (e.key === 'U' || e.key === 'u'))) {
+                e.preventDefault(); return false;
             }
         });
-        document.addEventListener('contextmenu', function(e) {
-            e.preventDefault();
-        });
+        document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
 
-        // --- 2. HÀM MỞ RỘNG TOÀN MÀN HÌNH (FULLSCREEN) ĐÃ HOÀN THIỆN ---
+        // --- 2. XỬ LÝ KHI ẨN TRÌNH DUYỆT (TỰ ĐỘNG RESET BẢO VỆ MICRO) ---
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'hidden') { if (window.resetButton && !isPaused) { window.resetButton.click(); } }
+        });
+        window.addEventListener('beforeunload', () => { stopAudioChannel('A'); stopAudioChannel('B'); });
+
+        // --- 3. HÀM MỞ RỘNG TOÀN MÀN HÌNH (FULLSCREEN) ---
         function toggleFullScreen() {
             let elem = document.documentElement;
             if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement && !document.msFullscreenElement) {
-                if (elem.requestFullscreen) {
-                    elem.requestFullscreen().catch(err => { console.log(err); });
-                } else if (elem.webkitRequestFullscreen) {
-                    elem.webkitRequestFullscreen();
-                } else if (elem.msRequestFullscreen) {
-                    elem.msRequestFullscreen();
-                }
+                if (elem.requestFullscreen) elem.requestFullscreen().catch(err => { console.log(err); });
+                else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
+                else if (elem.msRequestFullscreen) elem.msRequestFullscreen();
             } else {
-                if (document.exitFullscreen) {
-                    document.exitFullscreen();
-                } else if (document.webkitExitFullscreen) {
-                    document.webkitExitFullscreen();
-                } else if (document.msExitFullscreen) {
-                    document.msExitFullscreen();
-                }
+                if (document.exitFullscreen) document.exitFullscreen();
+                else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+                else if (document.msExitFullscreen) document.msExitFullscreen();
             }
         }
 
@@ -454,22 +465,16 @@
         const canvas = document.getElementById('oscilloscope'), canvasCtx = canvas.getContext('2d', { alpha: false });
         const settingsDropdown = document.getElementById('settingsDropdown'), settingsMenu = document.getElementById('settingsMenu');
 
-        let isDemoMode = true;
-        let demoTimer = null;
-        let demoChatCount = 0;
-        const MAX_DEMO_CHAT = 3;
+        window.resetButton = resetButton; 
 
+        let isDemoMode = true; let demoTimer = null; let demoChatCount = 0; const MAX_DEMO_CHAT = 3;
         let detectedFrequency = 0, lockedFrequency = 440;
         let isUserZoomed = false, totalTimeOnScreen = 5 * (1.0 / 440), currentZoomY = 2.0;
 
-        let isTwoSourceModalOpen = false;
-        let isTsPaused = false;
-        let snapDataA = [];
-        let snapDataB = [];
-        let tsViewMode = 'overlay';
-        let showTsResults = false;
-        let showTsEquations = false;
-        let currentCalcFreqA = 0, currentCalcFreqB = 0;
+        let isTwoSourceModalOpen = false, isTsPaused = false;
+        let snapDataA = [], snapDataB = [], tsViewMode = 'overlay';
+        let showTsResults = false, showTsEquations = false;
+        let currentCalcFreqA = 0, currentCalcFreqB = 0, currentAmpA = 0, currentAmpB = 0;
 
         function getDeviceId() {
             let deviceId = localStorage.getItem('fox_device_id');
@@ -482,8 +487,7 @@
 
         function selectMode(mode) {
             if (mode === 'demo') {
-                isDemoMode = true;
-                document.getElementById('licenseModalOverlay').style.display = 'none';
+                isDemoMode = true; document.getElementById('licenseModalOverlay').style.display = 'none';
                 const gearBtn = document.querySelector('.license-gear-btn');
                 if (gearBtn) gearBtn.style.display = 'inline-flex';
                 updateAnalysisButtonState();
@@ -495,6 +499,105 @@
         function openLicenseModal() {
             document.getElementById('licenseModalOverlay').style.display = 'flex';
             document.getElementById('keyInputContainer').style.display = 'none';
+        }
+
+        // TÍNH NĂNG QUẢN LÝ BẢN QUYỀN
+        window.handleLicenseAction = function(action) {
+            let key = localStorage.getItem('fox_license_key');
+            if (!key) { alert("Bạn chưa kích hoạt Key nào hoặc đang ở chế độ Dùng thử!"); return; }
+            
+            if (action === 'logout') {
+                if (confirm("🚪 Bạn muốn Đăng xuất khỏi thiết bị này?\n(Key vẫn được lưu trên hệ thống, nhưng sẽ bị đăng xuất khỏi máy này)")) {
+                    forceLogout(false);
+                }
+            } else if (action === 'change') {
+                if (confirm("🔄 Bạn muốn Đổi thiết bị?\n(Thiết bị hiện tại sẽ bị đăng xuất để bạn có thể dùng Key này đăng nhập vào máy tính khác)")) {
+                    fetch(LICENSE_GAS_URL, { method: 'POST', body: JSON.stringify({ action: "releaseDevice", key: key, deviceId: getDeviceId() }) });
+                    alert("Đã gửi yêu cầu giải phóng thiết bị!");
+                    forceLogout(false);
+                }
+            } else if (action === 'delete') {
+                if (confirm("🗑 XÓA KEY VĨNH VIỄN?\nBạn có chắc chắn muốn xóa hẳn Key này khỏi hệ thống? (Thao tác này không thể hoàn tác)")) {
+                    fetch(LICENSE_GAS_URL, { method: 'POST', body: JSON.stringify({ action: "deleteKey", key: key, deviceId: getDeviceId() }) });
+                    alert("Đã gửi lệnh xóa Key vĩnh viễn!");
+                    forceLogout(false);
+                }
+            }
+            document.getElementById('settingsDropdown').classList.remove('open');
+        }
+
+        function activateFullMode(key) {
+            isDemoMode = false; localStorage.setItem('fox_license_key', key); 
+            if(demoTimer) clearTimeout(demoTimer);
+            document.getElementById('licenseModalOverlay').style.display = 'none';
+            infoMessageText.innerHTML = "✅ Bản Full Chính Thức đã kích hoạt thành công!";
+            const gearBtn = document.querySelector('.license-gear-btn');
+            if (gearBtn) gearBtn.style.display = 'none';
+            updateAnalysisButtonState(); checkAndShowQR();
+        }
+
+        async function verifyKeyWithServer(key, type, isSilent = false) {
+            if(!isSilent) infoMessageText.innerHTML = "Đang kiểm tra Key bản Full với Google Sheets...";
+            try {
+                const response = await fetch(LICENSE_GAS_URL, {
+                    method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ action: "verifyKey", key: key, deviceId: getDeviceId(), type: type })
+                });
+                const result = await response.json();
+                if (result.status === "success") {
+                    activateFullMode(key);
+                } else {
+                    if(!isSilent) {
+                        let confirmChange = confirm(`❌ Lỗi: ${result.message}\n\nMã Key này có thể đang được sử dụng ở thiết bị khác.\nBạn có muốn XÁC NHẬN ĐỔI THIẾT BỊ (tự động đăng xuất máy cũ, lưu vào máy mới - tối đa 3 lần) không?`);
+                        if(confirmChange) {
+                            forceChangeDevice(key, type);
+                        } else {
+                            forceLogout();
+                        }
+                    } else { forceLogout(); }
+                }
+            } catch (e) {
+                if (isSilent) { activateFullMode(key); infoMessageText.innerHTML = "✅ Bản Full (Ngoại tuyến)"; } 
+                else { alert("Lỗi mạng khi kiểm tra Key."); forceLogout(); }
+            }
+        }
+
+        async function forceChangeDevice(key, type) {
+            infoMessageText.innerHTML = "Đang gửi yêu cầu Đổi thiết bị...";
+            try {
+                const response = await fetch(LICENSE_GAS_URL, {
+                    method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ action: "changeDevice", key: key, deviceId: getDeviceId(), type: type })
+                });
+                const result = await response.json();
+                if (result.status === "success") {
+                    alert("✅ Đổi thiết bị thành công! Key đã được gán cho máy này.");
+                    activateFullMode(key);
+                } else {
+                    alert(`❌ Không thể đổi thiết bị: ${result.message}\n(Có thể mã Key này đã hết số lần Đổi thiết bị)`);
+                    forceLogout();
+                }
+            } catch (e) { alert("Lỗi kết nối khi yêu cầu đổi thiết bị!"); forceLogout(); }
+        }
+
+        async function verifyEnteredKey() {
+            const keyInput = document.getElementById('licenseKeyInput').value.trim();
+            if (!keyInput) { alert("⚠️ Vui lòng nhập mã Key hợp lệ!"); return; }
+            await verifyKeyWithServer(keyInput, "full");
+        }
+
+        function forceLogout(isManual = false) {
+            localStorage.removeItem('fox_license_key'); isDemoMode = true;
+            document.getElementById('settingsDropdown').classList.remove('open');
+            stopAudioChannel('A'); stopAudioChannel('B');
+            document.getElementById('keyInputContainer').style.display = 'none';
+            document.getElementById('licenseKeyInput').value = '';
+            document.getElementById('licenseModalOverlay').style.display = 'flex'; 
+            const gearBtn = document.querySelector('.license-gear-btn');
+            if (gearBtn) gearBtn.style.display = 'inline-flex';
+            infoMessageText.innerHTML = "Bản Dùng thử Demo (Khóa tính năng nâng cao)."; infoMessageText.style.color = "#dc2626";
+            isPaused = true; clearTimeout(stopTimer); pauseButton.textContent = "Đo / Dừng"; pauseButton.className = "btn-green";
+            updateUIState(); checkAndShowQR(); drawFrame(true);
         }
 
         function saveAppState() {
@@ -528,7 +631,6 @@
             restoreAppState();
             const urlParams = new URLSearchParams(window.location.search);
             const keyParam = urlParams.get('key');
-            
             if (keyParam) {
                 localStorage.setItem('fox_license_key', keyParam);
                 if (window.history && window.history.replaceState) {
@@ -538,81 +640,10 @@
             }
 
             let savedKey = localStorage.getItem('fox_license_key');
-
-            if (savedKey) {
-                isDemoMode = false;
-                document.getElementById('licenseModalOverlay').style.display = 'none';
-                infoMessageText.innerHTML = "✅ Bản Full Chính Thức đã kích hoạt thành công!";
-                const gearBtn = document.querySelector('.license-gear-btn');
-                if (gearBtn) gearBtn.style.display = 'none';
-                updateAnalysisButtonState(); 
-                checkAndShowQR();
-                verifyKeyWithServer(savedKey, "full", true);
-            } else if (keyParam) {
-                document.getElementById('licenseModalOverlay').style.display = 'none';
-                await verifyKeyWithServer(keyParam, "full");
-            } else {
-                openLicenseModal();
-            }
+            if (savedKey) { verifyKeyWithServer(savedKey, "full", true); } 
+            else if (keyParam) { document.getElementById('licenseModalOverlay').style.display = 'none'; await verifyKeyWithServer(keyParam, "full"); } 
+            else { openLicenseModal(); }
         });
-
-        async function verifyEnteredKey() {
-            const keyInput = document.getElementById('licenseKeyInput').value.trim();
-            if (!keyInput) { alert("⚠️ Vui lòng nhập mã Key hợp lệ!"); return; }
-            await verifyKeyWithServer(keyInput, "full");
-        }
-
-        function forceLogout(isManual = false) {
-            if (isManual) { if (!confirm("⚠️ Bạn có chắc chắn muốn xóa Key bản quyền và đăng xuất khỏi thiết bị này?")) return; }
-            localStorage.removeItem('fox_license_key'); isDemoMode = true;
-            document.getElementById('settingsDropdown').classList.remove('open');
-            stopAudioChannel('A'); stopAudioChannel('B');
-            document.getElementById('keyInputContainer').style.display = 'none';
-            document.getElementById('licenseKeyInput').value = '';
-            document.getElementById('licenseModalOverlay').style.display = 'flex'; 
-            const gearBtn = document.querySelector('.license-gear-btn');
-            if (gearBtn) gearBtn.style.display = 'inline-flex';
-            infoMessageText.innerHTML = "Bản Dùng thử Demo (Khóa tính năng nâng cao)."; infoMessageText.style.color = "#dc2626";
-            isPaused = true; clearTimeout(stopTimer); pauseButton.textContent = "Đo / Dừng"; pauseButton.className = "btn-green";
-            updateUIState(); checkAndShowQR(); drawFrame(true);
-        }
-
-        async function verifyKeyWithServer(key, type, isSilent = false) {
-            if(!isSilent) infoMessageText.innerHTML = "Đang kiểm tra Key bản Full với Google Sheets...";
-            try {
-                const response = await fetch(LICENSE_GAS_URL, {
-                    method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify({ action: "verifyKey", key: key, deviceId: getDeviceId(), type: type })
-                });
-                const result = await response.json();
-                if (result.status === "success") {
-                    isDemoMode = false; localStorage.setItem('fox_license_key', key); 
-                    if(demoTimer) clearTimeout(demoTimer);
-                    document.getElementById('licenseModalOverlay').style.display = 'none';
-                    infoMessageText.innerHTML = "✅ Bản Full Chính Thức đã kích hoạt thành công!";
-                    const gearBtn = document.querySelector('.license-gear-btn');
-                    if (gearBtn) gearBtn.style.display = 'none';
-                    updateAnalysisButtonState(); checkAndShowQR();
-                } else {
-                    if(!isSilent) alert(`❌ ${result.message}\nVui lòng liên hệ tác giả nhận Key bản Full!`);
-                    forceLogout();
-                }
-            } catch (e) {
-                if (isSilent) {
-                    isDemoMode = false;
-                    document.getElementById('licenseModalOverlay').style.display = 'none';
-                    infoMessageText.innerHTML = "✅ Bản Full Chính Thức (Chế độ ngoại tuyến ổn định)";
-                    const gearBtn = document.querySelector('.license-gear-btn');
-                    if (gearBtn) gearBtn.style.display = 'none';
-                    updateAnalysisButtonState(); checkAndShowQR();
-                } else {
-                    alert("⚠️ Không thể kết nối máy chủ xác thực, nhưng Key đã được lưu trên thiết bị!");
-                    isDemoMode = false;
-                    document.getElementById('licenseModalOverlay').style.display = 'none';
-                    updateAnalysisButtonState();
-                }
-            }
-        }
 
         setInterval(async () => {
             let activeKey = localStorage.getItem('fox_license_key');
@@ -620,7 +651,7 @@
                 try {
                     const response = await fetch(LICENSE_GAS_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: "verifyKey", key: activeKey, deviceId: getDeviceId(), type: "full" }) });
                     const result = await response.json();
-                    if (result.status !== "success") { alert("⚠️ Key bản quyền của bạn đã bị thu hồi hoặc xóa khỏi hệ thống. Ứng dụng sẽ khóa lại!"); forceLogout(); }
+                    if (result.status !== "success") { alert("⚠️ Key bản quyền của bạn đã bị đăng xuất hoặc xóa khỏi hệ thống. Ứng dụng sẽ khóa lại!"); forceLogout(); }
                 } catch (e) {}
             }
         }, 30000);
@@ -628,23 +659,14 @@
         function checkAndShowQR() {
             const qrPanel = document.getElementById('qrPanel'), qrImage = document.getElementById('qrImage');
             if (!qrImage || !qrPanel) return;
-            
-            // Ẩn mã QR hoàn toàn trên các thiết bị di động / màn hình nhỏ
             const isSmartDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 900;
-            
-            if (isSmartDevice) {
-                qrPanel.style.display = 'none';
-                return;
-            }
-            
+            if (isSmartDevice) { qrPanel.style.display = 'none'; return; }
             qrPanel.style.display = 'flex';
             let currentUrl = window.location.href.split('?')[0]; 
             let activeKey = localStorage.getItem('fox_license_key') || '', qrUrl = currentUrl;
             if (activeKey) { qrUrl += '?key=' + encodeURIComponent(activeKey); }
             qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrUrl)}`;
         }
-
-        // Tự động kiểm tra lại khi thu phóng cửa sổ
         window.addEventListener('resize', checkAndShowQR);
 
         let workletUrl = null;
@@ -685,7 +707,12 @@
 
         settingsMenu.querySelectorAll('.settings-group-header').forEach(header => {
             header.addEventListener('click', (e) => {
-                if (header.textContent.includes('Xóa Key')) return;
+                if (header.dataset.group === 'license') { 
+                    const group = header.parentElement;
+                    settingsMenu.querySelectorAll('.settings-group').forEach(g => { if (g !== group) g.classList.remove('expanded'); });
+                    group.classList.toggle('expanded');
+                    return; 
+                }
                 e.stopPropagation();
                 const group = header.parentElement;
                 settingsMenu.querySelectorAll('.settings-group').forEach(g => { if (g !== group) g.classList.remove('expanded'); });
@@ -696,6 +723,7 @@
         settingsMenu.querySelectorAll('.settings-group-items').forEach(groupItems => groupItems.addEventListener('mouseleave', () => updateSettingsPill(groupItems, null, true)));
 
         settingsMenu.querySelectorAll('.settings-item').forEach(item => {
+            if (item.classList.contains('settings-action-btn')) return; // Bỏ qua nhóm nút bản quyền mới
             item.addEventListener('mouseenter', () => updateSettingsPill(item.parentElement, item, true));
             item.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -778,8 +806,7 @@
         let initialPinchDistance = 0, initialPinchTime = 0, initialZoomY = 0;
 
         canvas.addEventListener('wheel', (e) => {
-            e.preventDefault();
-            isUserZoomed = true;
+            e.preventDefault(); isUserZoomed = true;
             if (e.deltaY < 0) { totalTimeOnScreen *= 0.88; currentZoomY *= 1.12; } else { totalTimeOnScreen *= 1.12; currentZoomY /= 1.12; }
             totalTimeOnScreen = Math.max(0.0005, Math.min(totalTimeOnScreen, 5.0));
             currentZoomY = Math.max(0.1, Math.min(currentZoomY, 50.0));
@@ -788,8 +815,7 @@
 
         canvas.addEventListener('touchstart', (e) => {
             if (e.touches.length === 2) {
-                e.preventDefault();
-                isUserZoomed = true;
+                e.preventDefault(); isUserZoomed = true;
                 let dx = e.touches[0].clientX - e.touches[1].clientX, dy = e.touches[0].clientY - e.touches[1].clientY;
                 initialPinchDistance = Math.sqrt(dx * dx + dy * dy);
                 initialPinchTime = totalTimeOnScreen; initialZoomY = currentZoomY;
@@ -800,14 +826,11 @@
             if (e.touches.length === 2) {
                 e.preventDefault();
                 let dx = e.touches[0].clientX - e.touches[1].clientX, dy = e.touches[0].clientY - e.touches[1].clientY;
-                let dist = Math.sqrt(dx * dx + dy * dy);
-                let scale = initialPinchDistance / dist;
+                let dist = Math.sqrt(dx * dx + dy * dy); let scale = initialPinchDistance / dist;
                 if (Math.abs(dx) > Math.abs(dy)) {
-                    totalTimeOnScreen = initialPinchTime * scale;
-                    totalTimeOnScreen = Math.max(0.0005, Math.min(totalTimeOnScreen, 5.0));
+                    totalTimeOnScreen = initialPinchTime * scale; totalTimeOnScreen = Math.max(0.0005, Math.min(totalTimeOnScreen, 5.0));
                 } else {
-                    currentZoomY = initialZoomY / scale;
-                    currentZoomY = Math.max(0.1, Math.min(currentZoomY, 50.0));
+                    currentZoomY = initialZoomY / scale; currentZoomY = Math.max(0.1, Math.min(currentZoomY, 50.0));
                 }
                 if (isPaused) drawFrame();
             }
@@ -836,10 +859,7 @@
                 let corr = 0, count = 0;
                 for (let i = 200; i < 2000; i++) {
                     let idxA = i, idxB = i + shift;
-                    if (idxB >= 0 && idxB < dataB.length) {
-                        corr += dataA[idxA] * dataB[idxB];
-                        count++;
-                    }
+                    if (idxB >= 0 && idxB < dataB.length) { corr += dataA[idxA] * dataB[idxB]; count++; }
                 }
                 if (count > 0) corr /= count;
                 if (corr > maxCorr) { maxCorr = corr; bestShift = shift; }
@@ -1178,24 +1198,21 @@
             }
         }
 
-        function updateEquationsHUD(freqA, freqB, phaseRad) {
-            const eqFreqA = document.getElementById('eqFreqA');
-            const eqFreqB = document.getElementById('eqFreqB');
-            if (eqFreqA) eqFreqA.innerText = freqA > 0 ? freqA.toFixed(1) : "0.0";
-            if (eqFreqB) eqFreqB.innerText = freqB > 0 ? freqB.toFixed(1) : "0.0";
+        // HÀM CẬP NHẬT PHƯƠNG TRÌNH VÀ SỐ LIỆU BIÊN ĐỘ TRUNG BÌNH VÀO HUD
+        function updateEquationsHUD(freqA, freqB, phaseRad, ampA, ampB) {
+            document.getElementById('hudAmpA').innerText = ampA;
+            document.getElementById('hudAmpB').innerText = ampB;
             
-            const eqPhase = document.getElementById('eqPhase');
-            if (eqPhase) {
-                let phaseStr = phaseRad >= 0 ? ` + ${phaseRad.toFixed(2)}` : ` - ${Math.abs(phaseRad).toFixed(2)}`;
-                eqPhase.innerText = phaseStr;
-            }
+            document.getElementById('eqFreqA').innerText = freqA > 0 ? freqA.toFixed(1) : "0.0";
+            document.getElementById('eqFreqB').innerText = freqB > 0 ? freqB.toFixed(1) : "0.0";
+            document.getElementById('eqAmpA').innerText = ampA;
+            document.getElementById('eqAmpB').innerText = ampB;
+            
+            let phaseStr = phaseRad >= 0 ? ` + ${phaseRad.toFixed(2)}` : ` - ${Math.abs(phaseRad).toFixed(2)}`;
+            document.getElementById('eqPhase').innerText = phaseStr;
 
-            const hudPhaseRad = document.getElementById('hudPhaseRad');
-            const hudPhaseDeg = document.getElementById('hudPhaseDeg');
-            if (hudPhaseRad && hudPhaseDeg) {
-                hudPhaseRad.innerText = phaseRad.toFixed(2);
-                hudPhaseDeg.innerText = Math.round(phaseRad * 180 / Math.PI);
-            }
+            document.getElementById('hudPhaseRad').innerText = phaseRad.toFixed(2);
+            document.getElementById('hudPhaseDeg').innerText = Math.round(phaseRad * 180 / Math.PI);
 
             const sumLine = document.getElementById('eqSumLine');
             if (sumLine) {
@@ -1203,94 +1220,71 @@
                 if (freqA > 10 && freqB > 10 && diff > 3.0) {
                     sumLine.innerHTML = `Tổng hợp: <span class="math-symbol" style="color:#f87171;">⚠️ Tạo Sóng Phách (f<sub>1</sub> ≠ f<sub>2</sub>)</span>`;
                 } else {
-                    sumLine.innerHTML = `Tổng hợp: <span class="math-symbol">u = u<sub>A</sub> + u<sub>B</sub> = 2A·cos(<span class="math-fraction"><span class="math-numerator">Δφ</span><span class="math-denominator">2</span></span>)·cos(2πft + <span class="math-fraction"><span class="math-numerator">φ<sub>A</sub> + φ<sub>B</sub></span><span class="math-denominator">2</span></span>)</span>`;
+                    let A_val = ((parseFloat(ampA) + parseFloat(ampB)) / 2).toFixed(2);
+                    let phase_half = (phaseRad / 2).toFixed(2);
+                    let phase_half_sign = phaseRad >= 0 ? `+ ${phase_half}` : `- ${Math.abs(phase_half).toFixed(2)}`;
+                    let sum_amp = Math.abs(2 * A_val * Math.cos(phaseRad / 2)).toFixed(2);
+                    sumLine.innerHTML = `Tổng hợp: <span class="math-symbol">u = 2(${A_val})·cos(${phase_half})·cos(2πft ${phase_half_sign}) = ${sum_amp}·cos(2πft ${phase_half_sign})</span>`;
                 }
             }
         }
 
         function openTwoSourceModal() {
-            isTwoSourceModalOpen = true;
-            isTsPaused = false; 
-            showTsResults = false;
-            showTsEquations = false;
+            isTwoSourceModalOpen = true; isTsPaused = false; 
+            showTsResults = false; showTsEquations = false;
             
             const overlay = document.getElementById('twoSourceModalOverlay');
-            if (overlay) {
-                overlay.style.display = 'flex';
-                setTimeout(() => overlay.classList.add('animUI-visible'), 10);
-            }
+            if (overlay) { overlay.style.display = 'flex'; setTimeout(() => overlay.classList.add('animUI-visible'), 10); }
 
-            const resBtn = document.getElementById('tsResultBtn');
-            const eqBtn = document.getElementById('tsEquationBtn');
+            const resBtn = document.getElementById('tsResultBtn'), eqBtn = document.getElementById('tsEquationBtn');
             if (resBtn) resBtn.style.setProperty('display', 'none', 'important');
-            if (eqBtn) eqBtn.style.setProperty('display', 'none', 'important'); // Ẩn khi bắt đầu chạy
+            if (eqBtn) eqBtn.style.setProperty('display', 'none', 'important');
             document.getElementById('hudResults').style.display = 'none';
             document.getElementById('hudEquations').style.display = 'none';
 
             const btn = document.getElementById('tsPlayBtn');
-            if (btn) {
-                btn.innerHTML = '⏸ Dừng';
-                btn.className = "btn-orange";
-            }
+            if (btn) { btn.innerHTML = '⏸ Dừng'; btn.className = "btn-orange"; }
 
             requestAnimationFrame(calculatePhaseAndDrawLive);
         }
 
         function closeTwoSourceModal() {
-            isTwoSourceModalOpen = false;
-            isTsPaused = true;
-            
+            isTwoSourceModalOpen = false; isTsPaused = true;
             const overlay = document.getElementById('twoSourceModalOverlay');
             if (overlay) {
                 overlay.classList.remove('animUI-visible');
-                setTimeout(() => { 
-                    overlay.style.display = 'none'; 
-                    if (!animFrameId && typeof draw === 'function') draw();
-                }, 300);
+                setTimeout(() => { overlay.style.display = 'none'; if (!animFrameId && typeof draw === 'function') draw(); }, 300);
             }
         }
 
         function toggleTsPlay() {
             isTsPaused = !isTsPaused;
-            const btn = document.getElementById('tsPlayBtn');
-            const resBtn = document.getElementById('tsResultBtn');
-            const eqBtn = document.getElementById('tsEquationBtn');
-
-            if (!isTsPaused) { // Khi đang chạy
-                if (btn) {
-                    btn.innerHTML = '⏸ Dừng';
-                    btn.className = "btn-orange";
-                }
+            const btn = document.getElementById('tsPlayBtn'), resBtn = document.getElementById('tsResultBtn'), eqBtn = document.getElementById('tsEquationBtn');
+            if (!isTsPaused) { 
+                if (btn) { btn.innerHTML = '⏸ Dừng'; btn.className = "btn-orange"; }
                 if (resBtn) resBtn.style.setProperty('display', 'none', 'important');
-                if (eqBtn) eqBtn.style.setProperty('display', 'none', 'important'); // Sửa lỗi hiển thị
-                
+                if (eqBtn) eqBtn.style.setProperty('display', 'none', 'important'); 
                 showTsResults = false; showTsEquations = false;
                 document.getElementById('hudResults').style.display = 'none';
                 document.getElementById('hudEquations').style.display = 'none';
-
                 requestAnimationFrame(calculatePhaseAndDrawLive);
-            } else { // Khi đã bấm tạm dừng
-                if (btn) {
-                    btn.innerHTML = '▶ Tiếp tục';
-                    btn.className = "btn-green";
-                }
+            } else { 
+                if (btn) { btn.innerHTML = '▶ Tiếp tục'; btn.className = "btn-green"; }
                 if (resBtn) resBtn.style.setProperty('display', 'inline-flex', 'important');
-                if (eqBtn) eqBtn.style.setProperty('display', 'inline-flex', 'important'); // Hiện lại khi dừng
-
+                if (eqBtn) eqBtn.style.setProperty('display', 'inline-flex', 'important'); 
                 if (channelConfig && channelConfig.A && channelConfig.A.data) snapDataA = Array.from(channelConfig.A.data);
                 if (channelConfig && channelConfig.B && channelConfig.B.data) snapDataB = Array.from(channelConfig.B.data);
-
                 calculatePhaseAndDrawLive();
             }
         }
 
+        // HÀM TÍNH TOÁN BIÊN ĐỘ, PHA VÀ VẼ SÓNG
         function calculatePhaseAndDrawLive() {
             if (!isTwoSourceModalOpen) return;
             
             const canv = document.getElementById('twoSourceCanvas'); 
             if (canv) {
-                canv.width = canv.parentElement.clientWidth;
-                canv.height = canv.parentElement.clientHeight;
+                canv.width = canv.parentElement.clientWidth; canv.height = canv.parentElement.clientHeight;
 
                 const ctx = canv.getContext('2d'), cw = canv.width, ch = canv.height;
                 ctx.fillStyle = '#f8fafc'; ctx.fillRect(0, 0, cw, ch); 
@@ -1306,17 +1300,26 @@
                 if (!isTsPaused) {
                     let now = performance.now();
                     if (now - lastCorrelateTime > 300) {
+                        let sqA = 0, sqB = 0;
                         if (cIdxA > 2048) {
                             let recA = new Float32Array(2048);
-                            for (let i = 0; i < 2048; i++) recA[i] = activeDataA[((cIdxA - 2048 + i) % len + len) % len];
+                            for (let i = 0; i < 2048; i++) {
+                                let v = activeDataA[((cIdxA - 2048 + i) % len + len) % len];
+                                recA[i] = v; sqA += v * v;
+                            }
                             let fA = autoCorrelate(recA, sampleRate);
                             if (fA > 0) currentCalcFreqA = (currentCalcFreqA === 0) ? fA : (currentCalcFreqA * 0.7 + fA * 0.3);
+                            currentAmpA = (Math.sqrt(sqA / 2048) * 1.414).toFixed(2); 
                         }
                         if (cIdxB > 2048) {
                             let recB = new Float32Array(2048);
-                            for (let i = 0; i < 2048; i++) recB[i] = activeDataB[((cIdxB - 2048 + i) % len + len) % len];
+                            for (let i = 0; i < 2048; i++) {
+                                let v = activeDataB[((cIdxB - 2048 + i) % len + len) % len];
+                                recB[i] = v; sqB += v * v;
+                            }
                             let fB = autoCorrelate(recB, sampleRate);
                             if (fB > 0) currentCalcFreqB = (currentCalcFreqB === 0) ? fB : (currentCalcFreqB * 0.7 + fB * 0.3);
+                            currentAmpB = (Math.sqrt(sqB / 2048) * 1.414).toFixed(2);
                         }
                         lastCorrelateTime = now;
 
@@ -1327,23 +1330,26 @@
                         
                         let avgFreq = (currentCalcFreqA + currentCalcFreqB) / 2;
                         let calculatedPhase = calculatePhaseDifference(activeDataA, activeDataB, avgFreq > 0 ? avgFreq : 440, sampleRate);
-                        updateEquationsHUD(currentCalcFreqA, currentCalcFreqB, calculatedPhase);
+                        
+                        updateEquationsHUD(currentCalcFreqA, currentCalcFreqB, calculatedPhase, currentAmpA, currentAmpB);
                     }
                 }
 
-                let offsetA = isTsPaused ? findZeroCrossingOffset({active:true, data: snapDataA}, snapDataA.length, samplesDraw) : 0;
-                let startI = isTsPaused ? (snapDataA.length - offsetA - samplesDraw) : (cIdxA - samplesDraw);
+                let offsetA = 0;
+                if (isTsPaused) { offsetA = findZeroCrossingOffset({active:true, data: snapDataA}, snapDataA.length, samplesDraw); } 
+                else { offsetA = findZeroCrossingOffset(channelConfig.A, cIdxA, samplesDraw); }
 
-                ctx.lineWidth = 2; ctx.lineJoin = 'round';
-                let step = Math.max(1, Math.floor(samplesDraw / (cw * 0.75))); 
+                ctx.lineWidth = 2.5; ctx.lineJoin = 'round';
+                let step = Math.max(1, Math.floor(samplesDraw / (cw * 2.0))); 
                 
                 if (tsViewMode === 'overlay') {
                     document.getElementById('tsWarningText').style.display = 'none';
                     
                     ctx.strokeStyle = '#ef4444'; ctx.beginPath();
                     for (let i = 0; i < samplesDraw; i+=step) {
-                        let idx = isTsPaused ? Math.max(0, Math.min(snapDataA.length - 1, startI + i)) : ((cIdxA - samplesDraw + i) % len + len) % len;
-                        let val = isTsPaused ? snapDataA[idx] : activeDataA[idx];
+                        let idxA = isTsPaused ? Math.max(0, Math.min(snapDataA.length - 1, snapDataA.length - offsetA - samplesDraw + i)) 
+                                              : ((cIdxA - offsetA - samplesDraw + i) % len + len) % len;
+                        let val = isTsPaused ? snapDataA[idxA] : activeDataA[idxA];
                         let x = (i / samplesDraw) * cw, y = ch / 2 - (val * currentZoomY * ch / 2);
                         if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
                     }
@@ -1351,8 +1357,9 @@
                     
                     ctx.strokeStyle = '#3b82f6'; ctx.beginPath();
                     for (let i = 0; i < samplesDraw; i+=step) {
-                        let idx = isTsPaused ? Math.max(0, Math.min(snapDataB.length - 1, startI + i)) : ((cIdxB - samplesDraw + i) % len + len) % len;
-                        let val = isTsPaused ? snapDataB[idx] : activeDataB[idx];
+                        let idxB = isTsPaused ? Math.max(0, Math.min(snapDataB.length - 1, snapDataB.length - offsetA - samplesDraw + i)) 
+                                              : ((cIdxB - offsetA - samplesDraw + i) % len + len) % len;
+                        let val = isTsPaused ? snapDataB[idxB] : activeDataB[idxB];
                         let x = (i / samplesDraw) * cw, y = ch / 2 - (val * currentZoomY * ch / 2);
                         if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
                     }
@@ -1369,8 +1376,8 @@
                         document.getElementById('tsWarningText').style.display = 'none';
                         ctx.strokeStyle = '#8b5cf6'; ctx.beginPath();
                         for (let i = 0; i < samplesDraw; i+=step) {
-                            let idxA = isTsPaused ? Math.max(0, Math.min(snapDataA.length - 1, startI + i)) : ((cIdxA - samplesDraw + i) % len + len) % len;
-                            let idxB = isTsPaused ? Math.max(0, Math.min(snapDataB.length - 1, startI + i)) : ((cIdxB - samplesDraw + i) % len + len) % len;
+                            let idxA = isTsPaused ? Math.max(0, Math.min(snapDataA.length - 1, snapDataA.length - offsetA - samplesDraw + i)) : ((cIdxA - offsetA - samplesDraw + i) % len + len) % len;
+                            let idxB = isTsPaused ? Math.max(0, Math.min(snapDataB.length - 1, snapDataB.length - offsetA - samplesDraw + i)) : ((cIdxB - offsetA - samplesDraw + i) % len + len) % len;
                             let val = (isTsPaused ? snapDataA[idxA] : activeDataA[idxA]) + (isTsPaused ? snapDataB[idxB] : activeDataB[idxB]);
                             
                             let x = (i / samplesDraw) * cw, y = ch / 2 - (val * currentZoomY * ch / 2);
@@ -1401,12 +1408,7 @@
         }
 
         function toggleChat() { const widget = document.getElementById('fox-chat-widget'); widget.classList.toggle('open'); if (widget.classList.contains('open')) { setTimeout(() => document.getElementById('fox-chat-input').focus(), 300); } }
-        
-        function toggleChatTheme() { 
-            const chatBox = document.getElementById('fox-chat-box');
-            chatBox.classList.toggle('light-theme'); 
-        }
-
+        function toggleChatTheme() { const chatBox = document.getElementById('fox-chat-box'); chatBox.classList.toggle('light-theme'); }
         function updateFoxLiveFrequency(freq) { const freqTag = document.getElementById('foxLiveFreqTag'); if(freqTag) freqTag.innerText = freq.toFixed(1) + ' Hz'; }
 
         const chatInput = document.getElementById('fox-chat-input'), sendBtn = document.getElementById('foxSendBtn'), chatContent = document.getElementById('fox-chat-content');
@@ -1430,33 +1432,22 @@
             }
         }
 
-        window.copyFoxText = function(btn, text) {
-            navigator.clipboard.writeText(text).then(() => {
-                let oldText = btn.innerText;
-                btn.innerText = "Đã Copy ✓";
-                setTimeout(() => btn.innerText = oldText, 1500);
-            });
-        }
-
+        window.copyFoxText = function(btn, text) { navigator.clipboard.writeText(text).then(() => { let oldText = btn.innerText; btn.innerText = "Đã Copy ✓"; setTimeout(() => btn.innerText = oldText, 1500); }); }
         function addChatMessage(sender, text) {
             const row = document.createElement('div'); row.className = `fox-msg-row ${sender === 'user' ? 'fox-msg-user' : 'fox-msg-bot'}`;
             let html = ''; if (sender === 'bot') html += `<div class="fox-msg-avatar">${FOX_AVATAR_SVG}</div>`;
             const formattedText = sender === 'bot' ? formatMathText(text) : text;
-            
             let copyStr = text.replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, '\\n');
             let copyBtn = sender === 'bot' ? `<button class="fox-copy-btn" onclick="copyFoxText(this, '${copyStr}')">Copy</button>` : '';
-            
             html += `<div class="fox-msg-group"><div class="fox-msg-bubble">${formattedText} ${copyBtn}</div></div>`;
             row.innerHTML = html; chatContent.appendChild(row); chatContent.scrollTop = chatContent.scrollHeight;
         }
-
         function addTypingIndicator() {
             const id = 'typing_' + Date.now(), row = document.createElement('div');
             row.className = 'fox-msg-row fox-msg-bot'; row.id = id;
             row.innerHTML = '<div class="fox-msg-avatar">' + FOX_AVATAR_SVG + '</div><div class="fox-msg-group"><div class="fox-msg-bubble"><div class="fox-typing-indicator"><span class="fox-typing-text">Fox_lab đang phân tích...</span></div></div></div>';
             chatContent.appendChild(row); chatContent.scrollTop = chatContent.scrollHeight; return id;
         }
-        
         function removeTypingIndicator(id) { const el = document.getElementById(id); if (el) el.remove(); }
     </script>
 </body>
