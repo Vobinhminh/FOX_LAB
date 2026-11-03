@@ -366,7 +366,7 @@
                 <div class="fox-msg-row fox-msg-bot">
                     <div class="fox-msg-avatar" id="msg-fox-icon-container"></div>
                     <div class="fox-msg-group">
-                        <div class="fox-msg-bubble">Chào em! Thầy là <b>Fox_lab AI</b>, trợ lý ảo hướng dẫn thí nghiệm Vật lý. Em đang khảo sát với tần số <span id="foxLiveFreqTag" class="fox-freq-tag">0.0 Hz</span>. Em cần hỗ trợ gì?</div>
+                        <div class="fox-msg-bubble">Xin chào ! Mình là <b>Fox_lab AI</b>, trợ lý ảo hướng dẫn thí nghiệm Vật lý. Em đang khảo sát với tần số <span id="foxLiveFreqTag" class="fox-freq-tag">0.0 Hz</span>. Em cần hỗ trợ gì?</div>
                     </div>
                 </div>
             </div>
@@ -377,7 +377,7 @@
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
                     </button>
                 </div>
-                <div class="fox-footer-meta">Đo MCĐ Âm</div>
+                <div class="fox-footer-meta">FOX_LAB</div>
             </div>
         </div>
     </div>
@@ -420,7 +420,20 @@
             e.preventDefault();
         });
 
-        // --- 2. HÀM MỞ RỘNG TOÀN MÀN HÌNH (FULLSCREEN) ĐÃ HOÀN THIỆN ---
+        // --- 2. XỬ LÝ KHI ẨN TRÌNH DUYỆT (TỰ ĐỘNG RESET BẢO VỆ MICRO) ---
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'hidden') {
+                if (window.resetButton && !isPaused) {
+                    window.resetButton.click();
+                }
+            }
+        });
+        window.addEventListener('beforeunload', () => {
+            stopAudioChannel('A');
+            stopAudioChannel('B');
+        });
+
+        // --- 3. HÀM MỞ RỘNG TOÀN MÀN HÌNH (FULLSCREEN) ---
         function toggleFullScreen() {
             let elem = document.documentElement;
             if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement && !document.msFullscreenElement) {
@@ -453,6 +466,8 @@
         const micSelectA = document.getElementById('micSelectA'), micSelectB = document.getElementById('micSelectB');
         const canvas = document.getElementById('oscilloscope'), canvasCtx = canvas.getContext('2d', { alpha: false });
         const settingsDropdown = document.getElementById('settingsDropdown'), settingsMenu = document.getElementById('settingsMenu');
+
+        window.resetButton = resetButton; 
 
         let isDemoMode = true;
         let demoTimer = null;
@@ -631,7 +646,6 @@
             
             // Ẩn mã QR hoàn toàn trên các thiết bị di động / màn hình nhỏ
             const isSmartDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 900;
-            
             if (isSmartDevice) {
                 qrPanel.style.display = 'none';
                 return;
@@ -644,7 +658,6 @@
             qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrUrl)}`;
         }
 
-        // Tự động kiểm tra lại khi thu phóng cửa sổ
         window.addEventListener('resize', checkAndShowQR);
 
         let workletUrl = null;
@@ -1223,7 +1236,7 @@
             const resBtn = document.getElementById('tsResultBtn');
             const eqBtn = document.getElementById('tsEquationBtn');
             if (resBtn) resBtn.style.setProperty('display', 'none', 'important');
-            if (eqBtn) eqBtn.style.setProperty('display', 'none', 'important'); // Ẩn khi bắt đầu chạy
+            if (eqBtn) eqBtn.style.setProperty('display', 'none', 'important');
             document.getElementById('hudResults').style.display = 'none';
             document.getElementById('hudEquations').style.display = 'none';
 
@@ -1256,34 +1269,25 @@
             const resBtn = document.getElementById('tsResultBtn');
             const eqBtn = document.getElementById('tsEquationBtn');
 
-            if (!isTsPaused) { // Khi đang chạy
-                if (btn) {
-                    btn.innerHTML = '⏸ Dừng';
-                    btn.className = "btn-orange";
-                }
+            if (!isTsPaused) { 
+                if (btn) { btn.innerHTML = '⏸ Dừng'; btn.className = "btn-orange"; }
                 if (resBtn) resBtn.style.setProperty('display', 'none', 'important');
-                if (eqBtn) eqBtn.style.setProperty('display', 'none', 'important'); // Sửa lỗi hiển thị
-                
+                if (eqBtn) eqBtn.style.setProperty('display', 'none', 'important'); 
                 showTsResults = false; showTsEquations = false;
                 document.getElementById('hudResults').style.display = 'none';
                 document.getElementById('hudEquations').style.display = 'none';
-
                 requestAnimationFrame(calculatePhaseAndDrawLive);
-            } else { // Khi đã bấm tạm dừng
-                if (btn) {
-                    btn.innerHTML = '▶ Tiếp tục';
-                    btn.className = "btn-green";
-                }
+            } else { 
+                if (btn) { btn.innerHTML = '▶ Tiếp tục'; btn.className = "btn-green"; }
                 if (resBtn) resBtn.style.setProperty('display', 'inline-flex', 'important');
-                if (eqBtn) eqBtn.style.setProperty('display', 'inline-flex', 'important'); // Hiện lại khi dừng
-
+                if (eqBtn) eqBtn.style.setProperty('display', 'inline-flex', 'important'); 
                 if (channelConfig && channelConfig.A && channelConfig.A.data) snapDataA = Array.from(channelConfig.A.data);
                 if (channelConfig && channelConfig.B && channelConfig.B.data) snapDataB = Array.from(channelConfig.B.data);
-
                 calculatePhaseAndDrawLive();
             }
         }
 
+        // --- HÀM TÍNH TOÁN PHA VÀ VẼ GHÉP SÓNG CHÍNH XÁC ---
         function calculatePhaseAndDrawLive() {
             if (!isTwoSourceModalOpen) return;
             
@@ -1331,28 +1335,38 @@
                     }
                 }
 
-                let offsetA = isTsPaused ? findZeroCrossingOffset({active:true, data: snapDataA}, snapDataA.length, samplesDraw) : 0;
-                let startI = isTsPaused ? (snapDataA.length - offsetA - samplesDraw) : (cIdxA - samplesDraw);
+                // KHÓA PHA: Dùng điểm cắt của Kênh A làm gốc để đồng bộ chung cho cả 2 sóng
+                let offsetA = 0;
+                if (isTsPaused) {
+                    offsetA = findZeroCrossingOffset({active:true, data: snapDataA}, snapDataA.length, samplesDraw);
+                } else {
+                    offsetA = findZeroCrossingOffset(channelConfig.A, cIdxA, samplesDraw);
+                }
 
-                ctx.lineWidth = 2; ctx.lineJoin = 'round';
-                let step = Math.max(1, Math.floor(samplesDraw / (cw * 0.75))); 
+                ctx.lineWidth = 2.5; ctx.lineJoin = 'round';
+                // Tăng độ phân giải nét vẽ (nhỏ gọn mượt mà hơn)
+                let step = Math.max(1, Math.floor(samplesDraw / (cw * 2.0))); 
                 
                 if (tsViewMode === 'overlay') {
                     document.getElementById('tsWarningText').style.display = 'none';
                     
+                    // Vẽ Sóng A
                     ctx.strokeStyle = '#ef4444'; ctx.beginPath();
                     for (let i = 0; i < samplesDraw; i+=step) {
-                        let idx = isTsPaused ? Math.max(0, Math.min(snapDataA.length - 1, startI + i)) : ((cIdxA - samplesDraw + i) % len + len) % len;
-                        let val = isTsPaused ? snapDataA[idx] : activeDataA[idx];
+                        let idxA = isTsPaused ? Math.max(0, Math.min(snapDataA.length - 1, snapDataA.length - offsetA - samplesDraw + i)) 
+                                              : ((cIdxA - offsetA - samplesDraw + i) % len + len) % len;
+                        let val = isTsPaused ? snapDataA[idxA] : activeDataA[idxA];
                         let x = (i / samplesDraw) * cw, y = ch / 2 - (val * currentZoomY * ch / 2);
                         if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
                     }
                     ctx.stroke();
                     
+                    // Vẽ Sóng B (Khóa theo chung độ lùi thời gian offsetA của sóng A)
                     ctx.strokeStyle = '#3b82f6'; ctx.beginPath();
                     for (let i = 0; i < samplesDraw; i+=step) {
-                        let idx = isTsPaused ? Math.max(0, Math.min(snapDataB.length - 1, startI + i)) : ((cIdxB - samplesDraw + i) % len + len) % len;
-                        let val = isTsPaused ? snapDataB[idx] : activeDataB[idx];
+                        let idxB = isTsPaused ? Math.max(0, Math.min(snapDataB.length - 1, snapDataB.length - offsetA - samplesDraw + i)) 
+                                              : ((cIdxB - offsetA - samplesDraw + i) % len + len) % len;
+                        let val = isTsPaused ? snapDataB[idxB] : activeDataB[idxB];
                         let x = (i / samplesDraw) * cw, y = ch / 2 - (val * currentZoomY * ch / 2);
                         if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
                     }
@@ -1369,8 +1383,8 @@
                         document.getElementById('tsWarningText').style.display = 'none';
                         ctx.strokeStyle = '#8b5cf6'; ctx.beginPath();
                         for (let i = 0; i < samplesDraw; i+=step) {
-                            let idxA = isTsPaused ? Math.max(0, Math.min(snapDataA.length - 1, startI + i)) : ((cIdxA - samplesDraw + i) % len + len) % len;
-                            let idxB = isTsPaused ? Math.max(0, Math.min(snapDataB.length - 1, startI + i)) : ((cIdxB - samplesDraw + i) % len + len) % len;
+                            let idxA = isTsPaused ? Math.max(0, Math.min(snapDataA.length - 1, snapDataA.length - offsetA - samplesDraw + i)) : ((cIdxA - offsetA - samplesDraw + i) % len + len) % len;
+                            let idxB = isTsPaused ? Math.max(0, Math.min(snapDataB.length - 1, snapDataB.length - offsetA - samplesDraw + i)) : ((cIdxB - offsetA - samplesDraw + i) % len + len) % len;
                             let val = (isTsPaused ? snapDataA[idxA] : activeDataA[idxA]) + (isTsPaused ? snapDataB[idxB] : activeDataB[idxB]);
                             
                             let x = (i / samplesDraw) * cw, y = ch / 2 - (val * currentZoomY * ch / 2);
