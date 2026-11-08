@@ -711,7 +711,6 @@
 
     let dbHistoryA = [];
     let dbHistoryB = [];
-    let recordingStartTime = performance.now();
     let selectedBarIndexA = -1;
     let selectedBarIndexB = -1;
     const SAFETY_THRESHOLD_DB = 85.0;
@@ -821,7 +820,7 @@
                 activateFullMode(key);
             } else {
                 if (!isSilent) {
-                    let confirmChange = confirm(`❌ Lỗi: ${result.message}\n\nMã Key này có thể đang được sử dụng ở thiết bị khác.\nBạn có muốn XÁC NHẬN ĐỔI THIẾT BỊ (tự động đăng xuất máy cũ, lưu vào máy mới - tối đa 3 lần) không?`);
+                    let confirmChange = confirm(`❌ Lỗi: ${result.message}\n\nMã Key này có thể đang được sử dụng ở thiết bị khác.\nBạn có muốn XÁC NHẬN ĐỔI THIẾT BỊ (tự động đăng xuất máy cũ, lưu vào máyใหม่ - tối đa 3 lần) không?`);
                     if (confirmChange) {
                         forceChangeDevice(key, type);
                     } else {
@@ -1363,7 +1362,6 @@
         isContinuousMode = (modeSelect && modeSelect.value === 'continuous');
         if (isPaused) {
             isPaused = false;
-            if (dbHistoryA.length === 0 && dbHistoryB.length === 0) recordingStartTime = performance.now();
             pauseButton.disabled = false;
             if (channelConfig.A.data) { channelConfig.A.data.fill(0); channelConfig.A.index = 0; }
             if (channelConfig.B.data) { channelConfig.B.data.fill(0); channelConfig.B.index = 0; }
@@ -1398,7 +1396,6 @@
         if (channelConfig.A.data) { channelConfig.A.data.fill(0); channelConfig.A.index = 0; } if (channelConfig.B.data) { channelConfig.B.data.fill(0); channelConfig.B.index = 0; }
         dbHistoryA = [];
         dbHistoryB = [];
-        recordingStartTime = performance.now();
         selectedBarIndexA = -1;
         selectedBarIndexB = -1;
         updateUIState(); drawFrame(true);
@@ -1459,8 +1456,7 @@
                 ctx.lineTo(x, boxY + boxH - bottomPadding + 4);
                 ctx.stroke();
 
-                let itemTime = dbHistory[i].time;
-                let timeOffsetMs = Math.max(0, Math.round(itemTime - recordingStartTime));
+                let timeOffsetMs = i * timeIntervalMs;
                 ctx.fillText(`${timeOffsetMs} ms`, x, boxY + boxH - bottomPadding + 16);
             }
 
@@ -1491,7 +1487,7 @@
                 let selX = boxX + leftPadding + selectedIndex * barWidth + barWidth / 2;
                 let selY = (boxY + boxH - bottomPadding) - ((selItem.db - 30) / 90) * chartH;
 
-                let relTime = Math.max(0, Math.round(selItem.time - recordingStartTime));
+                let relTime = (selectedIndex - (dbHistory.length - 1)) * 50;
                 let tooltipText = `📍 ${selItem.db.toFixed(1)} dB | ${relTime} ms`;
 
                 ctx.save();
@@ -1652,12 +1648,21 @@
     }
 
     function handleAppReturn() {
-        if (audioCtx && audioCtx.state === 'suspended') {
-            audioCtx.resume().catch(e => console.log(e));
-        }
-        if (!isPaused && !animFrameId) {
-            draw();
-        }
+        resetFeaturesAndAdjustments();
+
+        isPaused = true;
+        clearTimeout(stopTimer);
+
+        pauseButton.textContent = "Đo / Dừng";
+        pauseButton.className = "btn-green";
+        pauseButton.disabled = true;
+        resetButton.disabled = false;
+
+        infoMessageText.innerHTML = "⚠️ Ứng dụng vừa quay lại. Vui lòng bấm <span class='info-badge'>Làm mới</span> để tiếp tục đo.";
+        infoMessageText.style.color = "#dc2626";
+
+        updateAnalysisButtonState();
+        drawFrame(false);
     }
 
     function openMcdModal() {
@@ -2140,40 +2145,64 @@
         if (isTwoSourceModalOpen && !isTsPaused) requestAnimationFrame(calculatePhaseAndDrawLive);
     }
 
-    function formatMathText(text) {
+        function formatMathText(text) {
         if (!text) return '';
-        let formatted = text
-            .replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '<span class="math-fraction" style="display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 3px;font-size:0.95em;"><span style="border-bottom:1px solid currentColor;padding-bottom:1px;">$1</span><span style="padding-top:1px;">$2</span></span>')
-            .replace(/\\text\{([^}]+)\}/g, '$1')
-            .replace(/\\omega/g, 'ω')
-            .replace(/\\lambda/g, 'λ')
-            .replace(/\\pi/g, 'π')
-            .replace(/\\varphi/g, 'φ')
-            .replace(/\\Delta/g, 'Δ')
-            .replace(/\\cos/g, 'cos')
-            .replace(/\\sin/g, 'sin')
-            .replace(/\\tan/g, 'tan')
-            .replace(/\\left\(/g, '(')
-            .replace(/\\right\)/g, ')')
-            .replace(/\\left\[/g, '[')
-            .replace(/\\right\]/g, ']')
-            .replace(/\\cdot/g, '·')
-            .replace(/\\lg/g, 'lg')
-            .replace(/\\log/g, 'log')
-            .replace(/\$([a-zA-Z])_([0-9a-zA-Z]+)\$/g, '<span class="math-symbol">$1<sub>$2</sub></span>')
-            .replace(/\$([^$]+)\$/g, (match, p1) => {
-                let clean = p1.replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '<span class="math-fraction" style="display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 3px;font-size:0.95em;"><span style="border-bottom:1px solid currentColor;padding-bottom:1px;">$1</span><span style="padding-top:1px;">$2</span></span>')
-                             .replace(/\\text\{([^}]+)\}/g, '$1')
-                             .replace(/\\omega/g, 'ω').replace(/\\lambda/g, 'λ').replace(/\\pi/g, 'π')
-                             .replace(/\\varphi/g, 'φ').replace(/\\Delta/g, 'Δ')
-                             .replace(/\\cos/g, 'cos').replace(/\\sin/g, 'sin').replace(/\\tan/g, 'tan')
-                             .replace(/\\left\(/g, '(').replace(/\\right\)/g, ')')
-                             .replace(/\\left\[/g, '[').replace(/\\right\]/g, ']')
-                             .replace(/\\cdot/g, '·').replace(/\\lg/g, 'lg')
-                             .replace(/([a-zA-Z])_([0-9a-zA-Z]+)/g, '$1<sub>$2</sub>');
-                return `<span class="math-symbol">${clean}</span>`;
-            })
+
+        let processMathExpr = function (expr) {
+            return expr
+                .replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '<span class="math-fraction" style="display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 4px;font-size:0.95em;"><span style="border-bottom:1px solid currentColor;padding-bottom:1px;line-height:1.1;">$1</span><span style="padding-top:1px;line-height:1.1;">$2</span></span>')
+                .replace(/\\text\{([^}]+)\}/g, '$1')
+                .replace(/([a-zA-Z0-9_>)]+)\\cos/g, '$1·cos')
+                .replace(/([a-zA-Z0-9_>)]+)\\sin/g, '$1·sin')
+                .replace(/([a-zA-Z0-9_>)]+)\\tan/g, '$1·tan')
+                .replace(/\\cos/g, 'cos')
+                .replace(/\\sin/g, 'sin')
+                .replace(/\\tan/g, 'tan')
+                .replace(/\\omega/g, 'ω')
+                .replace(/\\lambda/g, 'λ')
+                .replace(/\\pi/g, 'π')
+                .replace(/\\varphi/g, 'φ')
+                .replace(/\\Delta/g, 'Δ')
+                .replace(/\\alpha/g, 'α')
+                .replace(/\\beta/g, 'β')
+                .replace(/\\gamma/g, 'γ')
+                .replace(/\\theta/g, 'θ')
+                .replace(/\\mu/g, 'μ')
+                .replace(/\\cdot/g, '·')
+                .replace(/\\pm/g, '±')
+                .replace(/\\approx/g, '≈')
+                .replace(/\\neq/g, '≠')
+                .replace(/\\left\(/g, '(')
+                .replace(/\\right\)/g, ')')
+                .replace(/\\left\[/g, '[')
+                .replace(/\\right\]/g, ']')
+                .replace(/\\lg/g, 'lg')
+                .replace(/\\log/g, 'log')
+                .replace(/\^{([^}]+)}/g, '<sup>$1</sup>')
+                .replace(/(?<=[a-zA-Z0-9)\].$])\^([0-9a-zA-Z+\-.]+)/g, '<sup>$1</sup>')
+                .replace(/_\{([^}]+)\}/g, '<sub>$1</sub>')
+                .replace(/_([0-9a-zA-Z]+)/g, '<sub>$1</sub>');
+        };
+
+        // 1. Process block math $$...$$
+        let formatted = text.replace(/\$\$([\s\S]+?)\$\$/g, function (m, p1) {
+            return '<span class="math-symbol">' + processMathExpr(p1) + '</span>';
+        });
+
+        // 2. Process inline math $...$
+        formatted = formatted.replace(/\$([^$]+)\$/g, function (m, p1) {
+            return '<span class="math-symbol">' + processMathExpr(p1) + '</span>';
+        });
+
+        // 3. Process plain text superscripts, subscripts, spacing outside math blocks (e.g. W/m^2, 10^-12, Acos)
+        formatted = formatted
+            .replace(/\^{([^}]+)}/g, '<sup>$1</sup>')
+            .replace(/(?<=[a-zA-Z0-9)\].$])\^([0-9a-zA-Z+\-.]+)/g, '<sup>$1</sup>')
+            .replace(/([a-zA-Z])cos/g, '$1·cos')
+            .replace(/([a-zA-Z])sin/g, '$1·sin')
+            .replace(/([a-zA-Z])tan/g, '$1·tan')
             .replace(/\n/g, '<br>');
+
         return formatted;
     }
 
