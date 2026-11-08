@@ -1,9 +1,11 @@
 {
-  "name": "FOX-Lab Dao Động Ký",
+  "name": "FOX-Lab - Dao Động Ký & Đo Âm Thanh",
   "short_name": "FOX-Lab",
+  "description": "Phòng thí nghiệm Vật lý sóng âm, Dao động ký, Phân tích 5 Họa âm FFT và Đo Cường độ âm dB",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#e6f7ff",
+  "orientation": "any",
+  "background_color": "#0f172a",
   "theme_color": "#f97316",
   "icons": [
     {
