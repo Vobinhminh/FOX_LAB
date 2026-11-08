@@ -219,11 +219,9 @@
         .hud-highlight { color: #facc15; font-weight: bold; }
         .hud-eq { color: #10b981; font-style: italic; }
         .math-symbol { font-family: "Times New Roman", Times, serif; font-style: italic; font-size: 14.5px; }
-        .math-symbol span.math-upright, .math-symbol .upright, .math-upright { font-style: normal; }
         .math-fraction { display: inline-flex; flex-direction: column; vertical-align: middle; text-align: center; margin: 0 3px; font-size: 0.95em; }
         .math-numerator { border-bottom: 1px solid currentColor; padding-bottom: 1px; }
         .math-denominator { padding-top: 1px; }
-        sup sub, sub sup { font-size: 85%; }
 
         .ts-mode-toggle { display: flex; gap: 4px; background: #0f172a; padding: 3px; border-radius: 6px; border: 1px solid #334155; position: relative; overflow: hidden; }
         .ts-mode-pill { position: absolute; top: 3px; bottom: 3px; left: 0; width: 0; background: linear-gradient(135deg, #3b82f6, #2563eb); border-radius: 4px; pointer-events: none; z-index: 1; transition: transform 0.24s ease, width 0.24s ease; opacity: 0; }
@@ -470,7 +468,7 @@
         </div>
         <div class="modal-controls">
             <button class="btn-dark" onclick="closeFFTModal()">⬅ Quay lại</button>
-            <label style="font-weight: 600; font-size: 11.5px; margin-left:10px;">Tần số (<span class="math-symbol">f<sub>0</sub></span>):</label>
+            <label style="font-weight: 600; font-size: 11.5px; margin-left:10px;">Tần số (f0):</label>
             <input type="number" id="fftTargetFreq" value="440" min="20" max="5000" oninput="processAndDrawFFT()">
             <span style="font-weight: 600; font-size: 11.5px;">Hz</span>
             <button class="btn-green" onclick="processAndDrawFFT()">Quét Họa âm</button>
@@ -504,8 +502,8 @@
 
             <div id="hudResults" class="hud-overlay">
                 <div class="hud-title">BẢNG KẾT QUẢ ĐỐI CHIẾU</div>
-                <div>Tần số Kênh A: <span class="hud-highlight" id="hudFreqA">0.0</span> Hz &nbsp;|&nbsp; Chu kỳ T<sub>A</sub> = <span class="hud-highlight" id="hudPerA">0.00</span> ms &nbsp;|&nbsp; Biên độ A<sub>A</sub>: <span class="hud-highlight" id="hudAmpA">0.00</span></div>
-                <div>Tần số Kênh B: <span class="hud-highlight" id="hudFreqB">0.0</span> Hz &nbsp;|&nbsp; Chu kỳ T<sub>B</sub> = <span class="hud-highlight" id="hudPerB">0.00</span> ms &nbsp;|&nbsp; Biên độ A<sub>B</sub>: <span class="hud-highlight" id="hudAmpB">0.00</span></div>
+                <div>Tần số Kênh A: <span class="hud-highlight" id="hudFreqA">0.0</span> Hz &nbsp;|&nbsp; Chu kỳ T<sub>A</sub> = <span class="hud-highlight" id="hudPerA">0.00</span> ms &nbsp;|&nbsp; Biên độ A: <span class="hud-highlight" id="hudAmpA">0.00</span></div>
+                <div>Tần số Kênh B: <span class="hud-highlight" id="hudFreqB">0.0</span> Hz &nbsp;|&nbsp; Chu kỳ T<sub>B</sub> = <span class="hud-highlight" id="hudPerB">0.00</span> ms &nbsp;|&nbsp; Biên độ B: <span class="hud-highlight" id="hudAmpB">0.00</span></div>
                 <div style="margin-top:4px; padding-top:4px; border-top:1px dashed rgba(255,255,255,0.2);">
                     Độ lệch pha Δφ: <span class="hud-highlight" id="hudPhaseRad">0.00</span> rad (<span class="hud-highlight" id="hudPhaseDeg">0</span>°)
                 </div>
@@ -513,8 +511,8 @@
 
             <div id="hudEquations" class="hud-overlay" style="top: auto; bottom: 16px; left: 16px;">
                 <div class="hud-title">PHƯƠNG TRÌNH DAO ĐỘNG</div>
-                <div class="hud-eq">Kênh A: <span class="math-symbol">u<sub>A</sub> = <span id="eqAmpA">A</span>·<span class="math-upright">cos</span>(2π·<span id="eqFreqA">0</span>·t)</span></div>
-                <div class="hud-eq">Kênh B: <span class="math-symbol">u<sub>B</sub> = <span id="eqAmpB">A</span>·<span class="math-upright">cos</span>(2π·<span id="eqFreqB">0</span>·t <span id="eqPhase">+ 0.00</span>)</span></div>
+                <div class="hud-eq">Kênh A: <span class="math-symbol">u<sub>A</sub> = <span id="eqAmpA">A</span>·cos(2π·<span id="eqFreqA">0</span>·t)</span></div>
+                <div class="hud-eq">Kênh B: <span class="math-symbol">u<sub>B</sub> = <span id="eqAmpB">A</span>·cos(2π·<span id="eqFreqB">0</span>·t <span id="eqPhase">+ 0.00</span>)</span></div>
                 <div class="hud-eq" id="eqSumLine" style="margin-top:4px;">Tổng hợp: <span class="math-symbol">u = u<sub>A</sub> + u<sub>B</sub></span></div>
             </div>
 
@@ -555,6 +553,8 @@
 
                 <div id="distanceResultBox" style="display: none; margin-top: 16px; padding: 14px; background: #eff6ff; border: 1px solid #93c5fd; border-radius: 6px; color: #1e40af; font-weight: 600; line-height: 1.6;">
                 </div>
+
+
             </div>
         </div>
     </div>
@@ -761,13 +761,11 @@
         if (!key) { alert("Bạn chưa kích hoạt Key nào hoặc đang ở chế độ Dùng thử!"); return; }
 
         if (action === 'logout') {
-            if (confirm("🚪 Bạn muốn Đăng xuất khỏi thiết bị này?
-(Key vẫn giữ quyền sử dụng trên hệ thống)")) {
+            if (confirm("🚪 Bạn muốn Đăng xuất khỏi thiết bị này?\n(Key vẫn giữ quyền sử dụng trên hệ thống)")) {
                 forceLogout(false);
             }
         } else if (action === 'change') {
-            if (confirm("🔄 Bạn muốn Đổi thiết bị?
-(Thiết bị này sẽ bị gỡ bỏ khỏi Google Sheet để bạn kích hoạt trên máy mới - Tối đa 3 lần đổi/Key)")) {
+            if (confirm("🔄 Bạn muốn Đổi thiết bị?\n(Thiết bị này sẽ bị gỡ bỏ khỏi Google Sheet để bạn kích hoạt trên máy mới - Tối đa 3 lần đổi/Key)")) {
                 try {
                     infoMessageText.innerHTML = "Đang gửi yêu cầu giải phóng device ID...";
                     await fetch(LICENSE_GAS_URL, {
@@ -782,8 +780,7 @@
                 forceLogout(false);
             }
         } else if (action === 'delete') {
-            if (confirm("🗑 XÓA KEY VĨNH VIỄN?
-Bạn có chắc chắn muốn xóa Key và xóa Device ID khỏi Google Sheet? (Thao tác không thể hoàn tác)")) {
+            if (confirm("🗑 XÓA KEY VĨNH VIỄN?\nBạn có chắc chắn muốn xóa Key và xóa Device ID khỏi Google Sheet? (Thao tác không thể hoàn tác)")) {
                 try {
                     infoMessageText.innerHTML = "Đang xóa Key & Device ID trên Google Sheet...";
                     await fetch(LICENSE_GAS_URL, {
@@ -823,10 +820,7 @@ Bạn có chắc chắn muốn xóa Key và xóa Device ID khỏi Google Sheet? 
                 activateFullMode(key);
             } else {
                 if (!isSilent) {
-                    let confirmChange = confirm(`❌ Lỗi: ${result.message}
-
-Mã Key này có thể đang được sử dụng ở thiết bị khác.
-Bạn có muốn XÁC NHẬN ĐỔI THIẾT BỊ (tự động đăng xuất máy cũ, lưu vào máy mới - tối đa 3 lần) không?`);
+                    let confirmChange = confirm(`❌ Lỗi: ${result.message}\n\nMã Key này có thể đang được sử dụng ở thiết bị khác.\nBạn có muốn XÁC NHẬN ĐỔI THIẾT BỊ (tự động đăng xuất máy cũ, lưu vào máyใหม่ - tối đa 3 lần) không?`);
                     if (confirmChange) {
                         forceChangeDevice(key, type);
                     } else {
@@ -852,8 +846,7 @@ Bạn có muốn XÁC NHẬN ĐỔI THIẾT BỊ (tự động đăng xuất má
                 alert("✅ Đổi thiết bị thành công! Key đã được gán cho máy này.");
                 activateFullMode(key);
             } else {
-                alert(`❌ Không thể đổi thiết bị: ${result.message}
-(Có thể mã Key này đã hết số lần Đổi thiết bị)`);
+                alert(`❌ Không thể đổi thiết bị: ${result.message}\n(Có thể mã Key này đã hết số lần Đổi thiết bị)`);
                 forceLogout();
             }
         } catch (e) { alert("Lỗi kết nối khi yêu cầu đổi thiết bị!"); forceLogout(); }
@@ -930,6 +923,7 @@ Bạn có muốn XÁC NHẬN ĐỔI THIẾT BỊ (tự động đăng xuất má
         let now = Date.now();
 
         if (savedKey) {
+            // Nếu thoát ra vào lại trong vòng 20s trên cùng thiết bị -> Tính 1 lần, kích hoạt ngay lập tức không bắt chờ/đếm trùng
             if (now - lastVerify < 20000) {
                 activateFullMode(savedKey);
             } else {
@@ -1830,6 +1824,8 @@ Bạn có muốn XÁC NHẬN ĐỔI THIẾT BỊ (tự động đăng xuất má
         }
     }
 
+    
+
     function openFFTModal() {
         if (isDemoMode) { alert("Chức năng Phân tích Họa âm FFT chỉ có trên bản Full."); return; }
         document.getElementById('fftModalOverlay').classList.add('animUI-visible'); document.getElementById('fftModalOverlay').style.display = 'flex';
@@ -1927,7 +1923,7 @@ Bạn có muốn XÁC NHẬN ĐỔI THIẾT BỊ (tự động đăng xuất má
             fCtx.beginPath(); fCtx.moveTo(x, ch - 25); fCtx.lineTo(x, yPeak); fCtx.stroke();
 
             fCtx.fillStyle = '#ef4444'; fCtx.beginPath(); fCtx.arc(x, yPeak, 3.5, 0, 2 * Math.PI); fCtx.fill();
-            fCtx.fillStyle = '#0f172a'; fCtx.fillText(`${n}f₀ (${Math.round(targetFreq)} Hz)`, x, Math.max(15, yPeak - 8));
+            fCtx.fillStyle = '#0f172a'; fCtx.fillText(`${n}f0 (${Math.round(targetFreq)}Hz)`, x, Math.max(15, yPeak - 8));
         }
     }
 
@@ -1977,8 +1973,7 @@ Bạn có muốn XÁC NHẬN ĐỔI THIẾT BỊ (tự động đăng xuất má
                 let phase_half = (phaseRad / 2).toFixed(2);
                 let phase_half_sign = phaseRad >= 0 ? `+ ${phase_half}` : `- ${Math.abs(phase_half).toFixed(2)}`;
                 let sum_amp = Math.abs(2 * A_val * Math.cos(phaseRad / 2)).toFixed(2);
-                let f_avg = (freqA > 0 ? freqA : (freqB > 0 ? freqB : 0)).toFixed(1);
-                sumLine.innerHTML = `Tổng hợp: <span class="math-symbol">u = 2·(${A_val})·<span style="font-style:normal;">cos</span>(${phase_half})·<span style="font-style:normal;">cos</span>(2π·${f_avg}·t ${phase_half_sign}) = ${sum_amp}·<span style="font-style:normal;">cos</span>(2π·${f_avg}·t ${phase_half_sign})</span>`;
+                sumLine.innerHTML = `Tổng hợp: <span class="math-symbol">u = 2(${A_val})·cos(${phase_half})·cos(2πft ${phase_half_sign}) = ${sum_amp}·cos(2πft ${phase_half_sign})</span>`;
             }
         }
     }
@@ -2150,48 +2145,48 @@ Bạn có muốn XÁC NHẬN ĐỔI THIẾT BỊ (tự động đăng xuất má
         if (isTwoSourceModalOpen && !isTsPaused) requestAnimationFrame(calculatePhaseAndDrawLive);
     }
 
-    function formatMathText(text) {
+        function formatMathText(text) {
         if (!text) return '';
 
         let processMathExpr = function (expr) {
             return expr
-                .replace(/_\{([^}]+)\}/g, '<sub>$1</sub>')
-                .replace(/_([0-9a-zA-Z]+)/g, '<sub>$1</sub>')
+                .replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '<span class="math-fraction" style="display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 4px;font-size:0.95em;"><span style="border-bottom:1px solid currentColor;padding-bottom:1px;line-height:1.1;">$1</span><span style="padding-top:1px;line-height:1.1;">$2</span></span>')
+                .replace(/\\text\{([^}]+)\}/g, '$1')
+                .replace(/([a-zA-Z0-9_>)]+)\\cos/g, '$1·cos')
+                .replace(/([a-zA-Z0-9_>)]+)\\sin/g, '$1·sin')
+                .replace(/([a-zA-Z0-9_>)]+)\\tan/g, '$1·tan')
+                .replace(/\\cos/g, 'cos')
+                .replace(/\\sin/g, 'sin')
+                .replace(/\\tan/g, 'tan')
+                .replace(/\\omega/g, 'ω')
+                .replace(/\\lambda/g, 'λ')
+                .replace(/\\pi/g, 'π')
+                .replace(/\\varphi/g, 'φ')
+                .replace(/\\Delta/g, 'Δ')
+                .replace(/\\alpha/g, 'α')
+                .replace(/\\beta/g, 'β')
+                .replace(/\\gamma/g, 'γ')
+                .replace(/\\theta/g, 'θ')
+                .replace(/\\mu/g, 'μ')
+                .replace(/\\cdot/g, '·')
+                .replace(/\\pm/g, '±')
+                .replace(/\\approx/g, '≈')
+                .replace(/\\neq/g, '≠')
+                .replace(/\\left\(/g, '(')
+                .replace(/\\right\)/g, ')')
+                .replace(/\\left\[/g, '[')
+                .replace(/\\right\]/g, ']')
+                .replace(/\\lg/g, 'lg')
+                .replace(/\\log/g, 'log')
                 .replace(/\^{([^}]+)}/g, '<sup>$1</sup>')
                 .replace(/(?<=[a-zA-Z0-9)\].$])\^([0-9a-zA-Z+\-.]+)/g, '<sup>$1</sup>')
-                .replace(/\frac\{([^}]+)\}\{([^}]+)\}/g, '<span class="math-fraction" style="display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 4px;font-size:0.95em;"><span style="border-bottom:1px solid currentColor;padding-bottom:1px;line-height:1.1;">$1</span><span style="padding-top:1px;line-height:1.1;">$2</span></span>')
-                .replace(/\text\{([^}]+)\}/g, '<span style="font-style:normal;">$1</span>')
-                .replace(/([a-zA-Z0-9_>)]+)\cos/g, '$1·<span style="font-style:normal;">cos</span>')
-                .replace(/([a-zA-Z0-9_>)]+)\sin/g, '$1·<span style="font-style:normal;">sin</span>')
-                .replace(/([a-zA-Z0-9_>)]+)\tan/g, '$1·<span style="font-style:normal;">tan</span>')
-                .replace(/\cos/g, '<span style="font-style:normal;">cos</span>')
-                .replace(/\sin/g, '<span style="font-style:normal;">sin</span>')
-                .replace(/\tan/g, '<span style="font-style:normal;">tan</span>')
-                .replace(/\omega/g, 'ω')
-                .replace(/\lambda/g, 'λ')
-                .replace(/\pi/g, 'π')
-                .replace(/\varphi/g, 'φ')
-                .replace(/\Delta/g, 'Δ')
-                .replace(/\alpha/g, 'α')
-                .replace(/\beta/g, 'β')
-                .replace(/\gamma/g, 'γ')
-                .replace(/\theta/g, 'θ')
-                .replace(/\mu/g, 'μ')
-                .replace(/\cdot/g, '·')
-                .replace(/\pm/g, '±')
-                .replace(/\approx/g, '≈')
-                .replace(/\neq/g, '≠')
-                .replace(/\left\(/g, '(')
-                .replace(/\right\)/g, ')')
-                .replace(/\left\[/g, '[')
-                .replace(/\right\]/g, ']')
-                .replace(/\lg/g, '<span style="font-style:normal;">lg</span>')
-                .replace(/\log/g, '<span style="font-style:normal;">log</span>');
+                .replace(/_\{([^}]+)\}/g, '<sub>$1</sub>')
+                .replace(/_([0-9a-zA-Z]+)/g, '<sub>$1</sub>');
         };
 
         // 1. Process block math $$...$$
         let formatted = text.replace(/\$\$([\s\S]+?)\$\$/g, function (m, p1) {
-            return '<div style="text-align:center;margin:6px 0;"><span class="math-symbol">' + processMathExpr(p1) + '</span></div>';
+            return '<span class="math-symbol">' + processMathExpr(p1) + '</span>';
         });
 
         // 2. Process inline math $...$
@@ -2199,20 +2194,14 @@ Bạn có muốn XÁC NHẬN ĐỔI THIẾT BỊ (tự động đăng xuất má
             return '<span class="math-symbol">' + processMathExpr(p1) + '</span>';
         });
 
-        // 3. Process markdown bold **...**
-        formatted = formatted.replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
-
-        // 4. Process plain text superscripts, subscripts, spacing outside math blocks (e.g. W/m^2, 10^-12, f_0, u_A, L_max)
+        // 3. Process plain text superscripts, subscripts, spacing outside math blocks (e.g. W/m^2, 10^-12, Acos)
         formatted = formatted
-            .replace(/_\{([^}]+)\}/g, '<sub>$1</sub>')
-            .replace(/(?<=[a-zA-Z0-9)\].$])_([0-9a-zA-Z]+)/g, '<sub>$1</sub>')
             .replace(/\^{([^}]+)}/g, '<sup>$1</sup>')
             .replace(/(?<=[a-zA-Z0-9)\].$])\^([0-9a-zA-Z+\-.]+)/g, '<sup>$1</sup>')
-            .replace(/([a-zA-Z])cos/g, '$1·<span style="font-style:normal;">cos</span>')
-            .replace(/([a-zA-Z])sin/g, '$1·<span style="font-style:normal;">sin</span>')
-            .replace(/([a-zA-Z])tan/g, '$1·<span style="font-style:normal;">tan</span>')
-            .replace(/
-/g, '<br>');
+            .replace(/([a-zA-Z])cos/g, '$1·cos')
+            .replace(/([a-zA-Z])sin/g, '$1·sin')
+            .replace(/([a-zA-Z])tan/g, '$1·tan')
+            .replace(/\n/g, '<br>');
 
         return formatted;
     }
@@ -2247,8 +2236,7 @@ Bạn có muốn XÁC NHẬN ĐỔI THIẾT BỊ (tự động đăng xuất má
         const row = document.createElement('div'); row.className = `fox-msg-row ${sender === 'user' ? 'fox-msg-user' : 'fox-msg-bot'}`;
         let html = ''; if (sender === 'bot') html += `<div class="fox-msg-avatar">${FOX_AVATAR_SVG}</div>`;
         const formattedText = sender === 'bot' ? formatMathText(text) : text;
-        let copyStr = text.replace(/'/g, "\'").replace(/"/g, '&quot;').replace(/
-/g, '\n');
+        let copyStr = text.replace(/'/g, "\'").replace(/"/g, '&quot;').replace(/\n/g, '\n');
         let copyBtn = sender === 'bot' ? `<button class="fox-copy-btn" onclick="copyFoxText(this, '${copyStr}')">Copy</button>` : '';
         html += `<div class="fox-msg-group"><div class="fox-msg-bubble">${formattedText} ${copyBtn}</div></div>`;
         row.innerHTML = html; chatContent.appendChild(row); chatContent.scrollTop = chatContent.scrollHeight;
