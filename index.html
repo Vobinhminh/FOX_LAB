@@ -1677,6 +1677,18 @@
 
         if (mode === '2') {
             tableHeaderTitle.innerHTML = "BẢNG THỐNG KÊ MỨC CƯỜNG ĐỘ ÂM 2 VỊ TRÍ ĐO (KÊNH A & KÊNH B)";
+            if (dbHistoryA.length === 0 && channelConfig.A.data) {
+                let recentA = new Float32Array(1024), lenA = channelConfig.A.data.length, idxA = channelConfig.A.index;
+                for (let i = 0; i < 1024; i++) recentA[i] = channelConfig.A.data[((idxA - 1024 + i) % lenA + lenA) % lenA];
+                let currentDbA = calculateRMSdB(recentA);
+                dbHistoryA.push({ time: performance.now(), db: currentDbA });
+            }
+            if (dbHistoryB.length === 0 && channelConfig.B.data) {
+                let recentB = new Float32Array(1024), lenB = channelConfig.B.data.length, idxB = channelConfig.B.index;
+                for (let i = 0; i < 1024; i++) recentB[i] = channelConfig.B.data[((idxB - 1024 + i) % lenB + lenB) % lenB];
+                let currentDbB = calculateRMSdB(recentB);
+                dbHistoryB.push({ time: performance.now(), db: currentDbB });
+            }
             let dbA = dbHistoryA.map(h => h.db);
             let dbB = dbHistoryB.map(h => h.db);
 
@@ -1708,6 +1720,12 @@
             `;
         } else {
             tableHeaderTitle.innerHTML = "BẢNG THỐNG KÊ MỨC CƯỜNG ĐỘ ÂM THU ĐƯỢC (1 NGUỒN / KÊNH A)";
+            if (dbHistoryA.length === 0 && channelConfig.A.data) {
+                let recentA = new Float32Array(1024), lenA = channelConfig.A.data.length, idxA = channelConfig.A.index;
+                for (let i = 0; i < 1024; i++) recentA[i] = channelConfig.A.data[((idxA - 1024 + i) % lenA + lenA) % lenA];
+                let currentDbA = calculateRMSdB(recentA);
+                dbHistoryA.push({ time: performance.now(), db: currentDbA });
+            }
             if (dbHistoryA.length === 0) return;
             let dbValues = dbHistoryA.map(h => h.db);
             let maxDb = Math.max(...dbValues);
