@@ -3,7 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FOX_LAB - Phòng thí nghiệm Vật lý về sóng cơ học </title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-512.png">
+    <link rel="apple-touch-icon" href="icon-512.png">
+    <meta name="theme-color" content="#f97316">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>FOX_LAB - Phòng thí nghiệm Vật lý về sóng âm</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -329,8 +335,8 @@
 <!-- MODAL BẢN QUYỀN -->
 <div id="licenseModalOverlay" class="license-modal-overlay" style="display: none;">
     <div class="license-selection-box">
-        <h2>🦊 FOX_LAB - Phòng thí nghiệm sóng cơ học</h2>
-        <p>Phần mềm mô phỏng thí nghiệm Vật lý chuyên về sóng cơ học dành cho Giáo viên & Học sinh.</p>
+        <h2>🦊 FOX_LAB PHYSICS SIMULATOR</h2>
+        <p>Phần mềm mô phỏng thí nghiệm Vật lý Âm thanh chuyên nghiệp dành cho Giáo viên & Học sinh.</p>
         <div class="license-btn-group">
             <button class="license-btn btn-demo-mode" onclick="selectMode('demo')">🧪 Dùng thử Demo (Giới hạn tính năng)</button>
             <button class="license-btn btn-full-mode" onclick="selectMode('full')">🔑 Kích hoạt Bản Full (Nhập Key)</button>
@@ -680,7 +686,7 @@
     }
 
     const FOX_AVATAR_SVG = `<svg viewBox="0 0 100 100" fill="none"><polygon points="22,12 10,48 36,40" fill="#ff7a30"/><polygon points="23,19 16,44 32,38" fill="#1e293b"/><path d="M 19 36 Q 23 32 28 34" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round"/><polygon points="78,12 64,40 90,48" fill="#ff7a30"/><polygon points="77,19 68,38 84,44" fill="#1e293b"/><path d="M 81 36 Q 77 32 72 34" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round"/><polygon points="50,22 36,40 50,46" fill="#ff8f4a"/><polygon points="50,22 50,46 64,40" fill="#ff7a30"/><polygon points="36,40 10,48 20,68 38,58" fill="#d4380d"/><polygon points="64,40 38,58 50,46" fill="#e04006"/><polygon points="64,40 50,46 62,58" fill="#d4380d"/><polygon points="64,40 90,48 80,68 62,58" fill="#d4380d"/><polygon points="20,68 12,74 26,76 34,68" fill="#e2e8f0"/><polygon points="80,68 88,74 74,76 66,68" fill="#cbd5e1"/><polygon points="38,58 50,46 50,78 36,68" fill="#ff7a30"/><polygon points="62,58 50,46 50,78 64,68" fill="#e04006"/><polygon points="50,78 36,68 44,88 50,88" fill="#f8fafc"/><polygon points="50,78 64,68 56,88 50,88" fill="#e2e8f0"/><polygon points="50,88 45,82 55,82" fill="#0f172a"/><polygon points="25,48 50,54 75,48 71,59 50,65 29,59" fill="#090d16" stroke="rgba(56,189,248,0.5)" stroke-width="0.9"/><circle cx="34.5" cy="48" r="1.5" fill="#ffffff"/><circle cx="44.5" cy="60" r="1.5" fill="#ffffff"/><circle cx="54.5" cy="48" r="1.5" fill="#ffffff"/><circle cx="64.5" cy="60" r="1.5" fill="#ffffff"/></svg>`;
-    const LICENSE_GAS_URL = "https://script.google.com/macros/s/AKfycbxar01GNP_utInrUr0M_f6lE4Xfr-xn_U6B7N4eK7KHb2Dp2Yphs_50OEiE6g7UsaNoTw/exec";
+    const LICENSE_GAS_URL = "https://script.google.com/macros/s/AKfycbwC9gwiwBdIsfvv2nGZQNrkeR1O43GTW9lhMCu6fEn-LGjjbmMEcy-3153DZRkOaLdx3Q/exec";
     const CHAT_GAS_URL = "https://script.google.com/macros/s/AKfycbyStGo5ETWCHq3UxtQEWIFL-R2mpEHdeYuX53EgfPf8LtG2Dfe4Dbk1-i59hf8LcY2bdg/exec";
 
     const btnStartA = document.getElementById('btnStartA'), btnStartB = document.getElementById('btnStartB');
@@ -2179,5 +2185,26 @@
     }
     function removeTypingIndicator(id) { const el = document.getElementById(id); if (el) el.remove(); }
 </script>
+
+<script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js')
+                .then(reg => {
+                    console.log('ServiceWorker registered:', reg.scope);
+                    reg.onupdatefound = () => {
+                        const installingWorker = reg.installing;
+                        installingWorker.onstatechange = () => {
+                            if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                console.log('Phiên bản mới đã được tải ngầm.');
+                            }
+                        };
+                    };
+                })
+                .catch(err => console.log('ServiceWorker registration failed:', err));
+        });
+    }
+</script>
+
 </body>
 </html>
