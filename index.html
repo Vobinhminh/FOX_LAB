@@ -26,7 +26,7 @@
             },
             options: {
                 ignoreHtmlClass: 'tex2jax_ignore',
-                processHtmlClass: 'tex2jax_process'
+                processHtmlClass: 'tex2jax_process|fox-msg-bubble|hud-overlay'
             },
             chtml: {
                 scale: 1.05,
@@ -242,9 +242,6 @@
         .hud-highlight { color: #facc15; font-weight: bold; }
         .hud-eq { color: #10b981; font-style: italic; }
         .math-symbol { font-family: "Times New Roman", Times, serif; font-style: italic; font-size: 14.5px; }
-        .math-fraction { display: inline-flex; flex-direction: column; vertical-align: middle; text-align: center; margin: 0 3px; font-size: 0.95em; }
-        .math-numerator { border-bottom: 1px solid currentColor; padding-bottom: 1px; }
-        .math-denominator { padding-top: 1px; }
 
         .ts-mode-toggle { display: flex; gap: 4px; background: #0f172a; padding: 3px; border-radius: 6px; border: 1px solid #334155; position: relative; overflow: hidden; }
         .ts-mode-pill { position: absolute; top: 3px; bottom: 3px; left: 0; width: 0; background: linear-gradient(135deg, #3b82f6, #2563eb); border-radius: 4px; pointer-events: none; z-index: 1; transition: transform 0.24s ease, width 0.24s ease; opacity: 0; }
@@ -325,7 +322,7 @@
         .fox-msg-bot .fox-msg-bubble { background: rgba(30, 41, 59, 0.85); color: #f1f5f9; border: 1px solid rgba(255, 255, 255, 0.1); border-top-left-radius: 2px; }
         .fox-msg-bot .fox-msg-bubble b { color: var(--fox-cyan); font-weight: 600; }
 
-        /* Tối ưu hiển thị MathJax MathType chuẩn sắc nét & tinh chỉnh ký hiệu chỉ số dưới (Subscript) */
+        /* MathJax MathType Styling */
         .mjx-chtml {
             font-size: 106% !important;
             outline: none !important;
@@ -378,22 +375,6 @@
         .fox-send-btn svg { width: 12px; height: 12px; margin-left: 2px; }
         .fox-footer-meta { font-size: 9px; color: var(--fox-text-muted); text-align: center; }
         .fox-freq-tag { color: var(--fox-cyan); font-weight: 600; }
-
-        .doppler-card {
-            background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 14px; margin-top: 16px;
-        }
-        .doppler-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 10px;
-        }
-        .doppler-field {
-            display: flex; flex-direction: column; gap: 4px;
-        }
-        .doppler-field label {
-            font-size: 11.5px; font-weight: 700; color: #334155;
-        }
-        .doppler-field input, .doppler-field select {
-            padding: 6px 8px; font-size: 12px; font-weight: 600; border: 1px solid #cbd5e1; border-radius: 4px; background: #fff; color: #0f172a;
-        }
     </style>
 </head>
 <body>
@@ -587,7 +568,7 @@
     </div>
 </div>
 
-<!-- MODAL PHÂN TÍCH MỨC CƯỜNG ĐỘ ÂM (MCĐ) & HIỆU ỨNG DOPPLER -->
+<!-- MODAL PHÂN TÍCH MỨC CƯỜNG ĐỘ ÂM (MCĐ) -->
 <div id="mcdModalOverlay" class="modal-overlay">
     <div id="mcdModal" class="modal-content" style="background: #ffffff; color: #0f172a;" onclick="event.stopPropagation()">
         <div class="modal-header" style="background: linear-gradient(90deg, #059669, #10b981);">
@@ -777,6 +758,8 @@
     let dbHistoryB = [];
     let selectedBarIndexA = -1;
     let selectedBarIndexB = -1;
+    let lastDbSampleTime = 0;
+    let dbStartTime = 0;
     const SAFETY_THRESHOLD_DB = 85.0;
 
     function getDisplayMode() {
@@ -1513,6 +1496,8 @@
         if (isPaused) {
             isPaused = false;
             pauseButton.disabled = false;
+            dbStartTime = 0;
+            lastDbSampleTime = 0;
             if (channelConfig.A.data) { channelConfig.A.data.fill(0); channelConfig.A.index = 0; }
             if (channelConfig.B.data) { channelConfig.B.data.fill(0); channelConfig.B.index = 0; }
             isUserZoomed = false; detectedFrequency = 0; lockedFrequency = 440; totalTimeOnScreen = 5 * (1.0 / lockedFrequency);
@@ -1548,6 +1533,8 @@
         dbHistoryB = [];
         selectedBarIndexA = -1;
         selectedBarIndexB = -1;
+        dbStartTime = 0;
+        lastDbSampleTime = 0;
         updateUIState(); drawFrame(true);
     });
 
@@ -1591,7 +1578,6 @@
 
         if (dbHistory.length > 0) {
             let barWidth = chartW / 120;
-            let timeIntervalMs = 50;
 
             ctx.fillStyle = '#475569';
             ctx.font = '500 9.5px "JetBrains Mono", monospace';
@@ -1606,8 +1592,9 @@
                 ctx.lineTo(x, boxY + boxH - bottomPadding + 4);
                 ctx.stroke();
 
-                let timeOffsetMs = i * timeIntervalMs;
-                ctx.fillText(`${timeOffsetMs} ms`, x, boxY + boxH - bottomPadding + 16);
+                let curElapsed = dbHistory[i].elapsedMs !== undefined ? dbHistory[i].elapsedMs : (i * 50);
+                let timeStr = curElapsed >= 1000 ? `${(curElapsed / 1000).toFixed(1)} s` : `${curElapsed} ms`;
+                ctx.fillText(timeStr, x, boxY + boxH - bottomPadding + 16);
             }
 
             for (let i = 0; i < dbHistory.length; i++) {
@@ -1637,8 +1624,9 @@
                 let selX = boxX + leftPadding + selectedIndex * barWidth + barWidth / 2;
                 let selY = (boxY + boxH - bottomPadding) - ((selItem.db - 30) / 90) * chartH;
 
-                let relTime = (selectedIndex - (dbHistory.length - 1)) * 50;
-                let tooltipText = `📍 ${selItem.db.toFixed(1)} dB | ${relTime} ms`;
+                let curElapsed = selItem.elapsedMs !== undefined ? selItem.elapsedMs : (selectedIndex * 50);
+                let timeStr = curElapsed >= 1000 ? `${(curElapsed / 1000).toFixed(2)} s` : `${curElapsed} ms`;
+                let tooltipText = `📍 ${selItem.db.toFixed(1)} dB | t = ${timeStr}`;
 
                 ctx.save();
                 ctx.font = 'bold 11px "Be Vietnam Pro", sans-serif';
@@ -1663,26 +1651,31 @@
 
         let chunkSize = 1024;
         let mode = getActiveChannelMode();
+        let now = performance.now();
 
-        if (channelConfig.A.active && channelConfig.A.data) {
-            let recentA = new Float32Array(chunkSize);
-            let lenA = channelConfig.A.data.length, idxA = channelConfig.A.index;
-            for (let i = 0; i < chunkSize; i++) recentA[i] = channelConfig.A.data[((idxA - chunkSize + i) % lenA + lenA) % lenA];
-            let currentDbA = calculateRMSdB(recentA);
-            if (!isPaused) {
-                dbHistoryA.push({ time: performance.now(), db: currentDbA });
-                if (dbHistoryA.length > 120) dbHistoryA.shift();
-            }
-        }
+        if (!isPaused) {
+            if (dbStartTime === 0) dbStartTime = now;
+            if (now - lastDbSampleTime >= 50) { // Lấy mẫu chuẩn 50ms (20Hz)
+                lastDbSampleTime = now;
+                let elapsedMs = Math.round(now - dbStartTime);
 
-        if (mode === '2' && channelConfig.B.active && channelConfig.B.data) {
-            let recentB = new Float32Array(chunkSize);
-            let lenB = channelConfig.B.data.length, idxB = channelConfig.B.index;
-            for (let i = 0; i < chunkSize; i++) recentB[i] = channelConfig.B.data[((idxB - chunkSize + i) % lenB + lenB) % lenB];
-            let currentDbB = calculateRMSdB(recentB);
-            if (!isPaused) {
-                dbHistoryB.push({ time: performance.now(), db: currentDbB });
-                if (dbHistoryB.length > 120) dbHistoryB.shift();
+                if (channelConfig.A.active && channelConfig.A.data) {
+                    let recentA = new Float32Array(chunkSize);
+                    let lenA = channelConfig.A.data.length, idxA = channelConfig.A.index;
+                    for (let i = 0; i < chunkSize; i++) recentA[i] = channelConfig.A.data[((idxA - chunkSize + i) % lenA + lenA) % lenA];
+                    let currentDbA = calculateRMSdB(recentA);
+                    dbHistoryA.push({ time: now, elapsedMs: elapsedMs, db: currentDbA });
+                    if (dbHistoryA.length > 120) dbHistoryA.shift();
+                }
+
+                if (mode === '2' && channelConfig.B.active && channelConfig.B.data) {
+                    let recentB = new Float32Array(chunkSize);
+                    let lenB = channelConfig.B.data.length, idxB = channelConfig.B.index;
+                    for (let i = 0; i < chunkSize; i++) recentB[i] = channelConfig.B.data[((idxB - chunkSize + i) % lenB + lenB) % lenB];
+                    let currentDbB = calculateRMSdB(recentB);
+                    dbHistoryB.push({ time: now, elapsedMs: elapsedMs, db: currentDbB });
+                    if (dbHistoryB.length > 120) dbHistoryB.shift();
+                }
             }
         }
 
@@ -1819,7 +1812,6 @@
         const overlay = document.getElementById('mcdModalOverlay');
         overlay.style.display = 'flex';
         document.getElementById('distanceResultBox').style.display = 'none';
-        if (typeof calculateDopplerEffect === 'function') calculateDopplerEffect();
 
         function buildDbHistory(historyArr, channelCfg) {
             if (historyArr.length === 0 && channelCfg && channelCfg.data && channelCfg.active && channelCfg.index > 1024) {
@@ -1838,7 +1830,7 @@
                     for (let i = 0; i < chunkSize; i++) {
                         chunk[i] = channelCfg.data[((chunkStart + i) % len + len) % len];
                     }
-                    historyArr.push({ time: now - c * 50, db: calculateRMSdB(chunk) });
+                    historyArr.push({ time: now - c * 50, elapsedMs: (chunks - 1 - c) * 50, db: calculateRMSdB(chunk) });
                 }
             }
         }
@@ -1917,11 +1909,6 @@
                     </tr>
                 `;
             }
-        }
-
-        let dopSrcFreq = document.getElementById('dopSrcFreq');
-        if (dopSrcFreq && lockedFrequency > 20) {
-            dopSrcFreq.value = Math.round(lockedFrequency);
         }
     }
 
@@ -2293,18 +2280,16 @@
         if (isTwoSourceModalOpen && !isTsPaused) requestAnimationFrame(calculatePhaseAndDrawLive);
     }
 
-    // ĐẢM BẢO CHATBOX TRẢ LỜI HẾT CÂU TRỌN VẸN, KHÔNG BỊ CẮT NGANG MID-SENTENCE
+    // ĐẢM BẢO CHATBOX TRẢ LỜI HẾT CÂU TRỌN VẸN
     function formatCompleteSentences(text) {
         if (!text) return '';
         let trimmed = text.trim();
         if (!trimmed) return '';
 
-        // Chuẩn hóa tên thương hiệu Fox-lab trong phản hồi chat
         trimmed = trimmed.replace(/Fox_lab/gi, 'Fox-lab')
                          .replace(/FOX_LAB/gi, 'Fox-lab')
                          .replace(/Foxlab/gi, 'Fox-lab');
 
-        // Bóc tách văn bản thô để kiểm tra dấu câu cuối cùng
         let cleanText = trimmed.replace(/<[^>]+>/g, '').trim();
         if (!cleanText) return trimmed;
 
@@ -2316,7 +2301,6 @@
             return trimmed;
         }
 
-        // Nếu văn bản kết thúc bằng thẻ đóng HTML </...>, chèn dấu chấm ngay trước thẻ đóng cuối
         if (trimmed.endsWith('>')) {
             let lastCloseTag = trimmed.lastIndexOf('</');
             if (lastCloseTag !== -1) {
@@ -2325,7 +2309,6 @@
             return trimmed + '.';
         }
 
-        // Bổ sung dấu chấm để đảm bảo phản hồi luôn trọn vẹn câu
         return trimmed + '.';
     }
 
@@ -2334,31 +2317,35 @@
         if (!text) return '';
         let str = text;
 
-        // 1. Tự động chuẩn hóa các ký hiệu tập hợp và công thức sóng dừng phổ biến:
-        str = str.replace(/k\s*\in\s*\mathbb\{N\}\^\*/g, '$k \\in \\mathbb{N}^*$');
-        str = str.replace(/k\s*\in\s*\mathbb\{N\}/g, '$k \\in \\mathbb{N}$');
-        
-        // 2. Tự động bọc các biểu thức TeX standalone như \frac, \lambda, \Delta, \pi, \omega, \cdot, \approx, \le, \ge
-        // Bọc các phân số \frac{...}{...} đứng ngoài delimiter $...$
-        str = str.replace(/(?<!\$)\\frac\{([^{}]+)\}\{([^{}]+)\}(?!\$)/g, (m, p1, p2) => `$\\frac{${p1}}{${p2}}$`);
-        
-        // Bọc các ký hiệu TeX phổ biến đứng ngoài $...$
-        str = str.replace(/(?<!\$)\\lambda(?!\$)/g, '$\\lambda$');
-        str = str.replace(/(?<!\$)\\Delta(?!\$)/g, '$\\Delta$');
-        str = str.replace(/(?<!\$)\\varphi(?!\$)/g, '$\\varphi$');
-        str = str.replace(/(?<!\$)\\pi(?!\$)/g, '$\\pi$');
-        str = str.replace(/(?<!\$)\\omega(?!\$)/g, '$\\omega$');
-
-        // 3. Chuẩn hóa chỉ số dưới vật lý (vd: v_max -> $v_{\text{max}}$, f_0 -> $f_0$, u_A -> $u_{\text{A}}$, L_max -> $L_{\text{max}}$)
-        // Sửa triệt để bug replace "$$1" làm vỡ mã bằng hàm callback replacer
-        str = str.replace(/(?<!\$)\b([a-zA-Z])_([a-zA-Z0-9\u00C0-\u024F\u1EA0-\u1EF9]+)\b(?!\$)/g, (match, p1, p2) => {
-            if (/^\d+$/.test(p2)) {
-                return `$${p1}_{${p2}}$`;
-            }
-            return `$${p1}_{\\text{${p2}}}$`;
+        // 1. Bảo vệ các khối công thức MathJax đã bọc sẵn ($$...$$, \[...\], $...$, \(...\))
+        let mathBlocks = [];
+        let protectedStr = str.replace(/(\$\$[\s\S]*?\$\$|\\\[[\s\S]*?\\\]|\$[^\$\n]+?\$|\\\([\s\S]*?\\\))/g, function(match) {
+            let idx = mathBlocks.length;
+            mathBlocks.push(match);
+            return `___MATH_BLOCK_${idx}___`;
         });
 
-        return str.replace(/\n/g, '<br>');
+        // 2. Tự động phát hiện & bọc biểu thức LaTeX chưa có dấu $ (ví dụ x = A \cos(\omega t+\varphi), u = A \cos[\omega(t-\frac{x}{v})+\varphi])
+        let texFormulaRegex = /(?:\b[a-zA-Z0-9_]{1,3}\s*=\s*)?(?:\\(?:[a-zA-Z]+|[^a-zA-Z])|\{[^{}]*\}|\[[^\]]*\]|\([^\)]*\)|\b[a-zA-Z0-9_]{1,3}\b|[\+\-\*/\=\^\_\<\>°\.,]|\s)*?\\(?:cos|sin|tan|cot|omega|varphi|pi|lambda|Delta|frac|sqrt|mathbb|text|cdot|approx|ge|le|in|times)\b(?:\\(?:[a-zA-Z]+|[^a-zA-Z])|\{[^{}]*\}|\[[^\]]*\]|\([^\)]*\)|\b[a-zA-Z0-9_]{1,3}\b|[\+\-\*/\=\^\_\<\>°\.,]|\s)*/g;
+
+        protectedStr = protectedStr.replace(texFormulaRegex, function(match) {
+            let raw = match.trim();
+            if (!raw || raw.indexOf('\\') === -1) return match;
+            let punct = "";
+            while (raw && '.,;:!?'.indexOf(raw.charAt(raw.length - 1)) !== -1) {
+                punct = raw.charAt(raw.length - 1) + punct;
+                raw = raw.substring(0, raw.length - 1).trim();
+            }
+            if (!raw) return match;
+            return ' $' + raw + '$ ' + punct;
+        });
+
+        // 3. Khôi phục các khối công thức đã bảo vệ
+        for (let i = 0; i < mathBlocks.length; i++) {
+            protectedStr = protectedStr.replace(`___MATH_BLOCK_${i}___`, mathBlocks[i]);
+        }
+
+        return protectedStr.replace(/\n/g, '<br>');
     }
 
     function toggleChat() { const widget = document.getElementById('fox-chat-widget'); widget.classList.toggle('open'); if (widget.classList.contains('open')) { setTimeout(() => document.getElementById('fox-chat-input').focus(), 300); } }
@@ -2396,12 +2383,11 @@
         const row = document.createElement('div'); row.className = `fox-msg-row ${sender === 'user' ? 'fox-msg-user' : 'fox-msg-bot'}`;
         let html = ''; if (sender === 'bot') html += `<div class="fox-msg-avatar">${FOX_AVATAR_SVG}</div>`;
         const formattedText = sender === 'bot' ? formatMathText(text) : text;
-        let copyStr = text.replace(/'/g, "\'").replace(/"/g, '&quot;').replace(/\n/g, '\\n');
+        let copyStr = text.replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, '\\n');
         let copyBtn = sender === 'bot' ? `<button class="fox-copy-btn" onclick="copyFoxText(this, '${copyStr}')">Copy</button>` : '';
         html += `<div class="fox-msg-group"><div class="fox-msg-bubble">${formattedText} ${copyBtn}</div></div>`;
         row.innerHTML = html; chatContent.appendChild(row); chatContent.scrollTop = chatContent.scrollHeight;
 
-        // Ép MathJax biên dịch lại các công thức TeX/MathType ngay khi append bong bóng tin nhắn mới
         if (sender === 'bot' && window.MathJax && MathJax.typesetPromise) {
             try {
                 await MathJax.typesetPromise([row]);
