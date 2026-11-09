@@ -13,6 +13,29 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    
+    <!-- MathJax v3 Configuration & CDN -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true,
+                processEnvironments: true,
+                packages: ['base', 'ams', 'noerrors', 'noundefined']
+            },
+            options: {
+                ignoreHtmlClass: 'tex2jax_ignore',
+                processHtmlClass: 'tex2jax_process'
+            },
+            chtml: {
+                scale: 1.05,
+                displayAlign: 'left'
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
     <style>
         @keyframes animUI-fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes animUI-slideDown { from { opacity: 0; transform: translateY(-8px) scaleY(0.95); } to { opacity: 1; transform: none; } }
@@ -301,6 +324,14 @@
         .fox-msg-user .fox-msg-bubble { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); color: #ffffff; border-bottom-right-radius: 2px; font-weight: 500; }
         .fox-msg-bot .fox-msg-bubble { background: rgba(30, 41, 59, 0.85); color: #f1f5f9; border: 1px solid rgba(255, 255, 255, 0.1); border-top-left-radius: 2px; }
         .fox-msg-bot .fox-msg-bubble b { color: var(--fox-cyan); font-weight: 600; }
+
+        /* Tối ưu hiển thị MathJax MathType chuẩn sắc nét trong Chatbox */
+        .mjx-chtml { font-size: 106% !important; outline: none !important; }
+        #fox-chat-box:not(.light-theme) .mjx-chtml { color: #f8fafc !important; }
+        #fox-chat-box.light-theme .mjx-chtml { color: #0f172a !important; }
+        .mjx-sub { font-size: 78% !important; vertical-align: -0.22em !important; }
+        .mjx-sup { font-size: 78% !important; vertical-align: 0.35em !important; }
+        .mjx-frac { padding: 0 3px !important; }
 
         .fox-msg-bubble sub, .hud-overlay sub, .math-symbol sub {
             font-size: 0.78em;
@@ -2271,7 +2302,7 @@
         const lastPunctIdx = Math.max(cleanText.lastIndexOf('.'), cleanText.lastIndexOf('!'), cleanText.lastIndexOf('?'));
         
         if (lastPunctIdx !== -1 && lastPunctIdx > cleanText.length * 0.35) {
-            // Nếu có câu hoàn chỉnh phía trước và phần đuôi bị cắt dở > 3 từ, ta cắt trọn câu tại dấu câu gần nhất
+            // Nếu có câu hoàn chỉnh phía trước và phần đuôi bị cắt dở >= 3 từ, ta cắt trọn câu tại dấu câu gần nhất
             let tailFragment = cleanText.substring(lastPunctIdx + 1).trim();
             let words = tailFragment.split(/\s+/).filter(w => w.length > 0);
             if (words.length >= 3) {
@@ -2307,64 +2338,26 @@
         return trimmed + '.';
     }
 
-    // DINH DANG CHUAN KÍ TỰ DƯỚI (SUBSCRIPT) VÀ CÔNG THỨC TOÁN CHO FOX CHATBOX
+    // CHUẨN HÓA VÀ BỌC TỰ ĐỘNG CÔNG THỨC LATEX CHO MATHJAX CHUẨN MATHTYPE
     function formatMathText(text) {
         if (!text) return '';
+        let str = text;
 
-        let processMathExpr = function (expr) {
-            return expr
-                .replace(/\frac\{([^}]+)\}\{([^}]+)\}/g, '<span class="math-fraction" style="display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 4px;font-size:0.95em;"><span style="border-bottom:1px solid currentColor;padding-bottom:1px;line-height:1.1;">$1</span><span style="padding-top:1px;line-height:1.1;">$2</span></span>')
-                .replace(/\text\{([^}]+)\}/g, '$1')
-                .replace(/([a-zA-Z0-9_>)]+)\cos/g, '$1·cos')
-                .replace(/([a-zA-Z0-9_>)]+)\sin/g, '$1·sin')
-                .replace(/([a-zA-Z0-9_>)]+)\tan/g, '$1·tan')
-                .replace(/\cos/g, 'cos')
-                .replace(/\sin/g, 'sin')
-                .replace(/\tan/g, 'tan')
-                .replace(/\omega/g, 'ω')
-                .replace(/\lambda/g, 'λ')
-                .replace(/\pi/g, 'π')
-                .replace(/\varphi/g, 'φ')
-                .replace(/\Delta/g, 'Δ')
-                .replace(/\alpha/g, 'α')
-                .replace(/\beta/g, 'β')
-                .replace(/\gamma/g, 'γ')
-                .replace(/\theta/g, 'θ')
-                .replace(/\mu/g, 'μ')
-                .replace(/\cdot/g, '·')
-                .replace(/\pm/g, '±')
-                .replace(/\approx/g, '≈')
-                .replace(/\neq/g, '≠')
-                .replace(/\left\(/g, '(')
-                .replace(/\right\)/g, ')')
-                .replace(/\left\[/g, '[')
-                .replace(/\right\]/g, ']')
-                .replace(/\lg/g, 'lg')
-                .replace(/\log/g, 'log')
-                .replace(/\^{([^}]+)}/g, '<sup>$1</sup>')
-                .replace(/\^([0-9a-zA-Z+\.-]+)/g, '<sup>$1</sup>')
-                .replace(/_\{([^}]+)\}/g, '<sub>$1</sub>')
-                .replace(/([a-zA-Z0-9Ͱ-Ͽ°-ɏ])_([0-9a-zA-Z]+)/g, '$1<sub>$2</sub>');
-        };
+        // 1. Tự động sửa/bọc các mẫu công thức sóng dừng và ký hiệu vật lý thô từ AI (tránh vỡ mã):
+        str = str.replace(/k\s*\\in\s*\\mathbb\{N\}\^\*/g, '$k \\in \\mathbb{N}^*$');
+        str = str.replace(/k\s*\\in\s*\\mathbb\{N\}/g, '$k \\in \\mathbb{N}$');
+        str = str.replace(/L\s*=\s*\(2k\s*\+\s*1\)\\frac\{\\lambda\}\{4\}\s*=\s*\(2k\s*\+\s*1\)\\frac\{v\}\{4f\}/g, '$L = (2k + 1)\\frac{\\lambda}{4} = (2k + 1)\\frac{v}{4f}$');
+        str = str.replace(/\\frac\{\\lambda\}\{2\}/g, '$\\frac{\\lambda}{2}$');
+        str = str.replace(/\\frac\{\\lambda\}\{4\}/g, '$\\frac{\\lambda}{4}$');
+        str = str.replace(/\\frac\{v\}\{4f\}/g, '$\\frac{v}{4f}$');
 
-        let formatted = text.replace(/\$\$([\s\S]+?)\$\$/g, function (m, p1) {
-            return '<span class="math-symbol">' + processMathExpr(p1) + '</span>';
-        });
+        // 2. Bọc các cụm \frac{...}{...} đứng ngoài $...$
+        str = str.replace(/(?<!\$)\\frac\{([^{}]+)\}\{([^{}]+)\}(?!\$)/g, '$\\frac{$1}{$2}$');
+        
+        // 3. Chuẩn hóa các chỉ số dưới vật lý (vd: v_max -> $v_{\\text{max}}$, f_0 -> $f_0$, N_bụng -> $N_{\\text{bụng}}$)
+        str = str.replace(/(?<!\$)\b([a-zA-Z])_([a-zA-Z0-9Ͱ-Ͽ°-ɏ]{2,})\b(?!\$)/g, '$$1_{\\text{$2}}$$');
 
-        formatted = formatted.replace(/\$([^$]+)\$/g, function (m, p1) {
-            return '<span class="math-symbol">' + processMathExpr(p1) + '</span>';
-        });
-
-        formatted = formatted
-            .replace(/\^{([^}]+)}/g, '<sup>$1</sup>')
-            .replace(/_\{([^}]+)\}/g, '<sub>$1</sub>')
-            .replace(/([a-zA-Z0-9Ͱ-Ͽ°-ɏ])_([0-9a-zA-Z]+)/g, '$1<sub>$2</sub>')
-            .replace(/([a-zA-Z])cos/g, '$1·cos')
-            .replace(/([a-zA-Z])sin/g, '$1·sin')
-            .replace(/([a-zA-Z])tan/g, '$1·tan')
-            .replace(/\n/g, '<br>');
-
-        return formatted;
+        return str.replace(/\n/g, '<br>');
     }
 
     function toggleChat() { const widget = document.getElementById('fox-chat-widget'); widget.classList.toggle('open'); if (widget.classList.contains('open')) { setTimeout(() => document.getElementById('fox-chat-input').focus(), 300); } }
@@ -2397,7 +2390,8 @@
     }
 
     window.copyFoxText = function (btn, text) { navigator.clipboard.writeText(text).then(() => { let oldText = btn.innerText; btn.innerText = "Đã Copy ✓"; setTimeout(() => btn.innerText = oldText, 1500); }); }
-    function addChatMessage(sender, text) {
+    
+    async function addChatMessage(sender, text) {
         const row = document.createElement('div'); row.className = `fox-msg-row ${sender === 'user' ? 'fox-msg-user' : 'fox-msg-bot'}`;
         let html = ''; if (sender === 'bot') html += `<div class="fox-msg-avatar">${FOX_AVATAR_SVG}</div>`;
         const formattedText = sender === 'bot' ? formatMathText(text) : text;
@@ -2405,7 +2399,17 @@
         let copyBtn = sender === 'bot' ? `<button class="fox-copy-btn" onclick="copyFoxText(this, '${copyStr}')">Copy</button>` : '';
         html += `<div class="fox-msg-group"><div class="fox-msg-bubble">${formattedText} ${copyBtn}</div></div>`;
         row.innerHTML = html; chatContent.appendChild(row); chatContent.scrollTop = chatContent.scrollHeight;
+
+        // Ép MathJax biên dịch lại các công thức TeX/MathType ngay khi append bong bóng tin nhắn mới
+        if (sender === 'bot' && window.MathJax && MathJax.typesetPromise) {
+            try {
+                await MathJax.typesetPromise([row]);
+            } catch (err) {
+                console.log('MathJax typeset error:', err);
+            }
+        }
     }
+
     function addTypingIndicator() {
         const id = 'typing_' + Date.now(), row = document.createElement('div');
         row.className = 'fox-msg-row fox-msg-bot'; row.id = id;
