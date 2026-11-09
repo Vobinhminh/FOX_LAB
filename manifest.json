@@ -1,20 +1,13 @@
 {
-  "name": "FOX-Lab - Dao Động Ký & Đo Âm Thanh",
+  "name": "FOX-Lab AI Physics",
   "short_name": "FOX-Lab",
-  "description": "Phòng thí nghiệm Vật lý sóng âm, Dao động ký, Phân tích 5 Họa âm FFT và Đo Cường độ âm dB",
   "start_url": "./index.html",
   "display": "standalone",
-  "orientation": "any",
-  "background_color": "#0f172a",
-  "theme_color": "#f97316",
+  "background_color": "#020617",
+  "theme_color": "#1a1a2e",
   "icons": [
     {
-      "src": "./icon-512.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "./icon-512.png",
+      "src": "icon_512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
