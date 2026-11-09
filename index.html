@@ -206,7 +206,7 @@
             display: flex; justify-content: center; align-items: center; overflow: hidden;
             flex-grow: 1; position: relative;
         }
-        .modal-display-canvas { background: #fff; border: 1px solid #cbd5e1; border-radius: 4px; width: 100%; height: 100%; display: block; }
+        .modal-display-canvas { background: #fff; border: 1px solid #cbd5e1; border-radius: 4px; width: 100%; height: 100%; display: block; touch-action: none; }
         #fftModal .modal-header { background: linear-gradient(90deg, #7c3aed, #4f46e5); }
         #twoSourceModal .modal-header { background: linear-gradient(90deg, #db2777, #c026d3); }
 
@@ -297,10 +297,26 @@
         .fox-msg-group:hover .fox-copy-btn { opacity: 1; }
         .fox-msg-user .fox-msg-group { align-items: flex-end; }
         .fox-msg-bot .fox-msg-group { align-items: flex-start; }
-        .fox-msg-bubble { padding: 8px 12px; border-radius: 10px; font-size: 12px; line-height: 1.4; word-wrap: break-word; max-width: 100%; }
+        .fox-msg-bubble { padding: 8px 12px; border-radius: 10px; font-size: 12px; line-height: 1.45; word-wrap: break-word; max-width: 100%; }
         .fox-msg-user .fox-msg-bubble { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); color: #ffffff; border-bottom-right-radius: 2px; font-weight: 500; }
         .fox-msg-bot .fox-msg-bubble { background: rgba(30, 41, 59, 0.85); color: #f1f5f9; border: 1px solid rgba(255, 255, 255, 0.1); border-top-left-radius: 2px; }
         .fox-msg-bot .fox-msg-bubble b { color: var(--fox-cyan); font-weight: 600; }
+
+        /* Chỉnh sửa kiểu dáng kí tự dưới (subscript) & kí tự trên (superscript) trong Chatbox & Công thức */
+        .fox-msg-bubble sub, .hud-overlay sub, .math-symbol sub {
+            font-size: 0.78em;
+            line-height: 0;
+            position: relative;
+            vertical-align: baseline;
+            bottom: -0.22em;
+        }
+        .fox-msg-bubble sup, .hud-overlay sup, .math-symbol sup {
+            font-size: 0.78em;
+            line-height: 0;
+            position: relative;
+            vertical-align: baseline;
+            top: -0.35em;
+        }
 
         .fox-typing-indicator { display: inline-flex; align-items: center; width: auto; white-space: nowrap; }
         .fox-typing-text { font-size: 11px; color: #94a3b8; font-style: italic; margin-left: 6px; }
@@ -335,8 +351,8 @@
 <!-- MODAL BẢN QUYỀN -->
 <div id="licenseModalOverlay" class="license-modal-overlay" style="display: none;">
     <div class="license-selection-box">
-        <h2>🦊 FOX_LAB- Phòng thí nghiệm Vật lý về sóng cơ</h2>
-        <p>Phần mềm phòng thí nghiệm Vật lý chuyên đề sóng cơ nghiệp dành cho Giáo viên & Học sinh.</p>
+        <h2>🦊 FOX_LAB - Phòng thí nghiệm Vật lý về sóng cơ</h2>
+        <p>Phần mềm phòng thí nghiệm Vật lý chuyên đề sóng cơ dành cho Giáo viên & Học sinh.</p>
         <div class="license-btn-group">
             <button class="license-btn btn-demo-mode" onclick="selectMode('demo')">🧪 Dùng thử Demo (Giới hạn tính năng)</button>
             <button class="license-btn btn-full-mode" onclick="selectMode('full')">🔑 Kích hoạt Bản Full (Nhập Key)</button>
@@ -468,7 +484,7 @@
         </div>
         <div class="modal-controls">
             <button class="btn-dark" onclick="closeFFTModal()">⬅ Quay lại</button>
-            <label style="font-weight: 600; font-size: 11.5px; margin-left:10px;">Tần số (f0):</label>
+            <label style="font-weight: 600; font-size: 11.5px; margin-left:10px;">Tần số (f<sub>0</sub>):</label>
             <input type="number" id="fftTargetFreq" value="440" min="20" max="5000" oninput="processAndDrawFFT()">
             <span style="font-weight: 600; font-size: 11.5px;">Hz</span>
             <button class="btn-green" onclick="processAndDrawFFT()">Quét Họa âm</button>
@@ -553,8 +569,6 @@
 
                 <div id="distanceResultBox" style="display: none; margin-top: 16px; padding: 14px; background: #eff6ff; border: 1px solid #93c5fd; border-radius: 6px; color: #1e40af; font-weight: 600; line-height: 1.6;">
                 </div>
-
-
             </div>
         </div>
     </div>
@@ -820,7 +834,7 @@
                 activateFullMode(key);
             } else {
                 if (!isSilent) {
-                    let confirmChange = confirm(`❌ Lỗi: ${result.message}\n\nMã Key này có thể đang được sử dụng ở thiết bị khác.\nBạn có muốn XÁC NHẬN ĐỔI THIẾT BỊ (tự động đăng xuất máy cũ, lưu vào máyใหม่ - tối đa 3 lần) không?`);
+                    let confirmChange = confirm(`❌ Lỗi: ${result.message}\n\nMã Key này có thể đang được sử dụng ở thiết bị khác.\nBạn có muốn XÁC NHẬN ĐỔI THIẾT BỊ (tự động đăng xuất máy cũ, lưu vào máy mới - tối đa 3 lần) không?`);
                     if (confirmChange) {
                         forceChangeDevice(key, type);
                     } else {
@@ -923,7 +937,6 @@
         let now = Date.now();
 
         if (savedKey) {
-            // Nếu thoát ra vào lại trong vòng 20s trên cùng thiết bị -> Tính 1 lần, kích hoạt ngay lập tức không bắt chờ/đếm trùng
             if (now - lastVerify < 20000) {
                 activateFullMode(savedKey);
             } else {
@@ -1173,6 +1186,7 @@
         }
     });
 
+    // HỖ TRỢ PHÓNG TO / THU NHỎ TRÊN MÁY TÍNH & THIẾT BỊ THÔNG MINH (TOUCH / PINCH / MOUSE WHEEL / DOUBLE TAP)
     canvas.addEventListener('wheel', (e) => {
         e.preventDefault(); isUserZoomed = true;
         if (e.deltaY < 0) { totalTimeOnScreen *= 0.88; currentZoomY *= 1.12; } else { totalTimeOnScreen *= 1.12; currentZoomY /= 1.12; }
@@ -1180,6 +1194,96 @@
         currentZoomY = Math.max(0.1, Math.min(currentZoomY, 50.0));
         if (isPaused) drawFrame();
     }, { passive: false });
+
+    // Cử chỉ cảm ứng Phóng to / Thu nhỏ (Pinch to Zoom) cho Màn hình Cảm ứng / Smartphone / Tablet / Smart TV
+    let initialTouchDist = 0;
+    let touchBaseTimeOnScreen = totalTimeOnScreen;
+    let touchBaseZoomY = currentZoomY;
+    let lastTapTimestamp = 0;
+
+    canvas.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 2) {
+            e.preventDefault();
+            const dx = e.touches[0].clientX - e.touches[1].clientX;
+            const dy = e.touches[0].clientY - e.touches[1].clientY;
+            initialTouchDist = Math.hypot(dx, dy);
+            touchBaseTimeOnScreen = totalTimeOnScreen;
+            touchBaseZoomY = currentZoomY;
+        } else if (e.touches.length === 1) {
+            const now = performance.now();
+            if (now - lastTapTimestamp < 300) {
+                // Chạm 2 lần liên tiếp (Double Tap) để reset tỷ lệ phóng to mặc định
+                isUserZoomed = false;
+                currentZoomY = 2.0;
+                detectedFrequency = 0;
+                lockedFrequency = 440;
+                totalTimeOnScreen = 5 * (1.0 / 440);
+                if (isPaused) drawFrame();
+            }
+            lastTapTimestamp = now;
+        }
+    }, { passive: false });
+
+    canvas.addEventListener('touchmove', (e) => {
+        if (e.touches.length === 2 && initialTouchDist > 0) {
+            e.preventDefault();
+            const dx = e.touches[0].clientX - e.touches[1].clientX;
+            const dy = e.touches[0].clientY - e.touches[1].clientY;
+            const currentDist = Math.hypot(dx, dy);
+            if (currentDist > 0) {
+                const scale = currentDist / initialTouchDist;
+                isUserZoomed = true;
+                totalTimeOnScreen = Math.max(0.0005, Math.min(touchBaseTimeOnScreen / scale, 5.0));
+                currentZoomY = Math.max(0.1, Math.min(touchBaseZoomY * scale, 50.0));
+                if (isPaused) drawFrame();
+            }
+        }
+    }, { passive: false });
+
+    canvas.addEventListener('touchend', (e) => {
+        if (e.touches.length < 2) {
+            initialTouchDist = 0;
+        }
+    });
+    canvas.addEventListener('touchcancel', () => { initialTouchDist = 0; });
+
+    // Hỗ trợ cuộn / phóng to cho Canvas Phân tích 2 Nguồn âm
+    const twoSourceCanvasElem = document.getElementById('twoSourceCanvas');
+    if (twoSourceCanvasElem) {
+        twoSourceCanvasElem.addEventListener('wheel', (e) => {
+            e.preventDefault(); isUserZoomed = true;
+            if (e.deltaY < 0) { totalTimeOnScreen *= 0.88; currentZoomY *= 1.12; } else { totalTimeOnScreen *= 1.12; currentZoomY /= 1.12; }
+            totalTimeOnScreen = Math.max(0.0005, Math.min(totalTimeOnScreen, 5.0));
+            currentZoomY = Math.max(0.1, Math.min(currentZoomY, 50.0));
+            if (isTsPaused) calculatePhaseAndDrawLive();
+        }, { passive: false });
+
+        let tsTouchDist = 0, tsBaseTime = totalTimeOnScreen, tsBaseZoomY = currentZoomY;
+        twoSourceCanvasElem.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 2) {
+                e.preventDefault();
+                tsTouchDist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+                tsBaseTime = totalTimeOnScreen;
+                tsBaseZoomY = currentZoomY;
+            }
+        }, { passive: false });
+
+        twoSourceCanvasElem.addEventListener('touchmove', (e) => {
+            if (e.touches.length === 2 && tsTouchDist > 0) {
+                e.preventDefault();
+                const currentDist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+                if (currentDist > 0) {
+                    const scale = currentDist / tsTouchDist;
+                    isUserZoomed = true;
+                    totalTimeOnScreen = Math.max(0.0005, Math.min(tsBaseTime / scale, 5.0));
+                    currentZoomY = Math.max(0.1, Math.min(tsBaseZoomY * scale, 50.0));
+                    if (isTsPaused) calculatePhaseAndDrawLive();
+                }
+            }
+        }, { passive: false });
+
+        twoSourceCanvasElem.addEventListener('touchend', (e) => { if (e.touches.length < 2) tsTouchDist = 0; });
+    }
 
     function autoCorrelate(buffer, sampleRate) {
         let SIZE = buffer.length, sumSq = 0; for (let i = 0; i < SIZE; i++) sumSq += buffer[i] * buffer[i];
@@ -1824,8 +1928,6 @@
         }
     }
 
-    
-
     function openFFTModal() {
         if (isDemoMode) { alert("Chức năng Phân tích Họa âm FFT chỉ có trên bản Full."); return; }
         document.getElementById('fftModalOverlay').classList.add('animUI-visible'); document.getElementById('fftModalOverlay').style.display = 'flex';
@@ -2145,7 +2247,8 @@
         if (isTwoSourceModalOpen && !isTsPaused) requestAnimationFrame(calculatePhaseAndDrawLive);
     }
 
-        function formatMathText(text) {
+    // DINH DANG CHUAN KÍ TỰ DƯỚI (SUBSCRIPT) VÀ CÔNG THỨC TOÁN CHO FOX CHATBOX
+    function formatMathText(text) {
         if (!text) return '';
 
         let processMathExpr = function (expr) {
@@ -2179,25 +2282,26 @@
                 .replace(/\\lg/g, 'lg')
                 .replace(/\\log/g, 'log')
                 .replace(/\^{([^}]+)}/g, '<sup>$1</sup>')
-                .replace(/(?<=[a-zA-Z0-9)\].$])\^([0-9a-zA-Z+\-.]+)/g, '<sup>$1</sup>')
+                .replace(/\^([0-9a-zA-Z+\.-]+)/g, '<sup>$1</sup>')
                 .replace(/_\{([^}]+)\}/g, '<sub>$1</sub>')
-                .replace(/_([0-9a-zA-Z]+)/g, '<sub>$1</sub>');
+                .replace(/([a-zA-Z0-9\u0370-\u03ff\u00b0-\u024f])_([0-9a-zA-Z]+)/g, '$1<sub>$2</sub>');
         };
 
-        // 1. Process block math $$...$$
+        // 1. Phân tích khối công thức lớn $$...$$
         let formatted = text.replace(/\$\$([\s\S]+?)\$\$/g, function (m, p1) {
             return '<span class="math-symbol">' + processMathExpr(p1) + '</span>';
         });
 
-        // 2. Process inline math $...$
+        // 2. Phân tích công thức nội dòng $...$
         formatted = formatted.replace(/\$([^$]+)\$/g, function (m, p1) {
             return '<span class="math-symbol">' + processMathExpr(p1) + '</span>';
         });
 
-        // 3. Process plain text superscripts, subscripts, spacing outside math blocks (e.g. W/m^2, 10^-12, Acos)
+        // 3. Xử lý kí tự chỉ số dưới (subscript), chỉ số trên (superscript) và ký hiệu Vật lý ở ngoài khối $...$
         formatted = formatted
             .replace(/\^{([^}]+)}/g, '<sup>$1</sup>')
-            .replace(/(?<=[a-zA-Z0-9)\].$])\^([0-9a-zA-Z+\-.]+)/g, '<sup>$1</sup>')
+            .replace(/_\{([^}]+)\}/g, '<sub>$1</sub>')
+            .replace(/([a-zA-Z0-9\u0370-\u03ff\u00b0-\u024f])_([0-9a-zA-Z]+)/g, '$1<sub>$2</sub>')
             .replace(/([a-zA-Z])cos/g, '$1·cos')
             .replace(/([a-zA-Z])sin/g, '$1·sin')
             .replace(/([a-zA-Z])tan/g, '$1·tan')
