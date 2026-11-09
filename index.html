@@ -2362,8 +2362,7 @@
             .replace(/([a-zA-Z])cos/g, '$1·cos')
             .replace(/([a-zA-Z])sin/g, '$1·sin')
             .replace(/([a-zA-Z])tan/g, '$1·tan')
-            .replace(/
-/g, '<br>');
+            .replace(/\n/g, '<br>');
 
         return formatted;
     }
@@ -2402,8 +2401,7 @@
         const row = document.createElement('div'); row.className = `fox-msg-row ${sender === 'user' ? 'fox-msg-user' : 'fox-msg-bot'}`;
         let html = ''; if (sender === 'bot') html += `<div class="fox-msg-avatar">${FOX_AVATAR_SVG}</div>`;
         const formattedText = sender === 'bot' ? formatMathText(text) : text;
-        let copyStr = text.replace(/'/g, "\'").replace(/"/g, '&quot;').replace(/
-/g, '\n');
+        let copyStr = text.replace(/'/g, "\'").replace(/"/g, '&quot;').replace(/\n/g, '\\n');
         let copyBtn = sender === 'bot' ? `<button class="fox-copy-btn" onclick="copyFoxText(this, '${copyStr}')">Copy</button>` : '';
         html += `<div class="fox-msg-group"><div class="fox-msg-bubble">${formattedText} ${copyBtn}</div></div>`;
         row.innerHTML = html; chatContent.appendChild(row); chatContent.scrollTop = chatContent.scrollHeight;
