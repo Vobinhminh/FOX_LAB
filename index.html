@@ -302,7 +302,6 @@
         .fox-msg-bot .fox-msg-bubble { background: rgba(30, 41, 59, 0.85); color: #f1f5f9; border: 1px solid rgba(255, 255, 255, 0.1); border-top-left-radius: 2px; }
         .fox-msg-bot .fox-msg-bubble b { color: var(--fox-cyan); font-weight: 600; }
 
-        /* Chỉnh sửa kiểu dáng kí tự dưới (subscript) & kí tự trên (superscript) trong Chatbox & Công thức */
         .fox-msg-bubble sub, .hud-overlay sub, .math-symbol sub {
             font-size: 0.78em;
             line-height: 0;
@@ -588,7 +587,7 @@
             <div class="fox-header-left">
                 <div class="fox-avatar-container" id="header-fox-icon-container"></div>
                 <div class="fox-header-info">
-                    <div class="fox-header-title">Fox_lab AI</div>
+                    <div class="fox-header-title">Fox-lab AI</div>
                     <div class="fox-header-status"><span class="fox-status-dot"></span><span id="foxStatusText">Trực tuyến</span></div>
                 </div>
             </div>
@@ -604,7 +603,7 @@
             <div class="fox-msg-row fox-msg-bot">
                 <div class="fox-msg-avatar" id="msg-fox-icon-container"></div>
                 <div class="fox-msg-group">
-                    <div class="fox-msg-bubble">Xin chào quý Thầy/Cô và các em học sinh! Mình là <b>Fox_lab AI</b>, trợ lý ảo hướng dẫn thí nghiệm Vật lý. Em đang khảo sát với tần số <span id="foxLiveFreqTag" class="fox-freq-tag">0.0 Hz</span>. Em cần hỗ trợ gì?</div>
+                    <div class="fox-msg-bubble">Xin chào quý Thầy/Cô và các em học sinh! Mình là <b>Fox-lab AI</b>, trợ lý ảo hướng dẫn thí nghiệm Vật lý. Em đang khảo sát với tần số <span id="foxLiveFreqTag" class="fox-freq-tag">0.0 Hz</span>. Em cần hỗ trợ gì?</div>
                 </div>
             </div>
         </div>
@@ -1186,7 +1185,6 @@
         }
     });
 
-    // HỖ TRỢ PHÓNG TO / THU NHỎ TRÊN MÁY TÍNH & THIẾT BỊ THÔNG MINH (TOUCH / PINCH / MOUSE WHEEL / DOUBLE TAP)
     canvas.addEventListener('wheel', (e) => {
         e.preventDefault(); isUserZoomed = true;
         if (e.deltaY < 0) { totalTimeOnScreen *= 0.88; currentZoomY *= 1.12; } else { totalTimeOnScreen *= 1.12; currentZoomY /= 1.12; }
@@ -1195,7 +1193,6 @@
         if (isPaused) drawFrame();
     }, { passive: false });
 
-    // Cử chỉ cảm ứng Phóng to / Thu nhỏ (Pinch to Zoom) cho Màn hình Cảm ứng / Smartphone / Tablet / Smart TV
     let initialTouchDist = 0;
     let touchBaseTimeOnScreen = totalTimeOnScreen;
     let touchBaseZoomY = currentZoomY;
@@ -1212,7 +1209,6 @@
         } else if (e.touches.length === 1) {
             const now = performance.now();
             if (now - lastTapTimestamp < 300) {
-                // Chạm 2 lần liên tiếp (Double Tap) để reset tỷ lệ phóng to mặc định
                 isUserZoomed = false;
                 currentZoomY = 2.0;
                 detectedFrequency = 0;
@@ -1247,7 +1243,6 @@
     });
     canvas.addEventListener('touchcancel', () => { initialTouchDist = 0; });
 
-    // Hỗ trợ cuộn / phóng to cho Canvas Phân tích 2 Nguồn âm
     const twoSourceCanvasElem = document.getElementById('twoSourceCanvas');
     if (twoSourceCanvasElem) {
         twoSourceCanvasElem.addEventListener('wheel', (e) => {
@@ -2247,65 +2242,128 @@
         if (isTwoSourceModalOpen && !isTsPaused) requestAnimationFrame(calculatePhaseAndDrawLive);
     }
 
+    // ĐẢM BẢO CHATBOX TRẢ LỜI HẾT CÂU, KẾT THÚC BẰNG DẤU CHẤM KHÔNG BỊ CẮT NGANG
+    function formatCompleteSentences(text) {
+        if (!text) return '';
+        let trimmed = text.trim();
+        if (!trimmed) return '';
+
+        // Chuẩn hóa tên thương hiệu Fox-lab trong phản hồi chat
+        trimmed = trimmed.replace(/Fox_lab/gi, 'Fox-lab')
+                         .replace(/FOX_LAB/gi, 'Fox-lab')
+                         .replace(/Foxlab/gi, 'Fox-lab');
+
+        // Bóc tách văn bản thô để kiểm tra dấu câu cuối cùng
+        let cleanText = trimmed.replace(/<[^>]+>/g, '').trim();
+        if (!cleanText) return trimmed;
+
+        const lastChar = cleanText.slice(-1);
+        if (['.', '!', '?'].includes(lastChar)) {
+            return trimmed;
+        }
+
+        if ([':', ';'].includes(lastChar)) {
+            trimmed = trimmed.replace(/[:;]\s*$/, '.');
+            return trimmed;
+        }
+
+        // Kiểm tra xem đoạn câu bị cắt dở có dấu ngắt câu phía trước hay không
+        const lastPunctIdx = Math.max(cleanText.lastIndexOf('.'), cleanText.lastIndexOf('!'), cleanText.lastIndexOf('?'));
+        
+        if (lastPunctIdx !== -1 && lastPunctIdx > cleanText.length * 0.35) {
+            // Nếu có câu hoàn chỉnh phía trước và phần đuôi bị cắt dở > 3 từ, ta cắt trọn câu tại dấu câu gần nhất
+            let tailFragment = cleanText.substring(lastPunctIdx + 1).trim();
+            let words = tailFragment.split(/\s+/).filter(w => w.length > 0);
+            if (words.length >= 3) {
+                let posInOriginal = -1;
+                let cleanSegments = cleanText.split(/[.!?]/);
+                let targetSentenceCount = cleanSegments.length - 1;
+                let count = 0;
+                
+                for (let i = 0; i < trimmed.length; i++) {
+                    if (['.', '!', '?'].includes(trimmed[i])) {
+                        count++;
+                        if (count === targetSentenceCount) {
+                            posInOriginal = i;
+                            break;
+                        }
+                    }
+                }
+                if (posInOriginal !== -1) {
+                    return trimmed.substring(0, posInOriginal + 1).trim();
+                }
+            }
+        }
+
+        // Trường hợp câu cuối thiếu dấu chấm hoặc bị cụt ngắn, bổ sung dấu chấm kết thúc đầy đủ
+        if (trimmed.endsWith('>')) {
+            let lastCloseTag = trimmed.lastIndexOf('</');
+            if (lastCloseTag !== -1) {
+                return trimmed.substring(0, lastCloseTag) + '.' + trimmed.substring(lastCloseTag);
+            }
+            return trimmed + '.';
+        }
+
+        return trimmed + '.';
+    }
+
     // DINH DANG CHUAN KÍ TỰ DƯỚI (SUBSCRIPT) VÀ CÔNG THỨC TOÁN CHO FOX CHATBOX
     function formatMathText(text) {
         if (!text) return '';
 
         let processMathExpr = function (expr) {
             return expr
-                .replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '<span class="math-fraction" style="display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 4px;font-size:0.95em;"><span style="border-bottom:1px solid currentColor;padding-bottom:1px;line-height:1.1;">$1</span><span style="padding-top:1px;line-height:1.1;">$2</span></span>')
-                .replace(/\\text\{([^}]+)\}/g, '$1')
-                .replace(/([a-zA-Z0-9_>)]+)\\cos/g, '$1·cos')
-                .replace(/([a-zA-Z0-9_>)]+)\\sin/g, '$1·sin')
-                .replace(/([a-zA-Z0-9_>)]+)\\tan/g, '$1·tan')
-                .replace(/\\cos/g, 'cos')
-                .replace(/\\sin/g, 'sin')
-                .replace(/\\tan/g, 'tan')
-                .replace(/\\omega/g, 'ω')
-                .replace(/\\lambda/g, 'λ')
-                .replace(/\\pi/g, 'π')
-                .replace(/\\varphi/g, 'φ')
-                .replace(/\\Delta/g, 'Δ')
-                .replace(/\\alpha/g, 'α')
-                .replace(/\\beta/g, 'β')
-                .replace(/\\gamma/g, 'γ')
-                .replace(/\\theta/g, 'θ')
-                .replace(/\\mu/g, 'μ')
-                .replace(/\\cdot/g, '·')
-                .replace(/\\pm/g, '±')
-                .replace(/\\approx/g, '≈')
-                .replace(/\\neq/g, '≠')
-                .replace(/\\left\(/g, '(')
-                .replace(/\\right\)/g, ')')
-                .replace(/\\left\[/g, '[')
-                .replace(/\\right\]/g, ']')
-                .replace(/\\lg/g, 'lg')
-                .replace(/\\log/g, 'log')
+                .replace(/\frac\{([^}]+)\}\{([^}]+)\}/g, '<span class="math-fraction" style="display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 4px;font-size:0.95em;"><span style="border-bottom:1px solid currentColor;padding-bottom:1px;line-height:1.1;">$1</span><span style="padding-top:1px;line-height:1.1;">$2</span></span>')
+                .replace(/\text\{([^}]+)\}/g, '$1')
+                .replace(/([a-zA-Z0-9_>)]+)\cos/g, '$1·cos')
+                .replace(/([a-zA-Z0-9_>)]+)\sin/g, '$1·sin')
+                .replace(/([a-zA-Z0-9_>)]+)\tan/g, '$1·tan')
+                .replace(/\cos/g, 'cos')
+                .replace(/\sin/g, 'sin')
+                .replace(/\tan/g, 'tan')
+                .replace(/\omega/g, 'ω')
+                .replace(/\lambda/g, 'λ')
+                .replace(/\pi/g, 'π')
+                .replace(/\varphi/g, 'φ')
+                .replace(/\Delta/g, 'Δ')
+                .replace(/\alpha/g, 'α')
+                .replace(/\beta/g, 'β')
+                .replace(/\gamma/g, 'γ')
+                .replace(/\theta/g, 'θ')
+                .replace(/\mu/g, 'μ')
+                .replace(/\cdot/g, '·')
+                .replace(/\pm/g, '±')
+                .replace(/\approx/g, '≈')
+                .replace(/\neq/g, '≠')
+                .replace(/\left\(/g, '(')
+                .replace(/\right\)/g, ')')
+                .replace(/\left\[/g, '[')
+                .replace(/\right\]/g, ']')
+                .replace(/\lg/g, 'lg')
+                .replace(/\log/g, 'log')
                 .replace(/\^{([^}]+)}/g, '<sup>$1</sup>')
                 .replace(/\^([0-9a-zA-Z+\.-]+)/g, '<sup>$1</sup>')
                 .replace(/_\{([^}]+)\}/g, '<sub>$1</sub>')
-                .replace(/([a-zA-Z0-9\u0370-\u03ff\u00b0-\u024f])_([0-9a-zA-Z]+)/g, '$1<sub>$2</sub>');
+                .replace(/([a-zA-Z0-9Ͱ-Ͽ°-ɏ])_([0-9a-zA-Z]+)/g, '$1<sub>$2</sub>');
         };
 
-        // 1. Phân tích khối công thức lớn $$...$$
         let formatted = text.replace(/\$\$([\s\S]+?)\$\$/g, function (m, p1) {
             return '<span class="math-symbol">' + processMathExpr(p1) + '</span>';
         });
 
-        // 2. Phân tích công thức nội dòng $...$
         formatted = formatted.replace(/\$([^$]+)\$/g, function (m, p1) {
             return '<span class="math-symbol">' + processMathExpr(p1) + '</span>';
         });
 
-        // 3. Xử lý kí tự chỉ số dưới (subscript), chỉ số trên (superscript) và ký hiệu Vật lý ở ngoài khối $...$
         formatted = formatted
             .replace(/\^{([^}]+)}/g, '<sup>$1</sup>')
             .replace(/_\{([^}]+)\}/g, '<sub>$1</sub>')
-            .replace(/([a-zA-Z0-9\u0370-\u03ff\u00b0-\u024f])_([0-9a-zA-Z]+)/g, '$1<sub>$2</sub>')
+            .replace(/([a-zA-Z0-9Ͱ-Ͽ°-ɏ])_([0-9a-zA-Z]+)/g, '$1<sub>$2</sub>')
             .replace(/([a-zA-Z])cos/g, '$1·cos')
             .replace(/([a-zA-Z])sin/g, '$1·sin')
             .replace(/([a-zA-Z])tan/g, '$1·tan')
-            .replace(/\n/g, '<br>');
+            .replace(/
+/g, '<br>');
 
         return formatted;
     }
@@ -2328,10 +2386,14 @@
             const response = await fetch(CHAT_GAS_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ message: text, frequency: currentFreq }) });
             const result = await response.json();
             removeTypingIndicator(thinkingId); document.getElementById('foxStatusText').innerText = "Trực tuyến";
-            addChatMessage('bot', result.reply || "Fox_lab AI đã ghi nhận câu hỏi của thầy.");
+            let replyText = result.reply || "Fox-lab AI đã ghi nhận câu hỏi của thầy.";
+            replyText = formatCompleteSentences(replyText);
+            addChatMessage('bot', replyText);
         } catch (e) {
             removeTypingIndicator(thinkingId); document.getElementById('foxStatusText').innerText = "Trực tuyến";
-            addChatMessage('bot', `Fox_lab AI hiện tại đang đo đạc tần số <b>${currentFreq.toFixed(1)} Hz</b>. (Phản hồi tự động do kết nối mạng tạm thời).`);
+            let fallbackText = `Fox-lab AI hiện tại đang đo đạc tần số <b>${currentFreq.toFixed(1)} Hz</b>. (Phản hồi tự động do kết nối mạng tạm thời).`;
+            fallbackText = formatCompleteSentences(fallbackText);
+            addChatMessage('bot', fallbackText);
         }
     }
 
@@ -2340,7 +2402,8 @@
         const row = document.createElement('div'); row.className = `fox-msg-row ${sender === 'user' ? 'fox-msg-user' : 'fox-msg-bot'}`;
         let html = ''; if (sender === 'bot') html += `<div class="fox-msg-avatar">${FOX_AVATAR_SVG}</div>`;
         const formattedText = sender === 'bot' ? formatMathText(text) : text;
-        let copyStr = text.replace(/'/g, "\'").replace(/"/g, '&quot;').replace(/\n/g, '\n');
+        let copyStr = text.replace(/'/g, "\'").replace(/"/g, '&quot;').replace(/
+/g, '\n');
         let copyBtn = sender === 'bot' ? `<button class="fox-copy-btn" onclick="copyFoxText(this, '${copyStr}')">Copy</button>` : '';
         html += `<div class="fox-msg-group"><div class="fox-msg-bubble">${formattedText} ${copyBtn}</div></div>`;
         row.innerHTML = html; chatContent.appendChild(row); chatContent.scrollTop = chatContent.scrollHeight;
@@ -2348,7 +2411,7 @@
     function addTypingIndicator() {
         const id = 'typing_' + Date.now(), row = document.createElement('div');
         row.className = 'fox-msg-row fox-msg-bot'; row.id = id;
-        row.innerHTML = '<div class="fox-msg-avatar">' + FOX_AVATAR_SVG + '</div><div class="fox-msg-group"><div class="fox-msg-bubble"><div class="fox-typing-indicator"><span class="fox-typing-text">Fox_lab đang phân tích...</span></div></div></div>';
+        row.innerHTML = '<div class="fox-msg-avatar">' + FOX_AVATAR_SVG + '</div><div class="fox-msg-group"><div class="fox-msg-bubble"><div class="fox-typing-indicator"><span class="fox-typing-text">Fox-lab đang phân tích...</span></div></div></div>';
         chatContent.appendChild(row); chatContent.scrollTop = chatContent.scrollHeight; return id;
     }
     function removeTypingIndicator(id) { const el = document.getElementById(id); if (el) el.remove(); }
