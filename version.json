@@ -1,5 +1,2 @@
-{
-  "version": "3.3.5",
-  "build": "20261108",
-  "description": "Bản cập nhật FOX-Lab Sound Physics v3.3.0 - Hỗ trợ PWA, Offline & Auto-Update"
-}
+window.APP_VERSION = "v4.0.1";
+console.log("FOX-Lab Version loaded: " + window.APP_VERSION);
