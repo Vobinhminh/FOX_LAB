@@ -320,18 +320,36 @@
         .fox-msg-group:hover .fox-copy-btn { opacity: 1; }
         .fox-msg-user .fox-msg-group { align-items: flex-end; }
         .fox-msg-bot .fox-msg-group { align-items: flex-start; }
-        .fox-msg-bubble { padding: 8px 12px; border-radius: 10px; font-size: 12px; line-height: 1.45; word-wrap: break-word; max-width: 100%; }
+        .fox-msg-bubble { padding: 8px 12px; border-radius: 10px; font-size: 12px; line-height: 1.5; word-wrap: break-word; max-width: 100%; }
         .fox-msg-user .fox-msg-bubble { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); color: #ffffff; border-bottom-right-radius: 2px; font-weight: 500; }
         .fox-msg-bot .fox-msg-bubble { background: rgba(30, 41, 59, 0.85); color: #f1f5f9; border: 1px solid rgba(255, 255, 255, 0.1); border-top-left-radius: 2px; }
         .fox-msg-bot .fox-msg-bubble b { color: var(--fox-cyan); font-weight: 600; }
 
-        /* Tối ưu hiển thị MathJax MathType chuẩn sắc nét trong Chatbox */
-        .mjx-chtml { font-size: 106% !important; outline: none !important; }
-        #fox-chat-box:not(.light-theme) .mjx-chtml { color: #f8fafc !important; }
-        #fox-chat-box.light-theme .mjx-chtml { color: #0f172a !important; }
-        .mjx-sub { font-size: 78% !important; vertical-align: -0.22em !important; }
-        .mjx-sup { font-size: 78% !important; vertical-align: 0.35em !important; }
-        .mjx-frac { padding: 0 3px !important; }
+        /* Tối ưu hiển thị MathJax MathType chuẩn sắc nét & tinh chỉnh ký hiệu chỉ số dưới (Subscript) */
+        .mjx-chtml {
+            font-size: 106% !important;
+            outline: none !important;
+            line-height: 0 !important;
+        }
+        #fox-chat-box:not(.light-theme) .mjx-chtml { color: #38bdf8 !important; }
+        #fox-chat-box.light-theme .mjx-chtml { color: #0284c7 !important; }
+        
+        .mjx-sub {
+            font-size: 78% !important;
+            vertical-align: -0.24em !important;
+        }
+        .mjx-sup {
+            font-size: 78% !important;
+            vertical-align: 0.38em !important;
+        }
+        .mjx-frac {
+            padding: 0 4px !important;
+            vertical-align: -0.35em !important;
+        }
+        .mjx-utext {
+            font-family: 'Be Vietnam Pro', sans-serif !important;
+            font-weight: 500 !important;
+        }
 
         .fox-msg-bubble sub, .hud-overlay sub, .math-symbol sub {
             font-size: 0.78em;
@@ -339,13 +357,15 @@
             position: relative;
             vertical-align: baseline;
             bottom: -0.22em;
+            font-weight: 600;
         }
         .fox-msg-bubble sup, .hud-overlay sup, .math-symbol sup {
             font-size: 0.78em;
             line-height: 0;
             position: relative;
             vertical-align: baseline;
-            top: -0.35em;
+            top: -0.38em;
+            font-weight: 600;
         }
 
         .fox-typing-indicator { display: inline-flex; align-items: center; width: auto; white-space: nowrap; }
@@ -2273,7 +2293,7 @@
         if (isTwoSourceModalOpen && !isTsPaused) requestAnimationFrame(calculatePhaseAndDrawLive);
     }
 
-    // ĐẢM BẢO CHATBOX TRẢ LỜI HẾT CÂU, KẾT THÚC BẰNG DẤU CHẤM KHÔNG BỊ CẮT NGANG
+    // ĐẢM BẢO CHATBOX TRẢ LỜI HẾT CÂU TRỌN VẸN, KHÔNG BỊ CẮT NGANG MID-SENTENCE
     function formatCompleteSentences(text) {
         if (!text) return '';
         let trimmed = text.trim();
@@ -2289,44 +2309,14 @@
         if (!cleanText) return trimmed;
 
         const lastChar = cleanText.slice(-1);
-        if (['.', '!', '?'].includes(lastChar)) {
-            return trimmed;
-        }
-
-        if ([':', ';'].includes(lastChar)) {
-            trimmed = trimmed.replace(/[:;]\s*$/, '.');
-            return trimmed;
-        }
-
-        // Kiểm tra xem đoạn câu bị cắt dở có dấu ngắt câu phía trước hay không
-        const lastPunctIdx = Math.max(cleanText.lastIndexOf('.'), cleanText.lastIndexOf('!'), cleanText.lastIndexOf('?'));
-        
-        if (lastPunctIdx !== -1 && lastPunctIdx > cleanText.length * 0.35) {
-            // Nếu có câu hoàn chỉnh phía trước và phần đuôi bị cắt dở >= 3 từ, ta cắt trọn câu tại dấu câu gần nhất
-            let tailFragment = cleanText.substring(lastPunctIdx + 1).trim();
-            let words = tailFragment.split(/\s+/).filter(w => w.length > 0);
-            if (words.length >= 3) {
-                let posInOriginal = -1;
-                let cleanSegments = cleanText.split(/[.!?]/);
-                let targetSentenceCount = cleanSegments.length - 1;
-                let count = 0;
-                
-                for (let i = 0; i < trimmed.length; i++) {
-                    if (['.', '!', '?'].includes(trimmed[i])) {
-                        count++;
-                        if (count === targetSentenceCount) {
-                            posInOriginal = i;
-                            break;
-                        }
-                    }
-                }
-                if (posInOriginal !== -1) {
-                    return trimmed.substring(0, posInOriginal + 1).trim();
-                }
+        if (['.', '!', '?', ':', ';'].includes(lastChar)) {
+            if ([':', ';'].includes(lastChar)) {
+                trimmed = trimmed.replace(/[:;]\s*$/, '.');
             }
+            return trimmed;
         }
 
-        // Trường hợp câu cuối thiếu dấu chấm hoặc bị cụt ngắn, bổ sung dấu chấm kết thúc đầy đủ
+        // Nếu văn bản kết thúc bằng thẻ đóng HTML </...>, chèn dấu chấm ngay trước thẻ đóng cuối
         if (trimmed.endsWith('>')) {
             let lastCloseTag = trimmed.lastIndexOf('</');
             if (lastCloseTag !== -1) {
@@ -2335,6 +2325,7 @@
             return trimmed + '.';
         }
 
+        // Bổ sung dấu chấm để đảm bảo phản hồi luôn trọn vẹn câu
         return trimmed + '.';
     }
 
@@ -2343,19 +2334,29 @@
         if (!text) return '';
         let str = text;
 
-        // 1. Tự động sửa/bọc các mẫu công thức sóng dừng và ký hiệu vật lý thô từ AI (tránh vỡ mã):
-        str = str.replace(/k\s*\\in\s*\\mathbb\{N\}\^\*/g, '$k \\in \\mathbb{N}^*$');
-        str = str.replace(/k\s*\\in\s*\\mathbb\{N\}/g, '$k \\in \\mathbb{N}$');
-        str = str.replace(/L\s*=\s*\(2k\s*\+\s*1\)\\frac\{\\lambda\}\{4\}\s*=\s*\(2k\s*\+\s*1\)\\frac\{v\}\{4f\}/g, '$L = (2k + 1)\\frac{\\lambda}{4} = (2k + 1)\\frac{v}{4f}$');
-        str = str.replace(/\\frac\{\\lambda\}\{2\}/g, '$\\frac{\\lambda}{2}$');
-        str = str.replace(/\\frac\{\\lambda\}\{4\}/g, '$\\frac{\\lambda}{4}$');
-        str = str.replace(/\\frac\{v\}\{4f\}/g, '$\\frac{v}{4f}$');
-
-        // 2. Bọc các cụm \frac{...}{...} đứng ngoài $...$
-        str = str.replace(/(?<!\$)\\frac\{([^{}]+)\}\{([^{}]+)\}(?!\$)/g, '$\\frac{$1}{$2}$');
+        // 1. Tự động chuẩn hóa các ký hiệu tập hợp và công thức sóng dừng phổ biến:
+        str = str.replace(/k\s*\in\s*\mathbb\{N\}\^\*/g, '$k \\in \\mathbb{N}^*$');
+        str = str.replace(/k\s*\in\s*\mathbb\{N\}/g, '$k \\in \\mathbb{N}$');
         
-        // 3. Chuẩn hóa các chỉ số dưới vật lý (vd: v_max -> $v_{\\text{max}}$, f_0 -> $f_0$, N_bụng -> $N_{\\text{bụng}}$)
-        str = str.replace(/(?<!\$)\b([a-zA-Z])_([a-zA-Z0-9Ͱ-Ͽ°-ɏ]{2,})\b(?!\$)/g, '$$1_{\\text{$2}}$$');
+        // 2. Tự động bọc các biểu thức TeX standalone như \frac, \lambda, \Delta, \pi, \omega, \cdot, \approx, \le, \ge
+        // Bọc các phân số \frac{...}{...} đứng ngoài delimiter $...$
+        str = str.replace(/(?<!\$)\\frac\{([^{}]+)\}\{([^{}]+)\}(?!\$)/g, (m, p1, p2) => `$\\frac{${p1}}{${p2}}$`);
+        
+        // Bọc các ký hiệu TeX phổ biến đứng ngoài $...$
+        str = str.replace(/(?<!\$)\\lambda(?!\$)/g, '$\\lambda$');
+        str = str.replace(/(?<!\$)\\Delta(?!\$)/g, '$\\Delta$');
+        str = str.replace(/(?<!\$)\\varphi(?!\$)/g, '$\\varphi$');
+        str = str.replace(/(?<!\$)\\pi(?!\$)/g, '$\\pi$');
+        str = str.replace(/(?<!\$)\\omega(?!\$)/g, '$\\omega$');
+
+        // 3. Chuẩn hóa chỉ số dưới vật lý (vd: v_max -> $v_{\text{max}}$, f_0 -> $f_0$, u_A -> $u_{\text{A}}$, L_max -> $L_{\text{max}}$)
+        // Sửa triệt để bug replace "$$1" làm vỡ mã bằng hàm callback replacer
+        str = str.replace(/(?<!\$)\b([a-zA-Z])_([a-zA-Z0-9\u00C0-\u024F\u1EA0-\u1EF9]+)\b(?!\$)/g, (match, p1, p2) => {
+            if (/^\d+$/.test(p2)) {
+                return `$${p1}_{${p2}}$`;
+            }
+            return `$${p1}_{\\text{${p2}}}$`;
+        });
 
         return str.replace(/\n/g, '<br>');
     }
