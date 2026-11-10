@@ -2736,7 +2736,7 @@
 
     function exportChatReport(btn) {
         const chatRows = document.querySelectorAll('.fox-msg-row');
-        let reportText = "=== BÁO CÁO KẾT QUẢ THỰC HÀNH VẬT LÝ SÓNG CƠ - FOX_LAB ===\n";
+        let reportText = "=== BÁO CÁO LỊCH SỬ CHAT - FOX_LAB ===\n";
         reportText += "Thời gian xuất: " + new Date().toLocaleString() + "\n";
         reportText += "Tần số khảo sát hiện tại: " + (lockedFrequency || detectedFrequency).toFixed(1) + " Hz\n\n";
 
@@ -2755,7 +2755,7 @@
         let url = URL.createObjectURL(blob);
         let a = document.createElement('a');
         a.href = url;
-        a.download = "Bao_Cao_Thuc_Hanh_Song_Co_FoxLab.txt";
+        a.download = "Bao_Cao_lich_Su_Chat_FoxLab.txt";
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
