@@ -242,7 +242,7 @@
         }
         .hud-title { font-family: 'Be Vietnam Pro', sans-serif; font-weight: 700; color: #38bdf8; margin-bottom: 4px; font-size: 13px; text-transform: uppercase; border-bottom: 1px solid rgba(255, 255, 255, 0.2); padding-bottom: 2px; }
         .hud-highlight { color: #facc15; font-weight: bold; }
-        .hud-eq { color: #10b981; font-style: italic; }
+        .hud-eq { color: #10b981; font-style: italic; margin-top: 4px; }
         .math-symbol { font-family: "Times New Roman", Times, serif; font-style: italic; font-size: 14.5px; }
 
         .ts-mode-toggle { display: flex; gap: 4px; background: #0f172a; padding: 3px; border-radius: 6px; border: 1px solid #334155; position: relative; overflow: hidden; }
@@ -395,7 +395,6 @@
         #imagePreviewName { font-size: 11px; color: #e2e8f0; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .fox-remove-img { background: #ef4444; color: #fff; border: none; border-radius: 50%; width: 18px; height: 18px; font-size: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
-        /* Style Tối Ưu Mới: Gom gọn card & loại bỏ khoảng trắng quá xa trong nhãn tên */
         .dist-card-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 14px; }
         .dist-card { background: #ffffff; border: 1px solid #cbd5e1; border-radius: 10px; padding: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.03); position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; }
         .dist-card-border-a { border-left: 4px solid #ef4444; }
@@ -411,7 +410,6 @@
 </head>
 <body>
 
-<!-- MODAL BẢN QUYỀN -->
 <div id="licenseModalOverlay" class="license-modal-overlay" style="display: none;">
     <div class="license-selection-box">
         <h2>🦊 FOX_LAB - Phòng thí nghiệm Vật lý về sóng cơ</h2>
@@ -506,6 +504,7 @@
             </div>
 
             <button id="pauseButton" class="btn-green" disabled>Đo / Dừng</button>
+            <button id="btnManualAnalyze" class="btn-purple" style="display: none;">Phân tích điểm</button>
             <button id="resetButton" class="btn-orange">Làm mới</button>
             <button id="btnCalib" class="btn-orange" style="display: none;">🎯 Hiệu chuẩn</button>
             <button id="btnAnalysis" class="btn-slate" disabled>Xử lý nguồn âm</button>
@@ -592,8 +591,8 @@
 
             <div id="hudEquations" class="hud-overlay" style="top: auto; bottom: 16px; left: 16px;">
                 <div class="hud-title">PHƯƠNG TRÌNH DAO ĐỘNG</div>
-                <div class="hud-eq">Kênh A: <span class="math-symbol">u<sub>A</sub> = <span id="eqAmpA">A</span>·cos(2π·<span id="eqFreqA">0</span>·t)</span></div>
-                <div class="hud-eq">Kênh B: <span class="math-symbol">u<sub>B</sub> = <span id="eqAmpB">A</span>·cos(2π·<span id="eqFreqB">0</span>·t <span id="eqPhase">+ 0.00</span>)</span></div>
+                <div class="hud-eq">Kênh A: <span class="math-symbol" id="eqLineA">u<sub>A</sub> = <span id="eqAmpA">A</span>·cos(2π·<span id="eqFreqA">0</span>·t)</span></div>
+                <div class="hud-eq">Kênh B: <span class="math-symbol" id="eqLineB">u<sub>B</sub> = <span id="eqAmpB">A</span>·cos(2π·<span id="eqFreqB">0</span>·t <span id="eqPhase">+ 0.00</span>)</span></div>
                 <div class="hud-eq" id="eqSumLine" style="margin-top:4px;">Tổng hợp: <span class="math-symbol">u = u<sub>A</sub> + u<sub>B</sub></span></div>
             </div>
 
@@ -876,6 +875,7 @@
     const btnStartA = document.getElementById('btnStartA'), btnStartB = document.getElementById('btnStartB');
     const pauseButton = document.getElementById('pauseButton'), resetButton = document.getElementById('resetButton'), btnCalib = document.getElementById('btnCalib');
     const btnAnalysis = document.getElementById('btnAnalysis'), infoMessageText = document.getElementById('infoMessageText');
+    const btnManualAnalyze = document.getElementById('btnManualAnalyze');
     const channelModeSelect = document.getElementById('channelModeSelect'), modeSelect = document.getElementById('modeSelect'), speedSelect = document.getElementById('speedSelect');
     const displayModeSelect = document.getElementById('displayModeSelect');
     const micSelectA = document.getElementById('micSelectA'), micSelectB = document.getElementById('micSelectB');
@@ -883,6 +883,10 @@
     const settingsDropdown = document.getElementById('settingsDropdown'), settingsMenu = document.getElementById('settingsMenu');
 
     window.resetButton = resetButton;
+
+    let isManualMode = false;
+    let manualAnalysisPoints = [];
+    let showGridScale = false;
 
     if (btnCalib) {
         btnCalib.addEventListener('click', () => {
@@ -892,6 +896,23 @@
                 return;
             }
             openCalibModal();
+        });
+    }
+
+    if (btnManualAnalyze) {
+        btnManualAnalyze.addEventListener('click', () => {
+            isManualMode = !isManualMode;
+            if (isManualMode) {
+                btnManualAnalyze.className = 'btn-pink';
+                btnManualAnalyze.innerText = "Đang chọn điểm...";
+                manualAnalysisPoints = [];
+                showGridScale = false;
+            } else {
+                btnManualAnalyze.className = 'btn-purple';
+                btnManualAnalyze.innerText = "Phân tích điểm";
+                manualAnalysisPoints = [];
+                drawFrame();
+            }
         });
     }
 
@@ -1284,11 +1305,13 @@
             btnAnalysis.disabled = true;
             btnAnalysis.textContent = (getDisplayMode() === 'dbMeter') ? "Phân tích MCĐ (Bản Full)" : (mode === '1' ? "Phân tích FFT (Bản Full)" : "Xử lý nguồn âm (Bản Full)");
             btnAnalysis.className = 'btn-slate';
+            if (btnManualAnalyze) btnManualAnalyze.style.display = 'none';
             return;
         }
 
         if (getDisplayMode() === 'dbMeter') {
             btnAnalysis.style.display = 'inline-block';
+            if (btnManualAnalyze) btnManualAnalyze.style.display = 'none';
             let hasHistory = (mode === '2') ? (dbHistoryA.length > 0 || dbHistoryB.length > 0) : (dbHistoryA.length > 0);
             if (isPaused && hasHistory) {
                 btnAnalysis.disabled = false;
@@ -1302,11 +1325,24 @@
         } else {
             if (mode === '2') {
                 btnAnalysis.style.display = 'inline-block';
+                if (btnManualAnalyze) btnManualAnalyze.style.display = 'none';
                 if (activeChannels === 2) { btnAnalysis.disabled = false; btnAnalysis.textContent = "Xử lý nguồn âm"; btnAnalysis.className = 'btn-pink'; }
                 else { btnAnalysis.disabled = true; btnAnalysis.textContent = "Xử lý nguồn âm"; btnAnalysis.className = 'btn-slate'; }
             } else {
-                if (surveyMode === 'auto') { btnAnalysis.style.display = 'none'; }
-                else {
+                if (surveyMode === 'auto') { 
+                    btnAnalysis.style.display = 'none'; 
+                    // Chế độ 1 nguồn & Tự dừng -> Hiện nút Phân tích đồ thị
+                    if (btnManualAnalyze) {
+                        if (activeChannels === 1 && isPaused) {
+                            btnManualAnalyze.style.display = 'inline-block';
+                        } else {
+                            btnManualAnalyze.style.display = 'none';
+                            isManualMode = false;
+                            manualAnalysisPoints = [];
+                        }
+                    }
+                } else {
+                    if (btnManualAnalyze) btnManualAnalyze.style.display = 'none';
                     btnAnalysis.style.display = 'inline-block';
                     if (channelConfig.A.active && isPaused) { btnAnalysis.disabled = false; btnAnalysis.textContent = "Phân tích FFT"; btnAnalysis.className = 'btn-purple'; }
                     else { btnAnalysis.disabled = true; btnAnalysis.textContent = "Phân tích FFT"; btnAnalysis.className = 'btn-slate'; }
@@ -1385,36 +1421,51 @@
     window.addEventListener('resize', resizeCanvas);
 
     canvas.addEventListener('click', (e) => {
-        if (getDisplayMode() !== 'dbMeter') return;
         const rect = canvas.getBoundingClientRect();
         const clickX = e.clientX - rect.left;
         const clickY = e.clientY - rect.top;
         const width = canvas.clientWidth;
         const height = canvas.clientHeight;
-
-        const leftMargin = 55;
-        const rightMargin = 20;
-        const chartW = width - leftMargin - rightMargin;
         const mode = getActiveChannelMode();
 
-        if (mode === '2') {
-            const subH = height / 2;
-            if (clickX >= leftMargin && clickX <= width - rightMargin) {
-                let barWidth = chartW / 120;
-                let index = Math.floor((clickX - leftMargin) / barWidth);
-                if (clickY < subH) {
-                    if (index >= 0 && index < dbHistoryA.length) { selectedBarIndexA = index; if (isPaused) drawFrame(); }
-                } else {
-                    if (index >= 0 && index < dbHistoryB.length) { selectedBarIndexB = index; if (isPaused) drawFrame(); }
+        if (getDisplayMode() === 'dbMeter') {
+            const leftMargin = 55;
+            const rightMargin = 20;
+            const chartW = width - leftMargin - rightMargin;
+
+            if (mode === '2') {
+                const subH = height / 2;
+                if (clickX >= leftMargin && clickX <= width - rightMargin) {
+                    let barWidth = chartW / 120;
+                    let index = Math.floor((clickX - leftMargin) / barWidth);
+                    if (clickY < subH) {
+                        if (index >= 0 && index < dbHistoryA.length) { selectedBarIndexA = index; if (isPaused) drawFrame(); }
+                    } else {
+                        if (index >= 0 && index < dbHistoryB.length) { selectedBarIndexB = index; if (isPaused) drawFrame(); }
+                    }
+                }
+            } else {
+                if (clickX >= leftMargin && clickX <= width - rightMargin && dbHistoryA.length > 0) {
+                    let barWidth = chartW / 120;
+                    let index = Math.floor((clickX - leftMargin) / barWidth);
+                    if (index >= 0 && index < dbHistoryA.length) {
+                        selectedBarIndexA = index;
+                        if (isPaused) drawFrame();
+                    }
                 }
             }
-        } else {
-            if (clickX >= leftMargin && clickX <= width - rightMargin && dbHistoryA.length > 0) {
-                let barWidth = chartW / 120;
-                let index = Math.floor((clickX - leftMargin) / barWidth);
-                if (index >= 0 && index < dbHistoryA.length) {
-                    selectedBarIndexA = index;
-                    if (isPaused) drawFrame();
+        } 
+        else if (getDisplayMode() === 'oscilloscope' && isPaused && !isContinuousMode) {
+            if (mode === '1') {
+                if (isManualMode) {
+                    let timeMs = (clickX / width) * totalTimeOnScreen * 1000;
+                    let amp = (height / 2 - clickY) / (currentZoomY * height / 2);
+                    if (manualAnalysisPoints.length >= 2) manualAnalysisPoints = [];
+                    manualAnalysisPoints.push({ timeMs: timeMs, amp: amp });
+                    drawFrame();
+                } else {
+                    showGridScale = !showGridScale;
+                    drawFrame();
                 }
             }
         }
@@ -1525,7 +1576,9 @@
         if (maxpos <= 0 || maxval < c[0] * 0.3) return -1;
         let truePos = maxpos;
         if (maxpos > 0 && maxpos < halfSize - 1) { let x1 = c[maxpos - 1], x2 = c[maxpos], x3 = c[maxpos + 1], a = (x1 + x3 - 2 * x2) / 2, b = (x3 - x1) / 2; if (a < 0) truePos = maxpos - b / (2 * a); }
-        let freq = sampleRate / truePos; if (freq < 100 || freq > 1500) return -1; return freq;
+        let freq = sampleRate / truePos; 
+        if (freq < 15 || freq > 3500) return -1; // Cải tiến khoảng chặn tần số rộng hơn
+        return freq;
     }
 
     function calculatePhaseDifference(dataA, dataB, freq, sampleRate) {
@@ -1936,6 +1989,49 @@
                 drawWaveform(canvasCtx, channelConfig.B.data, channelConfig.B.index, offset, samplesNeeded, 0, boxB_Y, width, boxB_H, '#3b82f6');
             }
         }
+
+        // TÍNH NĂNG VẼ LƯỚI TỈ LỆ
+        if (isPaused && !isContinuousMode && showGridScale && mode === '1') {
+            let timePerGridMs = (totalTimeOnScreen * 1000) / 10;
+            drawLabelWithPill(canvasCtx, `1 ô = ${timePerGridMs.toFixed(4)} ms`, 60, 20, 'left', 'top', '#0f172a');
+        }
+
+        // TÍNH NĂNG CHỌN 2 ĐIỂM (PHÂN TÍCH ĐỒ THỊ)
+        if (isManualMode && manualAnalysisPoints.length > 0 && isPaused && mode === '1') {
+            canvasCtx.fillStyle = '#8b5cf6';
+            canvasCtx.strokeStyle = '#8b5cf6';
+            canvasCtx.lineWidth = 2;
+
+            manualAnalysisPoints.forEach((p, idx) => {
+                let screenX = (p.timeMs / 1000 / totalTimeOnScreen) * width;
+                let screenY = height / 2 - (p.amp * currentZoomY * height / 2);
+                
+                canvasCtx.beginPath();
+                canvasCtx.arc(screenX, screenY, 4.5, 0, Math.PI * 2);
+                canvasCtx.fill();
+                canvasCtx.stroke();
+                drawLabelWithPill(canvasCtx, `P${idx+1} (t: ${p.timeMs.toFixed(2)}ms, A: ${p.amp.toFixed(2)})`, screenX, screenY - 14, 'center', 'bottom', '#8b5cf6');
+            });
+
+            if (manualAnalysisPoints.length === 2) {
+                let p1 = manualAnalysisPoints[0];
+                let p2 = manualAnalysisPoints[1];
+                let sx1 = (p1.timeMs / 1000 / totalTimeOnScreen) * width;
+                let sy1 = height / 2 - (p1.amp * currentZoomY * height / 2);
+                let sx2 = (p2.timeMs / 1000 / totalTimeOnScreen) * width;
+                let sy2 = height / 2 - (p2.amp * currentZoomY * height / 2);
+
+                canvasCtx.beginPath();
+                canvasCtx.moveTo(sx1, sy1);
+                canvasCtx.lineTo(sx2, sy2);
+                canvasCtx.stroke();
+
+                let dt = Math.abs(p2.timeMs - p1.timeMs);
+                let f = dt > 0 ? 1000 / dt : 0;
+                let text = `Δt (T) = ${dt.toFixed(2)} ms  |  f = ${f.toFixed(1)} Hz`;
+                drawLabelWithPill(canvasCtx, text, width / 2, 20, 'center', 'top', '#f97316');
+            }
+        }
     }
 
     function drawWaveform(ctx, dataArray, currentIndex, offset, samplesNeeded, boxX, boxY, boxW, boxH, color) {
@@ -1984,6 +2080,15 @@
         targetFPS = 60;
         const groupSpeed = document.getElementById('groupSpeed');
         if (groupSpeed) groupSpeed.style.display = 'block';
+
+        isManualMode = false;
+        manualAnalysisPoints = [];
+        showGridScale = false;
+        if (btnManualAnalyze) {
+            btnManualAnalyze.className = 'btn-purple';
+            btnManualAnalyze.innerText = "Phân tích điểm";
+            btnManualAnalyze.style.display = 'none';
+        }
 
         document.querySelectorAll('#groupMode .settings-item').forEach(el => { el.classList.toggle('active', el.dataset.value === 'continuous'); });
         document.querySelectorAll('#groupSpeed .settings-item').forEach(el => { el.classList.toggle('active', el.dataset.value === 'fast'); });
@@ -2211,7 +2316,6 @@
         if (overlay) overlay.style.display = 'none';
     }
 
-    // TỐI ƯU GỌN GÀNG: LOẠI BỎ KHOẢNG TRẮNG KÝ HIỆU & SỬA LỖI HIỂN THỊ CÁC THẺ KHOẢNG CÁCH
     function calculateAvgDistance() {
         const mode = getActiveChannelMode();
         const box = document.getElementById('distanceResultBox');
@@ -2429,17 +2533,15 @@
         }
     }
 
+    // TỐI ƯU HIỂN THỊ PHƯƠNG TRÌNH DAO ĐỘNG (U_A, U_B, U)
     function updateEquationsHUD(freqA, freqB, phaseRad, ampA, ampB) {
         document.getElementById('hudAmpA').innerText = ampA;
         document.getElementById('hudAmpB').innerText = ampB;
 
-        document.getElementById('eqFreqA').innerText = freqA > 0 ? freqA.toFixed(1) : "0.0";
-        document.getElementById('eqFreqB').innerText = freqB > 0 ? freqB.toFixed(1) : "0.0";
-        document.getElementById('eqAmpA').innerText = ampA;
-        document.getElementById('eqAmpB').innerText = ampB;
-
+        document.getElementById('eqLineA').innerHTML = `u<sub>A</sub> = ${ampA}·cos(2π·${freqA > 0 ? freqA.toFixed(1) : "0.0"}·t)`;
+        
         let phaseStr = phaseRad >= 0 ? ` + ${phaseRad.toFixed(2)}` : ` - ${Math.abs(phaseRad).toFixed(2)}`;
-        document.getElementById('eqPhase').innerText = phaseStr;
+        document.getElementById('eqLineB').innerHTML = `u<sub>B</sub> = ${ampB}·cos(2π·${freqB > 0 ? freqB.toFixed(1) : "0.0"}·t${phaseStr})`;
 
         document.getElementById('hudPhaseRad').innerText = phaseRad.toFixed(2);
         document.getElementById('hudPhaseDeg').innerText = Math.round(phaseRad * 180 / Math.PI);
@@ -2454,7 +2556,7 @@
                 let phase_half = (phaseRad / 2).toFixed(2);
                 let phase_half_sign = phaseRad >= 0 ? `+ ${phase_half}` : `- ${Math.abs(phase_half).toFixed(2)}`;
                 let sum_amp = Math.abs(2 * A_val * Math.cos(phaseRad / 2)).toFixed(2);
-                sumLine.innerHTML = `Tổng hợp: <span class="math-symbol">u = 2(${A_val})·cos(${phase_half})·cos(2πft ${phase_half_sign}) = ${sum_amp}·cos(2πft ${phase_half_sign})</span>`;
+                sumLine.innerHTML = `Tổng hợp: <span class="math-symbol">u = ${sum_amp}·cos(2π·${freqA > 0 ? freqA.toFixed(1) : "0.0"}·t ${phase_half_sign})</span>`;
             }
         }
     }
@@ -2838,6 +2940,9 @@
         }
     }
 
+    // TẠO PROMISE CHAIN CHO MATHJAX ĐỂ KHÔNG BỊ LỖI CHỒNG CHÉO (RACE CONDITION)
+    window.mathJaxPromise = window.mathJaxPromise || Promise.resolve();
+
     async function sendFoxMessage() {
         const text = chatInput.value.trim();
         if (!text && !uploadedImageBase64) return;
@@ -2897,11 +3002,9 @@
         row.innerHTML = html; chatContent.appendChild(row); chatContent.scrollTop = chatContent.scrollHeight;
 
         if (sender === 'bot' && window.MathJax && MathJax.typesetPromise) {
-            try {
-                await MathJax.typesetPromise([row]);
-            } catch (err) {
-                console.log('MathJax typeset error:', err);
-            }
+            window.mathJaxPromise = window.mathJaxPromise
+                .then(() => MathJax.typesetPromise([row]))
+                .catch(err => console.log('MathJax typeset error:', err));
         }
     }
 
