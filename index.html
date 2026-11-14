@@ -508,8 +508,8 @@
             <option value="2">2 nguồn âm</option>
         </select>
         <select id="modeSelect" style="display:none">
-            <option value="auto">Khảo sát tần số (Tự dừng)</option>
-            <option value="continuous" selected>Khảo sát liên tục</option>
+            <option value="auto" selected>Khảo sát tần số (Tự dừng)</option>
+            <option value="continuous">Khảo sát liên tục</option>
         </select>
         <select id="displayModeSelect" style="display:none">
             <option value="oscilloscope" selected>Dao động ký</option>
@@ -536,8 +536,8 @@
                     <div class="settings-group" id="groupMode">
                         <div class="settings-group-header" data-group="mode"><span>Chức năng khảo sát</span><span class="group-arrow">›</span></div>
                         <div class="settings-group-items">
-                            <div class="settings-item" data-target="modeSelect" data-value="auto">Tự dừng</div>
-                            <div class="settings-item active" data-target="modeSelect" data-value="continuous">Liên tục</div>
+                            <div class="settings-item active" data-target="modeSelect" data-value="auto">Tự dừng</div>
+                            <div class="settings-item" data-target="modeSelect" data-value="continuous">Liên tục</div>
                         </div>
                     </div>
                     <div class="settings-group" id="groupDisplayMode">
@@ -547,7 +547,7 @@
                             <div class="settings-item" data-target="displayModeSelect" data-value="dbMeter">Cường độ âm (dB)</div>
                         </div>
                     </div>
-                    <div class="settings-group" id="groupSpeed" style="display: block;">
+                    <div class="settings-group" id="groupSpeed" style="display: none;">
                         <div class="settings-group-header" data-group="speed"><span>Tốc độ quét</span><span class="group-arrow">›</span></div>
                         <div class="settings-group-items">
                             <div class="settings-item active" data-target="speedSelect" data-value="fast">Nhanh</div>
@@ -906,12 +906,32 @@
         wasAppBackgrounded = true;
         lastBackgroundTime = performance.now();
         if (typeof stopTimer !== 'undefined') clearTimeout(stopTimer);
+
+        // Tạm ngưng toàn bộ chức năng đo & ghi nhận khi bị phần mềm khác chen ngang / mở trang khác
+        isPaused = true;
+        if (typeof stopSpeechRecognition === 'function') stopSpeechRecognition();
+        if (typeof isTsPaused !== 'undefined') isTsPaused = true;
+
+        const tsPlayBtn = document.getElementById('tsPlayBtn');
+        if (tsPlayBtn) { tsPlayBtn.innerHTML = '▶ Tiếp tục'; tsPlayBtn.className = "btn-green"; }
+
+        if (typeof pauseButton !== 'undefined' && pauseButton) {
+            pauseButton.textContent = "Đo / Dừng";
+            pauseButton.className = "btn-green";
+            pauseButton.disabled = true; // Khóa nút đo, bắt buộc bấm Làm mới
+        }
+        if (typeof btnAnalysis !== 'undefined' && btnAnalysis) btnAnalysis.disabled = true;
+        if (typeof btnManualAnalysis !== 'undefined' && btnManualAnalysis) btnManualAnalysis.disabled = true;
+
+        if (typeof audioCtx !== 'undefined' && audioCtx && audioCtx.state === 'running') {
+            audioCtx.suspend().catch(() => {});
+        }
     }
 
     function onAppEnter() {
         const now = performance.now();
-        if (now - lastReturnProcessTime < 400) return;
-        if (wasAppBackgrounded || (document.visibilityState === 'visible' && (now - lastBackgroundTime > 200))) {
+        if (now - lastReturnProcessTime < 300) return;
+        if (wasAppBackgrounded || document.visibilityState === 'visible') {
             wasAppBackgrounded = false;
             lastReturnProcessTime = now;
             if (typeof handleAppReturn === 'function') {
@@ -1027,6 +1047,27 @@
             isDemoMode = true; document.getElementById('licenseModalOverlay').style.display = 'none';
             const gearBtn = document.querySelector('.license-gear-btn');
             if (gearBtn) gearBtn.style.display = 'inline-flex';
+            // Mặc định khi vào Demo: 1 nguồn âm, đo tự dừng
+            if (channelModeSelect) {
+                channelModeSelect.value = '1';
+                const cardB = document.getElementById('cardChannelB');
+                if (cardB) cardB.style.display = 'none';
+                stopAudioChannel('B');
+                document.querySelectorAll('#groupChannelMode .settings-item').forEach(el => {
+                    el.classList.toggle('active', el.dataset.value === '1');
+                });
+            }
+            if (modeSelect) {
+                modeSelect.value = 'auto';
+                isContinuousMode = false;
+                clearTimeout(stopTimer);
+                document.querySelectorAll('#groupMode .settings-item').forEach(el => {
+                    el.classList.toggle('active', el.dataset.value === 'auto');
+                });
+                const speedGroup = document.getElementById('groupSpeed');
+                if (speedGroup) speedGroup.style.display = 'none';
+            }
+            updateToolbarButtonsVisibility();
             updateAnalysisButtonState();
         } else {
             document.getElementById('keyInputContainer').style.display = 'block';
@@ -1094,6 +1135,28 @@
         infoMessageText.innerHTML = "✅ Bản Full Chính Thức đã kích hoạt thành công!";
         const gearBtn = document.querySelector('.license-gear-btn');
         if (gearBtn) gearBtn.style.display = 'none';
+
+        // Mặc định khi đăng nhập / kích hoạt Full: 1 nguồn âm, đo tự dừng
+        if (channelModeSelect) {
+            channelModeSelect.value = '1';
+            const cardB = document.getElementById('cardChannelB');
+            if (cardB) cardB.style.display = 'none';
+            stopAudioChannel('B');
+            document.querySelectorAll('#groupChannelMode .settings-item').forEach(el => {
+                el.classList.toggle('active', el.dataset.value === '1');
+            });
+        }
+        if (modeSelect) {
+            modeSelect.value = 'auto';
+            isContinuousMode = false;
+            clearTimeout(stopTimer);
+            document.querySelectorAll('#groupMode .settings-item').forEach(el => {
+                el.classList.toggle('active', el.dataset.value === 'auto');
+            });
+            const speedGroup = document.getElementById('groupSpeed');
+            if (speedGroup) speedGroup.style.display = 'none';
+        }
+        updateToolbarButtonsVisibility();
         updateAnalysisButtonState(); checkAndShowQR();
     }
 
@@ -1176,17 +1239,17 @@
 
     function restoreAppState() {
         channelModeSelect.value = '1';
-        modeSelect.value = 'continuous';
+        modeSelect.value = 'auto'; // Mặc định khi khởi động / đăng nhập là Đo tự dừng
         if (displayModeSelect) displayModeSelect.value = 'oscilloscope';
         speedSelect.value = 'fast';
 
-        if (typeof isContinuousMode !== 'undefined') isContinuousMode = true;
+        isContinuousMode = false;
 
         document.querySelectorAll('#groupChannelMode .settings-item').forEach(el => {
             el.classList.toggle('active', el.dataset.value === '1');
         });
         document.querySelectorAll('#groupMode .settings-item').forEach(el => {
-            el.classList.toggle('active', el.dataset.value === 'continuous');
+            el.classList.toggle('active', el.dataset.value === 'auto');
         });
         document.querySelectorAll('#groupDisplayMode .settings-item').forEach(el => {
             el.classList.toggle('active', el.dataset.value === 'oscilloscope');
@@ -1195,7 +1258,7 @@
             el.classList.toggle('active', el.dataset.value === 'fast');
         });
 
-        document.getElementById('groupSpeed').style.display = 'block';
+        document.getElementById('groupSpeed').style.display = 'none';
         document.getElementById('cardChannelB').style.display = 'none'; updateToolbarButtonsVisibility();
     }
 
@@ -1342,7 +1405,7 @@
         });
     });
 
-    let audioCtx, sampleRate = 48000, isPaused = true, isContinuousMode = (modeSelect ? modeSelect.value === 'continuous' : true), stopTimer;
+    let audioCtx, sampleRate = 48000, isPaused = true, isContinuousMode = (modeSelect ? modeSelect.value === 'continuous' : false), stopTimer;
     const channelConfig = {
         A: { stream: null, source: null, workletNode: null, filterHP: null, filterLP: null, dummy: null, data: null, index: 0, color: '#dc2626', active: false },
         B: { stream: null, source: null, workletNode: null, filterHP: null, filterLP: null, dummy: null, data: null, index: 0, color: '#2563eb', active: false }
@@ -2203,18 +2266,33 @@
     });
 
     resetButton.addEventListener('click', () => {
-        resetFeaturesAndAdjustments();
-        isPaused = true; clearTimeout(stopTimer);
-        pauseButton.textContent = "Đo / Dừng"; pauseButton.className = "btn-green"; pauseButton.disabled = false;
+        resetFeaturesAndAdjustments(true); // Giữ lại chế độ đo hiện tại (1 nguồn/2 nguồn, tự dừng/liên tục, oscilloscope/dbMeter,...)
+        isPaused = true;
+        clearTimeout(stopTimer);
+        pauseButton.textContent = "Đo / Dừng";
+        pauseButton.className = "btn-green";
+        pauseButton.disabled = false; // Mở khóa nút Đo/Dừng để người dùng bắt đầu đo lại
         if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
-        if (channelConfig.A.data) { channelConfig.A.data.fill(0); channelConfig.A.index = 0; } if (channelConfig.B.data) { channelConfig.B.data.fill(0); channelConfig.B.index = 0; }
+        if (channelConfig.A.data) { channelConfig.A.data.fill(0); channelConfig.A.index = 0; }
+        if (channelConfig.B.data) { channelConfig.B.data.fill(0); channelConfig.B.index = 0; }
         dbHistoryA = [];
         dbHistoryB = [];
         selectedBarIndexA = -1;
         selectedBarIndexB = -1;
         dbStartTime = 0;
         lastDbSampleTime = 0;
-        updateUIState(); drawFrame(true);
+
+        // Cập nhật thông báo sẵn sàng đo theo đúng kênh đang bật
+        if (channelConfig.A.active || channelConfig.B.active) {
+            infoMessageText.innerHTML = "Đã làm mới. Bấm <span class='info-badge'>Đo / Dừng</span> để khảo sát.";
+            infoMessageText.style.color = "#0284c7";
+        } else {
+            infoMessageText.innerHTML = "Nhấn vào <span class='info-badge'>Kênh A</span> hoặc <span class='info-badge'>Kênh B</span> để bật mic.";
+            infoMessageText.style.color = "#0284c7";
+        }
+
+        updateUIState();
+        drawFrame(true);
     });
 
     function renderSingleDbChart(ctx, dbHistory, selectedIndex, titleText, titleColor, boxX, boxY, boxW, boxH) {
@@ -2436,7 +2514,7 @@
         animFrameId = requestAnimationFrame(draw);
     }
 
-    function resetFeaturesAndAdjustments() {
+    function resetFeaturesAndAdjustments(keepModes = true) {
         resetManualAnalysisState();
         const fftOverlay = document.getElementById('fftModalOverlay');
         if (fftOverlay) { fftOverlay.classList.remove('animUI-visible'); fftOverlay.style.display = 'none'; }
@@ -2460,31 +2538,52 @@
 
         isUserZoomed = false; currentZoomY = 2.0; detectedFrequency = 0; lockedFrequency = 440; totalTimeOnScreen = 5 * (1.0 / 440);
 
-        if (modeSelect) modeSelect.value = 'continuous';
-        isContinuousMode = true; clearTimeout(stopTimer);
-        if (speedSelect) speedSelect.value = 'fast';
-        targetFPS = 60;
-        const groupSpeed = document.getElementById('groupSpeed');
-        if (groupSpeed) groupSpeed.style.display = 'block';
+        if (!keepModes) {
+            if (channelModeSelect) channelModeSelect.value = '1';
+            if (modeSelect) modeSelect.value = 'auto';
+            if (displayModeSelect) displayModeSelect.value = 'oscilloscope';
+            if (speedSelect) speedSelect.value = 'fast';
+            isContinuousMode = false;
+            clearTimeout(stopTimer);
+            targetFPS = 60;
 
-        document.querySelectorAll('#groupMode .settings-item').forEach(el => { el.classList.toggle('active', el.dataset.value === 'continuous'); });
-        document.querySelectorAll('#groupSpeed .settings-item').forEach(el => { el.classList.toggle('active', el.dataset.value === 'fast'); });
+            document.querySelectorAll('#groupChannelMode .settings-item').forEach(el => { el.classList.toggle('active', el.dataset.value === '1'); });
+            document.querySelectorAll('#groupMode .settings-item').forEach(el => { el.classList.toggle('active', el.dataset.value === 'auto'); });
+            document.querySelectorAll('#groupDisplayMode .settings-item').forEach(el => { el.classList.toggle('active', el.dataset.value === 'oscilloscope'); });
+            document.querySelectorAll('#groupSpeed .settings-item').forEach(el => { el.classList.toggle('active', el.dataset.value === 'fast'); });
+            const groupSpeed = document.getElementById('groupSpeed');
+            if (groupSpeed) groupSpeed.style.display = 'none';
+            const cardB = document.getElementById('cardChannelB');
+            if (cardB) cardB.style.display = 'none';
+        } else {
+            // Giữ lại chế độ đang đo, đồng bộ cờ isContinuousMode và tốc độ quét
+            isContinuousMode = (modeSelect && modeSelect.value === 'continuous');
+            clearTimeout(stopTimer);
+            targetFPS = (speedSelect && speedSelect.value === 'slow') ? 15 : 60;
+            const groupSpeed = document.getElementById('groupSpeed');
+            if (groupSpeed) groupSpeed.style.display = isContinuousMode ? 'block' : 'none';
+        }
 
+        if (typeof updateToolbarButtonsVisibility === 'function') updateToolbarButtonsVisibility();
         if (typeof saveAppState === 'function') saveAppState();
     }
 
     function handleAppReturn() {
-        resetFeaturesAndAdjustments();
+        resetFeaturesAndAdjustments(true); // Giữ nguyên chế độ đo hiện tại khi quay lại ứng dụng
 
         isPaused = true;
         clearTimeout(stopTimer);
 
-        pauseButton.textContent = "Đo / Dừng";
-        pauseButton.className = "btn-green";
-        pauseButton.disabled = true;
-        resetButton.disabled = false;
+        if (pauseButton) {
+            pauseButton.textContent = "Đo / Dừng";
+            pauseButton.className = "btn-green";
+            pauseButton.disabled = true; // Khóa các chức năng đo, bắt buộc bấm Làm mới mới tiếp tục
+        }
+        if (resetButton) resetButton.disabled = false;
+        if (btnAnalysis) btnAnalysis.disabled = true;
+        if (btnManualAnalysis) btnManualAnalysis.disabled = true;
 
-        infoMessageText.innerHTML = "⚠️ Ứng dụng vừa quay lại. Vui lòng bấm <span class='info-badge'>Làm mới</span> để tiếp tục đo.";
+        infoMessageText.innerHTML = "⚠️ Ứng dụng vừa bị gián đoạn. Vui lòng bấm <span class='info-badge'>Làm mới</span> để tiếp tục đo.";
         infoMessageText.style.color = "#dc2626";
 
         updateAnalysisButtonState();
