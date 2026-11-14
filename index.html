@@ -407,6 +407,69 @@
         .dist-card-sub { font-size: 12px; color: #64748b; margin-top: 4px; font-weight: 500; }
         .dist-header-bar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 8px; }
         .dist-formula-badge { background: #e0f2fe; color: #0284c7; padding: 4px 10px; border-radius: 16px; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
+    
+        #oscilloscopeWrapper {
+            position: relative;
+            flex-grow: 1;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            overflow: hidden;
+        }
+        #manualAnalysisHud {
+            position: absolute;
+            bottom: 14px;
+            left: 14px;
+            background: rgba(15, 23, 42, 0.92);
+            backdrop-filter: blur(8px);
+            color: #f8fafc;
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+            font-family: 'Be Vietnam Pro', sans-serif;
+            font-size: 12px;
+            line-height: 1.55;
+            z-index: 45;
+            display: none;
+            max-width: calc(100% - 85px);
+        }
+        #manualAnalysisHud .ma-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            font-weight: 700;
+            color: #38bdf8;
+            font-size: 12.5px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            padding-bottom: 4px;
+            margin-bottom: 6px;
+        }
+        #manualAnalysisHud .ma-close {
+            background: rgba(255, 255, 255, 0.12);
+            border: none;
+            color: #cbd5e1;
+            border-radius: 4px;
+            padding: 1px 6px;
+            font-size: 11px;
+            cursor: pointer;
+        }
+        #manualAnalysisHud .ma-close:hover {
+            background: #ef4444;
+            color: #fff;
+        }
+        #manualAnalysisHud .ma-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+            gap: 6px 14px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11.5px;
+        }
+        #manualAnalysisHud .ma-val-manual { color: #facc15; font-weight: 700; }
+        #manualAnalysisHud .ma-val-auto { color: #34d399; font-weight: 700; }
+        #manualAnalysisHud .ma-val-err { color: #f472b6; font-weight: 700; }
+
     </style>
 </head>
 <body>
@@ -506,6 +569,7 @@
             </div>
 
             <button id="pauseButton" class="btn-green" disabled>Đo / Dừng</button>
+            <button id="btnManualAnalysis" class="btn-purple" style="display: inline-block;" disabled title="Chọn 2 điểm trên đồ thị Kênh A (khi đang dừng ở chế độ 1 nguồn) để đo T, f, Δφ và so sánh với tần số tự động">Phân tích điểm</button>
             <button id="resetButton" class="btn-orange">Làm mới</button>
             <button id="btnCalib" class="btn-orange" style="display: none;">🎯 Hiệu chuẩn</button>
             <button id="btnAnalysis" class="btn-slate" disabled>Xử lý nguồn âm</button>
@@ -539,7 +603,16 @@
     </div>
 </div>
 
-<canvas id="oscilloscope"></canvas>
+<div id="oscilloscopeWrapper">
+    <canvas id="oscilloscope"></canvas>
+    <div id="manualAnalysisHud">
+        <div class="ma-header">
+            <span>📐 KẾT QUẢ PHÂN TÍCH 2 ĐIỂM &amp; ĐỐI CHIẾU TỰ ĐỘNG</span>
+            <button class="ma-close" onclick="closeManualHud()" title="Ẩn bảng kết quả">✕</button>
+        </div>
+        <div id="manualAnalysisHudBody"></div>
+    </div>
+</div>
 
 <!-- MODAL PHÂN TÍCH HỌA ÂM FFT -->
 <div id="fftModalOverlay" class="modal-overlay">
@@ -874,7 +947,7 @@
     const CHAT_GAS_ID = "AKfycbwllsi_eXt98JRwTDyHPtD8qtgx6nnyhnDD8sSk5mIgEeB0EGLHkIwydpATOWohKJLuEg";
 
     const btnStartA = document.getElementById('btnStartA'), btnStartB = document.getElementById('btnStartB');
-    const pauseButton = document.getElementById('pauseButton'), resetButton = document.getElementById('resetButton'), btnCalib = document.getElementById('btnCalib');
+    const pauseButton = document.getElementById('pauseButton'), btnManualAnalysis = document.getElementById('btnManualAnalysis'), resetButton = document.getElementById('resetButton'), btnCalib = document.getElementById('btnCalib');
     const btnAnalysis = document.getElementById('btnAnalysis'), infoMessageText = document.getElementById('infoMessageText');
     const channelModeSelect = document.getElementById('channelModeSelect'), modeSelect = document.getElementById('modeSelect'), speedSelect = document.getElementById('speedSelect');
     const displayModeSelect = document.getElementById('displayModeSelect');
@@ -899,6 +972,8 @@
     let micCalibOffsetB = parseFloat(localStorage.getItem('fox_mic_calib_offset_b') || '0.0');
 
     let isDemoMode = true; let demoTimer = null; let demoChatCount = 0; const MAX_DEMO_CHAT = 5;
+    let isManualAnalysisMode = false;
+    let manualPoints = []; // [{ absIdx, y }]
     let detectedFrequency = 0, lockedFrequency = 440;
     let isUserZoomed = false, totalTimeOnScreen = 5 * (1.0 / 440), currentZoomY = 2.0;
 
@@ -1066,10 +1141,14 @@
         } catch (e) { alert("Lỗi kết nối khi yêu cầu đổi thiết bị!"); forceLogout(); }
     }
 
-    async function verifyEnteredKey() {
+    async function verifyEnteredKey(actionType = 'verify') {
         const keyInput = document.getElementById('licenseKeyInput').value.trim();
         if (!keyInput) { alert("⚠️ Vui lòng nhập mã Key hợp lệ!"); return; }
-        await verifyKeyWithServer(keyInput, "full");
+        if (actionType === 'change') {
+            await forceChangeDevice(keyInput, "full");
+        } else {
+            await verifyKeyWithServer(keyInput, "full");
+        }
     }
 
     function forceLogout(isManual = false) {
@@ -1164,7 +1243,7 @@
                 }
             } catch (e) { }
         }
-    }, 45000);
+    }, 300000); // Tối ưu: Kiểm tra bản quyền định kỳ mỗi 5 phút (300.000 ms) thay vì 45s để tiết kiệm băng thông và hạn mức GAS
 
     function checkAndShowQR() {
         const qrPanel = document.getElementById('qrPanel'), container = document.getElementById('qrCodeContainer');
@@ -1173,8 +1252,7 @@
         if (isSmartDevice) { qrPanel.style.display = 'none'; return; }
         qrPanel.style.display = 'flex';
         let currentUrl = window.location.href.split('?')[0];
-        let activeKey = localStorage.getItem('fox_license_key') || '', qrUrl = currentUrl;
-        if (activeKey) { qrUrl += '?key=' + encodeURIComponent(activeKey); }
+        let qrUrl = currentUrl; // Bảo mật: Không đính kèm License Key vào URL QR code tránh bị lộ bản quyền
         
         container.innerHTML = '';
         try {
@@ -1356,15 +1434,76 @@
         updateAnalysisButtonState(); saveAppState();
     });
 
+    function updateManualAnalysisButtonState() {
+        if (!btnManualAnalysis) return;
+        const isOneSource = (getActiveChannelMode() === '1');
+        const isOsc = (getDisplayMode() === 'oscilloscope');
+        if (!isOneSource || !isOsc) {
+            btnManualAnalysis.style.display = 'none';
+            if (isManualAnalysisMode) resetManualAnalysisState();
+            return;
+        }
+        btnManualAnalysis.style.display = 'inline-block';
+        const samplesNeeded = Math.floor(sampleRate * totalTimeOnScreen);
+        const hasEnoughData = channelConfig.A.active && channelConfig.A.data && channelConfig.A.index > Math.max(64, Math.min(samplesNeeded, 512));
+        if (isPaused && hasEnoughData) {
+            btnManualAnalysis.disabled = false;
+        } else {
+            btnManualAnalysis.disabled = true;
+            if (isManualAnalysisMode) resetManualAnalysisState();
+        }
+    }
+
+    function resetManualAnalysisState() {
+        isManualAnalysisMode = false;
+        manualPoints = [];
+        if (btnManualAnalysis) {
+            btnManualAnalysis.textContent = "Phân tích điểm";
+            btnManualAnalysis.className = "btn-purple";
+        }
+        closeManualHud();
+    }
+
+    function closeManualHud() {
+        const hud = document.getElementById('manualAnalysisHud');
+        if (hud) hud.style.display = 'none';
+    }
+
+    if (btnManualAnalysis) {
+        btnManualAnalysis.addEventListener('click', () => {
+            if (!isPaused || getActiveChannelMode() !== '1' || getDisplayMode() !== 'oscilloscope' || !channelConfig.A.active) {
+                alert("⚠️ Chức năng Phân tích điểm chỉ khả dụng ở chế độ 1 nguồn âm, hiển thị Dao động ký và đã bấm Dừng đo!");
+                return;
+            }
+            if (!isManualAnalysisMode) {
+                isManualAnalysisMode = true;
+                manualPoints = [];
+                closeManualHud();
+                btnManualAnalysis.textContent = "🎯 Đang chọn điểm...";
+                btnManualAnalysis.className = "btn-orange";
+                infoMessageText.innerHTML = "Chế độ chọn điểm: Click/chạm chọn <span class='info-badge'>Điểm 1 (P₁)</span> trên đồ thị sóng Kênh A.";
+                infoMessageText.style.color = "#7c3aed";
+                drawFrame();
+            } else {
+                resetManualAnalysisState();
+                infoMessageText.innerHTML = "Đã thoát chế độ Phân tích điểm.";
+                infoMessageText.style.color = "#0284c7";
+                drawFrame();
+            }
+        });
+    }
+
     function updateToolbarButtonsVisibility() {
         if (getDisplayMode() === 'dbMeter') {
             if (btnCalib) btnCalib.style.display = 'inline-block';
         } else {
             if (btnCalib) btnCalib.style.display = 'none';
         }
+        updateManualAnalysisButtonState();
     }
 
     displayModeSelect.addEventListener('change', () => {
+        if (getDisplayMode() !== 'oscilloscope') resetManualAnalysisState();
         updateToolbarButtonsVisibility();
         updateAnalysisButtonState();
         drawFrame();
@@ -1372,15 +1511,34 @@
     });
 
     channelModeSelect.addEventListener('change', () => {
-        if (getActiveChannelMode() === '1') { document.getElementById('cardChannelB').style.display = 'none'; updateToolbarButtonsVisibility(); stopAudioChannel('B'); }
-        else { document.getElementById('cardChannelB').style.display = 'flex'; }
+        if (getActiveChannelMode() === '1') {
+            document.getElementById('cardChannelB').style.display = 'none';
+            stopAudioChannel('B');
+        } else {
+            document.getElementById('cardChannelB').style.display = 'flex';
+            resetManualAnalysisState();
+        }
+        updateToolbarButtonsVisibility();
         updateUIState(); drawFrame(); saveAppState();
     });
 
-    btnStartA.addEventListener('click', async () => { if (channelConfig.A.active) { stopAudioChannel('A'); updateUIState(); drawFrame(); } else { await initAudioChannel('A', micSelectA.value); } });
+    btnStartA.addEventListener('click', async () => {
+        if (channelConfig.A.active) {
+            resetManualAnalysisState();
+            stopAudioChannel('A');
+            updateUIState();
+            drawFrame();
+        } else {
+            await initAudioChannel('A', micSelectA.value);
+        }
+    });
     btnStartB.addEventListener('click', async () => { if (channelConfig.B.active) { stopAudioChannel('B'); updateUIState(); drawFrame(); } else { await initAudioChannel('B', micSelectB.value); } });
     micSelectA.addEventListener('change', (e) => { if (channelConfig.A.active) initAudioChannel('A', e.target.value); saveAppState(); });
     micSelectB.addEventListener('change', (e) => { if (channelConfig.B.active) initAudioChannel('B', e.target.value); saveAppState(); });
+    micSelectA.addEventListener('focus', () => { isSelectActive = true; });
+    micSelectA.addEventListener('blur', () => { setTimeout(() => { isSelectActive = false; }, 300); });
+    micSelectB.addEventListener('focus', () => { isSelectActive = true; });
+    micSelectB.addEventListener('blur', () => { setTimeout(() => { isSelectActive = false; }, 300); });
 
     function resizeCanvas() {
         const dpr = window.devicePixelRatio || 1, cssWidth = canvas.clientWidth, cssHeight = canvas.clientHeight;
@@ -1391,7 +1549,273 @@
     }
     window.addEventListener('resize', resizeCanvas);
 
+    function getVisibleChannelAWindow() {
+        const samplesNeeded = Math.max(2, Math.floor(sampleRate * totalTimeOnScreen));
+        if (!channelConfig.A.active || !channelConfig.A.data || channelConfig.A.index <= 2) return null;
+        const offset = isContinuousMode ? 0 : findZeroCrossingOffset(channelConfig.A, channelConfig.A.index, samplesNeeded);
+        const startIdx = channelConfig.A.index - offset - samplesNeeded;
+        const len = channelConfig.A.data.length;
+        const slice = new Float32Array(samplesNeeded);
+        for (let i = 0; i < samplesNeeded; i++) {
+            slice[i] = channelConfig.A.data[((startIdx + i) % len + len) % len];
+        }
+        return { slice, startIdx, offset, samplesNeeded };
+    }
+
+    function computeFrozenAutoFrequency() {
+        if (!channelConfig.A.active || !channelConfig.A.data) return lockedFrequency || detectedFrequency || 0;
+        const len = channelConfig.A.data.length;
+        const cIdx = channelConfig.A.index;
+        const winSize = Math.min(4096, cIdx);
+        if (winSize >= 1024) {
+            const buf = new Float32Array(winSize);
+            for (let i = 0; i < winSize; i++) {
+                buf[i] = channelConfig.A.data[((cIdx - winSize + i) % len + len) % len];
+            }
+            const f = autoCorrelate(buf, sampleRate);
+            if (f > 0) return f;
+        }
+        return (detectedFrequency > 0) ? detectedFrequency : (lockedFrequency > 0 ? lockedFrequency : 0);
+    }
+
+    function calculateFromGraphClicks(p1, p2, winInfo) {
+        const dataArray = winInfo.slice;
+        const N = dataArray.length;
+        if (N < 4) return null;
+
+        let idx1 = Math.max(0, Math.min(N - 1, p1.absIdx - winInfo.startIdx));
+        let idx2 = Math.max(0, Math.min(N - 1, p2.absIdx - winInfo.startIdx));
+        if (idx1 > idx2) {
+            const tmp = idx1; idx1 = idx2; idx2 = tmp;
+        }
+        if (Math.abs(idx2 - idx1) < 1e-3) return null;
+
+        // Xác định biên độ cực đại A trên vùng hiển thị (hoặc vùng đệm lân cận nếu phóng to quá gần)
+        let minVal = Infinity, maxVal = -Infinity;
+        for (let i = 0; i < N; i++) {
+            const v = dataArray[i];
+            if (v < minVal) minVal = v;
+            if (v > maxVal) maxVal = v;
+        }
+        if (channelConfig.A.data && channelConfig.A.index >= 2048) {
+            const len = channelConfig.A.data.length;
+            const cIdx = channelConfig.A.index;
+            for (let i = 0; i < 2048; i++) {
+                const v = channelConfig.A.data[((cIdx - 2048 + i) % len + len) % len];
+                if (v < minVal) minVal = v;
+                if (v > maxVal) maxVal = v;
+            }
+        }
+        const A = (maxVal - minVal) / 2;
+        const midOffset = (maxVal + minVal) / 2;
+        if (A < 1e-4) return null;
+
+        function getPhaseAtExact(exactIdx) {
+            const i0 = Math.max(0, Math.min(N - 2, Math.floor(exactIdx)));
+            const frac = Math.max(0, Math.min(1, exactIdx - i0));
+            const y0 = dataArray[i0] - midOffset;
+            const y1 = dataArray[i0 + 1] - midOffset;
+            const y = y0 + frac * (y1 - y0);
+
+            const cosVal = Math.max(-1, Math.min(1, y / A));
+            let baseAngle = Math.acos(cosVal); // [0, pi]
+            const slope = y1 - y0;
+            // u = A cos(phi) -> du/dt = -A omega sin(phi)
+            // Nếu đang giảm (slope < 0) => sin(phi) > 0 => phi in (0, pi)
+            // Nếu đang tăng (slope > 0) => sin(phi) < 0 => phi in (pi, 2pi)
+            return (slope > 0) ? (2 * Math.PI - baseAngle) : baseAngle;
+        }
+
+        const phi1 = getPhaseAtExact(idx1);
+        const phi2 = getPhaseAtExact(idx2);
+
+        let partialPhi = phi2 - phi1;
+        let crossedZero = 0;
+        if (partialPhi < 0) {
+            partialPhi += 2 * Math.PI;
+            crossedZero = 1;
+        }
+
+        // Đếm số đỉnh sóng dương thực sự nằm giữa idx1 và idx2
+        let peaksBetween = 0;
+        const startScan = Math.max(1, Math.ceil(idx1));
+        const endScan = Math.min(N - 2, Math.floor(idx2));
+        for (let i = startScan; i <= endScan; i++) {
+            const prev = dataArray[i - 1] - midOffset;
+            const curr = dataArray[i] - midOffset;
+            const next = dataArray[i + 1] - midOffset;
+            if (curr > prev && curr >= next && curr > 0.7 * A) {
+                peaksBetween++;
+            }
+        }
+
+        const k = Math.max(0, peaksBetween - crossedZero);
+        const totalDeltaPhi = partialPhi + k * 2 * Math.PI;
+        if (totalDeltaPhi <= 1e-6) return null;
+
+        const dtSeconds = (idx2 - idx1) / sampleRate;
+        if (dtSeconds <= 0) return null;
+
+        const T_seconds = (2 * Math.PI * dtSeconds) / totalDeltaPhi;
+        const f_Hz = 1.0 / T_seconds;
+        const T_ms = T_seconds * 1000.0;
+        const dt_ms = dtSeconds * 1000.0;
+
+        return {
+            T_ms,
+            f_Hz,
+            dt_ms,
+            deltaPhiRad: totalDeltaPhi,
+            deltaPhiDeg: (totalDeltaPhi * 180.0) / Math.PI,
+            kCycles: k
+        };
+    }
+
+    function drawManualAnalysisOverlay(ctx, width, height) {
+        if (!isManualAnalysisMode || getDisplayMode() !== 'oscilloscope' || getActiveChannelMode() !== '1') return;
+        const winInfo = getVisibleChannelAWindow();
+        if (!winInfo || manualPoints.length === 0) return;
+
+        const N = winInfo.samplesNeeded;
+        const coords = manualPoints.map((pt, index) => {
+            const localIdx = pt.absIdx - winInfo.startIdx;
+            const x = (localIdx / N) * width;
+            const y = height / 2 - (pt.y * currentZoomY * height / 2);
+            return { x, y, label: index === 0 ? 'P₁' : 'P₂', color: index === 0 ? '#f59e0b' : '#10b981' };
+        });
+
+        ctx.save();
+        // Nếu có đủ 2 điểm, tô vùng chênh lệch thời gian Δt giữa P1 và P2
+        if (coords.length === 2) {
+            const xLeft = Math.min(coords[0].x, coords[1].x);
+            const xRight = Math.max(coords[0].x, coords[1].x);
+            ctx.fillStyle = 'rgba(139, 92, 246, 0.12)';
+            ctx.fillRect(xLeft, 0, xRight - xLeft, height);
+
+            // Mũi tên Δt ngang
+            const arrowY = Math.max(36, Math.min(height - 36, Math.min(coords[0].y, coords[1].y) - 24));
+            ctx.strokeStyle = '#7c3aed';
+            ctx.lineWidth = 1.8;
+            ctx.beginPath();
+            ctx.moveTo(xLeft, arrowY);
+            ctx.lineTo(xRight, arrowY);
+            ctx.stroke();
+            drawLabelWithPill(ctx, 'Δt', (xLeft + xRight) / 2, arrowY - 16, 'center', 'top', '#6d28d9');
+        }
+
+        coords.forEach(c => {
+            // Đường gióng dọc đứt nét
+            ctx.strokeStyle = c.color;
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([5, 4]);
+            ctx.beginPath();
+            ctx.moveTo(c.x, 0);
+            ctx.lineTo(c.x, height);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Điểm tròn đánh dấu trên đường sóng
+            ctx.fillStyle = c.color;
+            ctx.beginPath();
+            ctx.arc(c.x, c.y, 5.5, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = '#ffffff';
+            ctx.stroke();
+
+            // Nhãn P1 / P2
+            drawLabelWithPill(ctx, c.label, c.x, Math.max(8, c.y - 22), 'center', 'top', c.color === '#f59e0b' ? '#b45309' : '#047857');
+        });
+        ctx.restore();
+    }
+
     canvas.addEventListener('click', (e) => {
+        if (getDisplayMode() === 'oscilloscope') {
+            if (!isManualAnalysisMode || !isPaused || getActiveChannelMode() !== '1') return;
+            const winInfo = getVisibleChannelAWindow();
+            if (!winInfo) return;
+
+            const rect = canvas.getBoundingClientRect();
+            const clickX = Math.max(0, Math.min(canvas.clientWidth, e.clientX - rect.left));
+            const width = canvas.clientWidth;
+
+            const exactLocalIdx = (clickX / width) * (winInfo.samplesNeeded - 1);
+            const i0 = Math.max(0, Math.min(winInfo.samplesNeeded - 2, Math.floor(exactLocalIdx)));
+            const frac = Math.max(0, Math.min(1, exactLocalIdx - i0));
+            const exactY = winInfo.slice[i0] + frac * (winInfo.slice[i0 + 1] - winInfo.slice[i0]);
+
+            const pickedPoint = {
+                absIdx: winInfo.startIdx + exactLocalIdx,
+                y: exactY
+            };
+
+            if (manualPoints.length >= 2) {
+                manualPoints = [pickedPoint];
+                closeManualHud();
+                infoMessageText.innerHTML = "Đã chọn lại <span class='info-badge'>Điểm 1 (P₁)</span>. Hãy chọn <span class='info-badge'>Điểm 2 (P₂)</span> trên đồ thị.";
+                infoMessageText.style.color = "#7c3aed";
+                drawFrame();
+                return;
+            }
+
+            manualPoints.push(pickedPoint);
+            if (manualPoints.length === 1) {
+                infoMessageText.innerHTML = "Đã chọn <span class='info-badge'>Điểm 1 (P₁)</span>. Hãy chọn tiếp <span class='info-badge'>Điểm 2 (P₂)</span> trên đồ thị.";
+                infoMessageText.style.color = "#7c3aed";
+                drawFrame();
+            } else if (manualPoints.length === 2) {
+                // Đảm bảo P1 luôn đứng trước P2 theo thời gian
+                if (manualPoints[0].absIdx > manualPoints[1].absIdx) {
+                    const tmp = manualPoints[0];
+                    manualPoints[0] = manualPoints[1];
+                    manualPoints[1] = tmp;
+                }
+                const res = calculateFromGraphClicks(manualPoints[0], manualPoints[1], winInfo);
+                drawFrame();
+
+                if (!res) {
+                    infoMessageText.innerHTML = "⚠️ Hai điểm quá gần nhau hoặc biên độ sóng quá nhỏ. Hãy chọn 2 điểm cách xa nhau hơn!";
+                    infoMessageText.style.color = "#dc2626";
+                    return;
+                }
+
+                const autoFreq = computeFrozenAutoFrequency();
+                const autoT_ms = autoFreq > 0 ? (1000.0 / autoFreq) : 0;
+                const relErrorPct = (autoFreq > 0) ? (Math.abs(res.f_Hz - autoFreq) / autoFreq) * 100.0 : null;
+
+                let summaryHtml = `Đo 2 điểm: <span class="info-badge">Δt = ${res.dt_ms.toFixed(2)} ms</span> | ` +
+                    `<span class="info-badge">T = ${res.T_ms.toFixed(2)} ms</span> | ` +
+                    `<span class="info-badge">f = ${res.f_Hz.toFixed(1)} Hz</span> | ` +
+                    `<span class="info-badge">Δφ = ${res.deltaPhiDeg.toFixed(1)}°</span>`;
+                if (autoFreq > 0) {
+                    summaryHtml += ` &nbsp;⇔&nbsp; Tự động: <span class="channel-tag-a">f<sub>auto</sub> = ${autoFreq.toFixed(1)} Hz</span> (Sai lệch: <b>${relErrorPct.toFixed(2)}%</b>)`;
+                }
+                infoMessageText.innerHTML = summaryHtml;
+                infoMessageText.style.color = "#0f172a";
+
+                const hud = document.getElementById('manualAnalysisHud');
+                const hudBody = document.getElementById('manualAnalysisHudBody');
+                if (hud && hudBody) {
+                    hudBody.innerHTML = `
+                        <div class="ma-grid">
+                            <div>• Khoảng thời gian Δt: <span class="ma-val-manual">${res.dt_ms.toFixed(2)} ms</span></div>
+                            <div>• Độ lệch pha Δφ: <span class="ma-val-manual">${res.deltaPhiRad.toFixed(2)} rad (${res.deltaPhiDeg.toFixed(1)}°)</span></div>
+                            <div>• Chu kỳ đo 2 điểm (T): <span class="ma-val-manual">${res.T_ms.toFixed(2)} ms</span></div>
+                            <div>• Tần số đo 2 điểm (f): <span class="ma-val-manual">${res.f_Hz.toFixed(2)} Hz</span></div>
+                            <div>• Chu kỳ tự động (T<sub>auto</sub>): <span class="ma-val-auto">${autoFreq > 0 ? autoT_ms.toFixed(2) + ' ms' : '--'}</span></div>
+                            <div>• Tần số tự động (f<sub>auto</sub>): <span class="ma-val-auto">${autoFreq > 0 ? autoFreq.toFixed(2) + ' Hz' : '--'}</span></div>
+                        </div>
+                        <div style="margin-top:6px; padding-top:5px; border-top:1px dashed rgba(255,255,255,0.18); font-size:11.5px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+                            <span>Công thức: <i>T = 2π·Δt / Δφ</i> &nbsp;|&nbsp; <i>f = 1 / T</i></span>
+                            <span>Sai số tương đối δ: <span class="ma-val-err">${relErrorPct !== null ? relErrorPct.toFixed(2) + '%' : 'Chưa xác định'}</span></span>
+                        </div>
+                    `;
+                    hud.style.display = 'block';
+                }
+            }
+            return;
+        }
+
         if (getDisplayMode() !== 'dbMeter') return;
         const rect = canvas.getBoundingClientRect();
         const clickX = e.clientX - rect.left;
@@ -1607,40 +2031,6 @@
         ctx.stroke();
 
         if (showTime) {
-            let timePerGrid = totalTimeOnScreen / 10;
-            for (let i = 1; i < 10; i++) { if (i !== 5) drawLabelWithPill(ctx, parseFloat(((i - 5) * timePerGrid * 1000).toFixed(2)).toString().replace('.', ','), boxX + i * stepGridX, centerY + 8, 'center', 'top'); }
-            drawLabelWithPill(ctx, "t (ms)", boxX + boxW - 8, centerY - 24, 'right', 'top');
-        }
-
-        const maxY = 1.0 / currentZoomY, valPerStep = (maxY * 2) / 8; let drawYLabels = (boxH > 120);
-        for (let i = 1; i < 8; i++) { if (i !== 4) { if (!drawYLabels && i % 2 !== 0) continue; drawLabelWithPill(ctx, parseFloat((maxY - i * valPerStep).toFixed(2)).toString().replace('.', ','), centerX + 8, boxY + i * stepGridY, 'left', 'middle'); } }
-        drawLabelWithPill(ctx, "0", centerX + 8, centerY + 8, 'left', 'top');
-
-        if (titleText) { let textPosX = (titleText === 'Biên độ') ? (centerX + 6) : (boxX + 8); drawLabelWithPill(ctx, titleText, textPosX, boxY + 8, 'left', 'top', titleColor); }
-    }
-
-    // =========================================================================
-    // CODE BỔ SUNG: Sửa lỗi chia tỉ lệ các ô trục thời gian không đồng đều khi zoom
-    // (Chỉ thêm phần override hàm drawMainGrid này, không sửa bất kỳ code gốc nào)
-    // =========================================================================
-    drawMainGrid = function (ctx, boxX, boxY, boxW, boxH, titleColor, titleText, showTime) {
-        ctx.strokeStyle = '#bae6fd'; ctx.lineWidth = 1; const stepGridX = boxW / 10, stepGridY = boxH / 8;
-        ctx.beginPath();
-        for (let i = 0; i <= 10; i++) { ctx.moveTo(boxX + i * stepGridX, boxY); ctx.lineTo(boxX + i * stepGridX, boxY + boxH); }
-        for (let i = 0; i <= 8; i++) { ctx.moveTo(boxX, boxY + i * stepGridY); ctx.lineTo(boxX + boxW, boxY + i * stepGridY); }
-        ctx.stroke();
-
-        ctx.lineWidth = 2; ctx.strokeStyle = '#334155'; ctx.beginPath();
-        let centerY = boxY + boxH / 2, centerX = boxX + boxW / 2;
-        ctx.moveTo(boxX, centerY); ctx.lineTo(boxX + boxW, centerY);
-        ctx.moveTo(centerX, boxY); ctx.lineTo(centerX, boxY + boxH);
-
-        const tickSize = 4;
-        for (let i = 0; i <= 10; i++) { ctx.moveTo(boxX + i * stepGridX, centerY - tickSize); ctx.lineTo(boxX + i * stepGridX, centerY + tickSize); }
-        for (let i = 0; i <= 8; i++) { ctx.moveTo(centerX - tickSize, boxY + i * stepGridY); ctx.lineTo(centerX + tickSize, boxY + i * stepGridY); }
-        ctx.stroke();
-
-        if (showTime) {
             let rawStepMs = (totalTimeOnScreen / 10) * 1000;
             // Xác định số chữ số thập phân phù hợp theo độ thu phóng (zoom) để không mất độ chính xác
             let decimals = 2;
@@ -1690,7 +2080,7 @@
         drawLabelWithPill(ctx, "0", centerX + 8, centerY + 8, 'left', 'top');
 
         if (titleText) { let textPosX = (titleText === 'Biên độ') ? (centerX + 6) : (boxX + 8); drawLabelWithPill(ctx, titleText, textPosX, boxY + 8, 'left', 'top', titleColor); }
-    };
+    }
 
     async function populateMics() {
         try {
@@ -1715,6 +2105,7 @@
         if (channelConfig.A.active || channelConfig.B.active) { pauseButton.disabled = false; resetButton.disabled = false; if (isPaused) { infoMessageText.innerHTML = "Đã kết nối. Bấm <span class='info-badge'>Đo / Dừng</span> để khảo sát."; infoMessageText.style.color = "#0284c7"; } }
         else { pauseButton.disabled = true; resetButton.disabled = true; infoMessageText.innerHTML = "Nhấn vào <span class='info-badge'>Kênh A</span> hoặc <span class='info-badge'>Kênh B</span> để bật mic."; infoMessageText.style.color = "#0284c7"; }
         updateAnalysisButtonState();
+        updateManualAnalysisButtonState();
         const gearBtn = document.querySelector('.license-gear-btn'); if (gearBtn) { gearBtn.style.display = isDemoMode ? 'inline-flex' : 'none'; }
     }
 
@@ -1765,6 +2156,7 @@
                     infoMessageText.innerHTML = "Đã khóa sóng &mdash; Sẵn sàng khảo sát";
                     infoMessageText.style.color = "#dc2626";
                     updateAnalysisButtonState();
+                    updateManualAnalysisButtonState();
                     drawFrame();
                 }
             }, 2000);
@@ -1775,6 +2167,7 @@
         if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
         isContinuousMode = (modeSelect && modeSelect.value === 'continuous');
         if (isPaused) {
+            resetManualAnalysisState();
             isPaused = false;
             pauseButton.disabled = false;
             dbStartTime = 0;
@@ -1788,7 +2181,7 @@
             if (channelConfig.A.active && channelConfig.B.active) text += " &amp; ";
             if (channelConfig.B.active) text += "<span class='channel-tag-b'>Kênh B</span>";
             infoMessageText.innerHTML = text; infoMessageText.style.color = "#0284c7";
-            lastDrawTime = performance.now(); updateAnalysisButtonState();
+            lastDrawTime = performance.now(); updateAnalysisButtonState(); updateManualAnalysisButtonState();
             if (!animFrameId) draw();
             if (!isContinuousMode) triggerAutoStop();
             else clearTimeout(stopTimer);
@@ -1797,9 +2190,14 @@
             clearTimeout(stopTimer);
             pauseButton.textContent = "Đo / Dừng";
             pauseButton.className = "btn-green";
-            infoMessageText.innerHTML = isContinuousMode ? "Đã tạm dừng vẽ. Nhấp vào thanh cột để xem chi tiết." : "Đã khóa sóng an toàn.";
+            if (getDisplayMode() === "oscilloscope" && getActiveChannelMode() === "1") {
+                infoMessageText.innerHTML = "Đã khóa sóng. Bấm <span class='info-badge'>Phân tích điểm</span> để chọn 2 điểm đo trên đồ thị.";
+            } else {
+                infoMessageText.innerHTML = isContinuousMode ? "Đã tạm dừng vẽ. Nhấp vào thanh cột để xem chi tiết." : "Đã khóa sóng an toàn.";
+            }
             infoMessageText.style.color = "#dc2626";
             updateAnalysisButtonState();
+            updateManualAnalysisButtonState();
             drawFrame();
         }
     });
@@ -2007,6 +2405,9 @@
         if (channelConfig.A.active && channelConfig.A.data && channelConfig.A.index > samplesNeeded) {
             let offset = isContinuousMode ? 0 : findZeroCrossingOffset(channelConfig.A, channelConfig.A.index, samplesNeeded);
             drawWaveform(canvasCtx, channelConfig.A.data, channelConfig.A.index, offset, samplesNeeded, 0, boxA_Y, width, boxA_H, '#ef4444');
+            if (mode === '1') {
+                drawManualAnalysisOverlay(canvasCtx, width, height);
+            }
         }
 
         if (mode === '2') {
@@ -2036,6 +2437,7 @@
     }
 
     function resetFeaturesAndAdjustments() {
+        resetManualAnalysisState();
         const fftOverlay = document.getElementById('fftModalOverlay');
         if (fftOverlay) { fftOverlay.classList.remove('animUI-visible'); fftOverlay.style.display = 'none'; }
 
@@ -3028,15 +3430,37 @@
         }
     }
 
+    function sanitizeChatHtml(htmlStr) {
+        if (!htmlStr) return '';
+        let sanitized = htmlStr
+            .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+            .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '')
+            .replace(/<object\b[^<]*(?:(?!<\/object>)<[^<]*)*<\/object>/gi, '')
+            .replace(/<embed\b[^<]*>/gi, '')
+            .replace(/<link\b[^<]*>/gi, '')
+            .replace(/<meta\b[^<]*>/gi, '');
+        sanitized = sanitized.replace(/\s*on\w+\s*=\s*(?:'[^']*'|"[^"]*"|[^\s>]+)/gi, '');
+        sanitized = sanitized.replace(/(href|src)\s*=\s*(?:'javascript:[^']*'|"javascript:[^"]*"|javascript:[^\s>]+)/gi, '');
+        return sanitized;
+    }
+
     async function sendFoxMessage() {
         const text = chatInput.value.trim();
         if (!text && !uploadedImageBase64) return;
-        if (isDemoMode) { if (demoChatCount >= MAX_DEMO_CHAT) { alert("⚠️ Bản Demo chỉ cho phép hỏi AI tối đa 3 lần. Vui lòng nhập Key Bản Full để sử dụng tiếp!"); openLicenseModal(); return; } demoChatCount++; }
+        if (isDemoMode) {
+            if (demoChatCount >= MAX_DEMO_CHAT) {
+                alert(`⚠️ Bản Demo chỉ cho phép hỏi AI tối đa ${MAX_DEMO_CHAT} lần. Vui lòng nhập Key Bản Full để sử dụng tiếp!`);
+                openLicenseModal();
+                return;
+            }
+            demoChatCount++;
+        }
         
-        let userDisplayHtml = text;
+        let safeUserText = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        let userDisplayHtml = safeUserText;
         let imgBase64ToSend = uploadedImageBase64;
         if (uploadedImageBase64) {
-            userDisplayHtml = `<img src="${uploadedImageBase64}" class="fox-preview-img"><br>` + text;
+            userDisplayHtml = `<img src="${uploadedImageBase64}" class="fox-preview-img"><br>` + safeUserText;
         } else {
             // Tự động chụp snapshot canvas dao động ký để AI có thể quan sát trực tiếp dạng sóng và đồ thị
             imgBase64ToSend = captureOscilloscopeSnapshot();
@@ -3088,7 +3512,8 @@
     async function addChatMessage(sender, text) {
         const row = document.createElement('div'); row.className = `fox-msg-row ${sender === 'user' ? 'fox-msg-user' : 'fox-msg-bot'}`;
         let html = ''; if (sender === 'bot') html += `<div class="fox-msg-avatar">${FOX_AVATAR_SVG}</div>`;
-        const formattedText = sender === 'bot' ? formatMathText(text) : text;
+        const safeText = sanitizeChatHtml(text);
+        const formattedText = sender === 'bot' ? formatMathText(safeText) : safeText;
         let copyStr = text.replace(/<[^>]+>/g, '').replace(/'/g, "\'").replace(/"/g, '&quot;').replace(/\n/g, '\\n');
         let copyBtn = sender === 'bot' ? `<button class="fox-copy-btn" onclick="copyFoxText(this, '${copyStr}')">Copy</button><button class="fox-export-btn" onclick="exportChatReport(this)">📥 Tải báo cáo</button>` : '';
         let actionsBar = sender === 'bot' ? `<div class="fox-msg-actions-bar">${copyBtn}</div>` : '';
