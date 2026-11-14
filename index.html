@@ -870,8 +870,8 @@
     }
 
     const FOX_AVATAR_SVG = `<svg viewBox="0 0 100 100" fill="none"><polygon points="22,12 10,48 36,40" fill="#ff7a30"/><polygon points="23,19 16,44 32,38" fill="#1e293b"/><path d="M 19 36 Q 23 32 28 34" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round"/><polygon points="78,12 64,40 90,48" fill="#ff7a30"/><polygon points="77,19 68,38 84,44" fill="#1e293b"/><path d="M 81 36 Q 77 32 72 34" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round"/><polygon points="50,22 36,40 50,46" fill="#ff8f4a"/><polygon points="50,22 50,46 64,40" fill="#ff7a30"/><polygon points="36,40 10,48 20,68 38,58" fill="#d4380d"/><polygon points="64,40 38,58 50,46" fill="#e04006"/><polygon points="64,40 50,46 62,58" fill="#d4380d"/><polygon points="64,40 90,48 80,68 62,58" fill="#d4380d"/><polygon points="20,68 12,74 26,76 34,68" fill="#e2e8f0"/><polygon points="80,68 88,74 74,76 66,68" fill="#cbd5e1"/><polygon points="38,58 50,46 50,78 36,68" fill="#ff7a30"/><polygon points="62,58 50,46 50,78 64,68" fill="#e04006"/><polygon points="50,78 36,68 44,88 50,88" fill="#f8fafc"/><polygon points="50,78 64,68 56,88 50,88" fill="#e2e8f0"/><polygon points="50,88 45,82 55,82" fill="#0f172a"/><polygon points="25,48 50,54 75,48 71,59 50,65 29,59" fill="#090d16" stroke="rgba(56,189,248,0.5)" stroke-width="0.9"/><circle cx="34.5" cy="48" r="1.5" fill="#ffffff"/><circle cx="44.5" cy="60" r="1.5" fill="#ffffff"/><circle cx="54.5" cy="48" r="1.5" fill="#ffffff"/><circle cx="64.5" cy="60" r="1.5" fill="#ffffff"/></svg>`;
-    const LICENSE_GAS_URL = "https://script.google.com/macros/s/AKfycbwC9gwiwBdIsfvv2nGZQNrkeR1O43GTW9lhMCu6fEn-LGjjbmMEcy-3153DZRkOaLdx3Q/exec";
-    const CHAT_GAS_URL = "https://script.google.com/macros/s/AKfycbwllsi_eXt98JRwTDyHPtD8qtgx6nnyhnDD8sSk5mIgEeB0EGLHkIwydpATOWohKJLuEg/exec";
+    const LICENSE_GAS_ID = "AKfycbwC9gwiwBdIsfvv2nGZQNrkeR1O43GTW9lhMCu6fEn-LGjjbmMEcy-3153DZRkOaLdx3Q";
+    const CHAT_GAS_ID = "AKfycbwllsi_eXt98JRwTDyHPtD8qtgx6nnyhnDD8sSk5mIgEeB0EGLHkIwydpATOWohKJLuEg";
 
     const btnStartA = document.getElementById('btnStartA'), btnStartB = document.getElementById('btnStartB');
     const pauseButton = document.getElementById('pauseButton'), resetButton = document.getElementById('resetButton'), btnCalib = document.getElementById('btnCalib');
@@ -957,6 +957,13 @@
             document.getElementById('keyInputContainer').style.display = 'block';
         }
     }
+
+    // =========================================================================
+    // INTERNAL SECURITY: Khởi tạo Endpoint ngầm từ ID (Ẩn cơ chế giải mã URL)
+    // =========================================================================
+    const _getGasEndpoint = (id) => (typeof atob === 'function' ? atob("aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy8=") : "https://script.google.com/macros/s/") + id + "/exec";
+    const LICENSE_GAS_URL = _getGasEndpoint(LICENSE_GAS_ID);
+    const CHAT_GAS_URL = _getGasEndpoint(CHAT_GAS_ID);
 
     function openLicenseModal() {
         document.getElementById('licenseModalOverlay').style.display = 'flex';
@@ -1525,7 +1532,7 @@
         if (maxpos <= 0 || maxval < c[0] * 0.3) return -1;
         let truePos = maxpos;
         if (maxpos > 0 && maxpos < halfSize - 1) { let x1 = c[maxpos - 1], x2 = c[maxpos], x3 = c[maxpos + 1], a = (x1 + x3 - 2 * x2) / 2, b = (x3 - x1) / 2; if (a < 0) truePos = maxpos - b / (2 * a); }
-        let freq = sampleRate / truePos; if (freq < 100 || freq > 1500) return -1; return freq;
+        let freq = sampleRate / truePos; if (freq < 45 || freq > 2800) return -1; return freq;
     }
 
     function calculatePhaseDifference(dataA, dataB, freq, sampleRate) {
@@ -1612,6 +1619,79 @@
         if (titleText) { let textPosX = (titleText === 'Biên độ') ? (centerX + 6) : (boxX + 8); drawLabelWithPill(ctx, titleText, textPosX, boxY + 8, 'left', 'top', titleColor); }
     }
 
+    // =========================================================================
+    // CODE BỔ SUNG: Sửa lỗi chia tỉ lệ các ô trục thời gian không đồng đều khi zoom
+    // (Chỉ thêm phần override hàm drawMainGrid này, không sửa bất kỳ code gốc nào)
+    // =========================================================================
+    drawMainGrid = function (ctx, boxX, boxY, boxW, boxH, titleColor, titleText, showTime) {
+        ctx.strokeStyle = '#bae6fd'; ctx.lineWidth = 1; const stepGridX = boxW / 10, stepGridY = boxH / 8;
+        ctx.beginPath();
+        for (let i = 0; i <= 10; i++) { ctx.moveTo(boxX + i * stepGridX, boxY); ctx.lineTo(boxX + i * stepGridX, boxY + boxH); }
+        for (let i = 0; i <= 8; i++) { ctx.moveTo(boxX, boxY + i * stepGridY); ctx.lineTo(boxX + boxW, boxY + i * stepGridY); }
+        ctx.stroke();
+
+        ctx.lineWidth = 2; ctx.strokeStyle = '#334155'; ctx.beginPath();
+        let centerY = boxY + boxH / 2, centerX = boxX + boxW / 2;
+        ctx.moveTo(boxX, centerY); ctx.lineTo(boxX + boxW, centerY);
+        ctx.moveTo(centerX, boxY); ctx.lineTo(centerX, boxY + boxH);
+
+        const tickSize = 4;
+        for (let i = 0; i <= 10; i++) { ctx.moveTo(boxX + i * stepGridX, centerY - tickSize); ctx.lineTo(boxX + i * stepGridX, centerY + tickSize); }
+        for (let i = 0; i <= 8; i++) { ctx.moveTo(centerX - tickSize, boxY + i * stepGridY); ctx.lineTo(centerX + tickSize, boxY + i * stepGridY); }
+        ctx.stroke();
+
+        if (showTime) {
+            let rawStepMs = (totalTimeOnScreen / 10) * 1000;
+            // Xác định số chữ số thập phân phù hợp theo độ thu phóng (zoom) để không mất độ chính xác
+            let decimals = 2;
+            if (rawStepMs < 1 && rawStepMs > 0) {
+                decimals = Math.min(4, Math.max(2, Math.ceil(-Math.log10(rawStepMs)) + 1));
+            }
+            // Định lượng giá trị 1 ô chuẩn
+            let stepMs = parseFloat(rawStepMs.toFixed(decimals));
+            if (stepMs === 0) stepMs = rawStepMs;
+            
+            // Lấy đúng số chữ số thập phân thực tế của stepMs để đồng bộ hiển thị cho mọi ô
+            const sStep = stepMs.toString();
+            const dotIdx = sStep.indexOf('.');
+            const prec = dotIdx === -1 ? 0 : sStep.length - dotIdx - 1;
+
+            // Hiển thị nhãn cho các ô đối xứng qua tâm: Giá trị = k * stepMs
+            // Đảm bảo khoảng cách giữa 2 ô liền kề LUÔN LUÔN bằng đúng stepMs (không sai lệch dù chỉ 0.01)
+            for (let i = 1; i < 10; i++) {
+                if (i !== 5) {
+                    let k = i - 5;
+                    let val = (k * stepMs).toFixed(prec).replace('.', ',');
+                    drawLabelWithPill(ctx, val, boxX + i * stepGridX, centerY + 8, 'center', 'top');
+                }
+            }
+            drawLabelWithPill(ctx, "t (ms)", boxX + boxW - 8, centerY - 24, 'right', 'top');
+        }
+
+        const maxY = 1.0 / currentZoomY, valPerStep = (maxY * 2) / 8; let drawYLabels = (boxH > 120);
+        let decY = 2;
+        if (valPerStep < 1 && valPerStep > 0) {
+            decY = Math.min(4, Math.max(2, Math.ceil(-Math.log10(valPerStep)) + 1));
+        }
+        let stepY = parseFloat(valPerStep.toFixed(decY));
+        if (stepY === 0) stepY = valPerStep;
+        const sStepY = stepY.toString();
+        const dotIdxY = sStepY.indexOf('.');
+        const precY = dotIdxY === -1 ? 0 : sStepY.length - dotIdxY - 1;
+
+        for (let i = 1; i < 8; i++) {
+            if (i !== 4) {
+                if (!drawYLabels && i % 2 !== 0) continue;
+                let kY = 4 - i;
+                let valY = (kY * stepY).toFixed(precY).replace('.', ',');
+                drawLabelWithPill(ctx, valY, centerX + 8, boxY + i * stepGridY, 'left', 'middle');
+            }
+        }
+        drawLabelWithPill(ctx, "0", centerX + 8, centerY + 8, 'left', 'top');
+
+        if (titleText) { let textPosX = (titleText === 'Biên độ') ? (centerX + 6) : (boxX + 8); drawLabelWithPill(ctx, titleText, textPosX, boxY + 8, 'left', 'top', titleColor); }
+    };
+
     async function populateMics() {
         try {
             const devices = await navigator.mediaDevices.enumerateDevices(), audioInputs = devices.filter(device => device.kind === 'audioinput');
@@ -1658,7 +1738,7 @@
             cfg.source = audioCtx.createMediaStreamSource(cfg.stream);
             let finalSourceNode = cfg.source;
             if (mode === '2' && isSharedDevice) { const splitter = audioCtx.createChannelSplitter(2); cfg.source.connect(splitter); const channelSelector = audioCtx.createGain(); splitter.connect(channelSelector, (channelId === 'A') ? 0 : 1); finalSourceNode = channelSelector; }
-            cfg.filterHP = audioCtx.createBiquadFilter(); cfg.filterHP.frequency.value = 80; cfg.filterHP.type = 'highpass';
+            cfg.filterHP = audioCtx.createBiquadFilter(); cfg.filterHP.frequency.value = 45; cfg.filterHP.type = 'highpass';
             cfg.filterLP = audioCtx.createBiquadFilter(); cfg.filterLP.frequency.value = 3000; cfg.filterLP.type = 'lowpass';
             cfg.workletNode = new AudioWorkletNode(audioCtx, 'fox-audio-processor');
             cfg.workletNode.port.onmessage = (event) => { if (!isPaused && cfg.active && (!isTwoSourceModalOpen || !isTsPaused)) { let inputChunk = event.data, len = cfg.data.length, currentIdx = cfg.index; for (let i = 0; i < inputChunk.length; i++) { cfg.data[(currentIdx + i) % len] = inputChunk[i]; } cfg.index += inputChunk.length; } };
@@ -2448,13 +2528,18 @@
         if (sumLine) {
             let diff = Math.abs(freqA - freqB);
             if (freqA > 10 && freqB > 10 && diff > 3.0) {
-                sumLine.innerHTML = `Tổng hợp: <span class="math-symbol" style="color:#f87171;">⚠️ Tạo Sóng Phách (f<sub>1</sub> ≠ f<sub>2</sub>)</span>`;
+                let f_beat = diff.toFixed(1);
+                let f_carrier = ((freqA + freqB) / 2).toFixed(1);
+                sumLine.innerHTML = `Tổng hợp (Sóng Phách): <span class="math-symbol" style="color:#a78bfa;">u = 2A·cos(2π·${(diff/2).toFixed(1)}·t)·cos(2π·${f_carrier}·t) &rarr; f<sub>phách</sub> = ${f_beat} Hz</span>`;
             } else {
-                let A_val = ((parseFloat(ampA) + parseFloat(ampB)) / 2).toFixed(2);
-                let phase_half = (phaseRad / 2).toFixed(2);
-                let phase_half_sign = phaseRad >= 0 ? `+ ${phase_half}` : `- ${Math.abs(phase_half).toFixed(2)}`;
-                let sum_amp = Math.abs(2 * A_val * Math.cos(phaseRad / 2)).toFixed(2);
-                sumLine.innerHTML = `Tổng hợp: <span class="math-symbol">u = 2(${A_val})·cos(${phase_half})·cos(2πft ${phase_half_sign}) = ${sum_amp}·cos(2πft ${phase_half_sign})</span>`;
+                let a1 = parseFloat(ampA) || 0;
+                let a2 = parseFloat(ampB) || 0;
+                let sum_amp_sq = a1 * a1 + a2 * a2 + 2 * a1 * a2 * Math.cos(phaseRad);
+                let sum_amp = Math.sqrt(Math.max(0, sum_amp_sq)).toFixed(2);
+                let phi_sum = Math.atan2(a2 * Math.sin(phaseRad), a1 + a2 * Math.cos(phaseRad));
+                let phi_sum_str = phi_sum >= 0 ? `+ ${phi_sum.toFixed(2)}` : `- ${Math.abs(phi_sum).toFixed(2)}`;
+                let f_val = freqA > 0 ? freqA.toFixed(1) : (freqB > 0 ? freqB.toFixed(1) : "0.0");
+                sumLine.innerHTML = `Tổng hợp: <span class="math-symbol">u = ${sum_amp}·cos(2π·${f_val}·t ${phi_sum_str}) &nbsp;(A<sub>tổng</sub> = &radic;(A₁² + A₂² + 2A₁A₂cos&Delta;&phi;))</span>`;
             }
         }
     }
@@ -2604,23 +2689,28 @@
             else if (tsViewMode === 'sum') {
                 let diff = Math.abs(currentCalcFreqA - currentCalcFreqB);
                 let isSameFreq = (diff <= 3.0);
+                const warnEl = document.getElementById('tsWarningText');
 
                 if (currentCalcFreqA > 10 && currentCalcFreqB > 10 && !isSameFreq) {
-                    document.getElementById('tsWarningText').style.display = 'block';
-                    document.getElementById('tsWarningText').innerText = `⚠️ Cảnh báo: Hai nguồn khác tần số (${currentCalcFreqA.toFixed(1)}Hz và ${currentCalcFreqB.toFixed(1)}Hz). Không thể tổng hợp!`;
-                } else {
-                    document.getElementById('tsWarningText').style.display = 'none';
-                    ctx.strokeStyle = '#8b5cf6'; ctx.beginPath();
-                    for (let i = 0; i < samplesDraw; i += step) {
-                        let idxA = ((refIdxA - offsetA - samplesDraw + i) % len + len) % len;
-                        let idxB = ((refIdxB - offsetA - samplesDraw + i) % len + len) % len;
-                        let val = refDataA[idxA] + refDataB[idxB];
-
-                        let x = (i / samplesDraw) * cw, y = ch / 2 - (val * currentZoomY * ch / 2);
-                        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                    if (warnEl) {
+                        warnEl.style.display = 'block';
+                        warnEl.style.background = 'linear-gradient(135deg, #7c3aed, #6d28d9)';
+                        warnEl.innerText = `🌊 Hiện tượng Sóng Phách: f_phách = ${diff.toFixed(1)} Hz (f₁ = ${currentCalcFreqA.toFixed(1)} Hz, f₂ = ${currentCalcFreqB.toFixed(1)} Hz)`;
                     }
-                    ctx.stroke();
+                } else {
+                    if (warnEl) warnEl.style.display = 'none';
                 }
+
+                ctx.strokeStyle = '#8b5cf6'; ctx.beginPath();
+                for (let i = 0; i < samplesDraw; i += step) {
+                    let idxA = ((refIdxA - offsetA - samplesDraw + i) % len + len) % len;
+                    let idxB = ((refIdxB - offsetA - samplesDraw + i) % len + len) % len;
+                    let val = refDataA[idxA] + refDataB[idxB];
+
+                    let x = (i / samplesDraw) * cw, y = ch / 2 - (val * currentZoomY * ch / 2);
+                    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                }
+                ctx.stroke();
             }
         }
         if (isTwoSourceModalOpen && !isTsPaused) requestAnimationFrame(calculatePhaseAndDrawLive);
@@ -2838,6 +2928,106 @@
         }
     }
 
+    let foxChatHistory = [];
+
+    function getLabTelemetry() {
+        let fA = (lockedFrequency || detectedFrequency || 0);
+        let fB = (typeof currentCalcFreqB !== 'undefined' ? currentCalcFreqB : 0);
+        let mode = (typeof getActiveChannelMode === 'function') ? getActiveChannelMode() : '1';
+
+        let ampA = (typeof currentAmpA !== 'undefined' && parseFloat(currentAmpA) > 0) ? currentAmpA : '0.00';
+        let ampB = (typeof currentAmpB !== 'undefined' && parseFloat(currentAmpB) > 0) ? currentAmpB : '0.00';
+
+        if (ampA === '0.00' && channelConfig && channelConfig.A && channelConfig.A.data && channelConfig.A.index > 512) {
+            let d = channelConfig.A.data, idx = channelConfig.A.index, l = d.length, maxV = 0;
+            for (let i = 0; i < 512; i++) {
+                let v = Math.abs(d[((idx - 512 + i) % l + l) % l]);
+                if (v > maxV) maxV = v;
+            }
+            if (maxV > 0) ampA = maxV.toFixed(2);
+        }
+
+        let phaseDeg = '0', phaseRad = '0.00';
+        const pDegEl = document.getElementById('hudPhaseDeg');
+        const pRadEl = document.getElementById('hudPhaseRad');
+        if (pDegEl && pDegEl.innerText) phaseDeg = pDegEl.innerText;
+        if (pRadEl && pRadEl.innerText) phaseRad = pRadEl.innerText;
+
+        let timeBase = (typeof totalTimeOnScreen !== 'undefined') ? (totalTimeOnScreen / 10 * 1000).toFixed(2) + ' ms/ô' : '1.42 ms/ô';
+
+        let fftPeak = null;
+        const fftTargetEl = document.getElementById('fftTargetFreq');
+        if (fftTargetEl && fftTargetEl.value) {
+            fftPeak = fftTargetEl.value + ' Hz';
+        }
+
+        return {
+            mode: mode === '2' ? '2 Kênh (Dual-channel)' : '1 Kênh (Single-channel)',
+            isPaused: isPaused ? 'Đang Dừng (Freeze/Hold)' : 'Đang Đo thời gian thực (Live)',
+            timeBaseMs: timeBase,
+            channelA: {
+                active: !!(channelConfig && channelConfig.A && channelConfig.A.active),
+                frequency: fA > 0 ? fA.toFixed(1) + ' Hz' : '0.0 Hz',
+                period: fA > 0 ? (1000 / fA).toFixed(2) + ' ms' : '0.00 ms',
+                amplitudePeak: ampA
+            },
+            channelB: {
+                active: !!(channelConfig && channelConfig.B && channelConfig.B.active),
+                frequency: fB > 0 ? fB.toFixed(1) + ' Hz' : '0.0 Hz',
+                period: fB > 0 ? (1000 / fB).toFixed(2) + ' ms' : '0.00 ms',
+                amplitudePeak: ampB
+            },
+            phaseDifference: {
+                degrees: phaseDeg + '°',
+                radians: phaseRad + ' rad'
+            },
+            fftPeak: fftPeak
+        };
+    }
+
+    function captureOscilloscopeSnapshot() {
+        try {
+            const activeCanvas = (typeof isTwoSourceModalOpen !== 'undefined' && isTwoSourceModalOpen)
+                ? document.getElementById('twoSourceCanvas') 
+                : canvas;
+            if (!activeCanvas || activeCanvas.width <= 0) return null;
+            const thumbCanvas = document.createElement('canvas');
+            thumbCanvas.width = 600;
+            thumbCanvas.height = Math.round(600 * (activeCanvas.height / activeCanvas.width));
+            const tCtx = thumbCanvas.getContext('2d');
+            tCtx.drawImage(activeCanvas, 0, 0, thumbCanvas.width, thumbCanvas.height);
+            return thumbCanvas.toDataURL('image/jpeg', 0.65);
+        } catch (e) {
+            return null;
+        }
+    }
+
+    async function fetchGasChatWithRetry(payload, maxRetries = 1, timeoutMs = 20000) {
+        for (let attempt = 0; attempt <= maxRetries; attempt++) {
+            const controller = new AbortController();
+            const timerId = setTimeout(() => controller.abort(), timeoutMs);
+            try {
+                const response = await fetch(CHAT_GAS_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify(payload),
+                    signal: controller.signal
+                });
+                clearTimeout(timerId);
+                if (response.ok) return await response.json();
+            } catch (err) {
+                clearTimeout(timerId);
+                if (attempt < maxRetries) {
+                    const statusText = document.getElementById('foxStatusText');
+                    if (statusText) statusText.innerText = "Đang kết nối lại...";
+                    await new Promise(r => setTimeout(r, 600));
+                    continue;
+                }
+                throw err;
+            }
+        }
+    }
+
     async function sendFoxMessage() {
         const text = chatInput.value.trim();
         if (!text && !uploadedImageBase64) return;
@@ -2847,6 +3037,9 @@
         let imgBase64ToSend = uploadedImageBase64;
         if (uploadedImageBase64) {
             userDisplayHtml = `<img src="${uploadedImageBase64}" class="fox-preview-img"><br>` + text;
+        } else {
+            // Tự động chụp snapshot canvas dao động ký để AI có thể quan sát trực tiếp dạng sóng và đồ thị
+            imgBase64ToSend = captureOscilloscopeSnapshot();
         }
 
         addChatMessage('user', userDisplayHtml); 
@@ -2857,23 +3050,29 @@
 
         let thinkingId = addTypingIndicator(); 
         let currentFreq = lockedFrequency || detectedFrequency;
+        let labTelemetry = getLabTelemetry();
+
+        // Cập nhật lịch sử hội thoại cho user
+        foxChatHistory.push({ role: 'user', content: text || "Phân tích đồ thị dao động ký và thông số thí nghiệm này." });
 
         try {
-            const response = await fetch(CHAT_GAS_URL, { 
-                method: 'POST', 
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' }, 
-                body: JSON.stringify({ 
-                    message: text || "Phân tích hình ảnh đề bài vật lý sóng cơ này.", 
-                    frequency: currentFreq, 
-                    role: currentFoxRole,
-                    imageBase64: imgBase64ToSend 
-                }) 
+            const result = await fetchGasChatWithRetry({
+                message: text || "Phân tích hình ảnh đề bài hoặc đồ thị dao động ký này.",
+                frequency: currentFreq,
+                role: currentFoxRole,
+                imageBase64: imgBase64ToSend,
+                history: foxChatHistory.slice(0, -1).slice(-8), // Truyền 8 lượt hội thoại trước đó
+                labData: labTelemetry
             });
-            const result = await response.json();
             removeTypingIndicator(thinkingId); 
             document.getElementById('foxStatusText').innerText = "Trực tuyến";
-            let replyText = result.reply || "Fox-lab AI đã ghi nhận câu hỏi của thầy.";
+            let replyText = (result && result.reply) ? result.reply : "Fox-lab AI đã ghi nhận câu hỏi của thầy.";
             replyText = formatCompleteSentences(replyText);
+
+            // Cập nhật phản hồi bot vào lịch sử hội thoại
+            foxChatHistory.push({ role: 'model', content: replyText });
+            if (foxChatHistory.length > 10) foxChatHistory = foxChatHistory.slice(-10);
+
             addChatMessage('bot', replyText);
         } catch (e) {
             removeTypingIndicator(thinkingId); 
