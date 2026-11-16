@@ -2124,6 +2124,64 @@
         return (detectedFrequency > 0) ? detectedFrequency : (lockedFrequency > 0 ? lockedFrequency : 0);
     }
 
+    function snapToWaveFeature(winInfo, clickX, clickY, width, height) {
+        const data = winInfo.slice;
+        const N = winInfo.samplesNeeded;
+        const rawExactIdx = Math.max(0, Math.min(N - 1, (clickX / width) * N));
+
+        // Bán kính bắt dính thông minh khoảng 14px trên màn hình để dễ chọn chuẩn đỉnh/đáy/nút sóng
+        const snapRadiusSamples = Math.max(2, Math.round((14 / Math.max(1, width)) * N));
+        const searchStart = Math.max(1, Math.floor(rawExactIdx) - snapRadiusSamples);
+        const searchEnd = Math.min(N - 2, Math.ceil(rawExactIdx) + snapRadiusSamples);
+
+        let bestIdx = rawExactIdx;
+        let bestScore = Infinity;
+
+        for (let i = searchStart; i <= searchEnd; i++) {
+            const prev = data[i - 1];
+            const curr = data[i];
+            const next = data[i + 1];
+
+            // 1. Kiểm tra cực đại / cực tiểu cục bộ (đỉnh sóng / đáy sóng)
+            const isPeak = (curr >= prev && curr >= next && (curr > prev || curr > next));
+            const isTrough = (curr <= prev && curr <= next && (curr < prev || curr < next));
+            if (isPeak || isTrough) {
+                let exactExtIdx = i;
+                const denom = (prev - 2 * curr + next);
+                if (Math.abs(denom) > 1e-9) {
+                    const delta = 0.5 * (prev - next) / denom;
+                    if (Math.abs(delta) <= 1.0) exactExtIdx = i + delta;
+                }
+                const pxDist = Math.abs((exactExtIdx - rawExactIdx) / N) * width;
+                if (pxDist <= 14 && pxDist * 0.65 < bestScore) {
+                    bestScore = pxDist * 0.65;
+                    bestIdx = exactExtIdx;
+                }
+            }
+
+            // 2. Kiểm tra điểm qua vị trí cân bằng u = 0 (nút sóng)
+            if ((curr <= 0 && next > 0) || (curr >= 0 && next < 0)) {
+                const fracZero = Math.abs(curr) / (Math.abs(curr) + Math.abs(next));
+                const exactZeroIdx = i + fracZero;
+                const pxDist = Math.abs((exactZeroIdx - rawExactIdx) / N) * width;
+                if (pxDist <= 12 && pxDist * 0.75 < bestScore) {
+                    bestScore = pxDist * 0.75;
+                    bestIdx = exactZeroIdx;
+                }
+            }
+        }
+
+        const clampedIdx = Math.max(0, Math.min(N - 1, bestIdx));
+        const i0 = Math.max(0, Math.min(N - 2, Math.floor(clampedIdx)));
+        const frac = Math.max(0, Math.min(1, clampedIdx - i0));
+        const exactY = data[i0] + frac * (data[i0 + 1] - data[i0]);
+
+        return {
+            absIdx: winInfo.startIdx + clampedIdx,
+            y: exactY
+        };
+    }
+
     function calculateFromGraphClicks(p1, p2, winInfo) {
         const dataArray = winInfo.slice;
         const N = dataArray.length;
@@ -2134,83 +2192,118 @@
         if (idx1 > idx2) {
             const tmp = idx1; idx1 = idx2; idx2 = tmp;
         }
-        if (Math.abs(idx2 - idx1) < 1e-3) return null;
-
-        // Tín hiệu đã qua bộ lọc thông cao (highpass 45Hz) nên vị trí cân bằng chuẩn là u = 0
-        const midOffset = 0;
-        let peakAbs = 0;
-        // Ưu tiên đo biên độ cực đại từ các chu kỳ lân cận 2 điểm chọn để tránh sai số do suy giảm biên độ
-        const scanStart = Math.max(0, Math.floor(idx1) - Math.floor(sampleRate / 100));
-        const scanEnd = Math.min(N - 1, Math.ceil(idx2) + Math.floor(sampleRate / 100));
-        for (let i = scanStart; i <= scanEnd; i++) {
-            const absV = Math.abs(dataArray[i]);
-            if (absV > peakAbs) peakAbs = absV;
-        }
-        if (peakAbs < 1e-4) {
-            for (let i = 0; i < N; i++) {
-                const absV = Math.abs(dataArray[i]);
-                if (absV > peakAbs) peakAbs = absV;
-            }
-        }
-        const A = peakAbs;
-        if (A < 1e-4) return null;
-
-        function getPhaseAtExact(exactIdx) {
-            const i0 = Math.max(0, Math.min(N - 2, Math.floor(exactIdx)));
-            const frac = Math.max(0, Math.min(1, exactIdx - i0));
-            const y0 = dataArray[i0] - midOffset;
-            const y1 = dataArray[i0 + 1] - midOffset;
-            const y = y0 + frac * (y1 - y0);
-
-            // Tính đạo hàm trung tâm để xác định chính xác chiều biến thiên (tăng hay giảm) kể cả gần đỉnh/đáy
-            const prevIdx = Math.max(0, i0 - 1);
-            const nextIdx = Math.min(N - 1, i0 + 2);
-            const slope = (dataArray[nextIdx] - dataArray[prevIdx]);
-
-            const cosVal = Math.max(-1, Math.min(1, y / A));
-            let baseAngle = Math.acos(cosVal); // [0, pi]
-            // u = A cos(phi) -> du/dt = -A omega sin(phi)
-            // Nếu đang giảm (slope < 0) => sin(phi) > 0 => phi in (0, pi)
-            // Nếu đang tăng (slope > 0) => sin(phi) < 0 => phi in (pi, 2pi)
-            return (slope > 0) ? (2 * Math.PI - baseAngle) : baseAngle;
-        }
-
-        const phi1 = getPhaseAtExact(idx1);
-        const phi2 = getPhaseAtExact(idx2);
-
-        let partialPhi = phi2 - phi1;
-        let crossedZero = 0;
-        if (partialPhi < -1e-4) {
-            partialPhi += 2 * Math.PI;
-            crossedZero = 1;
-        } else if (partialPhi < 0) {
-            partialPhi = 0;
-        }
-
-        // Đếm số đỉnh sóng dương thực sự nằm giữa idx1 và idx2 (mỗi đỉnh dương tương ứng phi = 0 mod 2pi)
-        let peaksBetween = 0;
-        const startScan = Math.max(1, Math.ceil(idx1));
-        const endScan = Math.min(N - 2, Math.floor(idx2));
-        for (let i = startScan; i <= endScan; i++) {
-            const prev = dataArray[i - 1] - midOffset;
-            const curr = dataArray[i] - midOffset;
-            const next = dataArray[i + 1] - midOffset;
-            if (curr > prev && curr >= next && curr > 0.55 * A) {
-                peaksBetween++;
-            }
-        }
-
-        const k = Math.max(0, peaksBetween - crossedZero);
-        const totalDeltaPhi = partialPhi + k * 2 * Math.PI;
-        if (totalDeltaPhi <= 1e-6) return null;
-
         const dtSeconds = (idx2 - idx1) / sampleRate;
-        if (dtSeconds <= 0) return null;
+        if (dtSeconds <= 1e-6) return null;
+
+        // 1. Xác định chu kỳ chuẩn T_ref của sóng tại vùng [idx1, idx2] bằng Autocorrelation cục bộ
+        // Giúp loại bỏ hoàn toàn lỗi nhảy ±1 chu kỳ do sóng tắt dần hoặc biến dạng nhẹ
+        let T_ref = 0;
+        const autoFreq = computeFrozenAutoFrequency();
+        if (autoFreq > 0) T_ref = 1.0 / autoFreq;
+
+        const padSamples = Math.max(128, Math.floor(sampleRate * 0.015));
+        const subStart = Math.max(0, Math.floor(idx1) - padSamples);
+        const subEnd = Math.min(N, Math.ceil(idx2) + padSamples);
+        if (subEnd - subStart >= 256) {
+            const localF = autoCorrelate(dataArray.subarray(subStart, subEnd), sampleRate);
+            if (localF > 0) T_ref = 1.0 / localF;
+        }
+
+        // 2. Tính pha liên tục (Phase Unwrapping) dọc theo từng mẫu từ idx1 đến idx2
+        // Giúp Δφ tăng/giảm trơn tru liên tục khi di chuyển P2, không bao giờ nhảy bước 2π!
+        const halfWin = T_ref > 0 ? Math.max(4, Math.min(Math.floor(N / 4), Math.round(0.65 * T_ref * sampleRate))) : Math.max(8, Math.floor(sampleRate / 200));
+
+        function getLocalEnvelope(centerIdx) {
+            const c = Math.round(centerIdx);
+            const s = Math.max(0, c - halfWin);
+            const e = Math.min(N - 1, c + halfWin);
+            let maxV = 0;
+            for (let k = s; k <= e; k++) {
+                const av = Math.abs(dataArray[k]);
+                if (av > maxV) maxV = av;
+            }
+            return Math.max(maxV, 1e-4);
+        }
+
+        // Đạo hàm chuẩn hóa theo tần số góc ω để biên độ của u(t) và -u'(t)/ω bằng nhau
+        const omegaRef = T_ref > 0 ? (2 * Math.PI / T_ref) : (2 * Math.PI * 440);
+        const dtSample = 1.0 / sampleRate;
+
+        function getWrappedPhaseAt(sampleFloatIdx) {
+            const clamped = Math.max(0, Math.min(N - 1, sampleFloatIdx));
+            const i0 = Math.max(0, Math.min(N - 2, Math.floor(clamped)));
+            const frac = clamped - i0;
+
+            const env = getLocalEnvelope(clamped);
+            const u = (dataArray[i0] + frac * (dataArray[i0 + 1] - dataArray[i0])) / env;
+
+            // Đạo hàm trung tâm mượt tại i0 và i0+1
+            const p0 = Math.max(0, i0 - 1), n0 = Math.min(N - 1, i0 + 1);
+            const d0 = (dataArray[n0] - dataArray[p0]) / ((n0 - p0) * dtSample);
+            const p1i = Math.max(0, i0), n1i = Math.min(N - 1, i0 + 2);
+            const d1 = (dataArray[n1i] - dataArray[p1i]) / ((n1i - p1i) * dtSample);
+
+            const dudt = d0 + frac * (d1 - d0);
+            const vNorm = -dudt / (omegaRef * env);
+
+            // Pha tức thời φ ∈ (-π, π] với u = cos(φ), vNorm = -u'/ω = sin(φ)
+            return Math.atan2(vNorm, u);
+        }
+
+        const iStart = Math.ceil(idx1);
+        const iEnd = Math.floor(idx2);
+        let unwrappedPhi = 0;
+
+        if (iStart <= iEnd) {
+            let prevPhi = getWrappedPhaseAt(idx1);
+            const firstPhi = getWrappedPhaseAt(iStart);
+            let dFirst = firstPhi - prevPhi;
+            while (dFirst <= -Math.PI) dFirst += 2 * Math.PI;
+            while (dFirst > Math.PI) dFirst -= 2 * Math.PI;
+            unwrappedPhi += dFirst;
+            prevPhi = firstPhi;
+
+            for (let i = iStart + 1; i <= iEnd; i++) {
+                const curPhi = getWrappedPhaseAt(i);
+                let dPhi = curPhi - prevPhi;
+                while (dPhi <= -Math.PI) dPhi += 2 * Math.PI;
+                while (dPhi > Math.PI) dPhi -= 2 * Math.PI;
+                unwrappedPhi += dPhi;
+                prevPhi = curPhi;
+            }
+
+            const endPhi = getWrappedPhaseAt(idx2);
+            let dLast = endPhi - prevPhi;
+            while (dLast <= -Math.PI) dLast += 2 * Math.PI;
+            while (dLast > Math.PI) dLast -= 2 * Math.PI;
+            unwrappedPhi += dLast;
+        } else {
+            const pStart = getWrappedPhaseAt(idx1);
+            const pEnd = getWrappedPhaseAt(idx2);
+            let dSingle = pEnd - pStart;
+            while (dSingle <= -Math.PI) dSingle += 2 * Math.PI;
+            while (dSingle > Math.PI) dSingle -= 2 * Math.PI;
+            unwrappedPhi = dSingle;
+        }
+
+        // Hiệu chỉnh chống lệch pha khi T_ref ước lượng lệch nhẹ so với tần số thực
+        let totalDeltaPhi = Math.abs(unwrappedPhi);
+        if (T_ref > 0) {
+            const expectedCycles = dtSeconds / T_ref;
+            const measuredCycles = totalDeltaPhi / (2 * Math.PI);
+            const cycleDiff = Math.round(expectedCycles - measuredCycles);
+            if (Math.abs(cycleDiff) >= 1) {
+                totalDeltaPhi += cycleDiff * 2 * Math.PI;
+            }
+        }
+
+        if (totalDeltaPhi <= 1e-4) return null;
 
         const T_seconds = (2 * Math.PI * dtSeconds) / totalDeltaPhi;
         const f_Hz = 1.0 / T_seconds;
         const T_ms = T_seconds * 1000.0;
         const dt_ms = dtSeconds * 1000.0;
+        const k = Math.floor(totalDeltaPhi / (2 * Math.PI));
 
         return {
             T_ms,
@@ -2227,11 +2320,12 @@
         const winInfo = getVisibleChannelAWindow();
         if (!winInfo || manualPoints.length === 0) return;
 
+        // Sử dụng đúng N = winInfo.samplesNeeded khớp 100% với drawWaveform
         const N = winInfo.samplesNeeded;
         const coords = manualPoints.map((pt, index) => {
             const localIdx = pt.absIdx - winInfo.startIdx;
             const x = (localIdx / N) * width;
-            const y = height / 2 - (pt.y * currentZoomY * height / 2);
+            const y = Math.max(0, Math.min(height, height / 2 - (pt.y * currentZoomY * height / 2)));
             return { x, y, label: index === 0 ? 'P₁' : 'P₂', color: index === 0 ? '#f59e0b' : '#10b981' };
         });
 
@@ -2265,7 +2359,7 @@
             ctx.stroke();
             ctx.setLineDash([]);
 
-            // Điểm tròn đánh dấu trên đường sóng
+            // Điểm tròn đánh dấu nằm chính xác trên đường sóng
             ctx.fillStyle = c.color;
             ctx.beginPath();
             ctx.arc(c.x, c.y, 5.5, 0, 2 * Math.PI);
@@ -2280,6 +2374,107 @@
         ctx.restore();
     }
 
+    function updateTwoPointResultDisplay(winInfo) {
+        if (manualPoints.length < 2) return;
+        const res = calculateFromGraphClicks(manualPoints[0], manualPoints[1], winInfo);
+        drawFrame();
+
+        if (!res) {
+            infoMessageText.innerHTML = "⚠️ Hai điểm quá gần nhau hoặc biên độ sóng quá nhỏ. Hãy chọn 2 điểm cách xa nhau hơn!";
+            infoMessageText.style.color = "#dc2626";
+            return;
+        }
+
+        const autoFreq = computeFrozenAutoFrequency();
+        const autoT_ms = autoFreq > 0 ? (1000.0 / autoFreq) : 0;
+        const relErrorPct = (autoFreq > 0) ? (Math.abs(res.f_Hz - autoFreq) / autoFreq) * 100.0 : null;
+
+        let summaryHtml = `Đo 2 điểm: <span class="info-badge">Δt = ${res.dt_ms.toFixed(2)} ms</span> | ` +
+            `<span class="info-badge">T = ${res.T_ms.toFixed(2)} ms</span> | ` +
+            `<span class="info-badge">f = ${res.f_Hz.toFixed(1)} Hz</span> | ` +
+            `<span class="info-badge">Δφ = ${res.deltaPhiDeg.toFixed(1)}°</span>`;
+        if (autoFreq > 0) {
+            summaryHtml += ` &nbsp;⇔&nbsp; Tự động: <span class="channel-tag-a">f<sub>auto</sub> = ${autoFreq.toFixed(1)} Hz</span> (Sai lệch: <b>${relErrorPct.toFixed(2)}%</b>)`;
+        }
+        infoMessageText.innerHTML = summaryHtml;
+        infoMessageText.style.color = "#0f172a";
+
+        const hud = document.getElementById('manualAnalysisHud');
+        const hudBody = document.getElementById('manualAnalysisHudBody');
+        if (hud && hudBody) {
+            hudBody.innerHTML = `
+                <div class="ma-grid">
+                    <div>• Khoảng thời gian Δt: <span class="ma-val-manual">${res.dt_ms.toFixed(2)} ms</span></div>
+                    <div>• Độ lệch pha Δφ: <span class="ma-val-manual">${res.deltaPhiRad.toFixed(2)} rad (${res.deltaPhiDeg.toFixed(1)}°)</span></div>
+                    <div>• Chu kỳ đo 2 điểm (T): <span class="ma-val-manual">${res.T_ms.toFixed(2)} ms</span></div>
+                    <div>• Tần số đo 2 điểm (f): <span class="ma-val-manual">${res.f_Hz.toFixed(2)} Hz</span></div>
+                    <div>• Chu kỳ tự động (T<sub>auto</sub>): <span class="ma-val-auto">${autoFreq > 0 ? autoT_ms.toFixed(2) + ' ms' : '--'}</span></div>
+                    <div>• Tần số tự động (f<sub>auto</sub>): <span class="ma-val-auto">${autoFreq > 0 ? autoFreq.toFixed(2) + ' Hz' : '--'}</span></div>
+                </div>
+                <div style="margin-top:6px; padding-top:5px; border-top:1px dashed rgba(255,255,255,0.18); font-size:11.5px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+                    <span>Công thức: <i>T = 2π·Δt / Δφ</i> &nbsp;|&nbsp; <i>f = 1 / T</i></span>
+                    <span>Sai số tương đối δ: <span class="ma-val-err">${relErrorPct !== null ? relErrorPct.toFixed(2) + '%' : 'Chưa xác định'}</span></span>
+                </div>
+            `;
+            hud.style.display = 'block';
+        }
+    }
+
+    let draggingPointIndex = -1;
+
+    canvas.addEventListener('pointerdown', (e) => {
+        if (getDisplayMode() !== 'oscilloscope' || !isManualAnalysisMode || !isPaused || getActiveChannelMode() !== '1') return;
+        const winInfo = getVisibleChannelAWindow();
+        if (!winInfo || manualPoints.length === 0) return;
+
+        const rect = canvas.getBoundingClientRect();
+        const px = e.clientX - rect.left;
+        const width = canvas.clientWidth;
+        const N = winInfo.samplesNeeded;
+
+        // Cho phép kéo thả tinh chỉnh trực tiếp P1 hoặc P2 nếu chạm gần (<= 18px)
+        for (let i = 0; i < manualPoints.length; i++) {
+            const ptX = ((manualPoints[i].absIdx - winInfo.startIdx) / N) * width;
+            if (Math.abs(px - ptX) <= 18) {
+                draggingPointIndex = i;
+                if (canvas.setPointerCapture) canvas.setPointerCapture(e.pointerId);
+                return;
+            }
+        }
+    });
+
+    canvas.addEventListener('pointermove', (e) => {
+        if (draggingPointIndex < 0 || !isManualAnalysisMode || !isPaused) return;
+        const winInfo = getVisibleChannelAWindow();
+        if (!winInfo) return;
+
+        const rect = canvas.getBoundingClientRect();
+        const moveX = Math.max(0, Math.min(canvas.clientWidth, e.clientX - rect.left));
+        const moveY = Math.max(0, Math.min(canvas.clientHeight, e.clientY - rect.top));
+        manualPoints[draggingPointIndex] = snapToWaveFeature(winInfo, moveX, moveY, canvas.clientWidth, canvas.clientHeight);
+
+        if (manualPoints.length === 2) {
+            if (manualPoints[0].absIdx > manualPoints[1].absIdx) {
+                const tmp = manualPoints[0];
+                manualPoints[0] = manualPoints[1];
+                manualPoints[1] = tmp;
+                draggingPointIndex = 1 - draggingPointIndex;
+            }
+            updateTwoPointResultDisplay(winInfo);
+        } else {
+            drawFrame();
+        }
+    });
+
+    canvas.addEventListener('pointerup', (e) => {
+        if (draggingPointIndex >= 0) {
+            draggingPointIndex = -1;
+            if (canvas.releasePointerCapture) {
+                try { canvas.releasePointerCapture(e.pointerId); } catch (err) {}
+            }
+        }
+    });
+
     canvas.addEventListener('click', (e) => {
         if (getDisplayMode() === 'oscilloscope') {
             if (!isManualAnalysisMode || !isPaused || getActiveChannelMode() !== '1') return;
@@ -2288,22 +2483,22 @@
 
             const rect = canvas.getBoundingClientRect();
             const clickX = Math.max(0, Math.min(canvas.clientWidth, e.clientX - rect.left));
+            const clickY = Math.max(0, Math.min(canvas.clientHeight, e.clientY - rect.top));
             const width = canvas.clientWidth;
+            const height = canvas.clientHeight;
 
-            const exactLocalIdx = (clickX / width) * (winInfo.samplesNeeded - 1);
-            const i0 = Math.max(0, Math.min(winInfo.samplesNeeded - 2, Math.floor(exactLocalIdx)));
-            const frac = Math.max(0, Math.min(1, exactLocalIdx - i0));
-            const exactY = winInfo.slice[i0] + frac * (winInfo.slice[i0 + 1] - winInfo.slice[i0]);
+            // Bỏ qua sự kiện click ngay sau khi kéo thả xong điểm
+            for (let i = 0; i < manualPoints.length; i++) {
+                const ptX = ((manualPoints[i].absIdx - winInfo.startIdx) / winInfo.samplesNeeded) * width;
+                if (Math.abs(clickX - ptX) < 3) return;
+            }
 
-            const pickedPoint = {
-                absIdx: winInfo.startIdx + exactLocalIdx,
-                y: exactY
-            };
+            const pickedPoint = snapToWaveFeature(winInfo, clickX, clickY, width, height);
 
             if (manualPoints.length >= 2) {
                 manualPoints = [pickedPoint];
                 closeManualHud();
-                infoMessageText.innerHTML = "Đã chọn lại <span class='info-badge'>Điểm 1 (P₁)</span>. Hãy chọn <span class='info-badge'>Điểm 2 (P₂)</span> trên đồ thị.";
+                infoMessageText.innerHTML = "Đã chọn lại <span class='info-badge'>Điểm 1 (P₁)</span>. Hãy chọn <span class='info-badge'>Điểm 2 (P₂)</span> trên đồ thị (hoặc kéo thả điểm để tinh chỉnh).";
                 infoMessageText.style.color = "#7c3aed";
                 drawFrame();
                 return;
@@ -2321,48 +2516,7 @@
                     manualPoints[0] = manualPoints[1];
                     manualPoints[1] = tmp;
                 }
-                const res = calculateFromGraphClicks(manualPoints[0], manualPoints[1], winInfo);
-                drawFrame();
-
-                if (!res) {
-                    infoMessageText.innerHTML = "⚠️ Hai điểm quá gần nhau hoặc biên độ sóng quá nhỏ. Hãy chọn 2 điểm cách xa nhau hơn!";
-                    infoMessageText.style.color = "#dc2626";
-                    return;
-                }
-
-                const autoFreq = computeFrozenAutoFrequency();
-                const autoT_ms = autoFreq > 0 ? (1000.0 / autoFreq) : 0;
-                const relErrorPct = (autoFreq > 0) ? (Math.abs(res.f_Hz - autoFreq) / autoFreq) * 100.0 : null;
-
-                let summaryHtml = `Đo 2 điểm: <span class="info-badge">Δt = ${res.dt_ms.toFixed(2)} ms</span> | ` +
-                    `<span class="info-badge">T = ${res.T_ms.toFixed(2)} ms</span> | ` +
-                    `<span class="info-badge">f = ${res.f_Hz.toFixed(1)} Hz</span> | ` +
-                    `<span class="info-badge">Δφ = ${res.deltaPhiDeg.toFixed(1)}°</span>`;
-                if (autoFreq > 0) {
-                    summaryHtml += ` &nbsp;⇔&nbsp; Tự động: <span class="channel-tag-a">f<sub>auto</sub> = ${autoFreq.toFixed(1)} Hz</span> (Sai lệch: <b>${relErrorPct.toFixed(2)}%</b>)`;
-                }
-                infoMessageText.innerHTML = summaryHtml;
-                infoMessageText.style.color = "#0f172a";
-
-                const hud = document.getElementById('manualAnalysisHud');
-                const hudBody = document.getElementById('manualAnalysisHudBody');
-                if (hud && hudBody) {
-                    hudBody.innerHTML = `
-                        <div class="ma-grid">
-                            <div>• Khoảng thời gian Δt: <span class="ma-val-manual">${res.dt_ms.toFixed(2)} ms</span></div>
-                            <div>• Độ lệch pha Δφ: <span class="ma-val-manual">${res.deltaPhiRad.toFixed(2)} rad (${res.deltaPhiDeg.toFixed(1)}°)</span></div>
-                            <div>• Chu kỳ đo 2 điểm (T): <span class="ma-val-manual">${res.T_ms.toFixed(2)} ms</span></div>
-                            <div>• Tần số đo 2 điểm (f): <span class="ma-val-manual">${res.f_Hz.toFixed(2)} Hz</span></div>
-                            <div>• Chu kỳ tự động (T<sub>auto</sub>): <span class="ma-val-auto">${autoFreq > 0 ? autoT_ms.toFixed(2) + ' ms' : '--'}</span></div>
-                            <div>• Tần số tự động (f<sub>auto</sub>): <span class="ma-val-auto">${autoFreq > 0 ? autoFreq.toFixed(2) + ' Hz' : '--'}</span></div>
-                        </div>
-                        <div style="margin-top:6px; padding-top:5px; border-top:1px dashed rgba(255,255,255,0.18); font-size:11.5px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;">
-                            <span>Công thức: <i>T = 2π·Δt / Δφ</i> &nbsp;|&nbsp; <i>f = 1 / T</i></span>
-                            <span>Sai số tương đối δ: <span class="ma-val-err">${relErrorPct !== null ? relErrorPct.toFixed(2) + '%' : 'Chưa xác định'}</span></span>
-                        </div>
-                    `;
-                    hud.style.display = 'block';
-                }
+                updateTwoPointResultDisplay(winInfo);
             }
             return;
         }
