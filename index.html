@@ -618,7 +618,7 @@
 <div id="fftModalOverlay" class="modal-overlay">
     <div id="fftModal" class="modal-content" onclick="event.stopPropagation()">
         <div class="modal-header">
-            <span>Phân tích Họa âm (Spectrum - 5 Họa âm)</span>
+            <span>Phân tích Họa âm (Spectrum )</span>
         </div>
         <div class="modal-controls">
             <button class="btn-dark" onclick="closeFFTModal()">⬅ Quay lại</button>
@@ -675,11 +675,11 @@
     </div>
 </div>
 
-<!-- MODAL PHÂN TÍCH MỨC CƯỜNG ĐỘ ÂM (MCĐ) -->
+<!-- MODAL PHÂN TÍCH MỨC CƯỜNG ĐỘ ÂM -->
 <div id="mcdModalOverlay" class="modal-overlay">
     <div id="mcdModal" class="modal-content" style="background: #ffffff; color: #0f172a;" onclick="event.stopPropagation()">
         <div class="modal-header" style="background: linear-gradient(90deg, #059669, #10b981);">
-            <span>📊 Phân tích Mức Cường độ âm (MCĐ) & Khoảng cách Nguồn âm</span>
+            <span>📊 Phân tích Mức Cường độ âm & Khoảng cách Nguồn âm</span>
         </div>
         
         <div class="modal-controls" style="background: #f8fafc; border-bottom: 1px solid #e2e8f0; display:flex; gap:8px; align-items:center; justify-content:space-between;">
@@ -820,7 +820,7 @@
             <div class="fox-msg-row fox-msg-bot">
                 <div class="fox-msg-avatar" id="msg-fox-icon-container"></div>
                 <div class="fox-msg-group">
-                    <div class="fox-msg-bubble">Xin chào Thầy/Cô và các em! Mình là <b>Fox-lab AI</b>. Em đang khảo sát với tần số <span id="foxLiveFreqTag" class="fox-freq-tag">0.0 Hz</span>. Em cần hỗ trợ gì hoặc có thể chụp ảnh bài tập đề thi sóng cơ gửi cho em nhé!</div>
+                    <div class="fox-msg-bubble">Xin chào Thầy/Cô và các em Học sinh! Mình là <b>Fox-lab AI</b>. Mình đang khảo sát với tần số <span id="foxLiveFreqTag" class="fox-freq-tag">0.0 Hz</span>. Quý Thầy/Cô và các em Học sinh cần Mình hỗ trợ vấn đề gì về chuyên đề sóng!</div>
                     <div class="fox-msg-actions-bar">
                         <button class="fox-export-btn" onclick="exportChatReport(this)">📥 Tải báo cáo</button>
                     </div>
@@ -853,7 +853,7 @@
                         <line x1="8" y1="23" x2="16" y2="23"></line>
                     </svg>
                 </button>
-                <input type="text" id="fox-chat-input" placeholder="Hỏi AI, nói hoặc tải ảnh đề bài..." autocomplete="off">
+                <input type="text" id="fox-chat-input" placeholder="Hỏi AI, nói hoặc tải ảnh..." autocomplete="off">
                 <button class="fox-send-btn" id="foxSendBtn" disabled>
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <line x1="22" y1="2" x2="11" y2="13"></line>
@@ -1075,7 +1075,7 @@
     }
 
     // =========================================================================
-    // INTERNAL SECURITY: Khởi tạo Endpoint ngầm từ ID (Ẩn cơ chế giải mã URL)
+    // INTERNAL SECURITY: Khởi tạo Endpoint ngầm từ ID
     // =========================================================================
     const _getGasEndpoint = (id) => (typeof atob === 'function' ? atob("aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy8=") : "https://script.google.com/macros/s/") + id + "/exec";
     const LICENSE_GAS_URL = _getGasEndpoint(LICENSE_GAS_ID);
