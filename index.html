@@ -600,6 +600,191 @@
             font-weight: 700;
         }
 
+    
+        /* Bảng Tần số góp mặt & Họa âm sau khi quét FFT */
+        .fft-harmonic-table-panel {
+            display: none;
+            flex-direction: column;
+            width: 440px;
+            max-width: 48%;
+            height: 100%;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.22);
+            overflow: hidden;
+            flex-shrink: 0;
+            z-index: 20;
+            animation: animUI-fadeIn 0.22s ease forwards;
+        }
+        .fft-ht-header {
+            background: linear-gradient(90deg, #1e293b, #0f172a);
+            color: #ffffff;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+        .fft-ht-title {
+            font-size: 12.5px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            text-transform: uppercase;
+            color: #f8fafc;
+        }
+        .fft-ht-close {
+            background: rgba(255, 255, 255, 0.14);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            color: #f8fafc;
+            width: 24px;
+            height: 24px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            padding: 0;
+            box-shadow: none;
+            flex-shrink: 0;
+        }
+        .fft-ht-close:hover {
+            background: #ef4444;
+            border-color: #ef4444;
+            color: #ffffff;
+            transform: none;
+        }
+        .fft-ht-scroll {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: auto;
+            background: #ffffff;
+        }
+        .fft-ht-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            color: #0f172a;
+        }
+        .fft-ht-table thead th {
+            position: sticky;
+            top: 0;
+            z-index: 5;
+            background: #f8fafc;
+            color: #334155;
+            font-weight: 700;
+            font-size: 11.5px;
+            padding: 8px 8px;
+            border-bottom: 1.5px solid #cbd5e1;
+            white-space: nowrap;
+        }
+        .fft-ht-table tbody tr {
+            border-bottom: 1px solid #e2e8f0;
+            cursor: pointer;
+            transition: background-color 0.15s ease;
+        }
+        .fft-ht-table tbody tr:hover {
+            background-color: #f1f5f9;
+        }
+        .fft-ht-table tbody tr.fft-ht-row-active {
+            background-color: #eff6ff;
+        }
+        .fft-ht-table tbody td {
+            padding: 7px 8px;
+            vertical-align: middle;
+        }
+        .fft-ht-stt {
+            text-align: center;
+            font-weight: 700;
+            color: #334155;
+            font-family: 'JetBrains Mono', monospace;
+            width: 38px;
+        }
+        .fft-ht-freq {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            color: #0f172a;
+            white-space: nowrap;
+        }
+        .fft-ht-amp-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            min-width: 115px;
+        }
+        .fft-ht-amp-text {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11.5px;
+            line-height: 1.2;
+        }
+        .fft-ht-amp-val {
+            font-weight: 700;
+            color: #0f172a;
+        }
+        .fft-ht-amp-pct {
+            color: #64748b;
+            font-weight: 500;
+            margin-left: 3px;
+        }
+        .fft-ht-bar-track {
+            width: 100%;
+            height: 5px;
+            background: #e2e8f0;
+            border-radius: 999px;
+            overflow: hidden;
+        }
+        .fft-ht-bar-fill {
+            height: 100%;
+            border-radius: 999px;
+            transition: width 0.25s ease;
+        }
+        .fft-ht-badge {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+            border: 1px solid #cbd5e1;
+            background: #f8fafc;
+            color: #475569;
+        }
+        .fft-ht-badge.dominant {
+            background: #fee2e2;
+            color: #dc2626;
+            border-color: #fecaca;
+            font-weight: 700;
+        }
+        .fft-ht-badge.fundamental {
+            background: #fef3c7;
+            color: #b45309;
+            border-color: #fde68a;
+            font-weight: 700;
+        }
+        .fft-ht-badge.harmonic {
+            background: #ede9fe;
+            color: #6d28d9;
+            border-color: #ddd6fe;
+            font-weight: 700;
+        }
+        @media (max-width: 768px) {
+            .fft-harmonic-table-panel {
+                position: absolute;
+                right: 6px;
+                top: 6px;
+                bottom: 6px;
+                width: calc(100% - 12px);
+                max-width: 420px;
+                height: auto;
+            }
+        }
+
     </style>
 </head>
 <body>
@@ -764,9 +949,34 @@
                 <span style="font-weight: 600; font-size: 11.5px;">Hz</span>
                 <button id="btnScanHarmonics" class="btn-green" onclick="startHarmonicSweep()">Quét Họa âm</button>
             </div>
+            <div style="display:flex; align-items:center; gap:6px;">
+                <button id="btnToggleFftTable" class="btn-blue" style="display:none;" onclick="toggleFftHarmonicTable()">📊 Bảng tần số &amp; họa âm</button>
+            </div>
         </div>
         <div class="fft-canvas-container" id="fftCanvasContainer">
             <canvas id="fftDisplayCanvas" class="modal-display-canvas"></canvas>
+            <div id="fftHarmonicTablePanel" class="fft-harmonic-table-panel">
+                <div class="fft-ht-header">
+                    <div class="fft-ht-title">
+                        <span>📊</span>
+                        <span>TẦN SỐ GÓP MẶT &amp; HỌA ÂM</span>
+                    </div>
+                    <button type="button" class="fft-ht-close" onclick="closeFftHarmonicTable()" title="Đóng bảng">✕</button>
+                </div>
+                <div class="fft-ht-scroll">
+                    <table class="fft-ht-table">
+                        <thead>
+                            <tr>
+                                <th style="text-align:center;">STT</th>
+                                <th style="text-align:left;">Tần số (Hz)</th>
+                                <th style="text-align:left;">Biên độ / Độ lớn (A)</th>
+                                <th style="text-align:center;">Phân loại / Họa âm</th>
+                            </tr>
+                        </thead>
+                        <tbody id="fftHarmonicTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -1053,7 +1263,7 @@
             <div class="fox-msg-row fox-msg-bot">
                 <div class="fox-msg-avatar" id="msg-fox-icon-container"></div>
                 <div class="fox-msg-group">
-                   <div class="fox-msg-bubble">Xin chào quý Thầy/Cô và các em Học sinh! Mình là <b>Fox_lab AI</b>,trợ lý ảo hướng dẫn thí nghiệm Vật lý. Mình đang khảo sát với tần số <span id="foxLiveFreqTag" class="fox-freq-tag">0.0 Hz</span>. Quý Thầy/Cô và các em Học sinh cần Mình hỗ trợ vấn đề gì?</div>
+                   <div class="fox-msg-bubble">Xin chào quý Thầy/Cô và các em Học sinh! Mình là <b>Fox-lab AI</b>, trợ lý ảo hướng dẫn thí nghiệm Vật lý. Quý Thầy/Cô và các em Học sinh cần mình hỗ trợ vấn đề gì?</div>
                     <div class="fox-msg-actions-bar">
                         <button class="fox-export-btn" onclick="exportChatReport(this)">📥 Tải báo cáo</button>
                     </div>
@@ -2131,6 +2341,8 @@
             stopAudioChannel('B');
         } else {
             document.getElementById('cardChannelB').style.display = 'flex';
+            dbHistoryB = [];
+            selectedBarIndexB = -1;
             resetManualAnalysisState();
         }
         updateToolbarButtonsVisibility();
@@ -3017,6 +3229,10 @@
             resetManualAnalysisState();
             isPaused = false;
             pauseButton.disabled = false;
+            dbHistoryA = [];
+            dbHistoryB = [];
+            selectedBarIndexA = -1;
+            selectedBarIndexB = -1;
             dbStartTime = 0;
             lastDbSampleTime = 0;
             if (channelConfig.A.data) { channelConfig.A.data.fill(0); channelConfig.A.index = 0; }
@@ -3058,7 +3274,6 @@
         clearTimeout(stopTimer);
         pauseButton.textContent = "Đo / Dừng";
         pauseButton.className = "btn-green";
-        pauseButton.disabled = false; // Mở khóa nút Đo/Dừng để người dùng bắt đầu đo lại
         if (channelConfig.A.data) { channelConfig.A.data.fill(0); channelConfig.A.index = 0; }
         if (channelConfig.B.data) { channelConfig.B.data.fill(0); channelConfig.B.index = 0; }
         dbHistoryA = [];
@@ -3068,6 +3283,7 @@
         dbStartTime = 0;
         lastDbSampleTime = 0;
 
+        updateUIState();
         // Cập nhật thông báo sẵn sàng đo theo đúng kênh đang bật
         if (channelConfig.A.active || channelConfig.B.active) {
             infoMessageText.innerHTML = "Đã làm mới. Bấm <span class='info-badge'>Đo / Dừng</span> để khảo sát.";
@@ -3077,7 +3293,6 @@
             infoMessageText.style.color = "#0284c7";
         }
 
-        updateUIState();
         if (typeof checkAndShowQR === 'function') checkAndShowQR();
         drawFrame(true);
     });
@@ -3305,10 +3520,15 @@
         resetManualAnalysisState();
         if (typeof closeKinematicsModal === 'function') closeKinematicsModal();
         if (typeof stopFftSweepAnimation === 'function') stopFftSweepAnimation();
+        if (typeof closeFftHarmonicTable === 'function') closeFftHarmonicTable(true);
+        fftSelectedPeakFreq = null;
+        fftLastAnalysis = null;
         const fftOverlay = document.getElementById('fftModalOverlay');
         if (fftOverlay) { fftOverlay.classList.remove('animUI-visible'); fftOverlay.style.display = 'none'; }
         const fftInputEl = document.getElementById('fftTargetFreq');
         if (fftInputEl) fftInputEl.value = '';
+        currentCalcFreqA = 0; currentCalcFreqB = 0; currentAmpA = 0; currentAmpB = 0;
+        snapDataA = []; snapDataB = []; snapIdxA = 0; snapIdxB = 0;
 
         closeMcdModal();
         if (typeof closeCalibModal === 'function') closeCalibModal();
@@ -3948,6 +4168,8 @@
     let fftSweepActive = false;
     let fftSweepProgress = 1;
     let fftSweepStartTime = 0;
+    let fftSelectedPeakFreq = null;
+    let fftLastAnalysis = null;
     const FFT_SWEEP_DURATION_MS = 1800;
 
     function stopFftSweepAnimation() {
@@ -3963,10 +4185,169 @@
         }
     }
 
+    function openFftHarmonicTable(analysis) {
+        const panel = document.getElementById('fftHarmonicTablePanel');
+        const toggleBtn = document.getElementById('btnToggleFftTable');
+        if (analysis) fftLastAnalysis = analysis;
+        renderFftHarmonicTable(fftLastAnalysis);
+        if (panel) panel.style.display = 'flex';
+        if (toggleBtn) {
+            toggleBtn.style.display = 'inline-block';
+            toggleBtn.textContent = '📊 Ẩn bảng tần số';
+            toggleBtn.className = 'btn-orange';
+        }
+        requestAnimationFrame(() => processAndDrawFFT(1));
+    }
+
+    function closeFftHarmonicTable(hideToggleBtn = false) {
+        const panel = document.getElementById('fftHarmonicTablePanel');
+        const toggleBtn = document.getElementById('btnToggleFftTable');
+        if (panel) panel.style.display = 'none';
+        if (toggleBtn) {
+            if (hideToggleBtn) {
+                toggleBtn.style.display = 'none';
+            } else {
+                toggleBtn.style.display = 'inline-block';
+                toggleBtn.textContent = '📊 Bảng tần số & họa âm';
+                toggleBtn.className = 'btn-blue';
+            }
+        }
+        const fftOverlay = document.getElementById('fftModalOverlay');
+        if (fftOverlay && fftOverlay.style.display === 'flex' && !fftSweepActive) {
+            requestAnimationFrame(() => processAndDrawFFT(1));
+        }
+    }
+
+    function toggleFftHarmonicTable() {
+        const panel = document.getElementById('fftHarmonicTablePanel');
+        if (!panel) return;
+        if (panel.style.display === 'flex') {
+            closeFftHarmonicTable(false);
+        } else {
+            openFftHarmonicTable(fftLastAnalysis);
+        }
+    }
+
+    function selectFftTableRow(freqHz) {
+        fftSelectedPeakFreq = (fftSelectedPeakFreq !== null && Math.abs(fftSelectedPeakFreq - freqHz) < 0.2) ? null : freqHz;
+        renderFftHarmonicTable(fftLastAnalysis);
+        processAndDrawFFT(1);
+    }
+
+    function renderFftHarmonicTable(analysis) {
+        const tbody = document.getElementById('fftHarmonicTableBody');
+        if (!tbody) return;
+
+        if (!analysis || analysis.isEmptySignal || !analysis.presentPeaks || analysis.presentPeaks.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:18px 10px; color:#64748b; font-style:italic;">Chưa ghi nhận đỉnh tần số nổi bật nào trên phổ Kênh A.</td></tr>`;
+            return;
+        }
+
+        const f0 = analysis.hasValidF0 ? analysis.f0 : null;
+        const tolHz = Math.max(analysis.binFreq * 1.4, f0 ? f0 * 0.025 : 15);
+
+        // Gom tất cả các đỉnh tần số nổi bật (>= 5%) và đối chiếu với các họa âm 1f0..5f0
+        const mergedItems = analysis.presentPeaks.map(p => ({
+            freq: p.freq,
+            ampNorm: p.ampNorm,
+            harmonicOrder: null
+        }));
+
+        if (f0 && analysis.harmonicsList && analysis.harmonicsList.length > 0) {
+            for (const h of analysis.harmonicsList) {
+                let bestMatchIdx = -1;
+                let bestDiff = Infinity;
+                for (let i = 0; i < mergedItems.length; i++) {
+                    const diff = Math.abs(mergedItems[i].freq - h.targetFreq);
+                    if (diff <= tolHz && diff < bestDiff && mergedItems[i].harmonicOrder === null) {
+                        bestDiff = diff;
+                        bestMatchIdx = i;
+                    }
+                }
+                if (bestMatchIdx !== -1) {
+                    mergedItems[bestMatchIdx].harmonicOrder = h.order;
+                } else if (h.isPresent) {
+                    mergedItems.push({
+                        freq: h.targetFreq,
+                        ampNorm: h.ampNorm,
+                        harmonicOrder: h.order
+                    });
+                }
+            }
+        }
+
+        // Xác định đỉnh trội nhất (biên độ lớn nhất = 1.00 / 100.0%)
+        let maxAmpItem = mergedItems[0];
+        for (const item of mergedItems) {
+            if (item.ampNorm > maxAmpItem.ampNorm) maxAmpItem = item;
+        }
+
+        // Sắp xếp theo tần số tăng dần (Hz)
+        mergedItems.sort((a, b) => a.freq - b.freq);
+
+        let rowsHtml = '';
+        mergedItems.forEach((item, idx) => {
+            const isDominant = (item === maxAmpItem);
+            const ampVal = Math.min(1.0, Math.max(0, item.ampNorm));
+            const pctVal = (ampVal * 100).toFixed(1);
+            const barWidth = Math.max(3, Math.min(100, ampVal * 100)).toFixed(1);
+
+            let barColor = '#3b82f6';
+            let badgeClass = 'fft-ht-badge';
+            let badgeText = 'Tần số thành phần';
+
+            if (isDominant && item.harmonicOrder) {
+                barColor = '#ef4444';
+                badgeClass = 'fft-ht-badge dominant';
+                badgeText = `Đỉnh trội nhất • ${item.harmonicOrder}f₀`;
+            } else if (isDominant) {
+                barColor = '#ef4444';
+                badgeClass = 'fft-ht-badge dominant';
+                badgeText = 'Đỉnh trội nhất';
+            } else if (item.harmonicOrder === 1) {
+                barColor = '#f59e0b';
+                badgeClass = 'fft-ht-badge fundamental';
+                badgeText = 'Họa âm cơ bản (1f₀)';
+            } else if (item.harmonicOrder && item.harmonicOrder > 1) {
+                barColor = '#8b5cf6';
+                badgeClass = 'fft-ht-badge harmonic';
+                badgeText = `Họa âm bậc ${item.harmonicOrder} (${item.harmonicOrder}f₀)`;
+            }
+
+            const isSelected = (fftSelectedPeakFreq !== null && Math.abs(fftSelectedPeakFreq - item.freq) < 0.2);
+
+            rowsHtml += `
+                <tr class="${isSelected ? 'fft-ht-row-active' : ''}" onclick="selectFftTableRow(${item.freq.toFixed(1)})" title="Nhấn để đánh dấu tần số ${item.freq.toFixed(1)} Hz trên đồ thị">
+                    <td class="fft-ht-stt">${idx + 1}</td>
+                    <td class="fft-ht-freq">${item.freq.toFixed(1)} Hz</td>
+                    <td>
+                        <div class="fft-ht-amp-wrap">
+                            <div class="fft-ht-amp-text">
+                                <span class="fft-ht-amp-val">${ampVal.toFixed(2)}</span>
+                                <span class="fft-ht-amp-pct">(${pctVal}%)</span>
+                            </div>
+                            <div class="fft-ht-bar-track">
+                                <div class="fft-ht-bar-fill" style="width:${barWidth}%; background:${barColor};"></div>
+                            </div>
+                        </div>
+                    </td>
+                    <td style="text-align:center;">
+                        <span class="${badgeClass}">${badgeText}</span>
+                    </td>
+                </tr>
+            `;
+        });
+
+        tbody.innerHTML = rowsHtml;
+    }
+
     function openFFTModal() {
         if (isDemoMode) { alert("Chức năng Phân tích Họa âm FFT chỉ có trên bản Full."); return; }
         if (typeof resetManualAnalysisState === 'function') resetManualAnalysisState();
         stopFftSweepAnimation();
+        closeFftHarmonicTable(true);
+        fftSelectedPeakFreq = null;
+        fftLastAnalysis = null;
         fftSweepProgress = 1;
 
         const overlay = document.getElementById('fftModalOverlay');
@@ -3985,6 +4366,9 @@
 
     function closeFFTModal() {
         stopFftSweepAnimation();
+        closeFftHarmonicTable(true);
+        fftSelectedPeakFreq = null;
+        fftLastAnalysis = null;
         fftSweepProgress = 1;
         const overlay = document.getElementById('fftModalOverlay');
         const inputFreq = document.getElementById('fftTargetFreq');
@@ -3996,7 +4380,12 @@
     function onFftFreqInput() {
         stopFftSweepAnimation();
         fftSweepProgress = 1;
-        processAndDrawFFT(1);
+        const analysis = processAndDrawFFT(1);
+        const panel = document.getElementById('fftHarmonicTablePanel');
+        if (panel && panel.style.display === 'flex' && analysis) {
+            fftLastAnalysis = analysis;
+            renderFftHarmonicTable(analysis);
+        }
     }
 
     function analyzeFFTSpectrum(f0) {
@@ -4101,6 +4490,8 @@
 
     function startHarmonicSweep() {
         stopFftSweepAnimation();
+        closeFftHarmonicTable(true);
+        fftSelectedPeakFreq = null;
         const inputEl = document.getElementById('fftTargetFreq');
         const scanBtn = document.getElementById('btnScanHarmonics');
         let f0 = inputEl ? parseFloat(inputEl.value.trim()) : NaN;
@@ -4143,7 +4534,8 @@
                     scanBtn.disabled = false;
                     scanBtn.textContent = 'Quét Họa âm';
                 }
-                processAndDrawFFT(1);
+                const finalAnalysis = processAndDrawFFT(1);
+                openFftHarmonicTable(finalAnalysis);
             }
         }
 
@@ -4394,6 +4786,32 @@
             }
         }
 
+        // Đánh dấu tần số đang được chọn từ bảng
+        if (!fftSweepActive && fftSelectedPeakFreq !== null && fftSelectedPeakFreq >= 0 && fftSelectedPeakFreq <= maxFreqShow) {
+            const sx = plotLeft + (fftSelectedPeakFreq / maxFreqShow) * plotW;
+            fCtx.save();
+            fCtx.strokeStyle = '#f59e0b';
+            fCtx.lineWidth = 2;
+            fCtx.setLineDash([4, 3]);
+            fCtx.beginPath();
+            fCtx.moveTo(sx, plotTop);
+            fCtx.lineTo(sx, plotBottom);
+            fCtx.stroke();
+            fCtx.setLineDash([]);
+
+            const selText = `📍 ${fftSelectedPeakFreq.toFixed(1)} Hz`;
+            fCtx.font = 'bold 11px "JetBrains Mono", monospace';
+            const bw = fCtx.measureText(selText).width + 12;
+            const bx = Math.min(plotRight - bw - 4, Math.max(plotLeft + 4, sx - bw / 2));
+            const by = plotTop + 28;
+            fCtx.fillStyle = '#0f172a';
+            fCtx.fillRect(bx, by, bw, 20);
+            fCtx.fillStyle = '#facc15';
+            fCtx.textAlign = 'left';
+            fCtx.fillText(selText, bx + 6, by + 14);
+            fCtx.restore();
+        }
+
         return analysis;
     }
 
@@ -4489,7 +4907,11 @@
         const overlay = document.getElementById('twoSourceModalOverlay');
         if (overlay) {
             overlay.classList.remove('animUI-visible');
-            setTimeout(() => { overlay.style.display = 'none'; if (!animFrameId && typeof draw === 'function') draw(); }, 300);
+            setTimeout(() => {
+                overlay.style.display = 'none';
+                if (typeof drawFrame === 'function') drawFrame();
+                if (!animFrameId && typeof draw === 'function') draw();
+            }, 300);
         }
         if (!isPaused) {
             isContinuousMode = (modeSelect && modeSelect.value === 'continuous');
@@ -4499,6 +4921,7 @@
             pauseButton.className = "btn-green";
             updateAnalysisButtonState();
             updateManualAnalysisButtonState();
+            if (typeof drawFrame === 'function') drawFrame();
         }
     }
 
@@ -4551,7 +4974,12 @@
 
         const canv = document.getElementById('twoSourceCanvas');
         if (canv) {
-            canv.width = canv.parentElement.clientWidth; canv.height = canv.parentElement.clientHeight;
+            const targetW = Math.max(260, canv.parentElement.clientWidth - 12);
+            const targetH = Math.max(200, canv.parentElement.clientHeight - 12);
+            if (canv.width !== targetW || canv.height !== targetH) {
+                canv.width = targetW;
+                canv.height = targetH;
+            }
 
             const ctx = canv.getContext('2d'), cw = canv.width, ch = canv.height;
             ctx.fillStyle = '#f8fafc'; ctx.fillRect(0, 0, cw, ch);
@@ -4595,7 +5023,9 @@
                     document.getElementById('hudPerA').innerText = currentCalcFreqA > 0 ? (1000 / currentCalcFreqA).toFixed(2) : "0.00";
                     document.getElementById('hudPerB').innerText = currentCalcFreqB > 0 ? (1000 / currentCalcFreqB).toFixed(2) : "0.00";
 
-                    let avgFreq = (currentCalcFreqA + currentCalcFreqB) / 2;
+                    let avgFreq = (currentCalcFreqA > 0 && currentCalcFreqB > 0)
+                        ? ((currentCalcFreqA + currentCalcFreqB) / 2)
+                        : (currentCalcFreqA || currentCalcFreqB || 0);
                     let calculatedPhase = calculatePhaseDifference(activeDataA, activeDataB, avgFreq > 0 ? avgFreq : 440, sampleRate, cIdxA, cIdxB);
 
                     updateEquationsHUD(currentCalcFreqA, currentCalcFreqB, calculatedPhase, currentAmpA, currentAmpB);
@@ -4754,7 +5184,9 @@
         }
     }
 
+    let pendingQuickPrompt = false;
     function sendQuickPrompt(promptText) {
+        pendingQuickPrompt = true;
         document.getElementById('fox-chat-input').value = promptText;
         sendFoxMessage();
     }
@@ -4793,7 +5225,10 @@
         const chatRows = document.querySelectorAll('.fox-msg-row');
         let reportText = "=== BÁO CÁO LỊCH SỬ CHAT - FOX_LAB ===\n";
         reportText += "Thời gian xuất: " + new Date().toLocaleString() + "\n";
-        reportText += "Tần số khảo sát hiện tại: " + (lockedFrequency || detectedFrequency).toFixed(1) + " Hz\n\n";
+        if (detectedFrequency > 0) {
+            reportText += "Tần số khảo sát hiện tại: " + detectedFrequency.toFixed(1) + " Hz\n";
+        }
+        reportText += "\n";
 
         chatRows.forEach(row => {
             const isUser = row.classList.contains('fox-msg-user');
@@ -4899,8 +5334,8 @@
     let foxChatHistory = [];
 
     function getLabTelemetry() {
-        let fA = (lockedFrequency || detectedFrequency || 0);
-        let fB = (typeof currentCalcFreqB !== 'undefined' ? currentCalcFreqB : 0);
+        let fA = (detectedFrequency > 0 ? detectedFrequency : 0);
+        let fB = (typeof currentCalcFreqB !== 'undefined' && currentCalcFreqB > 0 ? currentCalcFreqB : 0);
         let mode = (typeof getActiveChannelMode === 'function') ? getActiveChannelMode() : '1';
 
         let ampA = (typeof currentAmpA !== 'undefined' && parseFloat(currentAmpA) > 0) ? currentAmpA : '0.00';
@@ -5022,13 +5457,16 @@
             demoChatCount++;
         }
         
+        const isQuickPreset = pendingQuickPrompt;
+        pendingQuickPrompt = false;
+
         let safeUserText = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
         let userDisplayHtml = safeUserText;
         let imgBase64ToSend = uploadedImageBase64;
         if (uploadedImageBase64) {
             userDisplayHtml = `<img src="${uploadedImageBase64}" class="fox-preview-img"><br>` + safeUserText;
-        } else {
-            // Tự động chụp snapshot canvas dao động ký để AI có thể quan sát trực tiếp dạng sóng và đồ thị
+        } else if (!isQuickPreset && (channelConfig.A.active || channelConfig.B.active)) {
+            // Chỉ chụp snapshot dao động ký khi người dùng hỏi trực tiếp về thí nghiệm đang bật (không kèm vào prompt lý thuyết trả lời sẵn)
             imgBase64ToSend = captureOscilloscopeSnapshot();
         }
 
@@ -5039,8 +5477,8 @@
         document.getElementById('foxStatusText').innerText = "Đang phân tích...";
 
         let thinkingId = addTypingIndicator(); 
-        let currentFreq = lockedFrequency || detectedFrequency;
-        let labTelemetry = getLabTelemetry();
+        let measuredFreq = (!isQuickPreset && detectedFrequency > 0) ? detectedFrequency : null;
+        let labTelemetry = (!isQuickPreset && (channelConfig.A.active || channelConfig.B.active)) ? getLabTelemetry() : null;
 
         // Cập nhật lịch sử hội thoại cho user
         foxChatHistory.push({ role: 'user', content: text || "Phân tích đồ thị dao động ký và thông số thí nghiệm này." });
@@ -5048,7 +5486,8 @@
         try {
             const result = await fetchGasChatWithRetry({
                 message: text || "Phân tích hình ảnh đề bài hoặc đồ thị dao động ký này.",
-                frequency: currentFreq,
+                frequency: measuredFreq,
+                isQuickPrompt: isQuickPreset,
                 role: currentFoxRole,
                 imageBase64: imgBase64ToSend,
                 history: foxChatHistory.slice(0, -1).slice(-8), // Truyền 8 lượt hội thoại trước đó
@@ -5056,7 +5495,7 @@
             });
             removeTypingIndicator(thinkingId); 
             document.getElementById('foxStatusText').innerText = "Trực tuyến";
-            let replyText = (result && result.reply) ? result.reply : "Fox-lab AI đã ghi nhận câu hỏi của thầy.";
+            let replyText = (result && result.reply) ? result.reply : "Fox-lab AI đã ghi nhận câu hỏi của bạn.";
             replyText = formatCompleteSentences(replyText);
 
             // Cập nhật phản hồi bot vào lịch sử hội thoại
@@ -5067,7 +5506,7 @@
         } catch (e) {
             removeTypingIndicator(thinkingId); 
             document.getElementById('foxStatusText').innerText = "Trực tuyến";
-            let fallbackText = `Fox-lab AI hiện tại đang đo đạc tần số <b>${currentFreq.toFixed(1)} Hz</b>. (Phản hồi tự động do kết nối mạng tạm thời).`;
+            let fallbackText = "Fox-lab AI đã ghi nhận câu hỏi của bạn. Hiện kết nối mạng tới máy chủ AI đang gián đoạn tạm thời, vui lòng thử gửi lại sau giây lát.";
             fallbackText = formatCompleteSentences(fallbackText);
             addChatMessage('bot', fallbackText);
         } finally {
