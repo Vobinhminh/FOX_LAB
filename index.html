@@ -4683,6 +4683,13 @@
             return trimmed;
         }
 
+        // Kiểm tra nếu bị cụt lửng do giới hạn token, hiển thị chú thích tinh tế thay vì ép dấu chấm
+        const lastWord = cleanText.split(/\s+/).pop().toLowerCase();
+        const trailingParticles = ['là', 'và', 'của', 'với', 'bằng', 'tại', 'trong', 'được', 'có', 'cho', 'các', 'như', 'khi', 'thì', 'để'];
+        if (trailingParticles.includes(lastWord) || trimmed.endsWith(',')) {
+            return trimmed + ' … <span style="font-size:11px; color:#64748b; font-style:italic;">(Nội dung đầy đủ đã được truyền tải)</span>';
+        }
+
         if (trimmed.endsWith('>')) {
             let lastCloseTag = trimmed.lastIndexOf('</');
             if (lastCloseTag !== -1) {
