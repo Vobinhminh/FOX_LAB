@@ -1,16 +1,20 @@
 {
-  "name": "FOX-Lab AI Physics",
-  "short_name": "FOX-Lab",
+  "name": "FOX_LAB - Phòng thí nghiệm Vật lý về sóng cơ học",
+  "short_name": "FOX_LAB",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#020617",
-  "theme_color": "#1a1a2e",
+  "background_color": "#0f172a",
+  "theme_color": "#f97316",
   "icons": [
     {
-      "src": "icon_512.png",
+      "src": "icon-512.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
       "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/png"
     }
   ]
 }
