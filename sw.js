@@ -1,8 +1,3 @@
-// ============================================================================
-// Service Worker cho FOX_LAB - Phòng thí nghiệm Vật lý về sóng cơ học
-// Hỗ trợ chạy Offline trên lớp học & tự động cập nhật khi có phiên bản mới
-// ============================================================================
-
 // Tăng số phiên bản này mỗi khi bạn cập nhật index.html, report.html hoặc JS
 const CACHE_VERSION = "fox-lab-v1.0.1";
 
