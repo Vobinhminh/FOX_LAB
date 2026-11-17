@@ -785,6 +785,424 @@
             }
         }
 
+    
+        /* =========================================================================
+           MODULE BÁO CÁO THÍ NGHIỆM A4 XUẤT TỪNG PHẦN (TÍCH HỢP FOX_LAB)
+           ========================================================================= */
+        #expReportModalOverlay {
+            position: fixed;
+            inset: 0;
+            z-index: 9500;
+            background: rgba(15, 23, 42, 0.82);
+            backdrop-filter: blur(4px);
+            display: none;
+            overflow-y: auto;
+            padding: 0 0 36px 0;
+            font-family: "Times New Roman", Times, Georgia, serif;
+            color: #0f172a;
+        }
+        #expReportModalOverlay * {
+            box-sizing: border-box;
+        }
+        #expReportModalOverlay .overline {
+            text-decoration: overline;
+        }
+        .exp-rep-toolbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: #1e293b;
+            color: #f8fafc;
+            padding: 9px 18px;
+            font-family: 'Be Vietnam Pro', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+            font-size: 13px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+        }
+        .exp-rep-toolbar-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+        .exp-rep-toolbar-row + .exp-rep-toolbar-row {
+            margin-top: 7px;
+            padding-top: 7px;
+            border-top: 1px solid #334155;
+        }
+        .exp-rep-toolbar-group {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 6px;
+        }
+        .exp-rep-btn {
+            border: none;
+            border-radius: 5px;
+            padding: 6px 11px;
+            font-size: 12.5px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: background 0.15s, transform 0.05s;
+        }
+        .exp-rep-btn:active { transform: translateY(1px); }
+        .exp-rep-btn-primary { background: #2563eb; color: #fff; }
+        .exp-rep-btn-primary:hover { background: #1d4ed8; }
+        .exp-rep-btn-success { background: #059669; color: #fff; }
+        .exp-rep-btn-success:hover { background: #047857; }
+        .exp-rep-btn-info { background: #0284c7; color: #fff; }
+        .exp-rep-btn-info:hover { background: #0369a1; }
+        .exp-rep-btn-secondary { background: #334155; color: #f1f5f9; }
+        .exp-rep-btn-secondary:hover { background: #475569; }
+        .exp-rep-btn-danger { background: #dc2626; color: #fff; }
+        .exp-rep-btn-danger:hover { background: #b91c1c; }
+
+        .exp-rep-preset {
+            background: #0f172a;
+            color: #cbd5e1;
+            border: 1px solid #475569;
+            padding: 4px 9px;
+            font-size: 12px;
+        }
+        .exp-rep-preset:hover, .exp-rep-preset.active {
+            background: #0284c7;
+            color: #ffffff;
+            border-color: #38bdf8;
+        }
+        .exp-rep-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            user-select: none;
+            background: #334155;
+            padding: 4px 9px;
+            border-radius: 5px;
+            font-size: 12px;
+            border: 1px solid #475569;
+        }
+        .exp-rep-chip:has(input:checked) {
+            background: #0f172a;
+            border-color: #38bdf8;
+            color: #e0f2fe;
+        }
+        .exp-rep-banner {
+            max-width: 210mm;
+            margin: 10px auto 0;
+            padding: 8px 14px;
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            color: #92400e;
+            border-radius: 6px;
+            font-family: 'Be Vietnam Pro', system-ui, -apple-system, sans-serif;
+            font-size: 12.5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+        .exp-rep-banner.live-mode {
+            background: #dcfce7;
+            border-color: #22c55e;
+            color: #166534;
+        }
+        .exp-a4-sheet {
+            width: 210mm;
+            max-width: calc(100vw - 24px);
+            min-height: 297mm;
+            margin: 14px auto 32px;
+            padding: 14mm 15mm;
+            background: #ffffff;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+            font-size: 12.5pt;
+            line-height: 1.42;
+        }
+        .exp-header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 1.5px solid #0f172a;
+            padding-bottom: 7px;
+            margin-bottom: 10px;
+            font-size: 11.5pt;
+        }
+        .exp-header-school {
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .exp-header-meta-right {
+            text-align: right;
+        }
+        .exp-report-title {
+            text-align: center;
+            margin: 8px 0 3px;
+            font-size: 15pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .exp-report-subtitle {
+            text-align: center;
+            font-style: italic;
+            font-size: 11.5pt;
+            margin-bottom: 10px;
+            color: #334155;
+        }
+        #expReportModalOverlay [contenteditable="true"] {
+            border-bottom: 1px dashed #94a3b8;
+            padding: 0 3px;
+            min-width: 30px;
+            display: inline-block;
+            outline: none;
+        }
+        #expReportModalOverlay [contenteditable="true"]:focus {
+            background: #eff6ff;
+            border-bottom: 1.5px solid #2563eb;
+        }
+        .exp-info-grid {
+            display: grid;
+            grid-template-columns: 1.3fr 1fr;
+            gap: 5px 16px;
+            margin-bottom: 9px;
+            font-size: 11.5pt;
+        }
+        .exp-tech-bar {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 8px;
+            background: #f8fafc;
+            border: 1px solid #94a3b8;
+            padding: 5px 10px;
+            font-size: 10.8pt;
+            margin-bottom: 12px;
+        }
+        .exp-report-part {
+            margin-top: 14px;
+            padding-top: 4px;
+            background: #ffffff;
+        }
+        .exp-report-part.hidden-part,
+        .exp-report-part.temp-print-hide {
+            display: none !important;
+        }
+        .exp-part-title {
+            font-size: 12pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #0f172a;
+            background: #f1f5f9;
+            border-left: 4px solid #0f172a;
+            padding: 5px 8px;
+            margin-bottom: 8px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 6px;
+        }
+        .exp-part-actions {
+            display: inline-flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+        .exp-sub-heading {
+            font-size: 11.8pt;
+            font-weight: bold;
+            margin: 9px 0 5px;
+            color: #1e293b;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+        }
+        .exp-graph-box {
+            border: 1px solid #334155;
+            padding: 7px;
+            text-align: center;
+            background: #ffffff;
+            margin-bottom: 10px;
+            position: relative;
+        }
+        .exp-graph-box canvas {
+            max-width: 100%;
+            max-height: 60mm;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+        .exp-graph-caption {
+            font-size: 10.8pt;
+            font-style: italic;
+            margin-top: 5px;
+            color: #1e293b;
+        }
+        table.exp-data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 9px;
+            font-size: 11pt;
+        }
+        table.exp-data-table th,
+        table.exp-data-table td {
+            border: 1px solid #0f172a;
+            padding: 4px 6px;
+            text-align: center;
+            vertical-align: middle;
+        }
+        table.exp-data-table th {
+            background-color: #f1f5f9;
+            font-weight: bold;
+        }
+        table.exp-data-table tr.summary-row td {
+            background-color: #f8fafc;
+            font-weight: bold;
+        }
+        .exp-inline-btn {
+            font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            border: 1px solid #94a3b8;
+            background: #e2e8f0;
+            color: #0f172a;
+            text-transform: none;
+            white-space: nowrap;
+        }
+        .exp-inline-btn:hover { background: #cbd5e1; }
+        .exp-inline-btn-img { background: #e0f2fe; color: #0369a1; border-color: #7dd3fc; }
+        .exp-inline-btn-img:hover { background: #bae6fd; }
+        .exp-inline-btn-pdf { background: #dbeafe; color: #1d4ed8; border-color: #93c5fd; }
+        .exp-inline-btn-pdf:hover { background: #bfdbfe; }
+        .exp-inline-btn-csv { background: #d1fae5; color: #065f46; border-color: #6ee7b7; }
+        .exp-inline-btn-csv:hover { background: #a7f3d0; }
+
+        .exp-row-del-btn {
+            background: #ef4444;
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+            padding: 1px 6px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+        .exp-result-box {
+            border: 1px solid #0f172a;
+            background: #f8fafc;
+            padding: 7px 11px;
+            margin-bottom: 10px;
+            font-size: 11.5pt;
+        }
+        .exp-result-box p { margin: 2px 0; }
+        .exp-notes-box {
+            border: 1px solid #334155;
+            min-height: 22mm;
+            padding: 7px 9px;
+            font-size: 11.5pt;
+            line-height: 1.5;
+            outline: none;
+            display: block !important;
+            width: 100%;
+        }
+        .exp-footer-sign {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            margin-top: 14px;
+            text-align: center;
+            font-size: 11.5pt;
+            break-inside: avoid;
+        }
+        .exp-sign-space {
+            height: 17mm;
+        }
+        .exp-toast-msg {
+            position: fixed;
+            bottom: 18px;
+            right: 18px;
+            background: #0f172a;
+            color: #f8fafc;
+            padding: 9px 15px;
+            border-radius: 8px;
+            font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+            font-size: 13px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+            z-index: 99999;
+            opacity: 0;
+            transform: translateY(8px);
+            transition: opacity 0.2s, transform 0.2s;
+            pointer-events: none;
+        }
+        .exp-toast-msg.show { opacity: 1; transform: translateY(0); }
+
+        @page {
+            size: A4 portrait;
+            margin: 11mm 13mm;
+        }
+
+        @media print {
+            body.printing-exp-report {
+                background: #ffffff !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                position: static !important;
+                overflow: visible !important;
+                height: auto !important;
+                display: block !important;
+            }
+            html:has(body.printing-exp-report) {
+                position: static !important;
+                overflow: visible !important;
+                height: auto !important;
+                background: #ffffff !important;
+            }
+            body.printing-exp-report > *:not(#expReportModalOverlay) {
+                display: none !important;
+            }
+            body.printing-exp-report #expReportModalOverlay {
+                position: static !important;
+                inset: auto !important;
+                overflow: visible !important;
+                height: auto !important;
+                background: #ffffff !important;
+                padding: 0 !important;
+                display: block !important;
+            }
+            body.printing-exp-report .exp-rep-toolbar,
+            body.printing-exp-report .exp-rep-banner,
+            body.printing-exp-report .exp-toast-msg,
+            body.printing-exp-report .no-print {
+                display: none !important;
+            }
+            body.printing-exp-report .exp-a4-sheet {
+                width: 100% !important;
+                max-width: 100% !important;
+                min-height: auto !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                box-shadow: none !important;
+            }
+            body.printing-exp-report [contenteditable="true"] {
+                border-bottom: none !important;
+                padding: 0 !important;
+            }
+            body.printing-exp-report .exp-notes-box {
+                border: 1px solid #334155 !important;
+            }
+            body.printing-exp-report .exp-part-title,
+            body.printing-exp-report .exp-tech-bar,
+            body.printing-exp-report .exp-result-box,
+            body.printing-exp-report table.exp-data-table th,
+            body.printing-exp-report table.exp-data-table tr.summary-row td {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+
     </style>
 </head>
 <body>
@@ -894,6 +1312,7 @@
             <button id="resetButton" class="btn-orange">Làm mới</button>
             <button id="btnCalib" class="btn-orange" style="display: none;">🎯 Hiệu chuẩn</button>
             <button id="btnAnalysis" class="btn-slate" disabled>Xử lý nguồn âm</button>
+            <button id="btnExportReport" class="btn-blue" onclick="openExpReportModal()" title="Xuất phiếu báo cáo thí nghiệm A4 theo từng phần (PDF, Ảnh PNG, Excel CSV)">📄 Xuất báo cáo</button>
             <button id="fullscreenButton" class="btn-slate" onclick="toggleFullScreen()">Mở rộng</button>
         </div>
 
@@ -954,7 +1373,9 @@
             </div>
         </div>
         <div class="fft-canvas-container" id="fftCanvasContainer">
-            <canvas id="fftDisplayCanvas" class="modal-display-canvas"></canvas>
+            <div class="fft-canvas-wrap" style="position:relative; flex:1; min-width:0; height:100%; display:flex;">
+                <canvas id="fftDisplayCanvas" class="modal-display-canvas"></canvas>
+            </div>
             <div id="fftHarmonicTablePanel" class="fft-harmonic-table-panel">
                 <div class="fft-ht-header">
                     <div class="fft-ht-title">
@@ -5577,7 +5998,1496 @@
         });
     }
 </script>
-<script src="graph-snapshot.js"></script>
-    
+
+<!-- ========================================================================= -->
+<!-- MODAL BÁO CÁO THÍ NGHIỆM A4 XUẤT TỪNG PHẦN (TÍCH HỢP TRONG FOX_LAB)       -->
+<!-- ========================================================================= -->
+<div id="expReportModalOverlay" onclick="if(event.target===this) closeExpReportModal()">
+  <!-- Thanh công cụ cấu hình & xuất từng phần theo yêu cầu -->
+  <div class="exp-rep-toolbar no-print">
+    <div class="exp-rep-toolbar-row">
+      <div class="exp-rep-toolbar-group">
+        <strong>Chọn nhanh chế độ xuất:</strong>
+        <button type="button" class="exp-rep-btn exp-rep-preset active" id="expPreset-all" onclick="applyExpPreset('all')">Tất cả các phần</button>
+        <button type="button" class="exp-rep-btn exp-rep-preset" id="expPreset-1" onclick="applyExpPreset('1')">Chỉ Phần I (Dao động kí)</button>
+        <button type="button" class="exp-rep-btn exp-rep-preset" id="expPreset-2" onclick="applyExpPreset('2')">Chỉ Phần II (Phổ FFT)</button>
+        <button type="button" class="exp-rep-btn exp-rep-preset" id="expPreset-3" onclick="applyExpPreset('3')">Chỉ Phần III (Mức dB)</button>
+        <button type="button" class="exp-rep-btn exp-rep-preset" id="expPreset-4" onclick="applyExpPreset('4')">Chỉ Phần IV (Bộ lọc số)</button>
+      </div>
+      <div class="exp-rep-toolbar-group">
+        <button type="button" class="exp-rep-btn exp-rep-btn-info" onclick="syncFoxLabToReport(true)" title="Lấy lại số liệu và đồ thị mới nhất từ máy đo FOX_LAB">🔄 Cập nhật từ máy đo</button>
+        <button type="button" class="exp-rep-btn exp-rep-btn-secondary" onclick="loadExpSampleAll()">Nạp dữ liệu mẫu</button>
+        <button type="button" class="exp-rep-btn exp-rep-btn-success" onclick="exportAllExpCSV()">📊 Xuất Excel (.CSV)</button>
+        <button type="button" class="exp-rep-btn exp-rep-btn-primary" onclick="printCurrentExpReport()">🖨️ In / Xuất PDF đang chọn</button>
+        <button type="button" class="exp-rep-btn exp-rep-btn-danger" onclick="closeExpReportModal()">✕ Đóng</button>
+      </div>
+    </div>
+    <div class="exp-rep-toolbar-row">
+      <div class="exp-rep-toolbar-group">
+        <span>Tùy chỉnh ghép phần:</span>
+        <label class="exp-rep-chip">
+          <input type="checkbox" id="expChk-part1" checked onchange="syncExpCheckboxes()" />
+          Phần I: Dao động kí
+        </label>
+        <label class="exp-rep-chip">
+          <input type="checkbox" id="expChk-part2" checked onchange="syncExpCheckboxes()" />
+          Phần II: Phổ FFT
+        </label>
+        <label class="exp-rep-chip">
+          <input type="checkbox" id="expChk-part3" checked onchange="syncExpCheckboxes()" />
+          Phần III: Mức dB
+        </label>
+        <label class="exp-rep-chip">
+          <input type="checkbox" id="expChk-part4" checked onchange="syncExpCheckboxes()" />
+          Phần IV: Bộ lọc số
+        </label>
+        <label class="exp-rep-chip">
+          <input type="checkbox" id="expChk-part5" checked onchange="syncExpCheckboxes()" />
+          Phần V: Nhận xét &amp; Chữ ký
+        </label>
+      </div>
+      <div class="exp-rep-toolbar-group">
+        <label class="exp-rep-chip" title="Tự động chuyển đồ thị nền tối sang nền trắng để in rõ nét">
+          <input type="checkbox" id="expInvertDarkToggle" checked onchange="redrawAllExpCanvases()" />
+          Nền trắng đồ thị
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Banner trạng thái dữ liệu -->
+  <div class="exp-rep-banner no-print" id="expReportStatusBanner">
+    <span id="expReportStatusText"><strong>Chế độ dữ liệu mẫu:</strong> Hãy bấm nút <strong>In/PDF phần này</strong> hoặc <strong>Xuất ảnh phần này</strong> trên thanh tiêu đề từng Phần để xuất riêng phần đó.</span>
+  </div>
+
+  <!-- Trang giấy A4 -->
+  <div class="exp-a4-sheet" id="expReportSheet">
+    <div class="exp-header-top">
+      <div>
+        <div class="exp-header-school" contenteditable="true" id="expSchoolName">TRƯỜNG THPT ........................................</div>
+        <div>Tổ chuyên môn: <span contenteditable="true" id="expDeptName">Vật lí - Công nghệ</span></div>
+      </div>
+      <div class="exp-header-meta-right">
+        <div><strong>PHIẾU BÁO CÁO THÍ NGHIỆM SÓNG ÂM</strong></div>
+        <div>Hệ thống đo: <strong>FOX_LAB</strong> | Xuất lúc: <span id="expExportTime">--/--/----</span></div>
+      </div>
+    </div>
+
+    <div class="exp-report-title" contenteditable="true" id="expReportTitle">
+      BÁO CÁO KẾT QUẢ THỰC HÀNH KHẢO SÁT SÓNG ÂM
+    </div>
+    <div class="exp-report-subtitle" contenteditable="true" id="expReportSubtitle">
+      (Chương trình Vật lí 11 – Kết nối tri thức với cuộc sống)
+    </div>
+
+    <div class="exp-info-grid">
+      <div><strong>Nhóm thực hiện:</strong> <span contenteditable="true" id="expGroupName">Nhóm 01</span></div>
+      <div><strong>Lớp:</strong> <span contenteditable="true" id="expClassName">11A1</span></div>
+      <div><strong>Thành viên nhóm:</strong> <span contenteditable="true" id="expStudentNames">..........................................................</span></div>
+      <div><strong>Đối tượng / Nguồn âm:</strong> <span contenteditable="true" id="expSoundSource">Âm thoa chuẩn 440 Hz &amp; Nhạc cụ</span></div>
+    </div>
+
+    <div class="exp-tech-bar">
+      <span><strong>Trục thời gian:</strong> <span contenteditable="true" id="expScaleX">2,00 ms/ô</span></span>
+      <span><strong>Trục biên độ:</strong> <span contenteditable="true" id="expScaleY">0,20 V/ô</span></span>
+      <span><strong>Lấy mẫu:</strong> <span contenteditable="true" id="expSampleRate">48000 Hz</span></span>
+      <span><strong>Chế độ bộ lọc số:</strong> <span contenteditable="true" id="expFilterStatus">Thông dải (45 – 3000 Hz)</span></span>
+    </div>
+
+    <!-- PHẦN I: DAO ĐỘNG KÍ -->
+    <section class="exp-report-part" id="expPart1" data-title="BÁO CÁO THỰC HÀNH: KHẢO SÁT DẠNG SÓNG VÀ ĐO CHU KÌ, TẦN SỐ">
+      <div class="exp-part-title">
+        <span>PHẦN I. KHẢO SÁT DẠNG SÓNG VÀ ĐO CHU KÌ, TẦN SỐ (DAO ĐỘNG KÍ)</span>
+        <div class="exp-part-actions no-print">
+          <button type="button" class="exp-inline-btn exp-inline-btn-pdf" onclick="printSingleExpPart('expPart1')" title="In hoặc lưu PDF A4 chỉ riêng Phần I kèm thông tin nhóm và chữ ký">🖨️ In/PDF phần này</button>
+          <button type="button" class="exp-inline-btn exp-inline-btn-img" onclick="exportExpPartAsImage('expPart1', 'Phan1_DaoDongKi')" title="Xuất toàn bộ Phần I (đồ thị + bảng số liệu) thành 1 file ảnh PNG">🖼️ Xuất ảnh phần này</button>
+          <button type="button" class="exp-inline-btn exp-inline-btn-csv" onclick="exportSingleExpPartCSV('expPart1')" title="Xuất bảng số liệu Phần I ra file Excel CSV">📊 CSV</button>
+        </div>
+      </div>
+
+      <div class="exp-sub-heading">
+        <span>1.1. Đồ thị dao động điều hòa và xác định khoảng thời gian qua 2 điểm mốc (<i>t</i><sub>1</sub>, <i>t</i><sub>2</sub>)</span>
+        <button type="button" class="exp-inline-btn exp-inline-btn-img no-print" onclick="exportSingleExpCanvas('expCanvasOsc', 'Phan1_ChiDoThi')">📷 Chỉ xuất đồ thị</button>
+      </div>
+      <div class="exp-graph-box">
+        <canvas id="expCanvasOsc" data-no-export="true" width="820" height="235"></canvas>
+        <div class="exp-graph-caption" contenteditable="true">
+          Hình 1.1. Đồ thị li độ sóng âm theo thời gian ghi nhận trên chế độ dừng hình (Pause) với hai con trỏ đo chu kì.
+        </div>
+      </div>
+
+      <div class="exp-sub-heading">
+        <span>1.2. Bảng số liệu đo chu kì (<i>T</i>), tần số (<i>f</i>) và tính toán sai số</span>
+        <button type="button" class="exp-inline-btn no-print" onclick="addExpOscRow()">+ Thêm lần đo</button>
+      </div>
+      <table class="exp-data-table">
+        <thead>
+          <tr>
+            <th style="width: 12%;">Lần đo</th>
+            <th style="width: 16%;">Số chu kì (<i>N</i>)</th>
+            <th style="width: 22%;">Thời gian Δ<i>t</i> = <i>t</i><sub>2</sub> − <i>t</i><sub>1</sub> (ms)</th>
+            <th style="width: 22%;">Chu kì <i>T</i> = Δ<i>t</i> / <i>N</i> (ms)</th>
+            <th style="width: 22%;">Tần số <i>f</i> = 1 / <i>T</i> (Hz)</th>
+            <th class="no-print" style="width: 6%;">Xóa</th>
+          </tr>
+        </thead>
+        <tbody id="expOscBody"></tbody>
+        <tfoot>
+          <tr class="summary-row">
+            <td colspan="3">Giá trị trung bình (<span class="overline"><i>x</i></span>)</td>
+            <td id="expAvgT">—</td>
+            <td id="expAvgF">—</td>
+            <td class="no-print"></td>
+          </tr>
+          <tr class="summary-row">
+            <td colspan="3">Sai số tuyệt đối trung bình (<span class="overline">Δ<i>x</i></span>)</td>
+            <td id="expErrT">—</td>
+            <td id="expErrF">—</td>
+            <td class="no-print"></td>
+          </tr>
+        </tfoot>
+      </table>
+
+      <div class="exp-result-box">
+        <p><strong>Kết quả phép đo dao động kí:</strong> &nbsp;
+          <span id="expResT"><i>T</i> = (— ± —) ms</span> &nbsp;|&nbsp;
+          <span id="expResF"><i>f</i> = (— ± —) Hz</span> &nbsp;(Sai số tỉ đối: <span id="expRelF">—</span>)
+        </p>
+      </div>
+    </section>
+
+    <!-- PHẦN II: PHỔ TẦN SỐ FFT -->
+    <section class="exp-report-part" id="expPart2" data-title="BÁO CÁO THỰC HÀNH: PHÂN TÍCH PHỔ TẦN SỐ VÀ ÂM SẮC (FFT)">
+      <div class="exp-part-title">
+        <span>PHẦN II. PHÂN TÍCH PHỔ TẦN SỐ VÀ ÂM SẮC (QUÉT PHỔ FFT)</span>
+        <div class="exp-part-actions no-print">
+          <button type="button" class="exp-inline-btn exp-inline-btn-pdf" onclick="printSingleExpPart('expPart2')">🖨️ In/PDF phần này</button>
+          <button type="button" class="exp-inline-btn exp-inline-btn-img" onclick="exportExpPartAsImage('expPart2', 'Phan2_PhoFFT')">🖼️ Xuất ảnh phần này</button>
+          <button type="button" class="exp-inline-btn exp-inline-btn-csv" onclick="exportSingleExpPartCSV('expPart2')">📊 CSV</button>
+        </div>
+      </div>
+
+      <div class="exp-sub-heading">
+        <span>2.1. Biểu đồ phổ biên độ – tần số của nguồn âm</span>
+        <button type="button" class="exp-inline-btn exp-inline-btn-img no-print" onclick="exportSingleExpCanvas('expCanvasFFT', 'Phan2_ChiPhoFFT')">📷 Chỉ xuất đồ thị</button>
+      </div>
+      <div class="exp-graph-box">
+        <canvas id="expCanvasFFT" data-no-export="true" width="820" height="220"></canvas>
+        <div class="exp-graph-caption" contenteditable="true">
+          Hình 2.1. Phổ tần số FFT thể hiện đỉnh tần số cơ bản <i>f</i><sub>0</sub> và các họa âm bậc cao (2<i>f</i><sub>0</sub>, 3<i>f</i><sub>0</sub>...).
+        </div>
+      </div>
+
+      <div class="exp-sub-heading">
+        <span>2.2. Bảng phân tích tần số cơ bản và đặc trưng họa âm giữa các nguồn âm</span>
+        <button type="button" class="exp-inline-btn no-print" onclick="addExpFftRow()">+ Thêm nguồn âm</button>
+      </div>
+      <table class="exp-data-table">
+        <thead>
+          <tr>
+            <th style="width: 24%;">Nguồn âm khảo sát</th>
+            <th style="width: 18%;">Tần số cơ bản <i>f</i><sub>0</sub> (Hz)</th>
+            <th style="width: 26%;">Các họa âm ghi nhận được</th>
+            <th style="width: 26%;">Đặc điểm dạng sóng &amp; Âm sắc</th>
+            <th class="no-print" style="width: 6%;">Xóa</th>
+          </tr>
+        </thead>
+        <tbody id="expFftBody"></tbody>
+      </table>
+    </section>
+
+    <!-- PHẦN III: MỨC CƯỜNG ĐỘ ÂM (dB) -->
+    <section class="exp-report-part" id="expPart3" data-title="BÁO CÁO THỰC HÀNH: ĐO MỨC CƯỜNG ĐỘ ÂM VÀ SỰ TRUYỀN ÂM (dB)">
+      <div class="exp-part-title">
+        <span>PHẦN III. ĐO MỨC CƯỜNG ĐỘ ÂM VÀ SỰ TRUYỀN ÂM (MÁY ĐO dB)</span>
+        <div class="exp-part-actions no-print">
+          <button type="button" class="exp-inline-btn exp-inline-btn-pdf" onclick="printSingleExpPart('expPart3')">🖨️ In/PDF phần này</button>
+          <button type="button" class="exp-inline-btn exp-inline-btn-img" onclick="exportExpPartAsImage('expPart3', 'Phan3_MucCuongDoAm')">🖼️ Xuất ảnh phần này</button>
+          <button type="button" class="exp-inline-btn exp-inline-btn-csv" onclick="exportSingleExpPartCSV('expPart3')">📊 CSV</button>
+        </div>
+      </div>
+
+      <div class="exp-sub-heading">
+        <span>3.1. Đồ thị biến thiên mức cường độ âm <i>L</i>(<i>t</i>) theo thời gian</span>
+        <button type="button" class="exp-inline-btn exp-inline-btn-img no-print" onclick="exportSingleExpCanvas('expCanvasDb', 'Phan3_ChiDoThiDB')">📷 Chỉ xuất đồ thị</button>
+      </div>
+      <div class="exp-graph-box">
+        <canvas id="expCanvasDb" data-no-export="true" width="820" height="205"></canvas>
+        <div class="exp-graph-caption" contenteditable="true">
+          Hình 3.1. Sự biến thiên mức cường độ âm <i>L</i> (dB) ghi nhận theo thời gian thực khi thay đổi khoảng cách tới nguồn âm.
+        </div>
+      </div>
+
+      <div class="exp-sub-heading">
+        <span>3.2. Bảng số liệu mức cường độ âm theo vị trí / khoảng cách</span>
+        <button type="button" class="exp-inline-btn no-print" onclick="addExpDbRow()">+ Thêm vị trí đo</button>
+      </div>
+      <table class="exp-data-table">
+        <thead>
+          <tr>
+            <th style="width: 14%;">Vị trí đo</th>
+            <th style="width: 20%;">Khoảng cách <i>r</i> (m)</th>
+            <th style="width: 16%;"><i>L</i><sub>min</sub> (dB)</th>
+            <th style="width: 16%;"><i>L</i><sub>max</sub> (dB)</th>
+            <th style="width: 16%;"><i>L</i><sub>TB</sub> (dB)</th>
+            <th style="width: 12%;">Độ giảm Δ<i>L</i></th>
+            <th class="no-print" style="width: 6%;">Xóa</th>
+          </tr>
+        </thead>
+        <tbody id="expDbBody"></tbody>
+      </table>
+    </section>
+
+    <!-- PHẦN IV: BỘ LỌC SỐ VÀ XỬ LÝ TÍN HIỆU -->
+    <section class="exp-report-part" id="expPart4" data-title="BÁO CÁO THỰC HÀNH: KHẢO SÁT HIỆU QUẢ BỘ LỌC SỐ VÀ KHỬ NHIỄU">
+      <div class="exp-part-title">
+        <span>PHẦN IV. KHẢO SÁT HIỆU QUẢ KHỬ NHIỄU CỦA BỘ LỌC SỐ</span>
+        <div class="exp-part-actions no-print">
+          <button type="button" class="exp-inline-btn exp-inline-btn-pdf" onclick="printSingleExpPart('expPart4')">🖨️ In/PDF phần này</button>
+          <button type="button" class="exp-inline-btn exp-inline-btn-img" onclick="exportExpPartAsImage('expPart4', 'Phan4_BoLocSo')">🖼️ Xuất ảnh phần này</button>
+        </div>
+      </div>
+
+      <div class="exp-sub-heading">
+        <span>4.1. So sánh dạng sóng trước và sau khi áp dụng bộ lọc số</span>
+        <button type="button" class="exp-inline-btn exp-inline-btn-img no-print" onclick="exportSingleExpCanvas('expCanvasFilter', 'Phan4_ChiDoThiLoc')">📷 Chỉ xuất đồ thị</button>
+      </div>
+      <div class="exp-graph-box">
+        <canvas id="expCanvasFilter" data-no-export="true" width="820" height="200"></canvas>
+        <div class="exp-graph-caption" contenteditable="true">
+          Hình 4.1. Tín hiệu thu trực tiếp lẫn tạp âm môi trường (trái) và tín hiệu hình sin sạch sau khi qua bộ lọc thông dải (phải).
+        </div>
+      </div>
+
+      <div class="exp-sub-heading">
+        <span>4.2. Đánh giá thông số bộ lọc và độ ổn định kết quả đo</span>
+      </div>
+      <table class="exp-data-table">
+        <thead>
+          <tr>
+            <th style="width: 26%;">Trạng thái bộ lọc</th>
+            <th style="width: 24%;">Dải tần số cho qua</th>
+            <th style="width: 24%;">Độ ổn định dạng sóng</th>
+            <th style="width: 26%;">Tần số đọc được (Hz)</th>
+          </tr>
+        </thead>
+        <tbody id="expFilterBody">
+          <tr>
+            <td contenteditable="true">Tắt bộ lọc (Tín hiệu thô)</td>
+            <td contenteditable="true">Toàn dải (20 – 20000 Hz)</td>
+            <td contenteditable="true">Có gợn nhiễu tần số cao/thấp</td>
+            <td contenteditable="true">436,5 – 445,2 Hz (dao động)</td>
+          </tr>
+          <tr>
+            <td contenteditable="true">Bật lọc thông dải (Band-pass)</td>
+            <td contenteditable="true" id="expFilterBandCell">45 – 3000 Hz</td>
+            <td contenteditable="true">Đường sin mượt, đỉnh rõ nét</td>
+            <td contenteditable="true" id="expFilterFreqCell">440,1 Hz (ổn định)</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- PHẦN V: KẾT LUẬN CHUNG & XÁC NHẬN -->
+    <section class="exp-report-part" id="expPart5">
+      <div class="exp-part-title">
+        <span>PHẦN V. NHẬN XÉT CHUNG VÀ ĐÁNH GIÁ KẾT QUẢ THÍ NGHIỆM</span>
+      </div>
+      <div class="exp-notes-box" contenteditable="true" id="expStudentNotes">
+        1. Kết luận về các đại lượng đặc trưng của sóng âm khảo sát (tần số, chu kì, mức cường độ âm, âm sắc): ........................................................................................................................................<br>
+        2. Phân tích nguyên nhân gây ra sai số trong quá trình thu âm bằng micro và hướng khắc phục (sử dụng bộ lọc số, chọn số chu kì <i>N</i> đủ lớn...): ........................................................................................................................................
+      </div>
+
+      <div class="exp-footer-sign">
+        <div>
+          <strong>ĐẠI DIỆN NHÓM HỌC SINH</strong><br>
+          <em>(Ký và ghi rõ họ tên)</em>
+          <div class="exp-sign-space"></div>
+        </div>
+        <div>
+          <strong>XÁC NHẬN CỦA GIÁO VIÊN HƯỚNG DẪN</strong><br>
+          <em>(Nhận xét / Điểm đánh giá)</em>
+          <div class="exp-sign-space"></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="exp-toast-msg no-print" id="expToastMsg"></div>
+</div>
+
+<script>
+/**
+ * graph-snapshot.js
+ * Module tự động gắn nút "📷 Xuất ảnh đồ thị" lên TẤT CẢ các vùng đồ thị (<canvas>)
+ * trên mọi trang/tab của ứng dụng đo (Dao động kí, Phổ tần số, Mức cường độ âm, Báo cáo...).
+ *
+ * Đặc điểm:
+ * - Chụp CHỈ vùng đồ thị (<canvas>), không dính nút bấm, menu hay giao diện xung quanh.
+ * - Chụp được BẤT KỲ LÚC NÀO (kể cả khi sóng đang chạy thời gian thực hay đang Pause)
+ *   mà không làm gián đoạn luồng đo.
+ * - Tương thích cả máy tính và điện thoại quét mã QR (hỗ trợ cả trình duyệt trong Zalo).
+ */
+(function () {
+  "use strict";
+
+  const DEFAULT_CONFIG = {
+    buttonText: "📷 Xuất ảnh đồ thị",
+    filePrefix: "DoThi_DoAm",
+    addTimestampWatermark: true, // Ghi nhỏ ngày giờ chụp ở góc dưới phải ảnh xuất
+    minWidth: 140,               // Bỏ qua các canvas icon nhỏ
+    minHeight: 80
+  };
+
+  const config = Object.assign({}, DEFAULT_CONFIG, window.GraphSnapshotConfig || {});
+
+  // Chèn CSS một lần duy nhất
+  function injectStyles() {
+    if (document.getElementById("graph-snapshot-styles")) return;
+    const style = document.createElement("style");
+    style.id = "graph-snapshot-styles";
+    style.textContent = `
+      .gs-canvas-wrapper {
+        position: relative !important;
+        display: block;
+        width: 100%;
+      }
+      .gs-snap-btn {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        z-index: 25;
+        background: rgba(15, 23, 42, 0.78);
+        color: #f8fafc;
+        border: 1px solid rgba(148, 163, 184, 0.45);
+        border-radius: 6px;
+        padding: 5px 10px;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        backdrop-filter: blur(4px);
+        transition: background 0.15s, transform 0.08s, opacity 0.15s;
+        user-select: none;
+        line-height: 1.2;
+      }
+      .gs-snap-btn:hover {
+        background: #0284c7;
+        border-color: #38bdf8;
+      }
+      .gs-snap-btn:active {
+        transform: scale(0.96);
+      }
+      @media print {
+        .gs-snap-btn, .gs-toast, .gs-modal {
+          display: none !important;
+        }
+      }
+      .gs-toast {
+        position: fixed;
+        bottom: 18px;
+        right: 18px;
+        z-index: 99999;
+        background: #0f172a;
+        color: #f8fafc;
+        border: 1px solid #334155;
+        padding: 9px 15px;
+        border-radius: 8px;
+        font-family: system-ui, -apple-system, sans-serif;
+        font-size: 13px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        opacity: 0;
+        transform: translateY(8px);
+        transition: opacity 0.2s, transform 0.2s;
+        pointer-events: none;
+      }
+      .gs-toast.show {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      /* Modal xem/lưu ảnh dự phòng cho trình duyệt nhúng trên điện thoại (Zalo/FB) */
+      .gs-modal {
+        position: fixed;
+        inset: 0;
+        z-index: 100000;
+        background: rgba(15, 23, 42, 0.85);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+        font-family: system-ui, -apple-system, sans-serif;
+      }
+      .gs-modal-card {
+        background: #1e293b;
+        color: #f8fafc;
+        border-radius: 10px;
+        padding: 14px;
+        max-width: 95vw;
+        max-height: 90vh;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+      }
+      .gs-modal-card img {
+        max-width: 100%;
+        max-height: 65vh;
+        border: 1px solid #475569;
+        border-radius: 6px;
+        display: block;
+        margin: 10px auto;
+      }
+      .gs-modal-close {
+        background: #2563eb;
+        color: #fff;
+        border: none;
+        padding: 7px 16px;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  function showToast(message) {
+    let toast = document.getElementById("gs-global-toast");
+    if (!toast) {
+      toast = document.createElement("div");
+      toast.id = "gs-global-toast";
+      toast.className = "gs-toast";
+      document.body.appendChild(toast);
+    }
+    toast.textContent = message;
+    toast.classList.add("show");
+    clearTimeout(window._gsToastTimer);
+    window._gsToastTimer = setTimeout(() => toast.classList.remove("show"), 2600);
+  }
+
+  function formatTimestamp() {
+    const now = new Date();
+    const pad = (n) => String(n).padStart(2, "0");
+    return {
+      file: `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}_${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`,
+      display: `${pad(now.getDate())}/${pad(now.getMonth() + 1)}/${now.getFullYear()} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`
+    };
+  }
+
+  // Xác định tên gợi nhớ cho từng đồ thị (Oscilloscope, FFT, dB...)
+  function detectGraphLabel(canvas, customLabel) {
+    if (customLabel) return customLabel;
+    const attrTitle = canvas.getAttribute("data-graph-title") || canvas.getAttribute("aria-label") || canvas.id;
+    if (attrTitle) {
+      return attrTitle.replace(/[^a-zA-Z0-9À-ỹ_-]+/g, "_");
+    }
+    return "BieuDo";
+  }
+
+  // Hàm chụp CHỈ vùng đồ thị của một canvas bất kỳ tại thời điểm hiện tại
+  function captureCanvasOnly(canvas, customName) {
+    if (!canvas || !(canvas instanceof HTMLCanvasElement)) return;
+
+    const w = canvas.width;
+    const h = canvas.height;
+    if (w === 0 || h === 0) return;
+
+    // Tạo canvas phụ trong bộ nhớ để chụp nguyên khung hình hiện tại mà không làm dừng đồ thị đang chạy
+    const offscreen = document.createElement("canvas");
+    offscreen.width = w;
+    offscreen.height = h;
+    const ctx = offscreen.getContext("2d");
+
+    // Sao chép toàn bộ vùng đồ thị
+    ctx.drawImage(canvas, 0, 0, w, h);
+
+    const ts = formatTimestamp();
+
+    // Tùy chọn: đóng dấu thời gian nhỏ ở góc dưới bên phải ảnh đồ thị để đối chiếu số liệu
+    if (config.addTimestampWatermark) {
+      const text = ts.display;
+      ctx.save();
+      ctx.font = "12px system-ui, -apple-system, sans-serif";
+      const metrics = ctx.measureText(text);
+      const padX = 8;
+      const boxW = metrics.width + padX * 2;
+      const boxH = 20;
+      const x = w - boxW - 6;
+      const y = h - boxH - 6;
+
+      ctx.fillStyle = "rgba(15, 23, 42, 0.65)";
+      ctx.fillRect(x, y, boxW, boxH);
+      ctx.fillStyle = "#f8fafc";
+      ctx.fillText(text, x + padX, y + 14);
+      ctx.restore();
+    }
+
+    const label = detectGraphLabel(canvas, customName);
+    const fileName = `${config.filePrefix}_${label}_${ts.file}.png`;
+
+    // Kiểm tra trình duyệt nhúng (Zalo, Facebook WebView) trên điện thoại
+    const isInAppWebView = /Zalo|FBAN|FBAV|Instagram/i.test(navigator.userAgent || "");
+
+    offscreen.toBlob((blob) => {
+      if (!blob || isInAppWebView) {
+        const dataUrl = offscreen.toDataURL("image/png");
+        openFallbackPreview(dataUrl, fileName);
+        return;
+      }
+
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1200);
+      showToast(`Đã lưu ảnh đồ thị: ${fileName}`);
+    }, "image/png");
+  }
+
+  function openFallbackPreview(dataUrl, fileName) {
+    const modal = document.createElement("div");
+    modal.className = "gs-modal";
+    modal.innerHTML = `
+      <div class="gs-modal-card">
+        <div style="font-weight:bold; font-size:14px;">Ảnh chụp vùng đồ thị (${fileName})</div>
+        <div style="font-size:12px; color:#cbd5e1; margin-top:4px;">Nhấn giữ vào ảnh bên dưới để lưu về máy</div>
+        <img src="${dataUrl}" alt="Đồ thị sóng âm" />
+        <button class="gs-modal-close">Đóng</button>
+      </div>
+    `;
+    modal.querySelector(".gs-modal-close").onclick = () => modal.remove();
+    modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+    document.body.appendChild(modal);
+  }
+
+  // Gắn nút xuất ảnh vào từng vùng chứa <canvas>
+  function attachButtonToCanvas(canvas) {
+    if (!canvas || canvas.dataset.gsAttached === "true") return;
+    if (canvas.getAttribute("data-no-export") === "true") return;
+
+    const rect = canvas.getBoundingClientRect();
+    const logicalW = canvas.width || rect.width;
+    const logicalH = canvas.height || rect.height;
+    if (logicalW < config.minWidth || logicalH < config.minHeight) return;
+
+    canvas.dataset.gsAttached = "true";
+
+    const parent = canvas.parentElement;
+    if (!parent) return;
+
+    const computedPos = window.getComputedStyle(parent).position;
+    if (computedPos === "static") {
+      parent.style.position = "relative";
+    }
+
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "gs-snap-btn no-print";
+    btn.textContent = config.buttonText;
+    btn.title = "Chụp và tải xuống chỉ riêng vùng đồ thị này dưới dạng ảnh PNG";
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      captureCanvasOnly(canvas);
+    });
+
+    parent.appendChild(btn);
+  }
+
+  function scanAndAttachAll() {
+    injectStyles();
+    const canvases = document.querySelectorAll("canvas");
+    canvases.forEach(attachButtonToCanvas);
+  }
+
+  // Xuất hàm toàn cục để có thể gọi từ bất kỳ nút tùy chỉnh nào trên giao diện
+  window.exportGraphCanvas = function (target, customName) {
+    const canvas = typeof target === "string" ? document.querySelector(target) : target;
+    captureCanvasOnly(canvas, customName);
+  };
+
+  // Tự động chạy khi tải trang và theo dõi nếu có tab/đồ thị mới sinh ra
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", scanAndAttachAll);
+  } else {
+    scanAndAttachAll();
+  }
+
+  const observer = new MutationObserver(() => {
+    scanAndAttachAll();
+  });
+  observer.observe(document.documentElement, { childList: true, subtree: true });
+})();
+
+</script>
+
+<script>
+(function () {
+    "use strict";
+
+    const EXP_STORAGE_KEY = "daodongki_report_data";
+    const EXP_DEFAULT_TITLE = "BÁO CÁO KẾT QUẢ THỰC HÀNH KHẢO SÁT SÓNG ÂM";
+
+    let expOscRows = [];
+    let expFftRows = [];
+    let expDbRows = [];
+    let expLiveImages = { osc: null, fft: null, db: null };
+
+    function showExpToast(text) {
+        const toast = document.getElementById("expToastMsg");
+        if (!toast) return;
+        toast.textContent = text;
+        toast.classList.add("show");
+        clearTimeout(window._expToastTimer);
+        window._expToastTimer = setTimeout(() => toast.classList.remove("show"), 2600);
+    }
+
+    window.openExpReportModal = function () {
+        const overlay = document.getElementById("expReportModalOverlay");
+        if (!overlay) return;
+        document.getElementById("expExportTime").textContent = new Date().toLocaleString("vi-VN");
+        overlay.style.display = "block";
+        syncFoxLabToReport(false);
+
+        const params = new URLSearchParams(window.location.search);
+        const partParam = params.get("parts") || params.get("part");
+        if (partParam) {
+            applyExpPreset(partParam);
+        }
+    };
+
+    window.closeExpReportModal = function () {
+        const overlay = document.getElementById("expReportModalOverlay");
+        if (overlay) overlay.style.display = "none";
+        document.body.classList.remove("printing-exp-report");
+    };
+
+    // Thu thập tự động số liệu và ảnh đồ thị đang đo từ FOX_LAB
+    window.syncFoxLabToReport = function (notifyUser) {
+        let hasLive = false;
+        const banner = document.getElementById("expReportStatusBanner");
+        const statusText = document.getElementById("expReportStatusText");
+
+        // 1. Cập nhật thanh thông số kỹ thuật từ FOX_LAB
+        if (typeof totalTimeOnScreen === "number" && totalTimeOnScreen > 0) {
+            const msPerDiv = (totalTimeOnScreen / 10) * 1000;
+            document.getElementById("expScaleX").textContent = msPerDiv.toFixed(2).replace(".", ",") + " ms/ô";
+        }
+        if (typeof currentZoomY === "number" && currentZoomY > 0) {
+            const vPerDiv = 1.0 / currentZoomY;
+            document.getElementById("expScaleY").textContent = vPerDiv.toFixed(2).replace(".", ",") + " V/ô";
+        }
+        if (typeof sampleRate === "number" && sampleRate > 0) {
+            document.getElementById("expSampleRate").textContent = Math.round(sampleRate) + " Hz";
+        }
+        if (typeof channelConfig !== "undefined" && channelConfig.A) {
+            const hp = channelConfig.A.filterHP ? Math.round(channelConfig.A.filterHP.frequency.value) : 45;
+            const lp = channelConfig.A.filterLP ? Math.round(channelConfig.A.filterLP.frequency.value) : 3000;
+            const bandLabel = `Thông dải (${hp} – ${lp} Hz)`;
+            document.getElementById("expFilterStatus").textContent = bandLabel;
+            const bandCell = document.getElementById("expFilterBandCell");
+            if (bandCell) bandCell.textContent = `${hp} – ${lp} Hz`;
+        }
+
+        // 2. Thu thập số liệu Dao động kí (2 điểm thủ công hoặc tần số tự động)
+        const liveOsc = [];
+        if (typeof manualPoints !== "undefined" && Array.isArray(manualPoints) && manualPoints.length === 2 &&
+            typeof getVisibleChannelAWindow === "function" && typeof calculateFromGraphClicks === "function") {
+            const winInfo = getVisibleChannelAWindow();
+            if (winInfo) {
+                const res = calculateFromGraphClicks(manualPoints[0], manualPoints[1], winInfo);
+                if (res && res.dt_ms > 0 && res.T_ms > 0) {
+                    const estCycles = Math.max(1, Math.round(res.dt_ms / res.T_ms));
+                    liveOsc.push({ soChuKi: estCycles, deltaT_ms: Number(res.dt_ms.toFixed(2)) });
+                }
+            }
+        }
+        const liveFreq = (typeof lockedFrequency === "number" && lockedFrequency > 0 && typeof detectedFrequency === "number" && detectedFrequency > 0)
+            ? detectedFrequency
+            : (typeof detectedFrequency === "number" && detectedFrequency > 0 ? detectedFrequency : 0);
+
+        if (liveFreq > 0) {
+            const T_ms = 1000 / liveFreq;
+            const N = 5;
+            liveOsc.push({ soChuKi: N, deltaT_ms: Number((N * T_ms).toFixed(2)) });
+            const freqCell = document.getElementById("expFilterFreqCell");
+            if (freqCell) freqCell.textContent = `${liveFreq.toFixed(1).replace(".", ",")} Hz (ổn định)`;
+            document.getElementById("expSoundSource").textContent = `Nguồn âm đo trực tiếp (~${liveFreq.toFixed(1)} Hz)`;
+        }
+
+        if (liveOsc.length > 0) {
+            expOscRows = liveOsc;
+            hasLive = true;
+        }
+
+        // 3. Chụp ảnh canvas chính (Oscilloscope hoặc dB Meter)
+        const mainCanvas = document.getElementById("oscilloscope");
+        const curMode = (typeof getDisplayMode === "function") ? getDisplayMode() : "oscilloscope";
+        const hasSignalData = (typeof channelConfig !== "undefined") &&
+            ((channelConfig.A && channelConfig.A.index > 256) || (channelConfig.B && channelConfig.B.index > 256));
+
+        if (mainCanvas && mainCanvas.width > 0 && hasSignalData) {
+            try {
+                const snapDataUrl = mainCanvas.toDataURL("image/png");
+                if (curMode === "dbMeter") {
+                    expLiveImages.db = snapDataUrl;
+                } else {
+                    expLiveImages.osc = snapDataUrl;
+                }
+                hasLive = true;
+            } catch (e) {}
+        }
+
+        // 4. Thu thập dữ liệu Phổ tần số FFT nếu đã quét
+        if (typeof fftLastAnalysis !== "undefined" && fftLastAnalysis && !fftLastAnalysis.isEmptySignal) {
+            const f0 = fftLastAnalysis.hasValidF0 ? fftLastAnalysis.f0 : (fftLastAnalysis.presentPeaks && fftLastAnalysis.presentPeaks[0] ? fftLastAnalysis.presentPeaks[0].freq : 0);
+            const harms = (fftLastAnalysis.harmonicsList || [])
+                .filter(h => h.isPresent)
+                .map(h => `${h.order}f₀ (${Math.round(h.targetFreq)} Hz)`)
+                .join(", ");
+            if (f0 > 0) {
+                expFftRows = [{
+                    nguon: document.getElementById("expSoundSource").textContent.trim() || "Nguồn âm khảo sát",
+                    f0: f0.toFixed(1).replace(".", ","),
+                    hoaAm: harms || "Chỉ có 1 đỉnh cơ bản f₀ rõ nét",
+                    dacDiem: (fftLastAnalysis.harmonicsList && fftLastAnalysis.harmonicsList.filter(h => h.isPresent).length > 1)
+                        ? "Sóng tuần hoàn giàu họa âm"
+                        : "Sóng hình sin gần thuần khiết"
+                }];
+                hasLive = true;
+            }
+            const fftCanvas = document.getElementById("fftDisplayCanvas");
+            if (fftCanvas && fftCanvas.width > 0) {
+                try {
+                    expLiveImages.fft = fftCanvas.toDataURL("image/png");
+                } catch (e) {}
+            }
+        }
+
+        // 5. Thu thập dữ liệu Mức cường độ âm (dB) nếu có lịch sử đo
+        if (typeof dbHistoryA !== "undefined" && Array.isArray(dbHistoryA) && dbHistoryA.length > 0) {
+            const vals = dbHistoryA.map(item => typeof item === "number" ? item : (item.db || item.val || 0)).filter(v => v > 0);
+            if (vals.length > 0) {
+                const lMin = Math.min(...vals);
+                const lMax = Math.max(...vals);
+                const lAvg = vals.reduce((a, b) => a + b, 0) / vals.length;
+                let rEst = 1.0;
+                if (typeof sourceRefState !== "undefined" && sourceRefState && sourceRefState.r0 > 0 && sourceRefState.L0 > 0) {
+                    rEst = Number((sourceRefState.r0 * Math.pow(10, (sourceRefState.L0 - lAvg) / 20)).toFixed(2));
+                }
+                expDbRows = [{
+                    viTri: "Vị trí đo Kênh A",
+                    r: rEst,
+                    lMin: Number(lMin.toFixed(1)),
+                    lMax: Number(lMax.toFixed(1)),
+                    lAvg: Number(lAvg.toFixed(1))
+                }];
+                hasLive = true;
+            }
+        }
+
+        if (hasLive) {
+            if (banner) banner.classList.add("live-mode");
+            if (statusText) {
+                statusText.innerHTML = "<strong>✅ Đã đồng bộ số liệu &amp; đồ thị thực tế từ máy đo FOX_LAB!</strong> Bạn có thể nhấn trực tiếp vào từng ô để chỉnh sửa hoặc xuất PDF / Ảnh từng phần.";
+            }
+            // Nếu chưa có dữ liệu ở một phần phụ, giữ dữ liệu mẫu bổ trợ cho phần đó để bảng không bị trống
+            if (expOscRows.length === 0) expOscRows = [{ soChuKi: 5, deltaT_ms: 11.36 }];
+            if (expFftRows.length === 0) expFftRows = [{ nguon: "Âm thoa / Nguồn âm", f0: liveFreq > 0 ? liveFreq.toFixed(1).replace(".", ",") : "440,0", hoaAm: "f₀ (chưa mở tab quét FFT)", dacDiem: "Dao động điều hòa" }];
+            if (expDbRows.length === 0) expDbRows = [{ viTri: "Điểm 1", r: 1.0, lMin: 65.0, lMax: 67.2, lAvg: 66.1 }];
+
+            renderExpOscTable();
+            renderExpFftTable();
+            renderExpDbTable();
+            redrawAllExpCanvases();
+            saveExpReportToStorage();
+            if (notifyUser) showExpToast("Đã cập nhật số liệu mới nhất từ máy đo FOX_LAB!");
+        } else {
+            // Kiểm tra localStorage hoặc nạp dữ liệu mẫu
+            if (banner) banner.classList.remove("live-mode");
+            if (statusText) {
+                statusText.innerHTML = "<strong>Chế độ xem trước (Dữ liệu mẫu):</strong> Chưa có phép đo đang chạy trên máy đo. Hãy đo sóng trên FOX_LAB rồi mở lại báo cáo, hoặc dùng ngay mẫu dưới đây.";
+            }
+            const savedRaw = localStorage.getItem(EXP_STORAGE_KEY);
+            if (savedRaw && !notifyUser) {
+                try {
+                    const data = JSON.parse(savedRaw);
+                    applyExpIncomingData(data);
+                    return;
+                } catch (e) {}
+            }
+            loadExpSampleAll(notifyUser);
+        }
+    };
+
+    function saveExpReportToStorage() {
+        try {
+            const payload = {
+                tenThiNghiem: document.getElementById("expReportTitle").textContent.trim(),
+                nguonAm: document.getElementById("expSoundSource").textContent.trim(),
+                nhom: document.getElementById("expGroupName").textContent.trim(),
+                lop: document.getElementById("expClassName").textContent.trim(),
+                cacLanDo: expOscRows,
+                phoTanSo: expFftRows,
+                mucCuongDoAm: expDbRows,
+                anhDoThiBase64: expLiveImages.osc,
+                anhPhoBase64: expLiveImages.fft,
+                anhDbBase64: expLiveImages.db
+            };
+            localStorage.setItem(EXP_STORAGE_KEY, JSON.stringify(payload));
+        } catch (e) {}
+    }
+
+    function applyExpIncomingData(data) {
+        if (data.tenThiNghiem) document.getElementById("expReportTitle").textContent = data.tenThiNghiem;
+        if (data.nguonAm) document.getElementById("expSoundSource").textContent = data.nguonAm;
+        if (data.nhom) document.getElementById("expGroupName").textContent = data.nhom;
+        if (data.lop) document.getElementById("expClassName").textContent = data.lop;
+        if (Array.isArray(data.cacLanDo) && data.cacLanDo.length) expOscRows = data.cacLanDo;
+        if (Array.isArray(data.phoTanSo) && data.phoTanSo.length) expFftRows = data.phoTanSo;
+        if (Array.isArray(data.mucCuongDoAm) && data.mucCuongDoAm.length) expDbRows = data.mucCuongDoAm;
+        expLiveImages.osc = data.anhDoThiBase64 || null;
+        expLiveImages.fft = data.anhPhoBase64 || null;
+        expLiveImages.db = data.anhDbBase64 || null;
+
+        renderExpOscTable();
+        renderExpFftTable();
+        renderExpDbTable();
+        redrawAllExpCanvases();
+    }
+
+    window.applyExpPreset = function (mode) {
+        document.querySelectorAll(".exp-rep-preset").forEach(b => b.classList.remove("active"));
+        const activeBtn = document.getElementById(`expPreset-${mode}`);
+        if (activeBtn) activeBtn.classList.add("active");
+
+        const parts = ["1", "2", "3", "4"];
+        if (mode === "all") {
+            parts.forEach(p => document.getElementById(`expChk-part${p}`).checked = true);
+            document.getElementById("expChk-part5").checked = true;
+            document.getElementById("expReportTitle").textContent = EXP_DEFAULT_TITLE;
+        } else {
+            const selected = String(mode).split(",");
+            parts.forEach(p => {
+                document.getElementById(`expChk-part${p}`).checked = selected.includes(p);
+            });
+            document.getElementById("expChk-part5").checked = true;
+            if (selected.length === 1) {
+                const sec = document.getElementById(`expPart${selected[0]}`);
+                if (sec && sec.dataset.title) {
+                    document.getElementById("expReportTitle").textContent = sec.dataset.title;
+                }
+            }
+        }
+        syncExpCheckboxes();
+    };
+
+    window.syncExpCheckboxes = function () {
+        ["1", "2", "3", "4", "5"].forEach(num => {
+            const chk = document.getElementById(`expChk-part${num}`);
+            const el = document.getElementById(`expPart${num}`);
+            if (chk && el) el.classList.toggle("hidden-part", !chk.checked);
+        });
+    };
+
+    function triggerCleanA4Print(onAfterPrint) {
+        document.body.classList.add("printing-exp-report");
+        let restored = false;
+        const cleanup = () => {
+            if (restored) return;
+            restored = true;
+            document.body.classList.remove("printing-exp-report");
+            window.removeEventListener("afterprint", cleanup);
+            if (typeof onAfterPrint === "function") onAfterPrint();
+        };
+        window.addEventListener("afterprint", cleanup);
+        setTimeout(() => {
+            window.print();
+            setTimeout(cleanup, 600);
+        }, 80);
+    }
+
+    window.printCurrentExpReport = function () {
+        triggerCleanA4Print();
+    };
+
+    window.printSingleExpPart = function (partId) {
+        const allParts = ["expPart1", "expPart2", "expPart3", "expPart4"];
+        const prevStates = {};
+        const prevTitle = document.getElementById("expReportTitle").textContent;
+
+        allParts.forEach(id => {
+            const el = document.getElementById(id);
+            prevStates[id] = el.classList.contains("hidden-part");
+            if (id === partId) {
+                el.classList.remove("hidden-part", "temp-print-hide");
+                if (el.dataset.title) {
+                    document.getElementById("expReportTitle").textContent = el.dataset.title;
+                }
+            } else {
+                el.classList.add("temp-print-hide");
+            }
+        });
+
+        const part5 = document.getElementById("expPart5");
+        const prevPart5 = part5.classList.contains("hidden-part");
+        part5.classList.remove("hidden-part", "temp-print-hide");
+
+        triggerCleanA4Print(() => {
+            allParts.forEach(id => {
+                const el = document.getElementById(id);
+                el.classList.remove("temp-print-hide");
+                el.classList.toggle("hidden-part", prevStates[id]);
+            });
+            part5.classList.toggle("hidden-part", prevPart5);
+            document.getElementById("expReportTitle").textContent = prevTitle;
+        });
+    };
+
+    window.exportExpPartAsImage = function (partId, fileTag) {
+        const section = document.getElementById(partId);
+        if (!section) return;
+
+        const clone = section.cloneNode(true);
+        clone.querySelectorAll(".no-print").forEach(el => el.remove());
+
+        const origCanvases = section.querySelectorAll("canvas");
+        const cloneCanvases = clone.querySelectorAll("canvas");
+        origCanvases.forEach((origC, idx) => {
+            if (cloneCanvases[idx]) {
+                const img = document.createElement("img");
+                img.src = origC.toDataURL("image/png");
+                img.style.width = (origC.offsetWidth || 680) + "px";
+                img.style.maxWidth = "100%";
+                img.style.height = "auto";
+                img.style.display = "block";
+                img.style.margin = "0 auto";
+                cloneCanvases[idx].parentNode.replaceChild(img, cloneCanvases[idx]);
+            }
+        });
+
+        const rect = section.getBoundingClientRect();
+        const width = Math.ceil(rect.width) || 740;
+        const height = Math.ceil(rect.height) + 28;
+
+        const scopedStyle = `
+            * { box-sizing: border-box; }
+            .overline { text-decoration: overline; }
+            .exp-part-title { font-size: 12pt; font-weight: bold; text-transform: uppercase; color: #0f172a; background: #f1f5f9; border-left: 4px solid #0f172a; padding: 5px 8px; margin-bottom: 8px; }
+            .exp-sub-heading { font-size: 11.8pt; font-weight: bold; margin: 9px 0 5px; color: #1e293b; }
+            .exp-graph-box { border: 1px solid #334155; padding: 7px; text-align: center; background: #ffffff; margin-bottom: 10px; }
+            .exp-graph-caption { font-size: 10.8pt; font-style: italic; margin-top: 5px; color: #1e293b; }
+            table.exp-data-table { width: 100%; border-collapse: collapse; margin-bottom: 9px; font-size: 11pt; }
+            table.exp-data-table th, table.exp-data-table td { border: 1px solid #0f172a; padding: 4px 6px; text-align: center; vertical-align: middle; }
+            table.exp-data-table th { background-color: #f1f5f9; font-weight: bold; }
+            table.exp-data-table tr.summary-row td { background-color: #f8fafc; font-weight: bold; }
+            .exp-result-box { border: 1px solid #0f172a; background: #f8fafc; padding: 7px 11px; margin-bottom: 10px; font-size: 11.5pt; }
+        `;
+        const groupName = document.getElementById("expGroupName").textContent.trim();
+        const className = document.getElementById("expClassName").textContent.trim();
+
+        const wrapperHtml = `
+            <div xmlns="http://www.w3.org/1999/xhtml" style="background:#ffffff; padding:12px 16px; font-family:'Times New Roman', serif; color:#0f172a;">
+              <style>${scopedStyle}</style>
+              <div style="display:flex; justify-content:space-between; font-size:11pt; border-bottom:1px solid #94a3b8; padding-bottom:4px; margin-bottom:6px;">
+                <span><strong>FOX_LAB</strong> | ${groupName} – Lớp ${className}</span>
+                <span>Thời gian: ${new Date().toLocaleString("vi-VN")}</span>
+              </div>
+              ${clone.outerHTML}
+            </div>
+        `;
+
+        const svg = `
+            <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height + 36}">
+              <foreignObject width="100%" height="100%">
+                ${wrapperHtml}
+              </foreignObject>
+            </svg>
+        `;
+
+        const svgBlob = new Blob([svg], { type: "image/svg+xml;charset=utf-8" });
+        const url = URL.createObjectURL(svgBlob);
+        const img = new Image();
+
+        img.onload = () => {
+            const scale = 2;
+            const outCanvas = document.createElement("canvas");
+            outCanvas.width = width * scale;
+            outCanvas.height = (height + 36) * scale;
+            const ctx = outCanvas.getContext("2d");
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, outCanvas.width, outCanvas.height);
+            ctx.scale(scale, scale);
+            ctx.drawImage(img, 0, 0);
+            URL.revokeObjectURL(url);
+
+            try {
+                outCanvas.toBlob((blob) => {
+                    if (!blob) return;
+                    const pngUrl = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = pngUrl;
+                    a.download = `FOXLAB_${fileTag}.png`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    setTimeout(() => URL.revokeObjectURL(pngUrl), 1000);
+                    showExpToast(`Đã xuất ảnh trọn gói: FOXLAB_${fileTag}.png`);
+                }, "image/png");
+            } catch (err) {
+                printSingleExpPart(partId);
+            }
+        };
+        img.onerror = () => {
+            URL.revokeObjectURL(url);
+            printSingleExpPart(partId);
+        };
+        img.src = url;
+    };
+
+    window.loadExpSampleAll = function (notifyUser) {
+        expLiveImages = { osc: null, fft: null, db: null };
+        expOscRows = [
+            { soChuKi: 5, deltaT_ms: 11.35 },
+            { soChuKi: 5, deltaT_ms: 11.38 },
+            { soChuKi: 5, deltaT_ms: 11.34 }
+        ];
+        expFftRows = [
+            { nguon: "Âm thoa chuẩn 440 Hz", f0: "440,2", hoaAm: "Chỉ có 1 đỉnh cơ bản rõ nét", dacDiem: "Sóng sin thuần khiết, âm thanh trong" },
+            { nguon: "Sáo trúc (Nốt La 4)", f0: "442,0", hoaAm: "f₀, 2f₀ (884 Hz), 3f₀ (1326 Hz)", dacDiem: "Đường sóng có các gợn hài hòa, âm êm" },
+            { nguon: "Giọng nói (Nguyên âm A)", f0: "215,5", hoaAm: "Nhiều họa âm bậc cao (431, 646, 862 Hz)", dacDiem: "Dạng sóng tuần hoàn phức tạp" }
+        ];
+        expDbRows = [
+            { viTri: "Điểm 1", r: 0.5, lMin: 74.2, lMax: 75.8, lAvg: 75.0 },
+            { viTri: "Điểm 2", r: 1.0, lMin: 68.1, lMax: 69.5, lAvg: 68.8 },
+            { viTri: "Điểm 3", r: 2.0, lMin: 62.0, lMax: 63.4, lAvg: 62.7 }
+        ];
+
+        renderExpOscTable();
+        renderExpFftTable();
+        renderExpDbTable();
+        redrawAllExpCanvases();
+        if (notifyUser) showExpToast("Đã nạp bộ dữ liệu mẫu tham khảo!");
+    };
+
+    window.redrawAllExpCanvases = function () {
+        if (expLiveImages.osc) drawExpBase64ToCanvas("expCanvasOsc", expLiveImages.osc);
+        else drawExpSampleOsc();
+
+        if (expLiveImages.fft) drawExpBase64ToCanvas("expCanvasFFT", expLiveImages.fft);
+        else drawExpSampleFFT();
+
+        if (expLiveImages.db) drawExpBase64ToCanvas("expCanvasDb", expLiveImages.db);
+        else drawExpSampleDb();
+
+        drawExpSampleFilter();
+    };
+
+    function drawExpGrid(ctx, w, h, cols, rows) {
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, w, h);
+        ctx.strokeStyle = "#cbd5e1";
+        ctx.lineWidth = 1;
+        for (let i = 0; i <= cols; i++) {
+            ctx.beginPath();
+            ctx.moveTo((i * w) / cols, 0);
+            ctx.lineTo((i * w) / cols, h);
+            ctx.stroke();
+        }
+        for (let j = 0; j <= rows; j++) {
+            ctx.beginPath();
+            ctx.moveTo(0, (j * h) / rows);
+            ctx.lineTo(w, (j * h) / rows);
+            ctx.stroke();
+        }
+    }
+
+    function drawExpSampleOsc() {
+        const c = document.getElementById("expCanvasOsc");
+        if (!c) return;
+        const ctx = c.getContext("2d");
+        const w = c.width, h = c.height;
+        drawExpGrid(ctx, w, h, 14, 6);
+
+        ctx.strokeStyle = "#475569";
+        ctx.lineWidth = 1.4;
+        ctx.beginPath();
+        ctx.moveTo(0, h / 2);
+        ctx.lineTo(w, h / 2);
+        ctx.stroke();
+
+        ctx.strokeStyle = "#0f172a";
+        ctx.lineWidth = 2.1;
+        ctx.beginPath();
+        const totalMs = 28;
+        for (let x = 0; x <= w; x++) {
+            const t = ((x / w) * totalMs) / 1000;
+            const y = h / 2 - h * 0.36 * Math.sin(2 * Math.PI * 440 * t);
+            x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+
+        const x1 = (2.27 / totalMs) * w;
+        const x2 = (13.64 / totalMs) * w;
+        ctx.strokeStyle = "#dc2626";
+        ctx.setLineDash([5, 4]);
+        [x1, x2].forEach((xp, i) => {
+            ctx.beginPath();
+            ctx.moveTo(xp, 8);
+            ctx.lineTo(xp, h - 8);
+            ctx.stroke();
+            ctx.fillStyle = "#dc2626";
+            ctx.font = "bold 13px Times New Roman";
+            ctx.fillText(i === 0 ? "t₁" : "t₂", xp + 5, 20);
+        });
+        ctx.setLineDash([]);
+    }
+
+    function drawExpSampleFFT() {
+        const c = document.getElementById("expCanvasFFT");
+        if (!c) return;
+        const ctx = c.getContext("2d");
+        const w = c.width, h = c.height;
+        drawExpGrid(ctx, w, h, 12, 5);
+
+        const baseLine = h - 24;
+        ctx.strokeStyle = "#334155";
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(30, baseLine);
+        ctx.lineTo(w - 15, baseLine);
+        ctx.stroke();
+
+        ctx.strokeStyle = "#1d4ed8";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        for (let x = 30; x < w - 15; x++) {
+            const freq = ((x - 30) / (w - 45)) * 2000;
+            const p1 = 145 * Math.exp(-Math.pow((freq - 440) / 18, 2));
+            const p2 = 62 * Math.exp(-Math.pow((freq - 880) / 18, 2));
+            const p3 = 28 * Math.exp(-Math.pow((freq - 1320) / 18, 2));
+            const y = baseLine - (p1 + p2 + p3 + 4);
+            x === 30 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+
+        ctx.fillStyle = "#0f172a";
+        ctx.font = "bold 12px Times New Roman";
+        const x440 = 30 + (440 / 2000) * (w - 45);
+        const x880 = 30 + (880 / 2000) * (w - 45);
+        ctx.fillText("f₀ = 440 Hz", x440 - 28, baseLine - 152);
+        ctx.fillText("2f₀ = 880 Hz", x880 - 30, baseLine - 70);
+        ctx.fillText("Tần số f (Hz)", w - 95, h - 6);
+    }
+
+    function drawExpSampleDb() {
+        const c = document.getElementById("expCanvasDb");
+        if (!c) return;
+        const ctx = c.getContext("2d");
+        const w = c.width, h = c.height;
+        drawExpGrid(ctx, w, h, 10, 5);
+
+        const steps = [
+            { label: "r = 0,5 m (75 dB)", y: h * 0.25 },
+            { label: "r = 1,0 m (68,8 dB)", y: h * 0.48 },
+            { label: "r = 2,0 m (62,7 dB)", y: h * 0.72 }
+        ];
+
+        ctx.strokeStyle = "#059669";
+        ctx.lineWidth = 2.2;
+        ctx.beginPath();
+        for (let x = 20; x <= w - 20; x++) {
+            const ratio = x / w;
+            const baseY = ratio < 0.35 ? steps[0].y : ratio < 0.68 ? steps[1].y : steps[2].y;
+            const y = baseY + Math.sin(x * 0.35) * 4;
+            x === 20 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+
+        ctx.fillStyle = "#0f172a";
+        ctx.font = "bold 12px Times New Roman";
+        ctx.fillText(steps[0].label, 45, steps[0].y - 10);
+        ctx.fillText(steps[1].label, w * 0.39, steps[1].y - 10);
+        ctx.fillText(steps[2].label, w * 0.72, steps[2].y - 10);
+    }
+
+    function drawExpSampleFilter() {
+        const c = document.getElementById("expCanvasFilter");
+        if (!c) return;
+        const ctx = c.getContext("2d");
+        const w = c.width, h = c.height;
+        drawExpGrid(ctx, w, h, 14, 4);
+
+        const midX = w / 2;
+        ctx.strokeStyle = "#64748b";
+        ctx.setLineDash([4, 4]);
+        ctx.beginPath();
+        ctx.moveTo(midX, 0);
+        ctx.lineTo(midX, h);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        ctx.strokeStyle = "#dc2626";
+        ctx.lineWidth = 1.6;
+        ctx.beginPath();
+        for (let x = 10; x < midX - 10; x++) {
+            const y = h / 2 - 48 * Math.sin(x * 0.14) - 14 * Math.sin(x * 1.15) - 8 * Math.cos(x * 2.3);
+            x === 10 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+
+        ctx.strokeStyle = "#0f172a";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        for (let x = midX + 10; x < w - 10; x++) {
+            const y = h / 2 - 48 * Math.sin(x * 0.14);
+            x === midX + 10 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+
+        ctx.fillStyle = "#0f172a";
+        ctx.font = "bold 12px Times New Roman";
+        ctx.fillText("Tắt lọc: Sóng bị gợn nhiễu", 18, 20);
+        ctx.fillText("Bật lọc thông dải: Sóng sin mượt", midX + 18, 20);
+    }
+
+    function drawExpBase64ToCanvas(canvasId, base64) {
+        const img = new Image();
+        img.onload = () => {
+            const c = document.getElementById(canvasId);
+            if (!c) return;
+            c.width = img.width;
+            c.height = img.height;
+            const ctx = c.getContext("2d");
+            ctx.drawImage(img, 0, 0);
+
+            const invertDark = document.getElementById("expInvertDarkToggle")?.checked;
+            if (invertDark) {
+                const imgData = ctx.getImageData(0, 0, c.width, c.height);
+                const d = imgData.data;
+                let sumLum = 0, samples = 0;
+                for (let i = 0; i < d.length; i += 64) {
+                    sumLum += 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
+                    samples++;
+                }
+                // Chỉ đảo nền nếu ảnh gốc thực sự là nền tối (< 115)
+                if (samples > 0 && (sumLum / samples) < 115) {
+                    for (let i = 0; i < d.length; i += 4) {
+                        const r = d[i], g = d[i + 1], b = d[i + 2];
+                        const max = Math.max(r, g, b), min = Math.min(r, g, b);
+                        const l = (max + min) / 2;
+                        const newL = 255 - l;
+                        const delta = newL - l;
+                        d[i] = Math.min(255, Math.max(0, r + delta));
+                        d[i + 1] = Math.min(255, Math.max(0, g + delta));
+                        d[i + 2] = Math.min(255, Math.max(0, b + delta));
+                    }
+                    ctx.putImageData(imgData, 0, 0);
+                }
+            }
+        };
+        img.src = base64;
+    }
+
+    window.exportSingleExpCanvas = function (canvasId, tag) {
+        const canvasEl = document.getElementById(canvasId);
+        if (!canvasEl) return;
+        const now = new Date();
+        const pad = (n) => String(n).padStart(2, "0");
+        const stamp = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}_${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
+        const fileName = `FOXLAB_${tag}_${stamp}.png`;
+
+        canvasEl.toBlob((blob) => {
+            if (!blob) return;
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+            showExpToast(`Đã xuất ảnh đồ thị: ${fileName}`);
+        }, "image/png");
+    };
+
+    // --- Render Bảng Phần I ---
+    function renderExpOscTable() {
+        const tbody = document.getElementById("expOscBody");
+        if (!tbody) return;
+        tbody.innerHTML = "";
+        const listT = [], listF = [];
+
+        expOscRows.forEach((row, idx) => {
+            const N = row.soChuKi > 0 ? row.soChuKi : 1;
+            const dt = row.deltaT_ms;
+            const T = dt > 0 ? dt / N : 0;
+            const f = T > 0 ? 1000 / T : 0;
+            if (T > 0) listT.push(T);
+            if (f > 0) listF.push(f);
+
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td><strong>Lần ${idx + 1}</strong></td>
+                <td contenteditable="true" onblur="updateExpOsc(${idx}, 'soChuKi', this.textContent)">${N}</td>
+                <td contenteditable="true" onblur="updateExpOsc(${idx}, 'deltaT_ms', this.textContent)">${dt.toFixed(2)}</td>
+                <td>${T > 0 ? T.toFixed(2) : "—"}</td>
+                <td>${f > 0 ? f.toFixed(1) : "—"}</td>
+                <td class="no-print"><button type="button" class="exp-row-del-btn" onclick="delExpOsc(${idx})">✕</button></td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        const stats = (arr) => {
+            if (!arr.length) return null;
+            const mean = arr.reduce((a, b) => a + b, 0) / arr.length;
+            const err = arr.reduce((a, b) => a + Math.abs(b - mean), 0) / arr.length;
+            return { mean, err };
+        };
+        const stT = stats(listT), stF = stats(listF);
+        document.getElementById("expAvgT").textContent = stT ? stT.mean.toFixed(2) : "—";
+        document.getElementById("expErrT").textContent = stT ? "± " + stT.err.toFixed(2) : "—";
+        document.getElementById("expAvgF").textContent = stF ? stF.mean.toFixed(1) : "—";
+        document.getElementById("expErrF").textContent = stF ? "± " + stF.err.toFixed(1) : "—";
+
+        document.getElementById("expResT").innerHTML = stT ? `<i>T</i> = (${stT.mean.toFixed(2)} ± ${stT.err.toFixed(2)}) ms` : "<i>T</i> = (— ± —) ms";
+        document.getElementById("expResF").innerHTML = stF ? `<i>f</i> = (${stF.mean.toFixed(1)} ± ${stF.err.toFixed(1)}) Hz` : "<i>f</i> = (— ± —) Hz";
+        document.getElementById("expRelF").textContent = stF && stF.mean > 0 ? ((stF.err / stF.mean) * 100).toFixed(2) + "%" : "—";
+    }
+
+    window.updateExpOsc = function (i, k, val) {
+        const n = parseFloat(val.replace(",", ".").trim());
+        if (!isNaN(n) && n >= 0) expOscRows[i][k] = k === "soChuKi" ? Math.max(1, Math.round(n)) : n;
+        renderExpOscTable();
+        saveExpReportToStorage();
+    };
+    window.addExpOscRow = function () { expOscRows.push({ soChuKi: 5, deltaT_ms: 11.35 }); renderExpOscTable(); };
+    window.delExpOsc = function (i) { expOscRows.splice(i, 1); renderExpOscTable(); };
+
+    // --- Render Bảng Phần II ---
+    function renderExpFftTable() {
+        const tbody = document.getElementById("expFftBody");
+        if (!tbody) return;
+        tbody.innerHTML = "";
+        expFftRows.forEach((r, i) => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td contenteditable="true" onblur="updateExpFft(${i}, 'nguon', this.textContent)">${r.nguon}</td>
+                <td contenteditable="true" onblur="updateExpFft(${i}, 'f0', this.textContent)">${r.f0}</td>
+                <td contenteditable="true" onblur="updateExpFft(${i}, 'hoaAm', this.textContent)">${r.hoaAm}</td>
+                <td contenteditable="true" onblur="updateExpFft(${i}, 'dacDiem', this.textContent)">${r.dacDiem}</td>
+                <td class="no-print"><button type="button" class="exp-row-del-btn" onclick="delExpFft(${i})">✕</button></td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+    window.updateExpFft = function (i, k, val) { expFftRows[i][k] = val.trim(); saveExpReportToStorage(); };
+    window.addExpFftRow = function () {
+        expFftRows.push({ nguon: "Nguồn âm mới", f0: "512,0", hoaAm: "f₀, 2f₀", dacDiem: "Dao động tuần hoàn" });
+        renderExpFftTable();
+    };
+    window.delExpFft = function (i) { expFftRows.splice(i, 1); renderExpFftTable(); };
+
+    // --- Render Bảng Phần III ---
+    function renderExpDbTable() {
+        const tbody = document.getElementById("expDbBody");
+        if (!tbody) return;
+        tbody.innerHTML = "";
+        const baseL = expDbRows.length ? expDbRows[0].lAvg : 0;
+        expDbRows.forEach((r, i) => {
+            const diff = i === 0 ? "0,0 dB (Mốc)" : (r.lAvg - baseL).toFixed(1) + " dB";
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td contenteditable="true" onblur="updateExpDb(${i}, 'viTri', this.textContent, false)">${r.viTri}</td>
+                <td contenteditable="true" onblur="updateExpDb(${i}, 'r', this.textContent, false)">${Number(r.r).toFixed(1)}</td>
+                <td contenteditable="true" onblur="updateExpDb(${i}, 'lMin', this.textContent, false)">${Number(r.lMin).toFixed(1)}</td>
+                <td contenteditable="true" onblur="updateExpDb(${i}, 'lMax', this.textContent, false)">${Number(r.lMax).toFixed(1)}</td>
+                <td contenteditable="true" onblur="updateExpDb(${i}, 'lAvg', this.textContent, true)">${Number(r.lAvg).toFixed(1)}</td>
+                <td>${diff}</td>
+                <td class="no-print"><button type="button" class="exp-row-del-btn" onclick="delExpDb(${i})">✕</button></td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+    window.updateExpDb = function (i, k, val, rerender) {
+        if (k === "viTri") expDbRows[i][k] = val.trim();
+        else expDbRows[i][k] = parseFloat(val.replace(",", ".")) || 0;
+        if (rerender) renderExpDbTable();
+        saveExpReportToStorage();
+    };
+    window.addExpDbRow = function () {
+        expDbRows.push({ viTri: `Điểm ${expDbRows.length + 1}`, r: 3.0, lMin: 58.0, lMax: 59.5, lAvg: 58.8 });
+        renderExpDbTable();
+    };
+    window.delExpDb = function (i) { expDbRows.splice(i, 1); renderExpDbTable(); };
+
+    // --- Xuất CSV từng phần & Toàn bộ ---
+    window.exportSingleExpPartCSV = function (partId) {
+        let rows = [
+            ["FOX_LAB - XUẤT SỐ LIỆU THÍ NGHIỆM"],
+            ["Nhóm", document.getElementById("expGroupName").textContent.trim(), "Lớp", document.getElementById("expClassName").textContent.trim()],
+            []
+        ];
+        let fileName = "FOXLAB_SoLieu.csv";
+
+        if (partId === "expPart1") {
+            fileName = "FOXLAB_Phan1_DaoDongKi.csv";
+            rows.push(["PHẦN I: ĐO CHU KÌ VÀ TẦN SỐ (DAO ĐỘNG KÍ)"], ["Lần đo", "Số chu kì N", "Δt (ms)", "Chu kì T (ms)", "Tần số f (Hz)"]);
+            expOscRows.forEach((r, i) => {
+                const T = r.deltaT_ms / (r.soChuKi || 1);
+                const f = T > 0 ? 1000 / T : 0;
+                rows.push([`Lần ${i + 1}`, r.soChuKi, r.deltaT_ms.toFixed(2), T.toFixed(2), f.toFixed(1)]);
+            });
+        } else if (partId === "expPart2") {
+            fileName = "FOXLAB_Phan2_PhoFFT.csv";
+            rows.push(["PHẦN II: PHÂN TÍCH PHỔ TẦN SỐ (FFT)"], ["Nguồn âm", "Tần số cơ bản f0 (Hz)", "Các họa âm", "Đặc điểm & Âm sắc"]);
+            expFftRows.forEach(r => rows.push([r.nguon, r.f0, r.hoaAm, r.dacDiem]));
+        } else if (partId === "expPart3") {
+            fileName = "FOXLAB_Phan3_MucCuongDoAm.csv";
+            rows.push(["PHẦN III: ĐO MỨC CƯỜNG ĐỘ ÂM (dB)"], ["Vị trí đo", "Khoảng cách r (m)", "L_min (dB)", "L_max (dB)", "L_TB (dB)"]);
+            expDbRows.forEach(r => rows.push([r.viTri, r.r, r.lMin, r.lMax, r.lAvg]));
+        }
+
+        downloadExpCSV(rows, fileName);
+    };
+
+    window.exportAllExpCSV = function () {
+        const rows = [
+            ["BÁO CÁO KẾT QUẢ THÍ NGHIỆM SÓNG ÂM - FOX_LAB"],
+            ["Nhóm", document.getElementById("expGroupName").textContent.trim(), "Lớp", document.getElementById("expClassName").textContent.trim()],
+            [],
+            ["PHẦN I: DAO ĐỘNG KÍ (T, f)"],
+            ["Lần đo", "Số chu kì N", "Δt (ms)", "Chu kì T (ms)", "Tần số f (Hz)"]
+        ];
+        expOscRows.forEach((r, i) => {
+            const T = r.deltaT_ms / (r.soChuKi || 1);
+            const f = T > 0 ? 1000 / T : 0;
+            rows.push([`Lần ${i + 1}`, r.soChuKi, r.deltaT_ms.toFixed(2), T.toFixed(2), f.toFixed(1)]);
+        });
+        rows.push([], ["PHẦN II: PHỔ TẦN SỐ (FFT)"], ["Nguồn âm", "f0 (Hz)", "Họa âm", "Đặc điểm"]);
+        expFftRows.forEach(r => rows.push([r.nguon, r.f0, r.hoaAm, r.dacDiem]));
+        rows.push([], ["PHẦN III: MỨC CƯỜNG ĐỘ ÂM (dB)"], ["Vị trí", "Khoảng cách r (m)", "L_min (dB)", "L_max (dB)", "L_TB (dB)"]);
+        expDbRows.forEach(r => rows.push([r.viTri, r.r, r.lMin, r.lMax, r.lAvg]));
+
+        downloadExpCSV(rows, "FOXLAB_BaoCao_DayDu.csv");
+    };
+
+    function downloadExpCSV(rows, fileName) {
+        const csv = "﻿" + rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(",")).join("
+");
+        const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showExpToast(`Đã xuất file Excel: ${fileName}`);
+    }
+})();
+</script>
+
 </body>
 </html>
