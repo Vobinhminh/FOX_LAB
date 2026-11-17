@@ -1,5 +1,5 @@
 // Tăng số phiên bản này mỗi khi bạn cập nhật index.html, report.html hoặc JS
-const CACHE_VERSION = "fox-lab-v1.0.1";
+const CACHE_VERSION = "fox-lab-v1.0.2";
 
 // Các file cốt lõi nằm cùng thư mục trên GitHub Pages / Hosting
 const CORE_ASSETS = [
