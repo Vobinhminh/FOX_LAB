@@ -275,13 +275,17 @@
         #fox-chat-widget.open .fox-trigger-close-icon { display: flex; transform: rotate(90deg); }
 
         #fox-chat-box {
-            position: absolute; bottom: 60px; right: 0; width: 350px; height: 500px; max-height: calc(100dvh - 100px);
+            position: absolute; bottom: 60px; right: 0; width: min(350px, calc(100vw - 32px)); height: 500px; max-height: calc(100dvh - 100px);
             background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 10px; box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.7); display: flex; flex-direction: column;
             overflow: hidden; transform: scale(0.9) translateY(20px); opacity: 0; visibility: hidden; pointer-events: none;
             transition: all 0.3s; z-index: 10;
         }
         #fox-chat-widget.open #fox-chat-box { transform: scale(1) translateY(0); opacity: 1; visibility: visible; pointer-events: auto; }
+        @media (max-width: 480px) {
+            #fox-chat-widget { right: 12px; bottom: 14px; }
+            #fox-chat-box { width: min(350px, calc(100vw - 24px)); }
+        }
 
         #fox-chat-box.light-theme { background: rgba(248, 250, 252, 0.98); border: 1px solid rgba(0, 0, 0, 0.15); }
         #fox-chat-box.light-theme .fox-chat-header { background: rgba(241, 245, 249, 0.95); border-bottom: 1px solid rgba(0, 0, 0, 0.1); }
@@ -854,7 +858,7 @@
 
 <!-- MODAL PHÂN TÍCH MỨC CƯỜNG ĐỘ ÂM -->
 <div id="mcdModalOverlay" class="modal-overlay">
-    <div id="mcdModal" class="modal-content" style="background: #ffffff; color: #0f172a;" onclick="event.stopPropagation()">
+    <div id="mcdModal" class="modal-content tex2jax_process" style="background: #ffffff; color: #0f172a;" onclick="event.stopPropagation()">
         <div class="modal-header" style="background: linear-gradient(90deg, #059669, #10b981);">
             <span>📊 Phân tích Mức Cường độ âm & Khoảng cách Nguồn âm</span>
         </div>
@@ -896,61 +900,105 @@
     </div>
 </div>
 
-<!-- MODAL HIỆU CHUẨN MICROPHONE -->
+<!-- MODAL HIỆU CHUẨN MICROPHONE & MỐC CHUẨN NGUỒN ÂM -->
 <div id="calibModalOverlay" class="modal-overlay" style="z-index: 150000;">
-    <div id="calibModal" class="modal-content" style="max-width: 520px; height: auto; max-height: 90dvh; background: #ffffff; color: #0f172a; border-radius: 12px; margin: auto; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);" onclick="event.stopPropagation()">
+    <div id="calibModal" class="modal-content" style="max-width: 560px; height: auto; max-height: 92dvh; background: #ffffff; color: #0f172a; border-radius: 12px; margin: auto; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);" onclick="event.stopPropagation()">
         <div class="modal-header" style="background: linear-gradient(90deg, #059669, #10b981); padding: 12px 16px;">
             <span style="display:flex; align-items:center; gap:8px; font-size:15px; font-weight:700;">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-                Hiệu chuẩn Micro (Microphone Calibration)
+                Hiệu chuẩn Micro &amp; Mốc chuẩn Nguồn âm (r₀, L₀)
             </span>
             <button class="btn-slate" onclick="closeCalibModal()" style="padding: 2px 8px; font-size:12px;">✕ Đóng</button>
         </div>
         <div style="padding: 16px 20px; overflow-y: auto; line-height: 1.5; font-size: 13px;">
-            <p style="margin-top:0; color:#475569;">
-                <b>Mục đích:</b> Đồng bộ độ nhạy Micro của thiết bị này với <i>Máy đo Mức cường độ âm (dB) chuẩn</i> thực tế để loại bỏ sai số phần cứng.
-            </p>
-            
-            <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:8px; padding:12px; margin-bottom:14px;">
-                <h4 style="margin:0 0 8px 0; color:#0f172a; font-size:13.5px; display:flex; align-items:center; gap:6px;">
-                    <span style="color:#ef4444;">🔴</span> Hiệu chuẩn Kênh A
-                </h4>
-                <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
-                    <label style="flex:1; font-weight:600; color:#334155;">Giá trị đo thô hiện tại (Uncalibrated):</label>
-                    <span id="calibRawValueA" style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#dc2626; font-size:14px;">-- dB</span>
+            <!-- PHẦN 1: HIỆU CHUẨN ĐỘ NHẠY MICRO -->
+            <div style="margin-bottom: 14px;">
+                <div style="font-weight: 700; color: #059669; font-size: 13.5px; margin-bottom: 4px; text-transform: uppercase;">
+                    1. Hiệu chuẩn độ nhạy Micro (Tùy chọn theo máy chuẩn)
                 </div>
-                <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
-                    <label style="flex:1; font-weight:600; color:#334155;">Nhập MCĐ Chuẩn từ Máy đo chuẩn (dB):</label>
-                    <input type="number" id="calibRefInputA" placeholder="VD: 75.0" step="0.1" style="width:100px; padding:4px 8px; border:1px solid #cbd5e1; border-radius:4px; font-weight:700; text-align:center;">
+                <p style="margin: 0 0 10px 0; color:#475569; font-size: 12.5px;">
+                    Đồng bộ độ nhạy Micro với <i>Máy đo Mức cường độ âm (dB) chuẩn</i> thực tế để loại bỏ sai số phần cứng (nếu có).
+                </p>
+                
+                <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:8px; padding:12px; margin-bottom:10px;">
+                    <h4 style="margin:0 0 8px 0; color:#0f172a; font-size:13.5px; display:flex; align-items:center; gap:6px;">
+                        <span style="color:#ef4444;">🔴</span> Hiệu chuẩn Kênh A
+                    </h4>
+                    <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+                        <label style="flex:1; font-weight:600; color:#334155;">Giá trị đo thô hiện tại (Uncalibrated):</label>
+                        <span id="calibRawValueA" style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#dc2626; font-size:14px;">-- dB</span>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+                        <label style="flex:1; font-weight:600; color:#334155;">Nhập MCĐ Chuẩn từ Máy đo chuẩn (dB):</label>
+                        <input type="number" id="calibRefInputA" placeholder="VD: 75.0" step="0.1" style="width:100px; padding:4px 8px; border:1px solid #cbd5e1; border-radius:4px; font-weight:700; text-align:center;">
+                    </div>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <label style="flex:1; font-weight:600; color:#334155;">Hằng số lệch bù (Offset ΔL):</label>
+                        <span id="calibOffsetDisplayA" style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#059669; font-size:14px;">+0.0 dB</span>
+                        <button class="btn-green" onclick="applyCalibFromRef('A')" style="padding:4px 10px; font-size:12px;">✅ Áp dụng A</button>
+                    </div>
                 </div>
-                <div style="display:flex; align-items:center; gap:8px;">
-                    <label style="flex:1; font-weight:600; color:#334155;">Hằng số lệch bù (Offset ΔL):</label>
-                    <span id="calibOffsetDisplayA" style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#059669; font-size:14px;">+0.0 dB</span>
-                    <button class="btn-green" onclick="applyCalibFromRef('A')" style="padding:4px 10px; font-size:12px;">✅ Áp dụng A</button>
+
+                <div id="calibChannelBBox" style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:8px; padding:12px;">
+                    <h4 style="margin:0 0 8px 0; color:#0f172a; font-size:13.5px; display:flex; align-items:center; gap:6px;">
+                        <span style="color:#2563eb;">🔵</span> Hiệu chuẩn Kênh B
+                    </h4>
+                    <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+                        <label style="flex:1; font-weight:600; color:#334155;">Giá trị đo thô hiện tại (Uncalibrated):</label>
+                        <span id="calibRawValueB" style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#2563eb; font-size:14px;">-- dB</span>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+                        <label style="flex:1; font-weight:600; color:#334155;">Nhập MCĐ Chuẩn từ Máy đo chuẩn (dB):</label>
+                        <input type="number" id="calibRefInputB" placeholder="VD: 75.0" step="0.1" style="width:100px; padding:4px 8px; border:1px solid #cbd5e1; border-radius:4px; font-weight:700; text-align:center;">
+                    </div>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <label style="flex:1; font-weight:600; color:#334155;">Hằng số lệch bù (Offset ΔL):</label>
+                        <span id="calibOffsetDisplayB" style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#059669; font-size:14px;">+0.0 dB</span>
+                        <button class="btn-blue" onclick="applyCalibFromRef('B')" style="padding:4px 10px; font-size:12px;">✅ Áp dụng B</button>
+                    </div>
                 </div>
             </div>
 
-            <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:8px; padding:12px; margin-bottom:14px;">
-                <h4 style="margin:0 0 8px 0; color:#0f172a; font-size:13.5px; display:flex; align-items:center; gap:6px;">
-                    <span style="color:#2563eb;">🔵</span> Hiệu chuẩn Kênh B
-                </h4>
-                <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
-                    <label style="flex:1; font-weight:600; color:#334155;">Giá trị đo thô hiện tại (Uncalibrated):</label>
-                    <span id="calibRawValueB" style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#2563eb; font-size:14px;">-- dB</span>
+            <!-- PHẦN 2: XÁC ĐỊNH MỐC CHUẨN NGUỒN ÂM (r0, L0) TẠI CHỖ -->
+            <div style="background:#eff6ff; border:1.5px solid #93c5fd; border-radius:10px; padding:12px 14px; margin-bottom:14px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:6px;">
+                    <span style="font-weight:700; color:#1d4ed8; font-size:13.5px; text-transform:uppercase;">
+                        2. Xác định mốc chuẩn nguồn âm (r₀, L₀) tại chỗ
+                    </span>
+                    <span id="sourceRefBadge" style="padding:2px 9px; border-radius:999px; font-size:11px; font-weight:700; background:#fef3c7; color:#b45309; border:1px solid #fcd34d;">
+                        Chưa xác định mốc
+                    </span>
                 </div>
-                <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
-                    <label style="flex:1; font-weight:600; color:#334155;">Nhập MCĐ Chuẩn từ Máy đo chuẩn (dB):</label>
-                    <input type="number" id="calibRefInputB" placeholder="VD: 75.0" step="0.1" style="width:100px; padding:4px 8px; border:1px solid #cbd5e1; border-radius:4px; font-weight:700; text-align:center;">
+                <p style="margin:0 0 10px 0; color:#334155; font-size:12.5px;">
+                    Đặt Micro cách nguồn âm một khoảng tự chọn <b>r₀</b> (VD: <code>0.5</code> m), nhập <b>r₀</b> rồi bấm <b>"🎙️ Đo lấy mốc L₀ (1.5s)"</b> (hoặc nhập trực tiếp cặp số <b>r₀, L₀</b> từ đề bài).
+                </p>
+
+                <div style="display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom:10px;">
+                    <div style="display:flex; align-items:center; gap:6px; flex:1; min-width:135px;">
+                        <label for="sourceRefR0Input" style="font-weight:700; color:#0f172a; white-space:nowrap;">r₀ (m):</label>
+                        <input type="number" id="sourceRefR0Input" placeholder="VD: 0.5" min="0.01" max="100" step="0.05" oninput="syncSourceRefFromInputs()" style="width:100%; padding:5px 8px; border:1px solid #93c5fd; border-radius:6px; font-weight:700; text-align:center; background:#ffffff; color:#0f172a;">
+                    </div>
+                    <div style="display:flex; align-items:center; gap:6px; flex:1; min-width:135px;">
+                        <label for="sourceRefL0Input" style="font-weight:700; color:#0f172a; white-space:nowrap;">L₀ (dB):</label>
+                        <input type="number" id="sourceRefL0Input" placeholder="Tự đo / nhập" min="10" max="140" step="0.1" oninput="syncSourceRefFromInputs()" style="width:100%; padding:5px 8px; border:1px solid #93c5fd; border-radius:6px; font-weight:700; text-align:center; background:#ffffff; color:#0f172a;">
+                    </div>
                 </div>
-                <div style="display:flex; align-items:center; gap:8px;">
-                    <label style="flex:1; font-weight:600; color:#334155;">Hằng số lệch bù (Offset ΔL):</label>
-                    <span id="calibOffsetDisplayB" style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#059669; font-size:14px;">+0.0 dB</span>
-                    <button class="btn-blue" onclick="applyCalibFromRef('B')" style="padding:4px 10px; font-size:12px;">✅ Áp dụng B</button>
+
+                <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
+                    <button type="button" id="btnMeasureSourceL0" class="btn-blue" onclick="measureSourceRefL0()" style="flex:2; min-width:170px; padding:7px 10px; font-size:12.5px;">
+                        🎙️ Đo lấy mốc L₀ (1.5s)
+                    </button>
+                    <button type="button" class="btn-slate" onclick="clearSourceRefCalibration()" style="flex:1; min-width:95px; padding:7px 10px; font-size:12px;">
+                        Xóa mốc r₀, L₀
+                    </button>
+                </div>
+                <div id="sourceRefStatusMsg" style="margin-top:8px; font-size:12px; font-weight:600; color:#475569;">
+                    💡 Bắt buộc xác định <b>r₀, L₀</b> trước khi tính khoảng cách nguồn âm (<i>r = r₀ · 10<sup>(L₀ − L)/20</sup></i>).
                 </div>
             </div>
 
             <div style="display:flex; justify-content:space-between; gap:10px;">
-                <button class="btn-orange" onclick="resetCalibOffsets()" style="flex:1; padding:8px;">🔄 Đặt lại về Mặc định (0 dB)</button>
+                <button class="btn-orange" onclick="resetCalibOffsets()" style="flex:1; padding:8px;">🔄 Đặt lại tất cả về Mặc định</button>
                 <button class="btn-dark" onclick="closeCalibModal()" style="flex:1; padding:8px;">Lưu &amp; Hoàn tất</button>
             </div>
         </div>
@@ -1084,6 +1132,7 @@
         wasAppBackgrounded = true;
         lastBackgroundTime = performance.now();
         if (typeof stopTimer !== 'undefined') clearTimeout(stopTimer);
+        if (typeof stopSourceRefSampling === 'function') stopSourceRefSampling();
 
         // Tạm ngưng toàn bộ chức năng đo & ghi nhận khi bị phần mềm khác chen ngang / mở trang khác
         isPaused = true;
@@ -1307,7 +1356,7 @@
     }
 
     function activateFullMode(key) {
-        isDemoMode = false; localStorage.setItem('fox_license_key', key);
+        isDemoMode = false; localStorage.setItem('fox_license_key', key); localStorage.setItem('fox_last_verify_time', Date.now().toString());
         if (demoTimer) clearTimeout(demoTimer);
         document.getElementById('licenseModalOverlay').style.display = 'none';
         infoMessageText.innerHTML = "✅ Bản Full Chính Thức đã kích hoạt thành công!";
@@ -2421,8 +2470,10 @@
     }
 
     let draggingPointIndex = -1;
+    let wasDraggingPoint = false;
 
     canvas.addEventListener('pointerdown', (e) => {
+        wasDraggingPoint = false;
         if (getDisplayMode() !== 'oscilloscope' || !isManualAnalysisMode || !isPaused || getActiveChannelMode() !== '1') return;
         const winInfo = getVisibleChannelAWindow();
         if (!winInfo || manualPoints.length === 0) return;
@@ -2445,6 +2496,7 @@
 
     canvas.addEventListener('pointermove', (e) => {
         if (draggingPointIndex < 0 || !isManualAnalysisMode || !isPaused) return;
+        wasDraggingPoint = true;
         const winInfo = getVisibleChannelAWindow();
         if (!winInfo) return;
 
@@ -2476,6 +2528,10 @@
     });
 
     canvas.addEventListener('click', (e) => {
+        if (wasDraggingPoint) {
+            wasDraggingPoint = false;
+            return;
+        }
         if (getDisplayMode() === 'oscilloscope') {
             if (!isManualAnalysisMode || !isPaused || getActiveChannelMode() !== '1') return;
             const winInfo = getVisibleChannelAWindow();
@@ -2664,22 +2720,59 @@
         let freq = sampleRate / truePos; if (freq < 45 || freq > 2800) return -1; return freq;
     }
 
-    function calculatePhaseDifference(dataA, dataB, freq, sampleRate) {
+    function calculatePhaseDifference(dataA, dataB, freq, sampleRate, idxA = null, idxB = null) {
         if (!dataA || !dataB || freq <= 0) return 0;
-        const samplesPerCycle = sampleRate / freq;
-        let maxCorr = -999999, bestShift = 0;
-        let searchLimit = Math.min(Math.floor(samplesPerCycle), 200);
+        const lenA = dataA.length, lenB = dataB.length;
+        if (lenA === 0 || lenB === 0) return 0;
 
-        for (let shift = -searchLimit; shift <= searchLimit; shift++) {
-            let corr = 0, count = 0;
-            for (let i = 200; i < 2000; i++) {
-                let idxA = i, idxB = i + shift;
-                if (idxB >= 0 && idxB < dataB.length) { corr += dataA[idxA] * dataB[idxB]; count++; }
-            }
-            if (count > 0) corr /= count;
-            if (corr > maxCorr) { maxCorr = corr; bestShift = shift; }
+        const curIdxA = (idxA !== null) ? idxA : ((channelConfig && channelConfig.A) ? channelConfig.A.index : lenA);
+        const curIdxB = (idxB !== null) ? idxB : ((channelConfig && channelConfig.B) ? channelConfig.B.index : lenB);
+
+        const samplesPerCycle = sampleRate / freq;
+        const winLen = 2048;
+        const searchLimit = Math.min(Math.ceil(samplesPerCycle / 2), 1024);
+        if (curIdxA < winLen + searchLimit || curIdxB < winLen + searchLimit) return 0;
+
+        const totalNeeded = winLen + 2 * searchLimit;
+        const bufA = new Float32Array(totalNeeded);
+        const bufB = new Float32Array(totalNeeded);
+        const startA = curIdxA - winLen - searchLimit;
+        const startB = curIdxB - winLen - searchLimit;
+
+        for (let i = 0; i < totalNeeded; i++) {
+            bufA[i] = dataA[((startA + i) % lenA + lenA) % lenA];
+            bufB[i] = dataB[((startB + i) % lenB + lenB) % lenB];
         }
-        let phaseRad = (bestShift / samplesPerCycle) * 2 * Math.PI;
+
+        const numShifts = 2 * searchLimit + 1;
+        const corrs = new Float64Array(numShifts);
+        let maxCorr = -Infinity, bestIdx = searchLimit;
+
+        for (let s = -searchLimit; s <= searchLimit; s++) {
+            let corr = 0;
+            const offsetB = searchLimit + s;
+            for (let k = 0; k < winLen; k++) {
+                corr += bufA[searchLimit + k] * bufB[offsetB + k];
+            }
+            corr /= winLen;
+            const arrIdx = s + searchLimit;
+            corrs[arrIdx] = corr;
+            if (corr > maxCorr) {
+                maxCorr = corr;
+                bestIdx = arrIdx;
+            }
+        }
+
+        let trueShift = bestIdx - searchLimit;
+        if (bestIdx > 0 && bestIdx < numShifts - 1) {
+            const y1 = corrs[bestIdx - 1], y2 = corrs[bestIdx], y3 = corrs[bestIdx + 1];
+            const denom = 2 * (y1 + y3 - 2 * y2);
+            if (denom < 0) {
+                trueShift += (y1 - y3) / denom;
+            }
+        }
+
+        let phaseRad = (trueShift / samplesPerCycle) * 2 * Math.PI;
         while (phaseRad > Math.PI) phaseRad -= 2 * Math.PI;
         while (phaseRad < -Math.PI) phaseRad += 2 * Math.PI;
         return phaseRad;
@@ -2960,6 +3053,7 @@
         }
 
         updateUIState();
+        if (typeof checkAndShowQR === 'function') checkAndShowQR();
         drawFrame(true);
     });
 
@@ -3097,7 +3191,7 @@
                     let recentB = new Float32Array(chunkSize);
                     let lenB = channelConfig.B.data.length, idxB = channelConfig.B.index;
                     for (let i = 0; i < chunkSize; i++) recentB[i] = channelConfig.B.data[((idxB - chunkSize + i) % lenB + lenB) % lenB];
-                    let currentDbB = calculateRMSdB(recentB);
+                    let currentDbB = calculateRMSdB(recentB, 'B', false);
                     let rawDbB = calculateRMSdB(recentB, 'B', true); dbHistoryB.push({ time: now, elapsedMs: elapsedMs, db: currentDbB, rawDb: rawDbB });
                     if (dbHistoryB.length > 120) dbHistoryB.shift();
                 }
@@ -3189,6 +3283,7 @@
         if (fftOverlay) { fftOverlay.classList.remove('animUI-visible'); fftOverlay.style.display = 'none'; }
 
         closeMcdModal();
+        if (typeof closeCalibModal === 'function') closeCalibModal();
 
         isTwoSourceModalOpen = false; isTsPaused = true; showTsResults = false; showTsEquations = false;
         const twoSourceOverlay = document.getElementById('twoSourceModalOverlay');
@@ -3202,8 +3297,7 @@
         const settingsDropdown = document.getElementById('settingsDropdown');
         if (settingsDropdown && settingsDropdown.classList.contains('open')) { settingsDropdown.classList.remove('open'); }
 
-        const qrPanel = document.getElementById('qrPanel');
-        if (qrPanel) qrPanel.style.display = 'none';
+        if (typeof checkAndShowQR === 'function') checkAndShowQR();
 
         isUserZoomed = false; currentZoomY = 2.0; detectedFrequency = 0; lockedFrequency = 440; totalTimeOnScreen = 5 * (1.0 / 440);
 
@@ -3238,6 +3332,7 @@
     }
 
     function handleAppReturn() {
+        if (!channelConfig.A.active && !channelConfig.B.active) return;
         resetFeaturesAndAdjustments(true); // Giữ nguyên chế độ đo hiện tại khi quay lại ứng dụng
 
         isPaused = true;
@@ -3259,18 +3354,272 @@
         drawFrame(false);
     }
 
-    function openCalibModal() {
+    // Trạng thái mốc chuẩn nguồn âm (r0, L0) xác định tại chỗ
+    const sourceRefState = {
+        r0: (function() {
+            const v = parseFloat(localStorage.getItem('fox_source_ref_r0') || '');
+            return (Number.isFinite(v) && v > 0) ? v : null;
+        })(),
+        L0: (function() {
+            const v = parseFloat(localStorage.getItem('fox_source_ref_L0') || '');
+            return (Number.isFinite(v) && v > 0) ? v : null;
+        })(),
+        isSampling: false,
+        sampleInterval: null,
+        sampleTimeout: null
+    };
+
+    function isSourceRefReady() {
+        return Number.isFinite(sourceRefState.r0) && sourceRefState.r0 > 0 &&
+               Number.isFinite(sourceRefState.L0) && sourceRefState.L0 > 0;
+    }
+
+    function stopSourceRefSampling() {
+        if (sourceRefState.sampleInterval) {
+            clearInterval(sourceRefState.sampleInterval);
+            sourceRefState.sampleInterval = null;
+        }
+        if (sourceRefState.sampleTimeout) {
+            clearTimeout(sourceRefState.sampleTimeout);
+            sourceRefState.sampleTimeout = null;
+        }
+        sourceRefState.isSampling = false;
+        const btn = document.getElementById('btnMeasureSourceL0');
+        if (btn) {
+            btn.disabled = false;
+            btn.textContent = '🎙️ Đo lấy mốc L₀ (1.5s)';
+        }
+    }
+
+    function updateSourceRefUI() {
+        const r0El = document.getElementById('sourceRefR0Input');
+        const l0El = document.getElementById('sourceRefL0Input');
+        const badge = document.getElementById('sourceRefBadge');
+        const msgEl = document.getElementById('sourceRefStatusMsg');
+
+        if (r0El && document.activeElement !== r0El) {
+            r0El.value = (sourceRefState.r0 !== null) ? sourceRefState.r0 : '';
+        }
+        if (l0El && document.activeElement !== l0El) {
+            l0El.value = (sourceRefState.L0 !== null) ? sourceRefState.L0.toFixed(1) : '';
+        }
+
+        if (badge) {
+            if (isSourceRefReady()) {
+                badge.textContent = `✅ Đã chốt: r₀ = ${sourceRefState.r0} m | L₀ = ${sourceRefState.L0.toFixed(1)} dB`;
+                badge.style.background = '#dcfce7';
+                badge.style.color = '#15803d';
+                badge.style.borderColor = '#86efac';
+            } else {
+                badge.textContent = 'Chưa xác định mốc';
+                badge.style.background = '#fef3c7';
+                badge.style.color = '#b45309';
+                badge.style.borderColor = '#fcd34d';
+            }
+        }
+
+        if (msgEl && !sourceRefState.isSampling) {
+            if (isSourceRefReady()) {
+                msgEl.innerHTML = `✅ Sẵn sàng tính khoảng cách nguồn âm theo mốc chuẩn <b>r₀ = ${sourceRefState.r0} m</b>, <b>L₀ = ${sourceRefState.L0.toFixed(1)} dB</b>.`;
+                msgEl.style.color = '#15803d';
+            } else {
+                msgEl.innerHTML = '💡 Bắt buộc xác định <b>r₀, L₀</b> trước khi tính khoảng cách nguồn âm (<i>r = r₀ · 10<sup>(L₀ − L)/20</sup></i>).';
+                msgEl.style.color = '#475569';
+            }
+        }
+    }
+
+    function syncSourceRefFromInputs() {
+        const r0El = document.getElementById('sourceRefR0Input');
+        const l0El = document.getElementById('sourceRefL0Input');
+        if (!r0El || !l0El) return;
+
+        const r0Val = parseFloat(r0El.value);
+        const l0Val = parseFloat(l0El.value);
+
+        if (Number.isFinite(r0Val) && r0Val > 0) {
+            sourceRefState.r0 = r0Val;
+            localStorage.setItem('fox_source_ref_r0', r0Val.toString());
+        } else {
+            sourceRefState.r0 = null;
+            localStorage.removeItem('fox_source_ref_r0');
+        }
+
+        if (Number.isFinite(l0Val) && l0Val > 0) {
+            sourceRefState.L0 = l0Val;
+            localStorage.setItem('fox_source_ref_L0', l0Val.toString());
+        } else {
+            sourceRefState.L0 = null;
+            localStorage.removeItem('fox_source_ref_L0');
+        }
+
+        updateSourceRefUI();
+    }
+
+    function getCurrentCalibratedDbForRef(channel = 'A') {
+        const cfg = channelConfig[channel];
+        if (cfg && cfg.active && cfg.data && cfg.index > 1024) {
+            const chunkSize = 1024;
+            const recent = new Float32Array(chunkSize);
+            const len = cfg.data.length, idx = cfg.index;
+            for (let i = 0; i < chunkSize; i++) {
+                recent[i] = cfg.data[((idx - chunkSize + i) % len + len) % len];
+            }
+            return calculateRMSdB(recent, channel, false);
+        }
+        const history = (channel === 'B') ? dbHistoryB : dbHistoryA;
+        if (history && history.length > 0) {
+            return history[history.length - 1].db;
+        }
+        return null;
+    }
+
+    async function measureSourceRefL0() {
+        const r0El = document.getElementById('sourceRefR0Input');
+        const l0El = document.getElementById('sourceRefL0Input');
+        const btn = document.getElementById('btnMeasureSourceL0');
+        const msgEl = document.getElementById('sourceRefStatusMsg');
+
+        const r0Val = parseFloat(r0El ? r0El.value : '');
+        if (!Number.isFinite(r0Val) || r0Val <= 0) {
+            alert('⚠️ Vui lòng nhập khoảng cách mốc r₀ > 0 (mét) trước khi đo lấy mốc L₀!');
+            if (r0El) r0El.focus();
+            return;
+        }
+
+        if (!channelConfig.A.active) {
+            alert('⚠️ Kênh A đang khóa! Vui lòng bật Micro Kênh A trên thanh công cụ trước khi đo lấy mốc L₀.');
+            return;
+        }
+
+        if (sourceRefState.isSampling) return;
+
+        // Đảm bảo AudioContext đang chạy để thu mẫu trực tiếp ngay trong modal hiệu chuẩn
+        if (audioCtx && audioCtx.state === 'suspended') {
+            try { await audioCtx.resume(); } catch (e) {}
+        }
+        const wasPausedBeforeSample = isPaused;
+        if (wasPausedBeforeSample) {
+            isPaused = false;
+        }
+
+        sourceRefState.isSampling = true;
+        if (btn) {
+            btn.disabled = true;
+            btn.textContent = '⏳ Đang lấy mẫu 1.5s...';
+        }
+        if (msgEl) {
+            msgEl.innerHTML = `🎙️ Đang thu mẫu âm thanh tại vị trí mốc <b>r₀ = ${r0Val} m</b> trong 1,5 giây...`;
+            msgEl.style.color = '#0284c7';
+        }
+
+        const samples = [];
+        sourceRefState.sampleInterval = setInterval(() => {
+            const dbVal = getCurrentCalibratedDbForRef('A');
+            if (typeof dbVal === 'number' && Number.isFinite(dbVal) && dbVal > 0) {
+                samples.push(dbVal);
+            }
+        }, 100);
+
+        sourceRefState.sampleTimeout = setTimeout(() => {
+            stopSourceRefSampling();
+            if (wasPausedBeforeSample) {
+                isPaused = true;
+            }
+
+            if (samples.length > 0) {
+                const avgL0 = samples.reduce((sum, v) => sum + v, 0) / samples.length;
+                sourceRefState.r0 = r0Val;
+                sourceRefState.L0 = parseFloat(avgL0.toFixed(1));
+                localStorage.setItem('fox_source_ref_r0', sourceRefState.r0.toString());
+                localStorage.setItem('fox_source_ref_L0', sourceRefState.L0.toString());
+                if (l0El) l0El.value = sourceRefState.L0.toFixed(1);
+                updateSourceRefUI();
+            } else {
+                if (msgEl) {
+                    msgEl.innerHTML = '❌ Không thu được tín hiệu âm thanh hợp lệ! Hãy kiểm tra Micro Kênh A và thử lại.';
+                    msgEl.style.color = '#dc2626';
+                }
+            }
+        }, 1500);
+    }
+
+    function clearSourceRefCalibration(silent = false) {
+        stopSourceRefSampling();
+        sourceRefState.r0 = null;
+        sourceRefState.L0 = null;
+        localStorage.removeItem('fox_source_ref_r0');
+        localStorage.removeItem('fox_source_ref_L0');
+        const r0El = document.getElementById('sourceRefR0Input');
+        const l0El = document.getElementById('sourceRefL0Input');
+        if (r0El) r0El.value = '';
+        if (l0El) l0El.value = '';
+        updateSourceRefUI();
+        if (!silent && document.getElementById('mcdModalOverlay').style.display === 'flex' &&
+            document.getElementById('distanceResultBox').style.display === 'block') {
+            calculateAvgDistance();
+        }
+    }
+
+    function openCalibModal(focusSourceRef = false) {
         const overlay = document.getElementById('calibModalOverlay');
         if (overlay) overlay.style.display = 'flex';
+        const chBBox = document.getElementById('calibChannelBBox');
+        if (chBBox) {
+            chBBox.style.display = (getActiveChannelMode() === '2') ? 'block' : 'none';
+        }
         updateCalibDisplay();
+        updateSourceRefUI();
+        if (focusSourceRef) {
+            setTimeout(() => {
+                const r0El = document.getElementById('sourceRefR0Input');
+                if (r0El) r0El.focus();
+            }, 60);
+        }
     }
 
     function closeCalibModal() {
+        stopSourceRefSampling();
         const overlay = document.getElementById('calibModalOverlay');
         if (overlay) overlay.style.display = 'none';
         if (typeof openMcdModal === 'function' && document.getElementById('mcdModalOverlay').style.display === 'flex') {
+            const wasDistOpen = (document.getElementById('distanceResultBox').style.display === 'block');
             openMcdModal();
+            if (wasDistOpen && isSourceRefReady()) {
+                calculateAvgDistance();
+            }
         }
+    }
+
+    function getLatestRawDb(channel) {
+        const history = (channel === 'B') ? dbHistoryB : dbHistoryA;
+        if (history.length > 0) {
+            return history[history.length - 1].rawDb;
+        }
+        const cfg = channelConfig[channel];
+        if (cfg && cfg.active && cfg.data && cfg.index > 1024) {
+            const chunkSize = 1024;
+            const recent = new Float32Array(chunkSize);
+            const len = cfg.data.length, idx = cfg.index;
+            for (let i = 0; i < chunkSize; i++) {
+                recent[i] = cfg.data[((idx - chunkSize + i) % len + len) % len];
+            }
+            return calculateRMSdB(recent, channel, true);
+        }
+        return null;
+    }
+
+    function syncDbHistoryWithOffsets() {
+        dbHistoryA.forEach(item => {
+            if (typeof item.rawDb === 'number') {
+                item.db = Math.max(30.0, Math.min(120.0, item.rawDb + micCalibOffsetA));
+            }
+        });
+        dbHistoryB.forEach(item => {
+            if (typeof item.rawDb === 'number') {
+                item.db = Math.max(30.0, Math.min(120.0, item.rawDb + micCalibOffsetB));
+            }
+        });
     }
 
     function updateCalibDisplay() {
@@ -3279,11 +3628,11 @@
         const offAEl = document.getElementById('calibOffsetDisplayA');
         const offBEl = document.getElementById('calibOffsetDisplayB');
 
-        let lastA = (dbHistoryA.length > 0) ? dbHistoryA[dbHistoryA.length - 1].rawDb : 60.0;
-        let lastB = (dbHistoryB.length > 0) ? dbHistoryB[dbHistoryB.length - 1].rawDb : 60.0;
+        const lastA = getLatestRawDb('A');
+        const lastB = getLatestRawDb('B');
 
-        if (rawAEl) rawAEl.innerText = lastA.toFixed(1) + " dB";
-        if (rawBEl) rawBEl.innerText = lastB.toFixed(1) + " dB";
+        if (rawAEl) rawAEl.innerText = (lastA !== null) ? (lastA.toFixed(1) + " dB") : "-- dB (Chưa có mẫu)";
+        if (rawBEl) rawBEl.innerText = (lastB !== null) ? (lastB.toFixed(1) + " dB") : "-- dB (Chưa có mẫu)";
 
         if (offAEl) offAEl.innerText = (micCalibOffsetA >= 0 ? "+" : "") + micCalibOffsetA.toFixed(1) + " dB";
         if (offBEl) offBEl.innerText = (micCalibOffsetB >= 0 ? "+" : "") + micCalibOffsetB.toFixed(1) + " dB";
@@ -3297,8 +3646,11 @@
             return;
         }
 
-        let history = (channel === 'B') ? dbHistoryB : dbHistoryA;
-        let rawVal = (history.length > 0) ? history[history.length - 1].rawDb : 60.0;
+        let rawVal = getLatestRawDb(channel);
+        if (rawVal === null) {
+            alert(`⚠️ Chưa có dữ liệu âm thanh đo được trên Kênh ${channel}! Vui lòng bật Micro và bấm "Đo / Dừng" lấy mẫu trước khi hiệu chuẩn.`);
+            return;
+        }
 
         let offset = refVal - rawVal;
         if (channel === 'B') {
@@ -3309,7 +3661,9 @@
             localStorage.setItem('fox_mic_calib_offset_a', offset.toString());
         }
 
+        syncDbHistoryWithOffsets();
         updateCalibDisplay();
+        if (getDisplayMode() === 'dbMeter' && typeof drawFrame === 'function') drawFrame();
         alert(`✅ Đã hiệu chuẩn Kênh ${channel}! Offset mới ΔL = ${offset >= 0 ? '+' : ''}${offset.toFixed(1)} dB`);
     }
 
@@ -3320,8 +3674,11 @@
         localStorage.removeItem('fox_mic_calib_offset_b');
         document.getElementById('calibRefInputA').value = '';
         document.getElementById('calibRefInputB').value = '';
+        clearSourceRefCalibration(true);
+        syncDbHistoryWithOffsets();
         updateCalibDisplay();
-        alert("🔄 Đặt lại tất cả hằng số hiệu chuẩn Micro về 0 dB!");
+        if (getDisplayMode() === 'dbMeter' && typeof drawFrame === 'function') drawFrame();
+        alert("🔄 Đã đặt lại Offset Micro về 0 dB và xóa mốc chuẩn (r₀, L₀)!");
     }
 
     function openMcdModal() {
@@ -3355,6 +3712,7 @@
 
         buildDbHistory(dbHistoryA, channelConfig.A, 'A');
         buildDbHistory(dbHistoryB, channelConfig.B, 'B');
+        syncDbHistoryWithOffsets();
 
         const mode = getActiveChannelMode();
         const tableContainer = document.getElementById('mcdReportTableContainer');
@@ -3454,6 +3812,11 @@
             `;
             tableContainer.innerHTML = htmlContent;
         }
+
+        const mcdModalEl = document.getElementById('mcdModal');
+        if (mcdModalEl && window.MathJax && MathJax.typesetPromise) {
+            MathJax.typesetPromise([mcdModalEl]).catch(err => console.log('MathJax error:', err));
+        }
     }
 
     function closeMcdModal() {
@@ -3461,13 +3824,29 @@
         if (overlay) overlay.style.display = 'none';
     }
 
-    // TỐI ƯU GỌN GÀNG: LOẠI BỎ KHOẢNG TRẮNG KÝ HIỆU & SỬA LỖI HIỂN THỊ CÁC THẺ KHOẢNG CÁCH
+    // TÍNH KHOẢNG CÁCH NGUỒN ÂM DỰA TRÊN MỐC CHUẨN (r0, L0) ĐÃ XÁC ĐỊNH TẠI CHỖ
     function calculateAvgDistance() {
         const mode = getActiveChannelMode();
         const box = document.getElementById('distanceResultBox');
         box.style.display = 'block';
 
-        let r0 = 1.0, L0 = 90.0;
+        if (!isSourceRefReady()) {
+            box.innerHTML = `
+                <div style="background:#fffbeb; border:1.5px solid #f59e0b; border-radius:8px; padding:12px 14px; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px;">
+                    <div style="color:#92400e; font-size:13px; line-height:1.5;">
+                        <b>⚠️ Chưa xác định mốc chuẩn nguồn âm (r₀, L₀)!</b><br>
+                        Vui lòng mở mục <b>🎯 Hiệu chuẩn</b> để đo hoặc nhập cặp thông số tham chiếu <b>(r₀, L₀)</b> tại chỗ trước khi tính khoảng cách.
+                    </div>
+                    <button type="button" class="btn-orange" onclick="openCalibModal(true)" style="padding:7px 12px; font-size:12.5px;">
+                        🎯 Mở Hiệu chuẩn &amp; Xác định r₀, L₀
+                    </button>
+                </div>
+            `;
+            return;
+        }
+
+        const r0 = sourceRefState.r0;
+        const L0 = sourceRefState.L0;
 
         if (mode === '2') {
             if (dbHistoryA.length === 0 || dbHistoryB.length === 0) {
@@ -3485,13 +3864,14 @@
 
             box.innerHTML = `
                 <div class="dist-header-bar">
-                    <div style="display:flex; align-items:center; gap:8px;">
+                    <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
                         <span style="font-size:16px;">📐</span>
                         <span style="font-weight:700; color:#0f172a; font-size:14px; text-transform:uppercase;">KẾT QUẢ TÍNH KHOẢNG CÁCH NGUỒN ÂM ($r_A, r_B$)</span>
+                        <button type="button" class="btn-slate" onclick="openCalibModal(true)" style="padding:2px 8px; font-size:11px;">✏️ Đổi mốc (r₀=${r0}m; L₀=${L0.toFixed(1)}dB)</button>
                     </div>
                     <div class="dist-formula-badge">
                         <span>Công thức:</span>
-                        <span>$L_A - L_B = 20\\lg\\left(\\frac{r_B}{r_A}\\right)$</span>
+                        <span>$r = r_0 \cdot 10^{\frac{L_0 - L}{20}}$</span>
                     </div>
                 </div>
 
@@ -3499,25 +3879,25 @@
                     <div class="dist-card dist-card-border-a">
                         <div class="dist-card-title">KHOẢNG CÁCH KÊNH A:</div>
                         <div class="dist-card-value" style="color:#ef4444;">${rA.toFixed(2)} <span style="font-size:14px; font-weight:bold;">m</span></div>
-                        <div class="dist-card-sub">$L_{A,tb} = ${avgDbA.toFixed(1)}\\text{ dB}$</div>
+                        <div class="dist-card-sub">$L_{A,tb} = ${avgDbA.toFixed(1)}\text{ dB}$ (Mốc $r_0=${r0}\text{ m}, L_0=${L0.toFixed(1)}\text{ dB}$)</div>
                     </div>
 
                     <div class="dist-card dist-card-border-b">
                         <div class="dist-card-title">KHOẢNG CÁCH KÊNH B:</div>
                         <div class="dist-card-value" style="color:#3b82f6;">${rB.toFixed(2)} <span style="font-size:14px; font-weight:bold;">m</span></div>
-                        <div class="dist-card-sub">$L_{B,tb} = ${avgDbB.toFixed(1)}\\text{ dB}$</div>
+                        <div class="dist-card-sub">$L_{B,tb} = ${avgDbB.toFixed(1)}\text{ dB}$ (Mốc $r_0=${r0}\text{ m}, L_0=${L0.toFixed(1)}\text{ dB}$)</div>
                     </div>
 
                     <div class="dist-card dist-card-border-diff">
                         <div class="dist-card-title">KHOẢNG CÁCH GIỮA HAI KÊNH</div>
                         <div class="dist-card-value" style="color:#10b981;">${deltaR.toFixed(2)} <span style="font-size:14px; font-weight:bold;">m</span></div>
-                        <div class="dist-card-sub">$\\Delta r = |r_A - r_B|$</div>
+                        <div class="dist-card-sub">$\Delta r = |r_A - r_B|$</div>
                     </div>
 
                     <div class="dist-card dist-card-border-ratio">
                         <div class="dist-card-title">TỶ SỐ KHOẢNG CÁCH HAI KÊNH</div>
                         <div class="dist-card-value" style="color:#8b5cf6;">${ratio.toFixed(3)} <span style="font-size:14px; font-weight:bold;">lần</span></div>
-                        <div class="dist-card-sub">$10^{\\frac{L_A - L_B}{20}}$</div>
+                        <div class="dist-card-sub">$10^{\frac{L_A - L_B}{20}}$</div>
                     </div>
                 </div>
             `;
@@ -3531,22 +3911,22 @@
 
             box.innerHTML = `
                 <div class="dist-header-bar">
-                    <div style="display:flex; align-items:center; gap:8px;">
+                    <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
                         <span style="font-size:16px;">📐</span>
                         <span style="font-weight:700; color:#0f172a; font-size:14px; text-transform:uppercase;">KẾT QUẢ TÍNH KHOẢNG CÁCH NGUỒN ÂM TỚI MICRO</span>
+                        <button type="button" class="btn-slate" onclick="openCalibModal(true)" style="padding:2px 8px; font-size:11px;">✏️ Đổi mốc (r₀=${r0}m; L₀=${L0.toFixed(1)}dB)</button>
                     </div>
                     <div class="dist-formula-badge">
                         <span>Công thức:</span>
-                        <span>$r = r_0 \\cdot 10^{\\frac{L_0 - L}{20}}$</span>
+                        <span>$r = r_0 \cdot 10^{\frac{L_0 - L}{20}}$</span>
                     </div>
                 </div>
 
                 <div class="dist-card-container">
-                    
                     <div class="dist-card dist-card-border-a">
-                        <div class="dist-card-title">KHOẢNG CÁCH ƯỚC TÍNH</div>
+                        <div class="dist-card-title">KHOẢNG CÁCH ĐO ĐƯỢC</div>
                         <div class="dist-card-value" style="color:#ef4444;">${dist.toFixed(2)} <span style="font-size:14px; font-weight:bold;">m</span></div>
-                        <div class="dist-card-sub">Ước tính từ chuẩn $L_0 = 90\\text{ dB}$ tại $1\\text{m}$</div>
+                        <div class="dist-card-sub">Theo mốc chuẩn tại chỗ: $L_0 = ${L0.toFixed(1)}\text{ dB}$ tại $r_0 = ${r0}\text{ m}$ ($L_{tb} = ${avgDb.toFixed(1)}\text{ dB}$)</div>
                     </div>
                 </div>
             `;
@@ -3715,8 +4095,20 @@
     }
 
     function openTwoSourceModal() {
+        if (audioCtx && audioCtx.state === 'suspended') {
+            audioCtx.resume().catch(() => {});
+        }
         isTwoSourceModalOpen = true; isTsPaused = false;
         showTsResults = false; showTsEquations = false;
+
+        if (channelConfig.A.active || channelConfig.B.active) {
+            isPaused = false;
+            clearTimeout(stopTimer);
+            if (pauseButton) {
+                pauseButton.textContent = "Đang đo...";
+                pauseButton.className = "btn-red";
+            }
+        }
 
         const overlay = document.getElementById('twoSourceModalOverlay');
         if (overlay) { overlay.style.display = 'flex'; setTimeout(() => overlay.classList.add('animUI-visible'), 10); }
@@ -3740,12 +4132,32 @@
             overlay.classList.remove('animUI-visible');
             setTimeout(() => { overlay.style.display = 'none'; if (!animFrameId && typeof draw === 'function') draw(); }, 300);
         }
+        if (!isPaused) {
+            isContinuousMode = (modeSelect && modeSelect.value === 'continuous');
+            if (!isContinuousMode) triggerAutoStop();
+        } else if (pauseButton) {
+            pauseButton.textContent = "Đo / Dừng";
+            pauseButton.className = "btn-green";
+            updateAnalysisButtonState();
+            updateManualAnalysisButtonState();
+        }
     }
 
     function toggleTsPlay() {
         isTsPaused = !isTsPaused;
         const btn = document.getElementById('tsPlayBtn'), resBtn = document.getElementById('tsResultBtn'), eqBtn = document.getElementById('tsEquationBtn');
         if (!isTsPaused) {
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume().catch(() => {});
+            }
+            if (channelConfig.A.active || channelConfig.B.active) {
+                isPaused = false;
+                clearTimeout(stopTimer);
+                if (pauseButton) {
+                    pauseButton.textContent = "Đang đo...";
+                    pauseButton.className = "btn-red";
+                }
+            }
             if (btn) { btn.innerHTML = '⏸ Dừng'; btn.className = "btn-orange"; }
             if (resBtn) resBtn.style.setProperty('display', 'none', 'important');
             if (eqBtn) eqBtn.style.setProperty('display', 'none', 'important');
@@ -3754,15 +4166,21 @@
             document.getElementById('hudEquations').style.display = 'none';
             requestAnimationFrame(calculatePhaseAndDrawLive);
         } else {
+            isPaused = true;
+            clearTimeout(stopTimer);
+            if (pauseButton) {
+                pauseButton.textContent = "Đo / Dừng";
+                pauseButton.className = "btn-green";
+            }
             if (btn) { btn.innerHTML = '▶ Tiếp tục'; btn.className = "btn-green"; }
             if (resBtn) resBtn.style.setProperty('display', 'inline-flex', 'important');
             if (eqBtn) eqBtn.style.setProperty('display', 'inline-flex', 'important');
             if (channelConfig && channelConfig.A && channelConfig.A.data) {
-                snapDataA = Array.from(channelConfig.A.data);
+                snapDataA = new Float32Array(channelConfig.A.data);
                 snapIdxA = channelConfig.A.index;
             }
             if (channelConfig && channelConfig.B && channelConfig.B.data) {
-                snapDataB = Array.from(channelConfig.B.data);
+                snapDataB = new Float32Array(channelConfig.B.data);
                 snapIdxB = channelConfig.B.index;
             }
             calculatePhaseAndDrawLive();
@@ -3819,7 +4237,7 @@
                     document.getElementById('hudPerB').innerText = currentCalcFreqB > 0 ? (1000 / currentCalcFreqB).toFixed(2) : "0.00";
 
                     let avgFreq = (currentCalcFreqA + currentCalcFreqB) / 2;
-                    let calculatedPhase = calculatePhaseDifference(activeDataA, activeDataB, avgFreq > 0 ? avgFreq : 440, sampleRate);
+                    let calculatedPhase = calculatePhaseDifference(activeDataA, activeDataB, avgFreq > 0 ? avgFreq : 440, sampleRate, cIdxA, cIdxB);
 
                     updateEquationsHUD(currentCalcFreqA, currentCalcFreqB, calculatedPhase, currentAmpA, currentAmpB);
                 }
