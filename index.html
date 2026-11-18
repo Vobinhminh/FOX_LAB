@@ -146,10 +146,14 @@
             border-radius: 4px; border: 1px solid #cbd5e1; background: linear-gradient(180deg, #ffffff, #f1f5f9);
             cursor: pointer; display: flex; align-items: center; gap: 4px;
         }
+        .settings-dropdown-toggle .dropdown-arrow { font-size: 9px; transition: transform 0.2s ease; margin-left: 2px; }
+        .settings-dropdown.open .settings-dropdown-toggle .dropdown-arrow { transform: rotate(180deg); }
         .settings-dropdown-menu {
             display: none; position: absolute; top: calc(100% + 4px); left: 0; min-width: 250px;
+            max-width: calc(100vw - 16px); max-height: min(520px, calc(100dvh - 60px));
+            overflow-x: hidden; overflow-y: auto;
             z-index: 1001; background: #0f172a; border: 1px solid #334155; border-radius: 6px;
-            box-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.5); overflow: hidden;
+            box-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.5); scrollbar-width: thin; scrollbar-color: #334155 transparent;
         }
         .settings-dropdown.open .settings-dropdown-menu { display: block; animation: animUI-slideDown 0.22s ease forwards; }
 
@@ -168,7 +172,7 @@
         }
         .settings-group.expanded > .settings-group-items { display: flex; flex-direction: row; align-items: stretch; }
         .settings-slider-pill {
-            position: absolute; top: 4px; bottom: 4px; left: 0; width: 0;
+            position: absolute; left: 0; top: 0; width: 0; height: 0;
             background: linear-gradient(135deg, #3b82f6, #2563eb); border-radius: 4px;
             pointer-events: none; z-index: 1; transition: transform 0.24s ease, width 0.24s ease; opacity: 0;
         }
@@ -334,8 +338,10 @@
         .fox-msg-group { position: relative; display: flex; flex-direction: column; max-width: 85%; gap: 2px; }
         
         .fox-msg-actions-bar { display: flex; gap: 6px; margin-top: 2px; }
-        .fox-copy-btn, .fox-export-btn { background: #cbd5e1; border: none; border-radius: 4px; color: #0f172a; cursor: pointer; font-size: 9px; padding: 2px 6px; font-weight: bold; opacity: 0.8; transition: opacity 0.2s; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2); }
-        .fox-copy-btn:hover, .fox-export-btn:hover { opacity: 1; filter: brightness(1.1); }
+        .fox-copy-btn, .fox-export-btn, .fox-speak-btn { background: #cbd5e1; border: none; border-radius: 4px; color: #0f172a; cursor: pointer; font-size: 9px; padding: 2px 6px; font-weight: bold; opacity: 0.8; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2); }
+        .fox-copy-btn:hover, .fox-export-btn:hover, .fox-speak-btn:hover { opacity: 1; filter: brightness(1.1); }
+        .fox-speak-btn { background: #10b981; color: #ffffff; }
+        .fox-speak-btn.speaking { background: #ef4444; color: #ffffff; animation: statusPulse 1.2s infinite; }
         .fox-export-btn { background: #38bdf8; color: #0f172a; }
 
         .fox-msg-user .fox-msg-group { align-items: flex-end; }
@@ -2377,15 +2383,17 @@
 
 
     function updateSettingsPill(groupItems, targetItem, animated = true) {
-        if (!groupItems) return;
+        if (!groupItems || !groupItems.querySelector('.settings-item')) return;
         let pill = groupItems.querySelector('.settings-slider-pill');
         if (!pill) { pill = document.createElement('div'); pill.className = 'settings-slider-pill'; groupItems.prepend(pill); }
         if (!targetItem) targetItem = groupItems.querySelector('.settings-item.active');
         if (!targetItem) { pill.style.opacity = '0'; return; }
         const gRect = groupItems.getBoundingClientRect(), iRect = targetItem.getBoundingClientRect();
         if (gRect.width === 0 || iRect.width === 0) return;
+        const offsetX = (iRect.left - gRect.left) - (groupItems.clientLeft || 0);
+        const offsetY = (iRect.top - gRect.top) - (groupItems.clientTop || 0);
         pill.style.transition = animated ? 'transform 0.24s cubic-bezier(0.2, 0.9, 0.3, 1), width 0.24s cubic-bezier(0.2, 0.9, 0.3, 1), opacity 0.15s ease' : 'none';
-        pill.style.opacity = '1'; pill.style.transform = `translateX(${iRect.left - gRect.left}px)`; pill.style.width = `${iRect.width}px`; pill.style.top = `${iRect.top - gRect.top}px`; pill.style.height = `${iRect.height}px`;
+        pill.style.opacity = '1'; pill.style.transform = `translateX(${offsetX}px)`; pill.style.width = `${iRect.width}px`; pill.style.top = `${offsetY}px`; pill.style.height = `${iRect.height}px`;
     }
 
     document.getElementById('settingsToggle').addEventListener('click', (e) => {
@@ -2395,15 +2403,13 @@
 
     settingsMenu.querySelectorAll('.settings-group-header').forEach(header => {
         header.addEventListener('click', (e) => {
-            if (header.dataset.group === 'license') {
-                const group = header.parentElement;
-                settingsMenu.querySelectorAll('.settings-group').forEach(g => { if (g !== group) g.classList.remove('expanded'); });
-                group.classList.toggle('expanded');
-                return;
-            }
             e.stopPropagation();
             const group = header.parentElement;
             settingsMenu.querySelectorAll('.settings-group').forEach(g => { if (g !== group) g.classList.remove('expanded'); });
+            if (header.dataset.group === 'license') {
+                group.classList.toggle('expanded');
+                return;
+            }
             if (group.classList.toggle('expanded')) { requestAnimationFrame(() => updateSettingsPill(group.querySelector('.settings-group-items'), null, false)); }
         });
     });
@@ -5822,6 +5828,13 @@
     const foxMicBtn = document.getElementById('foxMicBtn');
     let recognition = null;
     let isListening = false;
+    let isVoiceSession = false;
+
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.onvoiceschanged = () => {
+            try { window.speechSynthesis.getVoices(); } catch (e) { }
+        };
+    }
 
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
@@ -5833,14 +5846,16 @@
 
         recognition.onstart = () => {
             isListening = true;
+            isVoiceSession = true;
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
             foxMicBtn.classList.add('listening');
-            foxMicBtn.title = "Đang lắng nghe... (Nhấn để dừng)";
-            chatInput.placeholder = "Đang lắng nghe giọng nói của bạn...";
+            foxMicBtn.title = "Đang lắng nghe... (Dừng để gửi luôn)";
+            chatInput.placeholder = "Đang lắng nghe... Nói xong AI sẽ tự trả lời";
         };
 
         recognition.onresult = (event) => {
             let transcript = '';
-            for (let i = event.resultIndex; i < event.results.length; i++) {
+            for (let i = 0; i < event.results.length; i++) {
                 transcript += event.results[i][0].transcript;
             }
             chatInput.value = transcript;
@@ -5849,6 +5864,7 @@
 
         recognition.onerror = (event) => {
             console.warn("Lỗi nhận diện giọng nói:", event.error);
+            isVoiceSession = false;
             stopSpeechRecognition();
             if (event.error === 'not-allowed') {
                 alert("⚠️ Vui lòng cấp quyền truy cập Microphone trên trình duyệt để sử dụng tính năng này!");
@@ -5856,19 +5872,29 @@
         };
 
         recognition.onend = () => {
+            const hasVoiceText = chatInput.value.trim() !== '';
             stopSpeechRecognition();
+            if (isVoiceSession && hasVoiceText) {
+                isVoiceSession = false;
+                sendFoxMessage();
+            } else {
+                isVoiceSession = false;
+            }
         };
 
         foxMicBtn.addEventListener('click', () => {
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
             if (isListening) {
                 recognition.stop();
             } else {
                 chatInput.value = '';
+                isVoiceSession = true;
                 isMicPromptActive = true;
                 try {
                     recognition.start();
                 } catch (err) {
                     console.log(err);
+                    isVoiceSession = false;
                 } finally {
                     setTimeout(() => { isMicPromptActive = false; }, 600);
                 }
@@ -5892,6 +5918,91 @@
             chatInput.placeholder = "Hỏi AI, nói hoặc tải ảnh đề bài...";
         }
     }
+
+    function cleanTextForSpeech(text) {
+        if (!text) return '';
+        let t = text;
+        t = t.replace(/<[^>]+>/g, ' ');
+        t = t.replace(/\$\$(.*?)\$\$/gs, ' $1 ');
+        t = t.replace(/\$(.*?)\$/g, ' $1 ');
+        t = t.replace(/\\Delta\s*\\varphi/gi, 'độ lệch pha');
+        t = t.replace(/\\Delta/gi, 'đenta');
+        t = t.replace(/\\varphi|\\phi/gi, 'phi');
+        t = t.replace(/\\lambda/gi, 'lam-đa');
+        t = t.replace(/\\pi/gi, 'pi');
+        t = t.replace(/\\omega/gi, 'ô-mê-ga');
+        t = t.replace(/\\alpha/gi, 'an-pha');
+        t = t.replace(/\\beta/gi, 'bê-ta');
+        t = t.replace(/\\frac\{([^}]+)\}\{([^}]+)\}/gi, '$1 chia cho $2');
+        t = t.replace(/\\[a-zA-Z]+/g, ' ');
+        t = t.replace(/[\{\}\^_\\]/g, ' ');
+        t = t.replace(/```[\s\S]*?```/g, ' ');
+        t = t.replace(/`([^`]+)`/g, '$1');
+        t = t.replace(/\*\*([^*]+)\*\*/g, '$1');
+        t = t.replace(/\*([^*]+)\*/g, '$1');
+        t = t.replace(/#+\s*/g, '');
+        t = t.replace(/(\d+)\s*Hz\b/gi, '$1 héc');
+        t = t.replace(/(\d+)\s*ms\b/gi, '$1 mili giây');
+        t = t.replace(/(\d+)\s*s\b/gi, '$1 giây');
+        t = t.replace(/(\d+)\s*rad\b/gi, '$1 ra-đi-an');
+        t = t.replace(/(\d+)\s*cm\b/gi, '$1 xăng-ti-mét');
+        t = t.replace(/(\d+)\s*m\b/gi, '$1 mét');
+        t = t.replace(/\s+/g, ' ').trim();
+        return t;
+    }
+
+    function speakFoxResponse(rawText, btnElement = null) {
+        if (!('speechSynthesis' in window)) return;
+        
+        if (btnElement && btnElement.classList.contains('speaking')) {
+            window.speechSynthesis.cancel();
+            btnElement.classList.remove('speaking');
+            btnElement.innerText = '🔊 Nghe';
+            return;
+        }
+
+        window.speechSynthesis.cancel();
+        document.querySelectorAll('.fox-speak-btn.speaking').forEach(b => {
+            b.classList.remove('speaking');
+            b.innerText = '🔊 Nghe';
+        });
+
+        const speakText = cleanTextForSpeech(rawText);
+        if (!speakText) return;
+
+        const utterance = new SpeechSynthesisUtterance(speakText);
+        utterance.lang = 'vi-VN';
+        utterance.rate = 1.05;
+
+        const voices = window.speechSynthesis.getVoices();
+        const viVoice = voices.find(v => v.lang && (v.lang === 'vi-VN' || v.lang.startsWith('vi')));
+        if (viVoice) utterance.voice = viVoice;
+
+        if (btnElement) {
+            btnElement.classList.add('speaking');
+            btnElement.innerText = '⏹ Dừng';
+        }
+
+        utterance.onend = () => {
+            if (btnElement) {
+                btnElement.classList.remove('speaking');
+                btnElement.innerText = '🔊 Nghe';
+            }
+        };
+        utterance.onerror = () => {
+            if (btnElement) {
+                btnElement.classList.remove('speaking');
+                btnElement.innerText = '🔊 Nghe';
+            }
+        };
+
+        window.speechSynthesis.speak(utterance);
+    }
+
+    window.toggleSpeakMessage = function (btn) {
+        const textToSpeak = btn.dataset.speakText || (btn.closest('.fox-msg-group') ? btn.closest('.fox-msg-group').querySelector('.fox-msg-bubble').innerText : '');
+        speakFoxResponse(textToSpeak, btn);
+    };
 
     let foxChatHistory = [];
 
@@ -6092,13 +6203,15 @@
         let html = ''; if (sender === 'bot') html += `<div class="fox-msg-avatar">${FOX_AVATAR_SVG}</div>`;
         const safeText = sanitizeChatHtml(text);
         const formattedText = sender === 'bot' ? formatMathText(safeText) : safeText;
-        let copyBtn = sender === 'bot' ? `<button class="fox-copy-btn" onclick="copyFoxText(this)">Copy</button><button class="fox-export-btn" onclick="exportChatReport(this)">📥 Tải báo cáo</button>` : '';
+        let copyBtn = sender === 'bot' ? `<button class="fox-copy-btn" onclick="copyFoxText(this)">Copy</button><button class="fox-speak-btn" onclick="toggleSpeakMessage(this)">🔊 Nghe</button><button class="fox-export-btn" onclick="exportChatReport(this)">📥 Tải báo cáo</button>` : '';
         let actionsBar = sender === 'bot' ? `<div class="fox-msg-actions-bar">${copyBtn}</div>` : '';
         html += `<div class="fox-msg-group"><div class="fox-msg-bubble">${formattedText}</div>${actionsBar}</div>`;
         row.innerHTML = html;
         if (sender === 'bot') {
             const cBtn = row.querySelector('.fox-copy-btn');
             if (cBtn) cBtn.dataset.copyText = text.replace(/<[^>]+>/g, '');
+            const sBtn = row.querySelector('.fox-speak-btn');
+            if (sBtn) sBtn.dataset.speakText = text;
         }
         chatContent.appendChild(row); chatContent.scrollTop = chatContent.scrollHeight;
 
@@ -6109,6 +6222,7 @@
                 console.log('MathJax typeset error:', err);
             }
         }
+        return row;
     }
 
     function addTypingIndicator() {
