@@ -1753,12 +1753,6 @@
     }
     checkAppVersion();
 
-    document.addEventListener('keydown', function (e) {
-        if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j')) || (e.ctrlKey && (e.key === 'U' || e.key === 'u'))) {
-            e.preventDefault(); return false;
-        }
-    });
-    document.addEventListener('contextmenu', function (e) { e.preventDefault(); });
 
     let isSelectActive = false;
     let isMicPromptActive = false;
