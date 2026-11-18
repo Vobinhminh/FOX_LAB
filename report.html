@@ -94,7 +94,7 @@
     .btn-export { background: #059669; color: #fff; }
     .btn-export:hover { background: #047857; }
 
-    /* Dropdown Menu */
+    /* Dropdown Menu (Mặc định thu gọn cho Điện thoại & Máy tính bảng) */
     .tb-dropdown {
       position: relative;
       display: inline-block;
@@ -121,6 +121,47 @@
 
     .tb-dropdown.open .tb-dropdown-menu {
       display: block;
+    }
+
+    /* Trên Máy tính (>= 992px): Tự động dàn hết các ô vuông checkbox ra thanh ngang */
+    @media (min-width: 992px) {
+      .toolbar-compact-bar {
+        max-width: 1200px;
+      }
+      #ddCustomParts > .btn-custom,
+      #ddCustomParts .tb-dd-header,
+      #ddCustomParts .tb-dd-divider {
+        display: none !important;
+      }
+      #ddCustomParts .tb-dropdown-menu {
+        display: flex !important;
+        position: static !important;
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        min-width: auto !important;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 5px;
+      }
+      #ddCustomParts .tb-check-item {
+        background: #1e293b;
+        border: 1px solid #475569;
+        padding: 5px 9px;
+        font-size: 12px;
+        border-radius: 6px;
+        gap: 6px;
+      }
+      #ddCustomParts .tb-check-item:has(input:checked) {
+        background: #0f172a;
+        border-color: #38bdf8;
+        color: #e0f2fe;
+      }
+      #ddCustomParts .tb-check-item input[type="checkbox"] {
+        width: 14px;
+        height: 14px;
+      }
     }
 
     .tb-dd-header {

@@ -16,6 +16,7 @@
 
     <!-- QRCode.js library for reliable QR code generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <!-- MathJax v3 Configuration & CDN -->
     <script>
         window.MathJax = {
@@ -1203,7 +1204,152 @@
             }
         }
 
-    </style>
+    
+        .exp-rep-toolbar-compact {
+            max-width: 1260px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+        .exp-rep-tb-left, .exp-rep-tb-right {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 6px;
+        }
+        .exp-tb-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        .exp-tb-dropdown-menu {
+            display: none;
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            min-width: 245px;
+            background: #1e293b;
+            border: 1px solid #475569;
+            border-radius: 8px;
+            padding: 8px;
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5);
+            z-index: 9600;
+        }
+        .exp-tb-dropdown-menu.align-right {
+            left: auto;
+            right: 0;
+        }
+        .exp-tb-dropdown.open .exp-tb-dropdown-menu {
+            display: block;
+        }
+        .exp-tb-dd-header {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            color: #94a3b8;
+            padding: 2px 6px 6px;
+            margin-bottom: 4px;
+            border-bottom: 1px solid #334155;
+        }
+        .exp-tb-dd-divider {
+            height: 1px;
+            background: #334155;
+            margin: 6px 0;
+        }
+        .exp-tb-dropdown-menu .exp-rep-chip {
+            display: flex;
+            width: 100%;
+            background: transparent;
+            border: none;
+            padding: 7px 6px;
+            border-radius: 6px;
+            font-size: 13px;
+            gap: 8px;
+        }
+        .exp-tb-dropdown-menu .exp-rep-chip:hover {
+            background: #334155;
+        }
+        .exp-tb-dropdown-menu .exp-rep-chip input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #38bdf8;
+        }
+        .exp-tb-action-item {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: #f8fafc;
+            text-align: left;
+            padding: 9px 10px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .exp-tb-action-item:hover {
+            background: #0284c7;
+        }
+        /* Trên Máy tính (>= 1024px): Dàn hết các ô vuông tích chọn ra thanh ngang */
+        @media (min-width: 1024px) {
+            #expDdCustomParts > .exp-dd-toggle-btn,
+            #expDdCustomParts .exp-tb-dd-header,
+            #expDdCustomParts .exp-tb-dd-divider {
+                display: none !important;
+            }
+            #expDdCustomParts .exp-tb-dropdown-menu {
+                display: flex !important;
+                position: static !important;
+                background: transparent !important;
+                border: none !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+                min-width: auto !important;
+                flex-wrap: wrap;
+                align-items: center;
+                gap: 5px;
+            }
+            #expDdCustomParts .exp-rep-chip {
+                display: inline-flex !important;
+                width: auto !important;
+                background: #0f172a !important;
+                border: 1px solid #475569 !important;
+                padding: 5px 9px !important;
+                font-size: 12px !important;
+                gap: 6px !important;
+            }
+            #expDdCustomParts .exp-rep-chip:has(input:checked) {
+                border-color: #38bdf8 !important;
+                color: #e0f2fe !important;
+            }
+            #expDdCustomParts .exp-rep-chip input[type="checkbox"] {
+                width: 14px !important;
+                height: 14px !important;
+            }
+        }
+        @media (max-width: 768px) {
+            .exp-rep-toolbar { padding: 7px 8px; }
+            .exp-rep-toolbar-compact, .exp-rep-tb-left, .exp-rep-tb-right {
+                justify-content: center;
+                gap: 5px;
+            }
+            .exp-rep-btn { padding: 6px 8px; font-size: 11.5px; }
+        }
+        .exp-exporting-pdf .no-print { display: none !important; }
+        .exp-exporting-pdf [contenteditable="true"] { border-bottom: none !important; padding: 0 !important; }
+        .exp-exporting-pdf.exp-a4-sheet {
+            width: 194mm !important;
+            max-width: 194mm !important;
+            margin: 0 !important;
+            padding: 6mm 8mm !important;
+            box-shadow: none !important;
+        }
+</style>
 </head>
 <body>
 
@@ -5998,55 +6144,66 @@
 <!-- MODAL BÁO CÁO THÍ NGHIỆM A4 XUẤT TỪNG PHẦN (TÍCH HỢP TRONG FOX_LAB)       -->
 <!-- ========================================================================= -->
 <div id="expReportModalOverlay" onclick="if(event.target===this) closeExpReportModal()">
-  <!-- Thanh công cụ cấu hình & xuất từng phần theo yêu cầu -->
+  <!-- Thanh công cụ cấu hình & xuất file (Tự dàn ngang trên PC, thu gọn Dropdown trên Điện thoại/Tablet) -->
   <div class="exp-rep-toolbar no-print">
-    <div class="exp-rep-toolbar-row">
-      <div class="exp-rep-toolbar-group">
-        <strong>Chọn nhanh chế độ xuất:</strong>
-        <button type="button" class="exp-rep-btn exp-rep-preset active" id="expPreset-all" onclick="applyExpPreset('all')">Tất cả các phần</button>
-        <button type="button" class="exp-rep-btn exp-rep-preset" id="expPreset-1" onclick="applyExpPreset('1')">Chỉ Phần I (Dao động kí)</button>
-        <button type="button" class="exp-rep-btn exp-rep-preset" id="expPreset-2" onclick="applyExpPreset('2')">Chỉ Phần II (Phổ FFT)</button>
-        <button type="button" class="exp-rep-btn exp-rep-preset" id="expPreset-3" onclick="applyExpPreset('3')">Chỉ Phần III (Mức dB)</button>
-        <button type="button" class="exp-rep-btn exp-rep-preset" id="expPreset-4" onclick="applyExpPreset('4')">Chỉ Phần IV (Bộ lọc số)</button>
-      </div>
-      <div class="exp-rep-toolbar-group">
-        <button type="button" class="exp-rep-btn exp-rep-btn-info" onclick="syncFoxLabToReport(true)" title="Lấy lại số liệu và đồ thị mới nhất từ máy đo FOX_LAB">🔄 Cập nhật từ máy đo</button>
-        <button type="button" class="exp-rep-btn exp-rep-btn-secondary" onclick="loadExpSampleAll()">Nạp dữ liệu mẫu</button>
-        <button type="button" class="exp-rep-btn exp-rep-btn-success" onclick="exportAllExpCSV()">📊 Xuất Excel (.CSV)</button>
-        <button type="button" class="exp-rep-btn exp-rep-btn-primary" onclick="printCurrentExpReport()">🖨️ In / Xuất PDF đang chọn</button>
-        <button type="button" class="exp-rep-btn exp-rep-btn-info" onclick="navigateToStandaloneReport()" title="Mở sang trang báo cáo riêng (report.html) với toàn bộ số liệu &amp; đồ thị đã đồng bộ">↗ Sang trang báo cáo</button>
+    <div class="exp-rep-toolbar-compact">
+      <div class="exp-rep-tb-left">
         <button type="button" class="exp-rep-btn exp-rep-btn-danger" onclick="closeExpReportModal()" title="Quay lại màn hình đo chính FOX_LAB">⬅ Quay lại</button>
+        <button type="button" class="exp-rep-btn exp-rep-btn-info" onclick="syncFoxLabToReport(true)" title="Đồng bộ số liệu và đồ thị mới nhất từ máy đo FOX_LAB">🔄 Đồng bộ dữ liệu</button>
+        <button type="button" class="exp-rep-btn exp-rep-btn-secondary" onclick="navigateToStandaloneReport()" title="Mở sang trang báo cáo riêng (report.html)">↗ Trang riêng</button>
       </div>
-    </div>
-    <div class="exp-rep-toolbar-row">
-      <div class="exp-rep-toolbar-group">
-        <span>Tùy chỉnh ghép phần:</span>
-        <label class="exp-rep-chip">
-          <input type="checkbox" id="expChk-part1" checked onchange="syncExpCheckboxes()" />
-          Phần I: Dao động kí
-        </label>
-        <label class="exp-rep-chip">
-          <input type="checkbox" id="expChk-part2" checked onchange="syncExpCheckboxes()" />
-          Phần II: Phổ FFT
-        </label>
-        <label class="exp-rep-chip">
-          <input type="checkbox" id="expChk-part3" checked onchange="syncExpCheckboxes()" />
-          Phần III: Mức dB
-        </label>
-        <label class="exp-rep-chip">
-          <input type="checkbox" id="expChk-part4" checked onchange="syncExpCheckboxes()" />
-          Phần IV: Bộ lọc số
-        </label>
-        <label class="exp-rep-chip">
-          <input type="checkbox" id="expChk-part5" checked onchange="syncExpCheckboxes()" />
-          Phần V: Nhận xét &amp; Chữ ký
-        </label>
-      </div>
-      <div class="exp-rep-toolbar-group">
-        <label class="exp-rep-chip" title="Tự động chuyển đồ thị nền tối sang nền trắng để in rõ nét">
-          <input type="checkbox" id="expInvertDarkToggle" checked onchange="redrawAllExpCanvases()" />
-          Nền trắng đồ thị
-        </label>
+
+      <div class="exp-rep-tb-right">
+        <!-- Tùy chỉnh ghép phần: Tự dàn ngang hết các ô vuông trên PC, thu gọn Dropdown trên Điện thoại/Tablet -->
+        <div class="exp-tb-dropdown" id="expDdCustomParts">
+          <button type="button" class="exp-rep-btn exp-rep-btn-secondary exp-dd-toggle-btn" onclick="toggleExpTbDropdown('expDdCustomParts', event)">
+            ☑️ Tùy chỉnh <span id="expSelectedCountBadge">(5)</span> ▼
+          </button>
+          <div class="exp-tb-dropdown-menu" onclick="event.stopPropagation()">
+            <div class="exp-tb-dd-header">Chọn phần hiển thị &amp; xuất file</div>
+            <label class="exp-rep-chip">
+              <input type="checkbox" id="expChk-part1" checked onchange="syncExpCheckboxes()" />
+              <span>Phần I: Dao động kí</span>
+            </label>
+            <label class="exp-rep-chip">
+              <input type="checkbox" id="expChk-part2" checked onchange="syncExpCheckboxes()" />
+              <span>Phần II: Phổ FFT</span>
+            </label>
+            <label class="exp-rep-chip">
+              <input type="checkbox" id="expChk-part3" checked onchange="syncExpCheckboxes()" />
+              <span>Phần III: Mức dB</span>
+            </label>
+            <label class="exp-rep-chip">
+              <input type="checkbox" id="expChk-part4" checked onchange="syncExpCheckboxes()" />
+              <span>Phần IV: Bộ lọc số</span>
+            </label>
+            <label class="exp-rep-chip">
+              <input type="checkbox" id="expChk-part5" checked onchange="syncExpCheckboxes()" />
+              <span>Phần V: Nhận xét &amp; Chữ ký</span>
+            </label>
+            <div class="exp-tb-dd-divider"></div>
+            <label class="exp-rep-chip" title="Tự động chuyển đồ thị nền tối sang nền trắng để xuất rõ nét">
+              <input type="checkbox" id="expInvertDarkToggle" checked onchange="redrawAllExpCanvases()" />
+              <span>Nền trắng đồ thị</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Nút Dropdown Xuất file (PDF & Excel trực tiếp, bỏ in ấn) -->
+        <div class="exp-tb-dropdown" id="expDdExportFile">
+          <button type="button" class="exp-rep-btn exp-rep-btn-success" onclick="toggleExpTbDropdown('expDdExportFile', event)">
+            📥 Xuất file ▼
+          </button>
+          <div class="exp-tb-dropdown-menu align-right" onclick="event.stopPropagation()">
+            <div class="exp-tb-dd-header">Xuất các phần đã tích chọn</div>
+            <button type="button" class="exp-tb-action-item" onclick="exportSelectedExpToPDF()">
+              📄 Xuất file PDF (.pdf)
+            </button>
+            <button type="button" class="exp-tb-action-item" onclick="exportSelectedExpToExcelCSV()">
+              📊 Xuất file Excel (.csv)
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -6095,7 +6252,7 @@
       <div class="exp-part-title">
         <span>PHẦN I. KHẢO SÁT DẠNG SÓNG VÀ ĐO CHU KÌ, TẦN SỐ (DAO ĐỘNG KÍ)</span>
         <div class="exp-part-actions no-print">
-          <button type="button" class="exp-inline-btn exp-inline-btn-pdf" onclick="printSingleExpPart('expPart1')" title="In hoặc lưu PDF A4 chỉ riêng Phần I kèm thông tin nhóm và chữ ký">🖨️ In/PDF phần này</button>
+          <button type="button" class="exp-inline-btn exp-inline-btn-pdf" onclick="exportSingleExpPartToPDF('expPart1', 'Phan1_DaoDongKi')" title="Tải trực tiếp file PDF riêng Phần I kèm thông tin nhóm và chữ ký">📄 PDF phần này</button>
           <button type="button" class="exp-inline-btn exp-inline-btn-img" onclick="exportExpPartAsImage('expPart1', 'Phan1_DaoDongKi')" title="Xuất toàn bộ Phần I (đồ thị + bảng số liệu) thành 1 file ảnh PNG">🖼️ Xuất ảnh phần này</button>
           <button type="button" class="exp-inline-btn exp-inline-btn-csv" onclick="exportSingleExpPartCSV('expPart1')" title="Xuất bảng số liệu Phần I ra file Excel CSV">📊 CSV</button>
         </div>
@@ -6157,7 +6314,7 @@
       <div class="exp-part-title">
         <span>PHẦN II. PHÂN TÍCH PHỔ TẦN SỐ VÀ ÂM SẮC (QUÉT PHỔ FFT)</span>
         <div class="exp-part-actions no-print">
-          <button type="button" class="exp-inline-btn exp-inline-btn-pdf" onclick="printSingleExpPart('expPart2')">🖨️ In/PDF phần này</button>
+          <button type="button" class="exp-inline-btn exp-inline-btn-pdf" onclick="exportSingleExpPartToPDF('expPart2', 'Phan2_PhoFFT')">📄 PDF phần này</button>
           <button type="button" class="exp-inline-btn exp-inline-btn-img" onclick="exportExpPartAsImage('expPart2', 'Phan2_PhoFFT')">🖼️ Xuất ảnh phần này</button>
           <button type="button" class="exp-inline-btn exp-inline-btn-csv" onclick="exportSingleExpPartCSV('expPart2')">📊 CSV</button>
         </div>
@@ -6197,7 +6354,7 @@
       <div class="exp-part-title">
         <span>PHẦN III. ĐO MỨC CƯỜNG ĐỘ ÂM VÀ SỰ TRUYỀN ÂM (MÁY ĐO dB)</span>
         <div class="exp-part-actions no-print">
-          <button type="button" class="exp-inline-btn exp-inline-btn-pdf" onclick="printSingleExpPart('expPart3')">🖨️ In/PDF phần này</button>
+          <button type="button" class="exp-inline-btn exp-inline-btn-pdf" onclick="exportSingleExpPartToPDF('expPart3', 'Phan3_MucCuongDoAm')">📄 PDF phần này</button>
           <button type="button" class="exp-inline-btn exp-inline-btn-img" onclick="exportExpPartAsImage('expPart3', 'Phan3_MucCuongDoAm')">🖼️ Xuất ảnh phần này</button>
           <button type="button" class="exp-inline-btn exp-inline-btn-csv" onclick="exportSingleExpPartCSV('expPart3')">📊 CSV</button>
         </div>
@@ -6239,7 +6396,7 @@
       <div class="exp-part-title">
         <span>PHẦN IV. KHẢO SÁT HIỆU QUẢ KHỬ NHIỄU CỦA BỘ LỌC SỐ</span>
         <div class="exp-part-actions no-print">
-          <button type="button" class="exp-inline-btn exp-inline-btn-pdf" onclick="printSingleExpPart('expPart4')">🖨️ In/PDF phần này</button>
+          <button type="button" class="exp-inline-btn exp-inline-btn-pdf" onclick="exportSingleExpPartToPDF('expPart4', 'Phan4_BoLocSo')">📄 PDF phần này</button>
           <button type="button" class="exp-inline-btn exp-inline-btn-img" onclick="exportExpPartAsImage('expPart4', 'Phan4_BoLocSo')">🖼️ Xuất ảnh phần này</button>
         </div>
       </div>
@@ -6696,7 +6853,7 @@
             bc.postMessage({ type: "SYNC_REPORT_DATA", payload });
             bc.close();
         } catch (e) {}
-        const targetPage = window.FOX_REPORT_PAGE || "reprt.html";
+        const targetPage = window.FOX_REPORT_PAGE || "report.html";
         window.location.href = targetPage;
     };
 
@@ -6969,12 +7126,154 @@
         syncExpCheckboxes();
     };
 
+    window.toggleExpTbDropdown = function (dropdownId, event) {
+        if (event) event.stopPropagation();
+        document.querySelectorAll(".exp-tb-dropdown").forEach(el => {
+            if (el.id !== dropdownId) el.classList.remove("open");
+        });
+        const target = document.getElementById(dropdownId);
+        if (target) target.classList.toggle("open");
+    };
+
+    document.addEventListener("click", () => {
+        document.querySelectorAll(".exp-tb-dropdown").forEach(el => el.classList.remove("open"));
+    });
+
     window.syncExpCheckboxes = function () {
+        let count = 0;
+        const checkedParts = [];
         ["1", "2", "3", "4", "5"].forEach(num => {
             const chk = document.getElementById(`expChk-part${num}`);
             const el = document.getElementById(`expPart${num}`);
-            if (chk && el) el.classList.toggle("hidden-part", !chk.checked);
+            if (chk && el) {
+                el.classList.toggle("hidden-part", !chk.checked);
+                if (chk.checked) {
+                    count++;
+                    if (num !== "5") checkedParts.push(`expPart${num}`);
+                }
+            }
         });
+        const badge = document.getElementById("expSelectedCountBadge");
+        if (badge) badge.textContent = `(${count})`;
+
+        const titleEl = document.getElementById("expReportTitle");
+        if (titleEl && typeof EXP_DEFAULT_TITLE !== "undefined") {
+            if (checkedParts.length === 1) {
+                const sec = document.getElementById(checkedParts[0]);
+                if (sec && sec.dataset.title) titleEl.textContent = sec.dataset.title;
+            } else {
+                titleEl.textContent = EXP_DEFAULT_TITLE;
+            }
+        }
+    };
+
+    window.exportSelectedExpToPDF = function () {
+        document.querySelectorAll(".exp-tb-dropdown").forEach(el => el.classList.remove("open"));
+        const sheet = document.getElementById("expReportSheet");
+        if (!sheet) return;
+        const groupSlug = (document.getElementById("expGroupName")?.textContent || "Nhom01").trim().replace(/\s+/g, "_");
+        const fileName = `FOXLAB_BaoCao_${groupSlug}.pdf`;
+
+        if (typeof html2pdf === "undefined") {
+            showExpToast("⚠️ Chưa tải được thư viện xuất PDF, vui lòng kiểm tra kết nối mạng!");
+            return;
+        }
+        showExpToast("⏳ Đang tạo file PDF, vui lòng đợi...");
+        sheet.classList.add("exp-exporting-pdf");
+
+        const opt = {
+            margin: [8, 8, 8, 8],
+            filename: fileName,
+            image: { type: "jpeg", quality: 0.96 },
+            html2canvas: { scale: 2, useCORS: true, backgroundColor: "#ffffff", scrollY: 0 },
+            jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+            pagebreak: { mode: ["avoid-all", "css", "legacy"] }
+        };
+        html2pdf().set(opt).from(sheet).save().then(() => {
+            sheet.classList.remove("exp-exporting-pdf");
+            showExpToast(`✅ Đã tải xuống file PDF: ${fileName}`);
+        }).catch(() => {
+            sheet.classList.remove("exp-exporting-pdf");
+            showExpToast("❌ Có lỗi xảy ra khi xuất PDF!");
+        });
+    };
+
+    window.exportSingleExpPartToPDF = function (partId, fileTag) {
+        const allParts = ["expPart1", "expPart2", "expPart3", "expPart4"];
+        const prevStates = {};
+        const prevTitle = document.getElementById("expReportTitle").textContent;
+
+        allParts.forEach(id => {
+            const el = document.getElementById(id);
+            prevStates[id] = el.classList.contains("hidden-part");
+            if (id === partId) {
+                el.classList.remove("hidden-part", "temp-print-hide");
+                if (el.dataset.title) document.getElementById("expReportTitle").textContent = el.dataset.title;
+            } else {
+                el.classList.add("temp-print-hide");
+            }
+        });
+        const part5 = document.getElementById("expPart5");
+        const prevPart5 = part5.classList.contains("hidden-part");
+        part5.classList.remove("hidden-part", "temp-print-hide");
+
+        const sheet = document.getElementById("expReportSheet");
+        sheet.classList.add("exp-exporting-pdf");
+        showExpToast(`⏳ Đang tạo PDF ${fileTag}...`);
+
+        const opt = {
+            margin: [8, 8, 8, 8],
+            filename: `FOXLAB_${fileTag}.pdf`,
+            image: { type: "jpeg", quality: 0.96 },
+            html2canvas: { scale: 2, useCORS: true, backgroundColor: "#ffffff", scrollY: 0 },
+            jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+        };
+        html2pdf().set(opt).from(sheet).save().then(() => {
+            sheet.classList.remove("exp-exporting-pdf");
+            allParts.forEach(id => {
+                const el = document.getElementById(id);
+                el.classList.remove("temp-print-hide");
+                el.classList.toggle("hidden-part", prevStates[id]);
+            });
+            part5.classList.toggle("hidden-part", prevPart5);
+            document.getElementById("expReportTitle").textContent = prevTitle;
+            showExpToast(`✅ Đã tải PDF: FOXLAB_${fileTag}.pdf`);
+        }).catch(() => {
+            sheet.classList.remove("exp-exporting-pdf");
+        });
+    };
+
+    window.exportSelectedExpToExcelCSV = function () {
+        document.querySelectorAll(".exp-tb-dropdown").forEach(el => el.classList.remove("open"));
+        const rows = [
+            ["BÁO CÁO KẾT QUẢ THÍ NGHIỆM SÓNG ÂM - FOX_LAB"],
+            ["Nhóm", document.getElementById("expGroupName").textContent.trim(), "Lớp", document.getElementById("expClassName").textContent.trim()],
+            []
+        ];
+        if (document.getElementById("expChk-part1")?.checked) {
+            rows.push(["PHẦN I: DAO ĐỘNG KÍ (T, f)"], ["Lần đo", "Số chu kì N", "Δt (ms)", "Chu kì T (ms)", "Tần số f (Hz)"]);
+            expOscRows.forEach((r, i) => {
+                const T = r.deltaT_ms / (r.soChuKi || 1);
+                const f = T > 0 ? 1000 / T : 0;
+                rows.push([`Lần ${i + 1}`, r.soChuKi, r.deltaT_ms.toFixed(2), T.toFixed(2), f.toFixed(1)]);
+            });
+            rows.push([]);
+        }
+        if (document.getElementById("expChk-part2")?.checked) {
+            rows.push(["PHẦN II: PHỔ TẦN SỐ (FFT)"], ["Nguồn âm", "f0 (Hz)", "Họa âm", "Đặc điểm"]);
+            expFftRows.forEach(r => rows.push([r.nguon, r.f0, r.hoaAm, r.dacDiem]));
+            rows.push([]);
+        }
+        if (document.getElementById("expChk-part3")?.checked) {
+            rows.push(["PHẦN III: MỨC CƯỜNG ĐỘ ÂM (dB)"], ["Vị trí", "Khoảng cách r (m)", "L_min (dB)", "L_max (dB)", "L_TB (dB)"]);
+            expDbRows.forEach(r => rows.push([r.viTri, r.r, r.lMin, r.lMax, r.lAvg]));
+            rows.push([]);
+        }
+        if (document.getElementById("expChk-part4")?.checked) {
+            rows.push(["PHẦN IV: BỘ LỌC SỐ"], ["Trạng thái bộ lọc", document.getElementById("expFilterStatus").textContent.trim()]);
+            rows.push([]);
+        }
+        downloadExpCSV(rows, "FOXLAB_BaoCao_DaChon.csv");
     };
 
     function triggerCleanA4Print(onAfterPrint) {
