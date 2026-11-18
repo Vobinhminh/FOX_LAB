@@ -84,11 +84,17 @@
       transform: translateY(1px);
     }
 
+    .btn-back { background: #f97316; color: #fff; }
+    .btn-back:hover { background: #ea580c; }
+
     .btn-primary { background: #2563eb; color: #fff; }
     .btn-primary:hover { background: #1d4ed8; }
 
     .btn-success { background: #059669; color: #fff; }
     .btn-success:hover { background: #047857; }
+
+    .btn-info { background: #0284c7; color: #fff; }
+    .btn-info:hover { background: #0369a1; }
 
     .btn-secondary { background: #334155; color: #f1f5f9; }
     .btn-secondary:hover { background: #475569; }
@@ -125,25 +131,32 @@
       color: #e0f2fe;
     }
 
-    .demo-banner {
+    .status-banner {
       max-width: 210mm;
       margin: 10px auto 0;
-      padding: 7px 14px;
+      padding: 8px 14px;
       background: #fef3c7;
       border: 1px solid #f59e0b;
       color: #92400e;
       border-radius: 6px;
       font-family: system-ui, -apple-system, sans-serif;
       font-size: 12.5px;
-      display: none;
+      display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 10px;
     }
 
+    .status-banner.live-mode {
+      background: #dcfce7;
+      border-color: #22c55e;
+      color: #166534;
+    }
+
     /* Khổ giấy A4 chuẩn */
     .a4-sheet {
       width: 210mm;
+      max-width: calc(100vw - 24px);
       min-height: 297mm;
       margin: 14px auto 32px;
       padding: 14mm 15mm;
@@ -191,7 +204,7 @@
     [contenteditable="true"] {
       border-bottom: 1px dashed #94a3b8;
       padding: 0 3px;
-      min-width: 30px;
+      min-width: 26px;
       display: inline-block;
       outline: none;
     }
@@ -421,9 +434,10 @@
 
     @media print {
       body { background: #fff; margin: 0; padding: 0; }
-      .toolbar, .demo-banner, .toast-msg, .no-print { display: none !important; }
+      .toolbar, .status-banner, .toast-msg, .no-print { display: none !important; }
       .a4-sheet {
         width: 100%;
+        max-width: 100%;
         min-height: auto;
         margin: 0;
         padding: 0;
@@ -431,6 +445,14 @@
       }
       [contenteditable="true"] { border-bottom: none; padding: 0; }
       .notes-box { border: 1px solid #334155 !important; }
+      .part-title, .sub-heading {
+        break-after: avoid;
+        page-break-after: avoid;
+      }
+      .graph-box, .result-box, .notes-box, table.data-table tr {
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
       .part-title, .tech-bar, .result-box, table.data-table th, table.data-table tr.summary-row td {
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
@@ -444,17 +466,19 @@
   <div class="toolbar no-print">
     <div class="toolbar-row">
       <div class="toolbar-group">
-        <strong>Chọn nhanh chế độ xuất:</strong>
-        <button class="btn btn-preset active" id="preset-all" onclick="applyPreset('all')">Tất cả các phần</button>
-        <button class="btn btn-preset" id="preset-1" onclick="applyPreset('1')">Chỉ Phần I (Dao động kí)</button>
-        <button class="btn btn-preset" id="preset-2" onclick="applyPreset('2')">Chỉ Phần II (Phổ FFT)</button>
-        <button class="btn btn-preset" id="preset-3" onclick="applyPreset('3')">Chỉ Phần III (Mức dB)</button>
-        <button class="btn btn-preset" id="preset-4" onclick="applyPreset('4')">Chỉ Phần IV (Bộ lọc số)</button>
+        <button type="button" class="btn btn-back" onclick="returnToMainPage()" title="Quay lại trang đo chính FOX_LAB (index.html)">⬅ Quay lại trang chính</button>
+        <strong>Chọn nhanh:</strong>
+        <button type="button" class="btn btn-preset active" id="preset-all" onclick="applyPreset('all')">Tất cả các phần</button>
+        <button type="button" class="btn btn-preset" id="preset-1" onclick="applyPreset('1')">Phần I (Dao động kí)</button>
+        <button type="button" class="btn btn-preset" id="preset-2" onclick="applyPreset('2')">Phần II (Phổ FFT)</button>
+        <button type="button" class="btn btn-preset" id="preset-3" onclick="applyPreset('3')">Phần III (Mức dB)</button>
+        <button type="button" class="btn btn-preset" id="preset-4" onclick="applyPreset('4')">Phần IV (Bộ lọc số)</button>
       </div>
       <div class="toolbar-group">
-        <button class="btn btn-secondary" onclick="loadSampleAll()">Nạp dữ liệu mẫu</button>
-        <button class="btn btn-success" onclick="exportAllCSV()">Xuất Excel (.CSV)</button>
-        <button class="btn btn-primary" onclick="window.print()">In / Xuất PDF đang chọn</button>
+        <button type="button" class="btn btn-info" onclick="reloadSyncedData(true)" title="Đồng bộ lại dữ liệu mới nhất từ trang chính FOX_LAB">🔄 Đồng bộ lại</button>
+        <button type="button" class="btn btn-secondary" onclick="loadSampleAll(true)">Nạp dữ liệu mẫu</button>
+        <button type="button" class="btn btn-success" onclick="exportAllCSV()">📊 Xuất Excel (.CSV)</button>
+        <button type="button" class="btn btn-primary" onclick="window.print()">🖨️ In / Xuất PDF đang chọn</button>
       </div>
     </div>
     <div class="toolbar-row">
@@ -478,29 +502,29 @@
         </label>
         <label class="chip-toggle">
           <input type="checkbox" id="chk-part5" checked onchange="syncCheckboxes()" />
-          Phần V: Nhận xét & Chữ ký
+          Phần V: Nhận xét &amp; Chữ ký
         </label>
       </div>
       <div class="toolbar-group">
         <label class="chip-toggle" title="Đảo nền tối của ảnh đồ thị sang nền trắng để in rõ nét">
-          <input type="checkbox" id="invertDarkToggle" checked />
+          <input type="checkbox" id="invertDarkToggle" checked onchange="redrawAllCanvases()" />
           Nền trắng đồ thị
         </label>
       </div>
     </div>
   </div>
 
-  <!-- Banner thông báo chế độ xem trước -->
-  <div class="demo-banner no-print" id="demoBanner">
-    <span><strong>Chế độ xem trước:</strong> Bạn có thể bấm các nút <strong>In/PDF phần này</strong> hoặc <strong>Xuất ảnh phần này</strong> ngay trên thanh tiêu đề của từng Phần để xuất riêng phần đó.</span>
+  <!-- Banner thông báo trạng thái đồng bộ -->
+  <div class="status-banner no-print" id="statusBanner">
+    <span id="statusBannerText"><strong>Chế độ xem trước (Dữ liệu mẫu):</strong> Hãy bấm <strong>Quay lại trang chính</strong> để đo sóng trên FOX_LAB, sau đó bấm <strong>Xuất báo cáo</strong> để tự động đổ số liệu và đồ thị vào trang này.</span>
   </div>
 
   <!-- Trang giấy A4 -->
   <div class="a4-sheet" id="reportSheet">
     <div class="header-top">
       <div>
-        <div class="header-school" contenteditable="true" id="schoolName">TRƯỜNG THPT ........................................</div>
-        <div>Tổ chuyên môn: <span contenteditable="true" id="deptName">Vật lí - Công nghệ</span></div>
+        <div class="header-school" contenteditable="true" id="schoolName" oninput="persistReportEdits()">TRƯỜNG THPT ........................................</div>
+        <div>Tổ chuyên môn: <span contenteditable="true" id="deptName" oninput="persistReportEdits()">Vật lí - Công nghệ</span></div>
       </div>
       <div class="header-meta-right">
         <div><strong>PHIẾU BÁO CÁO THÍ NGHIỆM SÓNG ÂM</strong></div>
@@ -508,25 +532,25 @@
       </div>
     </div>
 
-    <div class="report-title" contenteditable="true" id="expTitle">
+    <div class="report-title" contenteditable="true" id="expTitle" oninput="persistReportEdits()">
       BÁO CÁO KẾT QUẢ THỰC HÀNH KHẢO SÁT SÓNG ÂM
     </div>
-    <div class="report-subtitle" contenteditable="true" id="expSubtitle">
+    <div class="report-subtitle" contenteditable="true" id="expSubtitle" oninput="persistReportEdits()">
       (Chương trình Vật lí 11 – Kết nối tri thức với cuộc sống)
     </div>
 
     <div class="info-grid">
-      <div><strong>Nhóm thực hiện:</strong> <span contenteditable="true" id="groupName">Nhóm 01</span></div>
-      <div><strong>Lớp:</strong> <span contenteditable="true" id="className">11A1</span></div>
-      <div><strong>Thành viên nhóm:</strong> <span contenteditable="true" id="studentNames">..........................................................</span></div>
-      <div><strong>Đối tượng / Nguồn âm:</strong> <span contenteditable="true" id="soundSource">Âm thoa chuẩn 440 Hz & Nhạc cụ</span></div>
+      <div><strong>Nhóm thực hiện:</strong> <span contenteditable="true" id="groupName" oninput="persistReportEdits()">Nhóm 01</span></div>
+      <div><strong>Lớp:</strong> <span contenteditable="true" id="className" oninput="persistReportEdits()">11A1</span></div>
+      <div><strong>Thành viên nhóm:</strong> <span contenteditable="true" id="studentNames" oninput="persistReportEdits()">..........................................................</span></div>
+      <div><strong>Đối tượng / Nguồn âm:</strong> <span contenteditable="true" id="soundSource" oninput="persistReportEdits()">Âm thoa chuẩn 440 Hz &amp; Nhạc cụ</span></div>
     </div>
 
     <div class="tech-bar">
-      <span><strong>Trục thời gian:</strong> <span contenteditable="true" id="scaleX">2,00 ms/ô</span></span>
-      <span><strong>Trục biên độ:</strong> <span contenteditable="true" id="scaleY">0,20 V/ô</span></span>
-      <span><strong>Lấy mẫu:</strong> <span contenteditable="true" id="sampleRate">48000 Hz</span></span>
-      <span><strong>Chế độ bộ lọc số:</strong> <span contenteditable="true" id="filterStatus">Thông dải (300 – 1000 Hz)</span></span>
+      <span><strong>Trục thời gian:</strong> <span contenteditable="true" id="scaleX" oninput="persistReportEdits()">2,00 ms/ô</span></span>
+      <span><strong>Trục biên độ:</strong> <span contenteditable="true" id="scaleY" oninput="persistReportEdits()">0,20 V/ô</span></span>
+      <span><strong>Lấy mẫu:</strong> <span contenteditable="true" id="sampleRate" oninput="persistReportEdits()">48000 Hz</span></span>
+      <span><strong>Chế độ bộ lọc số:</strong> <span contenteditable="true" id="filterStatus" oninput="persistReportEdits()">Thông dải (45 – 3000 Hz)</span></span>
     </div>
 
     <!-- ===================================================================== -->
@@ -536,15 +560,15 @@
       <div class="part-title">
         <span>PHẦN I. KHẢO SÁT DẠNG SÓNG VÀ ĐO CHU KÌ, TẦN SỐ (DAO ĐỘNG KÍ)</span>
         <div class="part-actions no-print">
-          <button class="inline-btn inline-btn-pdf" onclick="printSinglePart('part1')" title="In hoặc lưu PDF A4 chỉ riêng Phần I kèm thông tin nhóm và chữ ký">🖨️ In/PDF phần này</button>
-          <button class="inline-btn inline-btn-img" onclick="exportPartAsImage('part1', 'Phan1_DaoDongKi')" title="Xuất toàn bộ Phần I (đồ thị + bảng số liệu) thành 1 file ảnh PNG">🖼️ Xuất ảnh phần này</button>
-          <button class="inline-btn inline-btn-csv" onclick="exportSinglePartCSV('part1')" title="Xuất bảng số liệu Phần I ra file Excel CSV">📊 CSV</button>
+          <button type="button" class="inline-btn inline-btn-pdf" onclick="printSinglePart('part1')" title="In hoặc lưu PDF A4 chỉ riêng Phần I kèm thông tin nhóm và chữ ký">🖨️ In/PDF phần này</button>
+          <button type="button" class="inline-btn inline-btn-img" onclick="exportPartAsImage('part1', 'Phan1_DaoDongKi')" title="Xuất toàn bộ Phần I (đồ thị + bảng số liệu) thành 1 file ảnh PNG">🖼️ Xuất ảnh phần này</button>
+          <button type="button" class="inline-btn inline-btn-csv" onclick="exportSinglePartCSV('part1')" title="Xuất bảng số liệu Phần I ra file Excel CSV">📊 CSV</button>
         </div>
       </div>
 
       <div class="sub-heading">
         <span>1.1. Đồ thị dao động điều hòa và xác định khoảng thời gian qua 2 điểm mốc (<i>t</i><sub>1</sub>, <i>t</i><sub>2</sub>)</span>
-        <button class="inline-btn inline-btn-img no-print" onclick="exportSingleCanvas('canvasOsc', 'Phan1_ChiDoThi')">📷 Chỉ xuất đồ thị</button>
+        <button type="button" class="inline-btn inline-btn-img no-print" onclick="exportSingleCanvas('canvasOsc', 'Phan1_ChiDoThi')">📷 Chỉ xuất đồ thị</button>
       </div>
       <div class="graph-box">
         <canvas id="canvasOsc" width="820" height="235"></canvas>
@@ -555,7 +579,7 @@
 
       <div class="sub-heading">
         <span>1.2. Bảng số liệu đo chu kì (<i>T</i>), tần số (<i>f</i>) và tính toán sai số</span>
-        <button class="inline-btn no-print" onclick="addOscRow()">+ Thêm lần đo</button>
+        <button type="button" class="inline-btn no-print" onclick="addOscRow()">+ Thêm lần đo</button>
       </div>
       <table class="data-table">
         <thead>
@@ -600,15 +624,15 @@
       <div class="part-title">
         <span>PHẦN II. PHÂN TÍCH PHỔ TẦN SỐ VÀ ÂM SẮC (QUÉT PHỔ FFT)</span>
         <div class="part-actions no-print">
-          <button class="inline-btn inline-btn-pdf" onclick="printSinglePart('part2')">🖨️ In/PDF phần này</button>
-          <button class="inline-btn inline-btn-img" onclick="exportPartAsImage('part2', 'Phan2_PhoFFT')">🖼️ Xuất ảnh phần này</button>
-          <button class="inline-btn inline-btn-csv" onclick="exportSinglePartCSV('part2')">📊 CSV</button>
+          <button type="button" class="inline-btn inline-btn-pdf" onclick="printSinglePart('part2')">🖨️ In/PDF phần này</button>
+          <button type="button" class="inline-btn inline-btn-img" onclick="exportPartAsImage('part2', 'Phan2_PhoFFT')">🖼️ Xuất ảnh phần này</button>
+          <button type="button" class="inline-btn inline-btn-csv" onclick="exportSinglePartCSV('part2')">📊 CSV</button>
         </div>
       </div>
 
       <div class="sub-heading">
         <span>2.1. Biểu đồ phổ biên độ – tần số của nguồn âm</span>
-        <button class="inline-btn inline-btn-img no-print" onclick="exportSingleCanvas('canvasFFT', 'Phan2_ChiPhoFFT')">📷 Chỉ xuất đồ thị</button>
+        <button type="button" class="inline-btn inline-btn-img no-print" onclick="exportSingleCanvas('canvasFFT', 'Phan2_ChiPhoFFT')">📷 Chỉ xuất đồ thị</button>
       </div>
       <div class="graph-box">
         <canvas id="canvasFFT" width="820" height="220"></canvas>
@@ -619,7 +643,7 @@
 
       <div class="sub-heading">
         <span>2.2. Bảng phân tích tần số cơ bản và đặc trưng họa âm giữa các nguồn âm</span>
-        <button class="inline-btn no-print" onclick="addFftRow()">+ Thêm nguồn âm</button>
+        <button type="button" class="inline-btn no-print" onclick="addFftRow()">+ Thêm nguồn âm</button>
       </div>
       <table class="data-table">
         <thead>
@@ -627,7 +651,7 @@
             <th style="width: 24%;">Nguồn âm khảo sát</th>
             <th style="width: 18%;">Tần số cơ bản <i>f</i><sub>0</sub> (Hz)</th>
             <th style="width: 26%;">Các họa âm ghi nhận được</th>
-            <th style="width: 26%;">Đặc điểm dạng sóng & Âm sắc</th>
+            <th style="width: 26%;">Đặc điểm dạng sóng &amp; Âm sắc</th>
             <th class="no-print" style="width: 6%;">Xóa</th>
           </tr>
         </thead>
@@ -642,15 +666,15 @@
       <div class="part-title">
         <span>PHẦN III. ĐO MỨC CƯỜNG ĐỘ ÂM VÀ SỰ TRUYỀN ÂM (MÁY ĐO dB)</span>
         <div class="part-actions no-print">
-          <button class="inline-btn inline-btn-pdf" onclick="printSinglePart('part3')">🖨️ In/PDF phần này</button>
-          <button class="inline-btn inline-btn-img" onclick="exportPartAsImage('part3', 'Phan3_MucCuongDoAm')">🖼️ Xuất ảnh phần này</button>
-          <button class="inline-btn inline-btn-csv" onclick="exportSinglePartCSV('part3')">📊 CSV</button>
+          <button type="button" class="inline-btn inline-btn-pdf" onclick="printSinglePart('part3')">🖨️ In/PDF phần này</button>
+          <button type="button" class="inline-btn inline-btn-img" onclick="exportPartAsImage('part3', 'Phan3_MucCuongDoAm')">🖼️ Xuất ảnh phần này</button>
+          <button type="button" class="inline-btn inline-btn-csv" onclick="exportSinglePartCSV('part3')">📊 CSV</button>
         </div>
       </div>
 
       <div class="sub-heading">
         <span>3.1. Đồ thị biến thiên mức cường độ âm <i>L</i>(<i>t</i>) theo thời gian</span>
-        <button class="inline-btn inline-btn-img no-print" onclick="exportSingleCanvas('canvasDb', 'Phan3_ChiDoThiDB')">📷 Chỉ xuất đồ thị</button>
+        <button type="button" class="inline-btn inline-btn-img no-print" onclick="exportSingleCanvas('canvasDb', 'Phan3_ChiDoThiDB')">📷 Chỉ xuất đồ thị</button>
       </div>
       <div class="graph-box">
         <canvas id="canvasDb" width="820" height="205"></canvas>
@@ -661,7 +685,7 @@
 
       <div class="sub-heading">
         <span>3.2. Bảng số liệu mức cường độ âm theo vị trí / khoảng cách</span>
-        <button class="inline-btn no-print" onclick="addDbRow()">+ Thêm vị trí đo</button>
+        <button type="button" class="inline-btn no-print" onclick="addDbRow()">+ Thêm vị trí đo</button>
       </div>
       <table class="data-table">
         <thead>
@@ -686,14 +710,14 @@
       <div class="part-title">
         <span>PHẦN IV. KHẢO SÁT HIỆU QUẢ KHỬ NHIỄU CỦA BỘ LỌC SỐ</span>
         <div class="part-actions no-print">
-          <button class="inline-btn inline-btn-pdf" onclick="printSinglePart('part4')">🖨️ In/PDF phần này</button>
-          <button class="inline-btn inline-btn-img" onclick="exportPartAsImage('part4', 'Phan4_BoLocSo')">🖼️ Xuất ảnh phần này</button>
+          <button type="button" class="inline-btn inline-btn-pdf" onclick="printSinglePart('part4')">🖨️ In/PDF phần này</button>
+          <button type="button" class="inline-btn inline-btn-img" onclick="exportPartAsImage('part4', 'Phan4_BoLocSo')">🖼️ Xuất ảnh phần này</button>
         </div>
       </div>
 
       <div class="sub-heading">
         <span>4.1. So sánh dạng sóng trước và sau khi áp dụng bộ lọc số</span>
-        <button class="inline-btn inline-btn-img no-print" onclick="exportSingleCanvas('canvasFilter', 'Phan4_ChiDoThiLoc')">📷 Chỉ xuất đồ thị</button>
+        <button type="button" class="inline-btn inline-btn-img no-print" onclick="exportSingleCanvas('canvasFilter', 'Phan4_ChiDoThiLoc')">📷 Chỉ xuất đồ thị</button>
       </div>
       <div class="graph-box">
         <canvas id="canvasFilter" width="820" height="200"></canvas>
@@ -723,9 +747,9 @@
           </tr>
           <tr>
             <td contenteditable="true">Bật lọc thông dải (Band-pass)</td>
-            <td contenteditable="true">300 – 1000 Hz</td>
+            <td contenteditable="true" id="filterBandCell">45 – 3000 Hz</td>
             <td contenteditable="true">Đường sin mượt, đỉnh rõ nét</td>
-            <td contenteditable="true">440,1 Hz (ổn định)</td>
+            <td contenteditable="true" id="filterFreqCell">440,1 Hz (ổn định)</td>
           </tr>
         </tbody>
       </table>
@@ -738,7 +762,7 @@
       <div class="part-title">
         <span>PHẦN V. NHẬN XÉT CHUNG VÀ ĐÁNH GIÁ KẾT QUẢ THÍ NGHIỆM</span>
       </div>
-      <div class="notes-box" contenteditable="true" id="studentNotes">
+      <div class="notes-box" contenteditable="true" id="studentNotes" oninput="persistReportEdits()">
         1. Kết luận về các đại lượng đặc trưng của sóng âm khảo sát (tần số, chu kì, mức cường độ âm, âm sắc): ........................................................................................................................................<br>
         2. Phân tích nguyên nhân gây ra sai số trong quá trình thu âm bằng micro và hướng khắc phục (sử dụng bộ lọc số, chọn số chu kì <i>N</i> đủ lớn...): ........................................................................................................................................
       </div>
@@ -767,16 +791,65 @@
     let oscRows = [];
     let fftRows = [];
     let dbRows = [];
+    let liveImages = { osc: null, fft: null, db: null };
 
     function showToast(text) {
       const toast = document.getElementById("toastMsg");
+      if (!toast) return;
       toast.textContent = text;
       toast.classList.add("show");
       clearTimeout(window._toastTimer);
       window._toastTimer = setTimeout(() => toast.classList.remove("show"), 2600);
     }
 
-    // Chế độ Preset chọn nhanh từng phần (Hỗ trợ cả tham số URL ?part=1 hoặc ?parts=1,3)
+    // Chặn phím Enter tạo thẻ div/br ở các trường đơn dòng (cho phép Enter ở ô Nhận xét)
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && e.target && e.target.isContentEditable && e.target.id !== "studentNotes") {
+        e.preventDefault();
+        e.target.blur();
+      }
+    });
+
+    // Quay lại trang chính FOX_LAB (index.html)
+    function returnToMainPage() {
+      persistReportEdits();
+      if (window.opener && !window.opener.closed) {
+        try {
+          window.opener.focus();
+          window.close();
+          return;
+        } catch (e) {}
+      }
+      window.location.href = "index.html";
+    }
+
+    function persistReportEdits() {
+      try {
+        const existingRaw = localStorage.getItem(STORAGE_KEY);
+        const existing = existingRaw ? JSON.parse(existingRaw) : {};
+        const updated = Object.assign({}, existing, {
+          truong: document.getElementById("schoolName").textContent.trim(),
+          toChuyenMon: document.getElementById("deptName").textContent.trim(),
+          tenThiNghiem: document.getElementById("expTitle").textContent.trim(),
+          tieuDePhu: document.getElementById("expSubtitle").textContent.trim(),
+          nhom: document.getElementById("groupName").textContent.trim(),
+          lop: document.getElementById("className").textContent.trim(),
+          thanhVien: document.getElementById("studentNames").textContent.trim(),
+          nguonAm: document.getElementById("soundSource").textContent.trim(),
+          scaleX: document.getElementById("scaleX").textContent.trim(),
+          scaleY: document.getElementById("scaleY").textContent.trim(),
+          sampleRate: document.getElementById("sampleRate").textContent.trim(),
+          filterStatus: document.getElementById("filterStatus").textContent.trim(),
+          nhanXet: document.getElementById("studentNotes").innerHTML,
+          cacLanDo: oscRows,
+          phoTanSo: fftRows,
+          mucCuongDoAm: dbRows
+        });
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+      } catch (e) {}
+    }
+
+    // Chế độ Preset chọn nhanh từng phần
     function applyPreset(mode) {
       document.querySelectorAll(".btn-preset").forEach(b => b.classList.remove("active"));
       const activeBtn = document.getElementById(`preset-${mode}`);
@@ -811,7 +884,7 @@
       });
     }
 
-    // In / Lưu PDF A4 CHỈ RIÊNG một Phần cụ thể (kèm header hành chính + Phần V nhận xét/chữ ký)
+    // In / Lưu PDF A4 CHỈ RIÊNG một Phần cụ thể
     function printSinglePart(partId) {
       const allParts = ["part1", "part2", "part3", "part4"];
       const prevStates = {};
@@ -836,7 +909,6 @@
 
       window.print();
 
-      // Khôi phục lại trạng thái trước khi in
       setTimeout(() => {
         allParts.forEach(id => {
           const el = document.getElementById(id);
@@ -848,23 +920,21 @@
       }, 300);
     }
 
-    // Xuất toàn bộ khối nội dung của một Phần (Tiêu đề + Đồ thị + Bảng số liệu) ra ảnh PNG
+    // Xuất toàn bộ khối nội dung của một Phần ra ảnh PNG (sử dụng CSS nội bộ sạch, tránh lỗi tainted canvas)
     function exportPartAsImage(partId, fileTag) {
       const section = document.getElementById(partId);
       if (!section) return;
 
       const clone = section.cloneNode(true);
-      // Loại bỏ các nút điều khiển (.no-print) khỏi bản sao
       clone.querySelectorAll(".no-print").forEach(el => el.remove());
 
-      // Chuyển các <canvas> bên trong thành thẻ <img> giữ nguyên hình đồ thị đã vẽ
       const origCanvases = section.querySelectorAll("canvas");
       const cloneCanvases = clone.querySelectorAll("canvas");
       origCanvases.forEach((origC, idx) => {
         if (cloneCanvases[idx]) {
           const img = document.createElement("img");
           img.src = origC.toDataURL("image/png");
-          img.style.width = origC.offsetWidth + "px";
+          img.style.width = (origC.offsetWidth || 720) + "px";
           img.style.maxWidth = "100%";
           img.style.height = "auto";
           img.style.display = "block";
@@ -873,18 +943,31 @@
         }
       });
 
-      const rect = section.getBoundingClientRect();
-      const width = Math.ceil(rect.width) || 740;
-      const height = Math.ceil(rect.height) + 24;
+      const width = Math.max(Math.ceil(section.getBoundingClientRect().width), 740);
+      const height = Math.ceil(section.getBoundingClientRect().height) + 56;
 
-      const styleText = document.querySelector("style").innerHTML;
+      const scopedCss = `
+        * { box-sizing: border-box; }
+        .overline { text-decoration: overline; }
+        .part-title { font-size: 12pt; font-weight: bold; text-transform: uppercase; color: #0f172a; background: #f1f5f9; border-left: 4px solid #0f172a; padding: 5px 8px; margin-bottom: 8px; }
+        .sub-heading { font-size: 11.8pt; font-weight: bold; margin: 9px 0 5px; color: #1e293b; }
+        .graph-box { border: 1px solid #334155; padding: 7px; text-align: center; background: #ffffff; margin-bottom: 10px; }
+        .graph-caption { font-size: 10.8pt; font-style: italic; margin-top: 5px; color: #1e293b; }
+        table.data-table { width: 100%; border-collapse: collapse; margin-bottom: 9px; font-size: 11pt; }
+        table.data-table th, table.data-table td { border: 1px solid #0f172a; padding: 4px 6px; text-align: center; vertical-align: middle; }
+        table.data-table th { background-color: #f1f5f9; font-weight: bold; }
+        table.data-table tr.summary-row td { background-color: #f8fafc; font-weight: bold; }
+        .result-box { border: 1px solid #0f172a; background: #f8fafc; padding: 7px 11px; margin-bottom: 10px; font-size: 11.5pt; }
+        .result-box p { margin: 2px 0; }
+      `;
+
       const groupName = document.getElementById("groupName").textContent.trim();
       const className = document.getElementById("className").textContent.trim();
 
       const wrapperHtml = `
-        <div xmlns="http://www.w3.org/1999/xhtml" style="background:#ffffff; padding:12px 16px; font-family:'Times New Roman', serif; color:#0f172a;">
-          <style>${styleText}</style>
-          <div style="display:flex; justify-content:space-between; font-size:11pt; border-bottom:1px solid #94a3b8; padding-bottom:4px; margin-bottom:6px;">
+        <div xmlns="http://www.w3.org/1999/xhtml" style="width:${width}px; background:#ffffff; padding:14px 18px; font-family:'Times New Roman', Times, serif; color:#0f172a; line-height:1.42;">
+          <style>${scopedCss}</style>
+          <div style="display:flex; justify-content:space-between; font-size:11pt; border-bottom:1.5px solid #0f172a; padding-bottom:5px; margin-bottom:8px;">
             <span><strong>FOX_LAB</strong> | ${groupName} – Lớp ${className}</span>
             <span>Thời gian: ${new Date().toLocaleString("vi-VN")}</span>
           </div>
@@ -892,29 +975,20 @@
         </div>
       `;
 
-      const svg = `
-        <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height + 36}">
-          <foreignObject width="100%" height="100%">
-            ${wrapperHtml}
-          </foreignObject>
-        </svg>
-      `;
-
-      const svgBlob = new Blob([svg], { type: "image/svg+xml;charset=utf-8" });
-      const url = URL.createObjectURL(svgBlob);
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}"><foreignObject width="100%" height="100%">${wrapperHtml}</foreignObject></svg>`;
+      const svgDataUrl = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
       const img = new Image();
 
       img.onload = () => {
-        const scale = 2; // Xuất độ phân giải cao 2x sắc nét
+        const scale = 2;
         const outCanvas = document.createElement("canvas");
         outCanvas.width = width * scale;
-        outCanvas.height = (height + 36) * scale;
+        outCanvas.height = height * scale;
         const ctx = outCanvas.getContext("2d");
         ctx.fillStyle = "#ffffff";
         ctx.fillRect(0, 0, outCanvas.width, outCanvas.height);
         ctx.scale(scale, scale);
         ctx.drawImage(img, 0, 0);
-        URL.revokeObjectURL(url);
 
         try {
           outCanvas.toBlob((blob) => {
@@ -930,35 +1004,40 @@
             showToast(`Đã xuất ảnh trọn gói: FOXLAB_${fileTag}.png`);
           }, "image/png");
         } catch (err) {
-          // Dự phòng nếu chạy trực tiếp từ file:// cục bộ
           printSinglePart(partId);
         }
       };
       img.onerror = () => {
-        URL.revokeObjectURL(url);
         printSinglePart(partId);
       };
-      img.src = url;
+      img.src = svgDataUrl;
     }
 
-    window.addEventListener("DOMContentLoaded", () => {
+    function reloadSyncedData(notifyUser) {
       document.getElementById("exportTime").textContent = new Date().toLocaleString("vi-VN");
-      document.getElementById("invertDarkToggle").addEventListener("change", redrawAllCanvases);
-
       const savedRaw = localStorage.getItem(STORAGE_KEY);
       if (savedRaw) {
         try {
           const data = JSON.parse(savedRaw);
           applyIncomingData(data);
+          if (notifyUser) showToast("✅ Đã đồng bộ số liệu mới nhất từ trang chính FOX_LAB!");
+          return;
         } catch (e) {
           console.error("Lỗi đọc dữ liệu:", e);
         }
-      } else {
-        document.getElementById("demoBanner").style.display = "flex";
-        loadSampleAll();
       }
+      const banner = document.getElementById("statusBanner");
+      const bannerText = document.getElementById("statusBannerText");
+      if (banner) banner.classList.remove("live-mode");
+      if (bannerText) {
+        bannerText.innerHTML = "<strong>Chế độ xem trước (Dữ liệu mẫu):</strong> Chưa có phép đo nào được gửi từ trang chính. Hãy bấm <strong>Quay lại trang chính</strong> để đo sóng rồi xuất báo cáo.";
+      }
+      loadSampleAll(notifyUser);
+    }
 
-      // Hỗ trợ mở thẳng từng phần từ link URL: report.html?part=1 hoặc report.html?parts=1,2
+    window.addEventListener("DOMContentLoaded", () => {
+      reloadSyncedData(false);
+
       const params = new URLSearchParams(window.location.search);
       const partParam = params.get("parts") || params.get("part");
       if (partParam) {
@@ -966,12 +1045,61 @@
       }
     });
 
+    window.addEventListener("storage", (e) => {
+      if (e.key === STORAGE_KEY && e.newValue) {
+        try {
+          applyIncomingData(JSON.parse(e.newValue));
+          showToast("✅ Đã nhận dữ liệu cập nhật từ trang chính FOX_LAB!");
+        } catch (err) {}
+      }
+    });
+
+    try {
+      const bc = new BroadcastChannel("foxlab_report_sync");
+      bc.onmessage = (ev) => {
+        if (ev && ev.data && ev.data.type === "SYNC_REPORT_DATA" && ev.data.payload) {
+          applyIncomingData(ev.data.payload);
+          showToast("✅ Đã đồng bộ dữ liệu trực tiếp từ FOX_LAB!");
+        }
+      };
+    } catch (e) {}
+
     function applyIncomingData(data) {
-      document.getElementById("demoBanner").style.display = "none";
+      const banner = document.getElementById("statusBanner");
+      const bannerText = document.getElementById("statusBannerText");
+      if (data.isLiveMeasurement) {
+        if (banner) banner.classList.add("live-mode");
+        if (bannerText) {
+          bannerText.innerHTML = "<strong>✅ Đã đồng bộ số liệu &amp; đồ thị thực tế từ máy đo FOX_LAB!</strong> Bạn có thể nhấn trực tiếp vào từng ô để chỉnh sửa hoặc bấm <strong>Quay lại trang chính</strong> để đo tiếp.";
+        }
+      } else {
+        if (banner) banner.classList.remove("live-mode");
+        if (bannerText) {
+          bannerText.innerHTML = "<strong>Chế độ xem trước (Dữ liệu mẫu):</strong> Hãy bấm <strong>Quay lại trang chính</strong> để đo sóng trên FOX_LAB, sau đó bấm <strong>Xuất báo cáo</strong> để tự động đổ số liệu và đồ thị vào trang này.";
+        }
+      }
+
+      if (data.truong) document.getElementById("schoolName").textContent = data.truong;
+      if (data.toChuyenMon) document.getElementById("deptName").textContent = data.toChuyenMon;
       if (data.tenThiNghiem) document.getElementById("expTitle").textContent = data.tenThiNghiem;
+      if (data.tieuDePhu) document.getElementById("expSubtitle").textContent = data.tieuDePhu;
       if (data.nguonAm) document.getElementById("soundSource").textContent = data.nguonAm;
       if (data.nhom) document.getElementById("groupName").textContent = data.nhom;
       if (data.lop) document.getElementById("className").textContent = data.lop;
+      if (data.thanhVien) document.getElementById("studentNames").textContent = data.thanhVien;
+      if (data.scaleX) document.getElementById("scaleX").textContent = data.scaleX;
+      if (data.scaleY) document.getElementById("scaleY").textContent = data.scaleY;
+      if (data.sampleRate) document.getElementById("sampleRate").textContent = data.sampleRate;
+      if (data.filterStatus) document.getElementById("filterStatus").textContent = data.filterStatus;
+      if (data.filterBand) {
+        const fb = document.getElementById("filterBandCell");
+        if (fb) fb.textContent = data.filterBand;
+      }
+      if (data.filterFreq) {
+        const ff = document.getElementById("filterFreqCell");
+        if (ff) ff.textContent = data.filterFreq;
+      }
+      if (data.nhanXet) document.getElementById("studentNotes").innerHTML = data.nhanXet;
 
       if (Array.isArray(data.cacLanDo) && data.cacLanDo.length) {
         oscRows = data.cacLanDo.map(r => ({
@@ -979,26 +1107,21 @@
           deltaT_ms: Number(r.deltaT_ms) || 0
         }));
       }
-      if (Array.isArray(data.phoTanSo)) fftRows = data.phoTanSo;
-      if (Array.isArray(data.mucCuongDoAm)) dbRows = data.mucCuongDoAm;
+      if (Array.isArray(data.phoTanSo) && data.phoTanSo.length) fftRows = data.phoTanSo;
+      if (Array.isArray(data.mucCuongDoAm) && data.mucCuongDoAm.length) dbRows = data.mucCuongDoAm;
+
+      liveImages.osc = data.anhDoThiBase64 || null;
+      liveImages.fft = data.anhPhoBase64 || null;
+      liveImages.db = data.anhDbBase64 || null;
 
       renderOscTable();
       renderFftTable();
       renderDbTable();
-
-      if (data.anhDoThiBase64) drawBase64ToCanvas("canvasOsc", data.anhDoThiBase64);
-      else drawSampleOsc();
-
-      if (data.anhPhoBase64) drawBase64ToCanvas("canvasFFT", data.anhPhoBase64);
-      else drawSampleFFT();
-
-      if (data.anhDbBase64) drawBase64ToCanvas("canvasDb", data.anhDbBase64);
-      else drawSampleDb();
-
-      drawSampleFilter();
+      redrawAllCanvases();
     }
 
-    function loadSampleAll() {
+    function loadSampleAll(notifyUser) {
+      liveImages = { osc: null, fft: null, db: null };
       oscRows = [
         { soChuKi: 5, deltaT_ms: 11.35 },
         { soChuKi: 5, deltaT_ms: 11.38 },
@@ -1019,12 +1142,19 @@
       renderFftTable();
       renderDbTable();
       redrawAllCanvases();
+      if (notifyUser) showToast("Đã nạp bộ dữ liệu mẫu tham khảo!");
     }
 
     function redrawAllCanvases() {
-      drawSampleOsc();
-      drawSampleFFT();
-      drawSampleDb();
+      if (liveImages.osc) drawBase64ToCanvas("canvasOsc", liveImages.osc);
+      else drawSampleOsc();
+
+      if (liveImages.fft) drawBase64ToCanvas("canvasFFT", liveImages.fft);
+      else drawSampleFFT();
+
+      if (liveImages.db) drawBase64ToCanvas("canvasDb", liveImages.db);
+      else drawSampleDb();
+
       drawSampleFilter();
     }
 
@@ -1196,10 +1326,35 @@
       const img = new Image();
       img.onload = () => {
         const c = document.getElementById(canvasId);
+        if (!c) return;
         c.width = img.width;
         c.height = img.height;
         const ctx = c.getContext("2d");
         ctx.drawImage(img, 0, 0);
+
+        const invertDark = document.getElementById("invertDarkToggle")?.checked;
+        if (invertDark) {
+          const imgData = ctx.getImageData(0, 0, c.width, c.height);
+          const d = imgData.data;
+          let sumLum = 0, samples = 0;
+          for (let i = 0; i < d.length; i += 64) {
+            sumLum += 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
+            samples++;
+          }
+          if (samples > 0 && (sumLum / samples) < 115) {
+            for (let i = 0; i < d.length; i += 4) {
+              const r = d[i], g = d[i + 1], b = d[i + 2];
+              const max = Math.max(r, g, b), min = Math.min(r, g, b);
+              const l = (max + min) / 2;
+              const newL = 255 - l;
+              const delta = newL - l;
+              d[i] = Math.min(255, Math.max(0, r + delta));
+              d[i + 1] = Math.min(255, Math.max(0, g + delta));
+              d[i + 2] = Math.min(255, Math.max(0, b + delta));
+            }
+            ctx.putImageData(imgData, 0, 0);
+          }
+        }
       };
       img.src = base64;
     }
@@ -1247,7 +1402,7 @@
           <td contenteditable="true" onblur="updateOsc(${idx}, 'deltaT_ms', this.textContent)">${dt.toFixed(2)}</td>
           <td>${T > 0 ? T.toFixed(2) : "—"}</td>
           <td>${f > 0 ? f.toFixed(1) : "—"}</td>
-          <td class="no-print"><button class="row-del-btn" onclick="delOsc(${idx})">✕</button></td>
+          <td class="no-print"><button type="button" class="row-del-btn" onclick="delOsc(${idx})">✕</button></td>
         `;
         tbody.appendChild(tr);
       });
@@ -1273,9 +1428,10 @@
       const n = parseFloat(val.replace(",", ".").trim());
       if (!isNaN(n) && n >= 0) oscRows[i][k] = k === "soChuKi" ? Math.max(1, Math.round(n)) : n;
       renderOscTable();
+      persistReportEdits();
     }
-    function addOscRow() { oscRows.push({ soChuKi: 5, deltaT_ms: 11.35 }); renderOscTable(); }
-    function delOsc(i) { oscRows.splice(i, 1); renderOscTable(); }
+    function addOscRow() { oscRows.push({ soChuKi: 5, deltaT_ms: 11.35 }); renderOscTable(); persistReportEdits(); }
+    function delOsc(i) { oscRows.splice(i, 1); renderOscTable(); persistReportEdits(); }
 
     // --- Render Bảng Phần II ---
     function renderFftTable() {
@@ -1284,11 +1440,11 @@
       fftRows.forEach((r, i) => {
         const tr = document.createElement("tr");
         tr.innerHTML = `
-          <td contenteditable="true" onblur="fftRows[${i}].nguon=this.textContent">${r.nguon}</td>
-          <td contenteditable="true" onblur="fftRows[${i}].f0=this.textContent">${r.f0}</td>
-          <td contenteditable="true" onblur="fftRows[${i}].hoaAm=this.textContent">${r.hoaAm}</td>
-          <td contenteditable="true" onblur="fftRows[${i}].dacDiem=this.textContent">${r.dacDiem}</td>
-          <td class="no-print"><button class="row-del-btn" onclick="fftRows.splice(${i},1);renderFftTable()">✕</button></td>
+          <td contenteditable="true" onblur="fftRows[${i}].nguon=this.textContent.trim();persistReportEdits()">${r.nguon}</td>
+          <td contenteditable="true" onblur="fftRows[${i}].f0=this.textContent.trim();persistReportEdits()">${r.f0}</td>
+          <td contenteditable="true" onblur="fftRows[${i}].hoaAm=this.textContent.trim();persistReportEdits()">${r.hoaAm}</td>
+          <td contenteditable="true" onblur="fftRows[${i}].dacDiem=this.textContent.trim();persistReportEdits()">${r.dacDiem}</td>
+          <td class="no-print"><button type="button" class="row-del-btn" onclick="fftRows.splice(${i},1);renderFftTable();persistReportEdits()">✕</button></td>
         `;
         tbody.appendChild(tr);
       });
@@ -1296,6 +1452,7 @@
     function addFftRow() {
       fftRows.push({ nguon: "Nguồn âm mới", f0: "512,0", hoaAm: "f₀, 2f₀", dacDiem: "Dao động tuần hoàn" });
       renderFftTable();
+      persistReportEdits();
     }
 
     // --- Render Bảng Phần III ---
@@ -1304,23 +1461,31 @@
       tbody.innerHTML = "";
       const baseL = dbRows.length ? dbRows[0].lAvg : 0;
       dbRows.forEach((r, i) => {
-        const diff = i === 0 ? "0,0 dB (Mốc)" : (r.lAvg - baseL).toFixed(1) + " dB";
+        const delta = r.lAvg - baseL;
+        const diff = i === 0 ? "0,0 dB (Mốc)" : (delta > 0 ? "+" : "") + delta.toFixed(1) + " dB";
         const tr = document.createElement("tr");
         tr.innerHTML = `
-          <td contenteditable="true" onblur="dbRows[${i}].viTri=this.textContent">${r.viTri}</td>
-          <td contenteditable="true" onblur="dbRows[${i}].r=parseFloat(this.textContent.replace(',','.'))||0">${r.r.toFixed(1)}</td>
-          <td contenteditable="true" onblur="dbRows[${i}].lMin=parseFloat(this.textContent.replace(',','.'))||0">${r.lMin.toFixed(1)}</td>
-          <td contenteditable="true" onblur="dbRows[${i}].lMax=parseFloat(this.textContent.replace(',','.'))||0">${r.lMax.toFixed(1)}</td>
-          <td contenteditable="true" onblur="dbRows[${i}].lAvg=parseFloat(this.textContent.replace(',','.'))||0;renderDbTable()">${r.lAvg.toFixed(1)}</td>
+          <td contenteditable="true" onblur="dbRows[${i}].viTri=this.textContent.trim();persistReportEdits()">${r.viTri}</td>
+          <td contenteditable="true" onblur="updateDbNum(${i}, 'r', this.textContent)">${Number(r.r).toFixed(1)}</td>
+          <td contenteditable="true" onblur="updateDbNum(${i}, 'lMin', this.textContent)">${Number(r.lMin).toFixed(1)}</td>
+          <td contenteditable="true" onblur="updateDbNum(${i}, 'lMax', this.textContent)">${Number(r.lMax).toFixed(1)}</td>
+          <td contenteditable="true" onblur="updateDbNum(${i}, 'lAvg', this.textContent)">${Number(r.lAvg).toFixed(1)}</td>
           <td>${diff}</td>
-          <td class="no-print"><button class="row-del-btn" onclick="dbRows.splice(${i},1);renderDbTable()">✕</button></td>
+          <td class="no-print"><button type="button" class="row-del-btn" onclick="dbRows.splice(${i},1);renderDbTable();persistReportEdits()">✕</button></td>
         `;
         tbody.appendChild(tr);
       });
     }
+    function updateDbNum(i, k, val) {
+      const n = parseFloat(val.replace(",", ".").trim());
+      if (!isNaN(n) && n >= 0) dbRows[i][k] = n;
+      renderDbTable();
+      persistReportEdits();
+    }
     function addDbRow() {
       dbRows.push({ viTri: `Điểm ${dbRows.length + 1}`, r: 3.0, lMin: 58.0, lMax: 59.5, lAvg: 58.8 });
       renderDbTable();
+      persistReportEdits();
     }
 
     // --- Xuất CSV từng phần riêng lẻ ---
@@ -1375,8 +1540,7 @@
     }
 
     function downloadCSV(rows, fileName) {
-      const csv = "﻿" + rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(",")).join("
-");
+      const csv = "\uFEFF" + rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(",")).join("\n");
       const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -1385,7 +1549,7 @@
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
       showToast(`Đã xuất file Excel: ${fileName}`);
     }
   </script>
