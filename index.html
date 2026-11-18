@@ -3,22 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="referrer" content="no-referrer">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" sizes="192x192" href="icon-512.png">
     <link rel="apple-touch-icon" href="icon-512.png">
     <meta name="theme-color" content="#f97316">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="referrer">
     <title>FOX_LAB - Phòng thí nghiệm Vật lý về sóng cơ học</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
 
     <!-- QRCode.js library for reliable QR code generation -->
-    <script src="speech.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <!-- MathJax v3 Configuration & CDN -->
     <script>
         window.MathJax = {
@@ -340,10 +339,10 @@
         .fox-msg-group { position: relative; display: flex; flex-direction: column; max-width: 85%; gap: 2px; }
         
         .fox-msg-actions-bar { display: flex; gap: 6px; margin-top: 2px; }
-        .fox-copy-btn, .fox-export-btn, .fox-speak-btn { background: #cbd5e1; border: none; border-radius: 4px; color: #0f172a; cursor: pointer; font-size: 9px; padding: 2px 6px; font-weight: bold; opacity: 0.8; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2); }
-        .fox-copy-btn:hover, .fox-export-btn:hover, .fox-speak-btn:hover { opacity: 1; filter: brightness(1.1); }
-        .fox-speak-btn { background: #10b981; color: #ffffff; }
-        .fox-speak-btn.speaking { background: #ef4444; color: #ffffff; animation: statusPulse 1.2s infinite; }
+        .fox-copy-btn, .fox-export-btn { background: #cbd5e1; border: none; border-radius: 4px; color: #0f172a; cursor: pointer; font-size: 9px; padding: 2px 6px; font-weight: bold; opacity: 0.8; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2); }
+        .fox-copy-btn:hover, .fox-export-btn:hover { opacity: 1; filter: brightness(1.1); }
+        
+        
         .fox-export-btn { background: #38bdf8; color: #0f172a; }
 
         .fox-msg-user .fox-msg-group { align-items: flex-end; }
@@ -5849,7 +5848,7 @@
         recognition.onstart = () => {
             isListening = true;
             isVoiceSession = true;
-            stopAllTTS();
+            
             foxMicBtn.classList.add('listening');
             foxMicBtn.title = "Đang lắng nghe... (Dừng để gửi luôn)";
             chatInput.placeholder = "Đang lắng nghe... Nói xong AI sẽ tự trả lời";
@@ -5885,7 +5884,7 @@
         };
 
         foxMicBtn.addEventListener('click', () => {
-            stopAllTTS();
+            
             if (isListening) {
                 recognition.stop();
             } else {
@@ -5921,282 +5920,9 @@
         }
     }
 
-    let ttsAudioPlayer = null;
-    let ttsAudioQueue = [];
-
-    function stopAllTTS() {
-        if ('speechSynthesis' in window) {
-            try { window.speechSynthesis.cancel(); } catch (e) {}
-        }
-        if (ttsAudioPlayer) {
-            try {
-                ttsAudioPlayer.pause();
-                ttsAudioPlayer.currentTime = 0;
-            } catch (e) {}
-            ttsAudioPlayer = null;
-        }
-        ttsAudioQueue = [];
-        document.querySelectorAll('.fox-speak-btn.speaking').forEach(b => {
-            b.classList.remove('speaking');
-            b.innerText = '🔊 Nghe';
-        });
-    }
-
-    function getVietnameseVoice() {
-        if (!('speechSynthesis' in window)) return null;
-        const voices = window.speechSynthesis.getVoices();
-        if (!voices || voices.length === 0) return null;
-        return voices.find(v => {
-            const lang = (v.lang || '').replace('_', '-').toLowerCase();
-            const name = (v.name || '').toLowerCase();
-            return lang === 'vi-vn' || lang.startsWith('vi') || 
-                   name.includes('vietnam') || name.includes('tiếng việt') || 
-                   name.includes('hoaimy') || name.includes('namminh');
-        }) || null;
-    }
-
-    function splitIntoSentences(text, maxLen = 150) {
-        if (!text) return [];
-        const rawParts = text.split(/([.\n;?!]+)/);
-        const result = [];
-        let cur = '';
-
-        for (let i = 0; i < rawParts.length; i++) {
-            const p = rawParts[i].trim();
-            if (!p) continue;
-            if ((cur + ' ' + p).length <= maxLen) {
-                cur = cur ? (cur + ' ' + p) : p;
-            } else {
-                if (cur) result.push(cur);
-                if (p.length > maxLen) {
-                    const subParts = p.split(/([,:]+)/);
-                    let subCur = '';
-                    for (let j = 0; j < subParts.length; j++) {
-                        const sp = subParts[j].trim();
-                        if (!sp) continue;
-                        if ((subCur + ' ' + sp).length <= maxLen) {
-                            subCur = subCur ? (subCur + ' ' + sp) : sp;
-                        } else {
-                            if (subCur) result.push(subCur);
-                            subCur = sp;
-                        }
-                    }
-                    if (subCur) cur = subCur;
-                    else cur = '';
-                } else {
-                    cur = p;
-                }
-            }
-        }
-        if (cur) result.push(cur);
-        return result;
-    }
-
-    function buildGoogleTTSUrl(text) {
-        // ttsspeed=1 = tốc độ chuẩn, không có "slow=true"
-        return "https://translate.google.com/translate_tts?ie=UTF-8&tl=vi&client=tw-ob&ttsspeed=1&q=" + encodeURIComponent(text);
-    }
-
-    function playGoogleTTS(cleanText, btnElement) {
-        // Chunk 200 ký tự → ít lần ngắt hơn, nghe mượt hơn
-        const sentences = splitIntoSentences(cleanText, 200);
-        if (sentences.length === 0) return;
-
-        ttsAudioQueue = sentences;
-        if (btnElement) {
-            btnElement.classList.add('speaking');
-            btnElement.innerText = '⏹ Dừng';
-        }
-
-        playNextGoogleTTSChunk(btnElement);
-    }
-
-    function playNextGoogleTTSChunk(btnElement) {
-        if (ttsAudioQueue.length === 0) {
-            if (btnElement) {
-                btnElement.classList.remove('speaking');
-                btnElement.innerText = '🔊 Nghe';
-            }
-            return;
-        }
-
-        const chunk = ttsAudioQueue.shift();
-
-        // Pre-load chunk kế tiếp để giảm độ trễ giữa các câu
-        let nextAudio = null;
-        if (ttsAudioQueue.length > 0) {
-            nextAudio = new Audio();
-            nextAudio.referrerPolicy = 'no-referrer';
-            nextAudio.preload = 'auto';
-            nextAudio.src = buildGoogleTTSUrl(ttsAudioQueue[0]);
-        }
-
-        ttsAudioPlayer = new Audio();
-        ttsAudioPlayer.referrerPolicy = 'no-referrer';
-        ttsAudioPlayer.src = buildGoogleTTSUrl(chunk);
-        // Tốc độ phát: 1.15 → nhanh hơn tự nhiên nhưng vẫn rõ
-        ttsAudioPlayer.playbackRate = 1.15;
-
-        ttsAudioPlayer.onended = () => {
-            playNextGoogleTTSChunk(btnElement);
-        };
-        ttsAudioPlayer.onerror = (err) => {
-            console.warn("TTS chunk load error:", err);
-            playNextGoogleTTSChunk(btnElement);
-        };
-        ttsAudioPlayer.play().catch(err => {
-            console.warn("Audio play blocked/error:", err);
-            if (btnElement) {
-                btnElement.classList.remove('speaking');
-                btnElement.innerText = '🔊 Nghe';
-            }
-        });
-    }
-
-    function cleanTextForSpeech(text) {
-        if (!text) return '';
-        let t = text;
-
-        t = t.replace(/<[^>]+>/g, ' ');
-        t = t.replace(/```[\s\S]*?```/g, ' ');
-        t = t.replace(/`([^`]+)`/g, '$1');
-
-        t = t.replace(/\\frac\{([^}]+)\}\{([^}]+)\}/gi, ' $1 chia $2 ');
-        t = t.replace(/\\sqrt\{([^}]+)\}/gi, ' căn bậc hai của $1 ');
-
-        // Các ký hiệu chỉ số vật lý chuẩn
-        t = t.replace(/u'[_]?M\b/gi, ' u phẩy Mờ ');
-        t = t.replace(/u[_]?M\b/gi, ' u Mờ ');
-        t = t.replace(/u[_]?N\b/gi, ' u Nờ ');
-        t = t.replace(/u[_]?A\b/gi, ' u A ');
-        t = t.replace(/u[_]?B\b/gi, ' u B ');
-        t = t.replace(/u[_]?0\b/gi, ' u không ');
-        t = t.replace(/r[_]?0\b/gi, ' rờ không ');
-        t = t.replace(/r[_]?A\b/gi, ' rờ A ');
-        t = t.replace(/r[_]?B\b/gi, ' rờ B ');
-        t = t.replace(/L[_]?0\b/gi, ' Lờ không ');
-        t = t.replace(/L[_]?(?:\{tb\}|tb)\b/gi, ' Lờ trung bình ');
-        t = t.replace(/L[_]?A\b/gi, ' Lờ A ');
-        t = t.replace(/L[_]?B\b/gi, ' Lờ B ');
-        t = t.replace(/f[_]?0\b/gi, ' ép không ');
-        t = t.replace(/f[_]?A\b/gi, ' ép A ');
-        t = t.replace(/f[_]?B\b/gi, ' ép B ');
-        t = t.replace(/T[_]?0\b/gi, ' tê không ');
-
-        // Ký hiệu toán học & Hy Lạp
-        t = t.replace(/\\Delta\s*\\varphi|\\Delta\s*\\phi/gi, ' độ lệch pha ');
-        t = t.replace(/\\Delta\s*r\b/gi, ' hiệu khoảng cách đenta rờ ');
-        t = t.replace(/\\Delta\s*t\b/gi, ' khoảng thời gian đenta tê ');
-        t = t.replace(/\\Delta/gi, ' đenta ');
-        t = t.replace(/\\varphi[_]?0|\\phi[_]?0/gi, ' phi không ');
-        t = t.replace(/\\varphi|\\phi/gi, ' phi ');
-        t = t.replace(/\\lambda/gi, ' lam-đa ');
-        t = t.replace(/\\omega/gi, ' ô-mê-ga ');
-        t = t.replace(/\\pi/gi, ' pi ');
-        t = t.replace(/\\alpha/gi, ' an-pha ');
-        t = t.replace(/\\beta/gi, ' bê-ta ');
-        t = t.replace(/\\gamma/gi, ' gam-ma ');
-        t = t.replace(/\\theta/gi, ' thê-ta ');
-        t = t.replace(/\\approx/gi, ' xấp xỉ ');
-        t = t.replace(/\\pm/gi, ' cộng trừ ');
-        t = t.replace(/\\cdot|\\times/gi, ' nhân ');
-        t = t.replace(/\\le/gi, ' nhỏ hơn hoặc bằng ');
-        t = t.replace(/\\ge/gi, ' lớn hơn hoặc bằng ');
-        t = t.replace(/\\neq/gi, ' khác ');
-        t = t.replace(/\\infty/gi, ' vô cùng ');
-
-        t = t.replace(/\\cos\b|\bcos\b/gi, ' cốt ');
-        t = t.replace(/\\sin\b|\bsin\b/gi, ' sin ');
-        t = t.replace(/\\tan\b|\btan\b/gi, ' tan ');
-
-        t = t.replace(/\\text\{([^}]+)\}/gi, ' $1 ');
-        t = t.replace(/\\[a-zA-Z]+/g, ' ');
-        t = t.replace(/[\$\{\}\^_\\]/g, ' ');
-
-        t = t.replace(/\*\*([^*]+)\*\*/g, '$1');
-        t = t.replace(/\*([^*]+)\*/g, '$1');
-        t = t.replace(/#+\s*/g, '');
-        t = t.replace(/^\s*[-•]\s*/gm, ' ');
-
-        // Đơn vị đo lường khoa học
-        t = t.replace(/(\d+[\.,]?\d*)\s*(?:dB|ext\{dB\}|extdB)\b/gi, '$1 đề-xi-ben');
-        t = t.replace(/\b(?:dB|ext\{dB\}|extdB)\b/gi, 'đề-xi-ben');
-        t = t.replace(/(\d+[\.,]?\d*)\s*kHz\b/gi, '$1 ki-lô-héc');
-        t = t.replace(/(\d+[\.,]?\d*)\s*MHz\b/gi, '$1 mê-ga-héc');
-        t = t.replace(/(\d+[\.,]?\d*)\s*GHz\b/gi, '$1 ghi-ga-héc');
-        t = t.replace(/(\d+[\.,]?\d*)\s*Hz\b/gi, '$1 héc');
-        t = t.replace(/\bHz\b/gi, 'héc');
-        t = t.replace(/(\d+[\.,]?\d*)\s*rad\/s\b/gi, '$1 ra-đi-an trên giây');
-        t = t.replace(/(\d+[\.,]?\d*)\s*rad\b/gi, '$1 ra-đi-an');
-        t = t.replace(/(\d+[\.,]?\d*)\s*m\/s\^2\b/gi, '$1 mét trên giây bình phương');
-        t = t.replace(/(\d+[\.,]?\d*)\s*m\/s\b/gi, '$1 mét trên giây');
-        t = t.replace(/(\d+[\.,]?\d*)\s*cm\/s\b/gi, '$1 xăng-ti-mét trên giây');
-        t = t.replace(/(\d+[\.,]?\d*)\s*mm\b/gi, '$1 mi-li-mét');
-        t = t.replace(/(\d+[\.,]?\d*)\s*cm\b/gi, '$1 xăng-ti-mét');
-        t = t.replace(/(\d+[\.,]?\d*)\s*dm\b/gi, '$1 đề-xi-mét');
-        t = t.replace(/(\d+[\.,]?\d*)\s*(?:m|ext\{m\}|extm)\b/gi, '$1 mét');
-        t = t.replace(/(\d+[\.,]?\d*)\s*km\b/gi, '$1 ki-lô-mét');
-        t = t.replace(/(\d+[\.,]?\d*)\s*ms\b/gi, '$1 mi-li-giây');
-        t = t.replace(/(\d+[\.,]?\d*)\s*s\b/gi, '$1 giây');
-        t = t.replace(/(\d+[\.,]?\d*)\s*W\/m\^2\b/gi, '$1 oát trên mét vuông');
-        t = t.replace(/(\d+[\.,]?\d*)\s*W\b/gi, '$1 oát');
-        t = t.replace(/(\d+[\.,]?\d*)\s*mV\b/gi, '$1 mi-li-vôn');
-        t = t.replace(/(\d+[\.,]?\d*)\s*V\b/gi, '$1 vôn');
-        t = t.replace(/(\d+[\.,]?\d*)\s*mA\b/gi, '$1 mi-li-am-pe');
-
-        t = t.replace(/\s+/g, ' ').trim();
-        return t;
-    }
-
-    function speakFoxResponse(rawText, btnElement = null) {
-        if (btnElement && btnElement.classList.contains('speaking')) {
-            stopAllTTS();
-            return;
-        }
-
-        stopAllTTS();
-
-        const speakText = cleanTextForSpeech(rawText);
-        if (!speakText) return;
-
-        const viVoice = getVietnameseVoice();
-
-        if (viVoice && ('speechSynthesis' in window)) {
-            const utterance = new SpeechSynthesisUtterance(speakText);
-            utterance.voice = viVoice;
-            utterance.lang = 'vi-VN';
-            utterance.rate = 1.2;
-
-            if (btnElement) {
-                btnElement.classList.add('speaking');
-                btnElement.innerText = '⏹ Dừng';
-            }
-
-            utterance.onend = () => {
-                if (btnElement) {
-                    btnElement.classList.remove('speaking');
-                    btnElement.innerText = '🔊 Nghe';
-                }
-            };
-            utterance.onerror = () => {
-                if (btnElement) {
-                    btnElement.classList.remove('speaking');
-                    btnElement.innerText = '🔊 Nghe';
-                }
-            };
-
-            window.speechSynthesis.speak(utterance);
-        } else {
-            // Khi máy tính chưa cài gói tiếng Việt SAPI (chỉ có Microsoft David/Zira),
-            // Tự động phát âm thanh tiếng Việt chuẩn qua Google Vietnamese Voice
-            playGoogleTTS(speakText, btnElement);
-        }
-    }
-
-    window.toggleSpeakMessage = function (btn) {
-        const textToSpeak = btn.dataset.speakText || (btn.closest('.fox-msg-group') ? btn.closest('.fox-msg-group').querySelector('.fox-msg-bubble').innerText : '');
-        speakFoxResponse(textToSpeak, btn);
-    };
+    
+    // [Đã loại bỏ hoàn toàn tính năng trợ lý đọc phản hồi thành tiếng (TTS) theo yêu cầu]
+;
 
     let foxChatHistory = [];
 
@@ -6418,15 +6144,14 @@
         let html = ''; if (sender === 'bot') html += `<div class="fox-msg-avatar">${FOX_AVATAR_SVG}</div>`;
         const safeText = sanitizeChatHtml(text);
         const formattedText = sender === 'bot' ? formatMathText(safeText) : safeText;
-        let copyBtn = sender === 'bot' ? `<button class="fox-copy-btn" onclick="copyFoxText(this)">Copy</button><button class="fox-speak-btn" onclick="toggleSpeakMessage(this)">🔊 Nghe</button><button class="fox-export-btn" onclick="exportChatReport(this)">📥 Tải báo cáo</button>` : '';
+        let copyBtn = sender === 'bot' ? `<button class="fox-copy-btn" onclick="copyFoxText(this)">Copy</button><button class="fox-export-btn" onclick="exportChatReport(this)">📥 Tải báo cáo</button>` : '';
         let actionsBar = sender === 'bot' ? `<div class="fox-msg-actions-bar">${copyBtn}</div>` : '';
         html += `<div class="fox-msg-group"><div class="fox-msg-bubble">${formattedText}</div>${actionsBar}</div>`;
         row.innerHTML = html;
         if (sender === 'bot') {
             const cBtn = row.querySelector('.fox-copy-btn');
             if (cBtn) cBtn.dataset.copyText = text.replace(/<[^>]+>/g, '');
-            const sBtn = row.querySelector('.fox-speak-btn');
-            if (sBtn) sBtn.dataset.speakText = text;
+            
         }
         chatContent.appendChild(row); chatContent.scrollTop = chatContent.scrollHeight;
 
