@@ -6003,7 +6003,7 @@
         playNextGoogleTTSChunk(btnElement);
     }
 
-    function playNextGoogleTTSChunk(btnElement) {
+    async function playNextGoogleTTSChunk(btnElement) {
         if (ttsAudioQueue.length === 0) {
             if (btnElement) {
                 btnElement.classList.remove('speaking');
@@ -6014,17 +6014,33 @@
 
         const chunk = ttsAudioQueue.shift();
         const url = "https://translate.google.com/translate_tts?ie=UTF-8&tl=vi&client=tw-ob&q=" + encodeURIComponent(chunk);
-        
-        ttsAudioPlayer = new Audio(url);
+
+        let blobUrl = null;
+        try {
+            // Dùng fetch no-referrer để tránh Google từ chối (404 khi có Referer header)
+            const resp = await fetch(url, { referrerPolicy: 'no-referrer' });
+            if (!resp.ok) throw new Error('HTTP ' + resp.status);
+            const blob = await resp.blob();
+            blobUrl = URL.createObjectURL(blob);
+        } catch (fetchErr) {
+            console.warn("TTS fetch error:", fetchErr);
+            playNextGoogleTTSChunk(btnElement);
+            return;
+        }
+
+        ttsAudioPlayer = new Audio(blobUrl);
         ttsAudioPlayer.onended = () => {
+            URL.revokeObjectURL(blobUrl);
             playNextGoogleTTSChunk(btnElement);
         };
         ttsAudioPlayer.onerror = (err) => {
-            console.warn("TTS chunk load error:", err);
+            console.warn("TTS audio play error:", err);
+            URL.revokeObjectURL(blobUrl);
             playNextGoogleTTSChunk(btnElement);
         };
         ttsAudioPlayer.play().catch(err => {
             console.warn("Audio play blocked/error:", err);
+            URL.revokeObjectURL(blobUrl);
             if (btnElement) {
                 btnElement.classList.remove('speaking');
                 btnElement.innerText = '🔊 Nghe';
