@@ -1,4 +1,4 @@
-const CACHE_NAME = 'app-cache-v1.0.4'; // Tăng số này mỗi khi cập nhật code
+const CACHE_NAME = 'app-cache-v1.0.5'; // Tăng số này mỗi khi cập nhật code
 const STATIC_ASSETS = [
   './',
   './index.html',
