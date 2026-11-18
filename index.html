@@ -7583,6 +7583,23 @@
     }
 })();
 </script>
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').then((reg) => {
+      // Ép kiểm tra file sw.js mới mỗi lần mở app
+      reg.update();
+    });
 
+    // Tự động reload trang khi Service Worker mới tiếp quản
+    let refreshing = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (!refreshing) {
+        refreshing = true;
+        window.location.reload();
+      }
+    });
+  }
+</script>
+    
 </body>
 </html>
