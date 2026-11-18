@@ -5990,8 +5990,14 @@
         return result;
     }
 
+    function buildGoogleTTSUrl(text) {
+        // ttsspeed=1 = tốc độ chuẩn, không có "slow=true"
+        return "https://translate.google.com/translate_tts?ie=UTF-8&tl=vi&client=tw-ob&ttsspeed=1&q=" + encodeURIComponent(text);
+    }
+
     function playGoogleTTS(cleanText, btnElement) {
-        const sentences = splitIntoSentences(cleanText, 160);
+        // Chunk 200 ký tự → ít lần ngắt hơn, nghe mượt hơn
+        const sentences = splitIntoSentences(cleanText, 200);
         if (sentences.length === 0) return;
 
         ttsAudioQueue = sentences;
@@ -6003,7 +6009,7 @@
         playNextGoogleTTSChunk(btnElement);
     }
 
-    async function playNextGoogleTTSChunk(btnElement) {
+    function playNextGoogleTTSChunk(btnElement) {
         if (ttsAudioQueue.length === 0) {
             if (btnElement) {
                 btnElement.classList.remove('speaking');
@@ -6013,34 +6019,31 @@
         }
 
         const chunk = ttsAudioQueue.shift();
-        const url = "https://translate.google.com/translate_tts?ie=UTF-8&tl=vi&client=tw-ob&q=" + encodeURIComponent(chunk);
 
-        let blobUrl = null;
-        try {
-            // Dùng fetch no-referrer để tránh Google từ chối (404 khi có Referer header)
-            const resp = await fetch(url, { referrerPolicy: 'no-referrer' });
-            if (!resp.ok) throw new Error('HTTP ' + resp.status);
-            const blob = await resp.blob();
-            blobUrl = URL.createObjectURL(blob);
-        } catch (fetchErr) {
-            console.warn("TTS fetch error:", fetchErr);
-            playNextGoogleTTSChunk(btnElement);
-            return;
+        // Pre-load chunk kế tiếp để giảm độ trễ giữa các câu
+        let nextAudio = null;
+        if (ttsAudioQueue.length > 0) {
+            nextAudio = new Audio();
+            nextAudio.referrerPolicy = 'no-referrer';
+            nextAudio.preload = 'auto';
+            nextAudio.src = buildGoogleTTSUrl(ttsAudioQueue[0]);
         }
 
-        ttsAudioPlayer = new Audio(blobUrl);
+        ttsAudioPlayer = new Audio();
+        ttsAudioPlayer.referrerPolicy = 'no-referrer';
+        ttsAudioPlayer.src = buildGoogleTTSUrl(chunk);
+        // Tốc độ phát: 1.15 → nhanh hơn tự nhiên nhưng vẫn rõ
+        ttsAudioPlayer.playbackRate = 1.15;
+
         ttsAudioPlayer.onended = () => {
-            URL.revokeObjectURL(blobUrl);
             playNextGoogleTTSChunk(btnElement);
         };
         ttsAudioPlayer.onerror = (err) => {
-            console.warn("TTS audio play error:", err);
-            URL.revokeObjectURL(blobUrl);
+            console.warn("TTS chunk load error:", err);
             playNextGoogleTTSChunk(btnElement);
         };
         ttsAudioPlayer.play().catch(err => {
             console.warn("Audio play blocked/error:", err);
-            URL.revokeObjectURL(blobUrl);
             if (btnElement) {
                 btnElement.classList.remove('speaking');
                 btnElement.innerText = '🔊 Nghe';
@@ -6160,7 +6163,7 @@
             const utterance = new SpeechSynthesisUtterance(speakText);
             utterance.voice = viVoice;
             utterance.lang = 'vi-VN';
-            utterance.rate = 1.0;
+            utterance.rate = 1.2;
 
             if (btnElement) {
                 btnElement.classList.add('speaking');
