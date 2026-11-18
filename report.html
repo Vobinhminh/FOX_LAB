@@ -586,7 +586,7 @@
       }
     }
 
-    /* Chế độ ẩn các nút phụ khi kết xuất PDF / Ảnh */
+    /* Chế độ ẩn các nút phụ khi kết xuất PDF */
     .exporting-pdf .no-print {
       display: none !important;
     }
@@ -673,7 +673,7 @@
     <span id="statusBannerText"><strong>Sẵn sàng đồng bộ:</strong> Bấm <strong>🔄 Đồng bộ dữ liệu</strong> để lấy số liệu &amp; đồ thị mới nhất từ máy đo FOX_LAB.</span>
   </div>
 
-  <!-- Trang giấy A4 -->
+<!-- Trang giấy A4 -->
   <div class="a4-sheet" id="reportSheet">
     <div class="header-top">
       <div>
@@ -735,35 +735,33 @@
         <span>1.2. Bảng số liệu đo chu kì (<i>T</i>), tần số (<i>f</i>) và tính toán sai số</span>
         <button type="button" class="inline-btn no-print" onclick="addOscRow()">+ Thêm lần đo</button>
       </div>
-      <div class="table-responsive">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th style="width: 12%;">Lần đo</th>
-              <th style="width: 16%;">Số chu kì (<i>N</i>)</th>
-              <th style="width: 22%;">Thời gian Δ<i>t</i> = <i>t</i><sub>2</sub> − <i>t</i><sub>1</sub> (ms)</th>
-              <th style="width: 22%;">Chu kì <i>T</i> = Δ<i>t</i> / <i>N</i> (ms)</th>
-              <th style="width: 22%;">Tần số <i>f</i> = 1 / <i>T</i> (Hz)</th>
-              <th class="no-print" style="width: 6%;">Xóa</th>
-            </tr>
-          </thead>
-          <tbody id="oscBody"></tbody>
-          <tfoot>
-            <tr class="summary-row">
-              <td colspan="3">Giá trị trung bình (<span class="overline"><i>x</i></span>)</td>
-              <td id="avgT">—</td>
-              <td id="avgF">—</td>
-              <td class="no-print"></td>
-            </tr>
-            <tr class="summary-row">
-              <td colspan="3">Sai số tuyệt đối trung bình (<span class="overline">Δ<i>x</i></span>)</td>
-              <td id="errT">—</td>
-              <td id="errF">—</td>
-              <td class="no-print"></td>
-            </tr>
-          </tfoot>
-        </table>
-      </div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th style="width: 12%;">Lần đo</th>
+            <th style="width: 16%;">Số chu kì (<i>N</i>)</th>
+            <th style="width: 22%;">Thời gian Δ<i>t</i> = <i>t</i><sub>2</sub> − <i>t</i><sub>1</sub> (ms)</th>
+            <th style="width: 22%;">Chu kì <i>T</i> = Δ<i>t</i> / <i>N</i> (ms)</th>
+            <th style="width: 22%;">Tần số <i>f</i> = 1 / <i>T</i> (Hz)</th>
+            <th class="no-print" style="width: 6%;">Xóa</th>
+          </tr>
+        </thead>
+        <tbody id="oscBody"></tbody>
+        <tfoot>
+          <tr class="summary-row">
+            <td colspan="3">Giá trị trung bình (<span class="overline"><i>x</i></span>)</td>
+            <td id="avgT">—</td>
+            <td id="avgF">—</td>
+            <td class="no-print"></td>
+          </tr>
+          <tr class="summary-row">
+            <td colspan="3">Sai số tuyệt đối trung bình (<span class="overline">Δ<i>x</i></span>)</td>
+            <td id="errT">—</td>
+            <td id="errF">—</td>
+            <td class="no-print"></td>
+          </tr>
+        </tfoot>
+      </table>
 
       <div class="result-box">
         <p><strong>Kết quả phép đo dao động kí:</strong> &nbsp;
@@ -801,20 +799,18 @@
         <span>2.2. Bảng phân tích tần số cơ bản và đặc trưng họa âm giữa các nguồn âm</span>
         <button type="button" class="inline-btn no-print" onclick="addFftRow()">+ Thêm nguồn âm</button>
       </div>
-      <div class="table-responsive">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th style="width: 24%;">Nguồn âm khảo sát</th>
-              <th style="width: 18%;">Tần số cơ bản <i>f</i><sub>0</sub> (Hz)</th>
-              <th style="width: 26%;">Các họa âm ghi nhận được</th>
-              <th style="width: 26%;">Đặc điểm dạng sóng &amp; Âm sắc</th>
-              <th class="no-print" style="width: 6%;">Xóa</th>
-            </tr>
-          </thead>
-          <tbody id="fftBody"></tbody>
-        </table>
-      </div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th style="width: 24%;">Nguồn âm khảo sát</th>
+            <th style="width: 18%;">Tần số cơ bản <i>f</i><sub>0</sub> (Hz)</th>
+            <th style="width: 26%;">Các họa âm ghi nhận được</th>
+            <th style="width: 26%;">Đặc điểm dạng sóng &amp; Âm sắc</th>
+            <th class="no-print" style="width: 6%;">Xóa</th>
+          </tr>
+        </thead>
+        <tbody id="fftBody"></tbody>
+      </table>
     </section>
 
     <!-- ===================================================================== -->
@@ -845,22 +841,20 @@
         <span>3.2. Bảng số liệu mức cường độ âm theo vị trí / khoảng cách</span>
         <button type="button" class="inline-btn no-print" onclick="addDbRow()">+ Thêm vị trí đo</button>
       </div>
-      <div class="table-responsive">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th style="width: 14%;">Vị trí đo</th>
-              <th style="width: 20%;">Khoảng cách <i>r</i> (m)</th>
-              <th style="width: 16%;"><i>L</i><sub>min</sub> (dB)</th>
-              <th style="width: 16%;"><i>L</i><sub>max</sub> (dB)</th>
-              <th style="width: 16%;"><i>L</i><sub>TB</sub> (dB)</th>
-              <th style="width: 12%;">Độ giảm Δ<i>L</i></th>
-              <th class="no-print" style="width: 6%;">Xóa</th>
-            </tr>
-          </thead>
-          <tbody id="dbBody"></tbody>
-        </table>
-      </div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th style="width: 14%;">Vị trí đo</th>
+            <th style="width: 20%;">Khoảng cách <i>r</i> (m)</th>
+            <th style="width: 16%;"><i>L</i><sub>min</sub> (dB)</th>
+            <th style="width: 16%;"><i>L</i><sub>max</sub> (dB)</th>
+            <th style="width: 16%;"><i>L</i><sub>TB</sub> (dB)</th>
+            <th style="width: 12%;">Độ giảm Δ<i>L</i></th>
+            <th class="no-print" style="width: 6%;">Xóa</th>
+          </tr>
+        </thead>
+        <tbody id="dbBody"></tbody>
+      </table>
     </section>
 
     <!-- ===================================================================== -->
@@ -889,32 +883,30 @@
       <div class="sub-heading">
         <span>4.2. Đánh giá thông số bộ lọc và độ ổn định kết quả đo</span>
       </div>
-      <div class="table-responsive">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th style="width: 26%;">Trạng thái bộ lọc</th>
-              <th style="width: 24%;">Dải tần số cho qua</th>
-              <th style="width: 24%;">Độ ổn định dạng sóng</th>
-              <th style="width: 26%;">Tần số đọc được (Hz)</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td contenteditable="true">Tắt bộ lọc (Tín hiệu thô)</td>
-              <td contenteditable="true">Toàn dải (20 – 20000 Hz)</td>
-              <td contenteditable="true">Có gợn nhiễu tần số cao/thấp</td>
-              <td contenteditable="true">436,5 – 445,2 Hz (dao động)</td>
-            </tr>
-            <tr>
-              <td contenteditable="true">Bật lọc thông dải (Band-pass)</td>
-              <td contenteditable="true" id="filterBandCell">45 – 3000 Hz</td>
-              <td contenteditable="true">Đường sin mượt, đỉnh rõ nét</td>
-              <td contenteditable="true" id="filterFreqCell">440,1 Hz (ổn định)</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th style="width: 26%;">Trạng thái bộ lọc</th>
+            <th style="width: 24%;">Dải tần số cho qua</th>
+            <th style="width: 24%;">Độ ổn định dạng sóng</th>
+            <th style="width: 26%;">Tần số đọc được (Hz)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td contenteditable="true">Tắt bộ lọc (Tín hiệu thô)</td>
+            <td contenteditable="true">Toàn dải (20 – 20000 Hz)</td>
+            <td contenteditable="true">Có gợn nhiễu tần số cao/thấp</td>
+            <td contenteditable="true">436,5 – 445,2 Hz (dao động)</td>
+          </tr>
+          <tr>
+            <td contenteditable="true">Bật lọc thông dải (Band-pass)</td>
+            <td contenteditable="true" id="filterBandCell">45 – 3000 Hz</td>
+            <td contenteditable="true">Đường sin mượt, đỉnh rõ nét</td>
+            <td contenteditable="true" id="filterFreqCell">440,1 Hz (ổn định)</td>
+          </tr>
+        </tbody>
+      </table>
     </section>
 
     <!-- ===================================================================== -->
@@ -946,22 +938,13 @@
 
   <div class="toast-msg no-print" id="toastMsg"></div>
 
+  
   <script>
     // =========================================================================
-    // ĐỒNG BỘ GIỚI HẠN PHIÊN 45 PHÚT VỚI TRANG CHÍNH FOX_LAB (MIỄN TRỪ GIÁO VIÊN)
+    // ĐỒNG BỘ GIỚI HẠN PHIÊN 30 PHÚT VỚI TRANG CHÍNH FOX_LAB
     // =========================================================================
     (function syncReportSessionLimit() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const modeParam = urlParams.get("mode") || "";
-      const isTeacher = modeParam.includes("GV") || sessionStorage.getItem("foxlab_is_teacher") === "1";
-
-      // Nếu là Giáo viên hoặc mở trực tiếp độc lập không gắn cờ học sinh -> Không giới hạn thời gian
-      if (isTeacher || modeParam !== "Daodongki") {
-        try { sessionStorage.removeItem("foxlab_session_expired"); } catch (e) {}
-        return;
-      }
-
-      const SESSION_LIMIT_MS = 45 * 60 * 1000;
+      const SESSION_LIMIT_MS = 30 * 60 * 1000;
       const SESSION_START_KEY = "foxlab_session_start_ts";
       const SESSION_EXPIRED_KEY = "foxlab_session_expired";
 
@@ -1029,7 +1012,7 @@
       document.querySelectorAll(".tb-dropdown").forEach(el => el.classList.remove("open"));
     });
 
-    // Quay lại trang chính FOX_LAB (Tự nhận diện tên file index_4.html hoặc index.html)
+    // Quay lại trang chính FOX_LAB (index.html)
     function returnToMainPage() {
       persistReportEdits();
       if (window.opener && !window.opener.closed) {
@@ -1039,13 +1022,7 @@
           return;
         } catch (e) {}
       }
-      const searchSuffix = window.location.search || "";
-      if (document.referrer && document.referrer.includes(".html") && !document.referrer.includes("report")) {
-        window.location.href = document.referrer;
-        return;
-      }
-      const isV4 = window.location.pathname.includes("_4");
-      window.location.href = (isV4 ? "index_4.html" : "index.html") + searchSuffix;
+      window.location.href = "index.html";
     }
 
     function persistReportEdits() {
@@ -1092,6 +1069,7 @@
       const badge = document.getElementById("selectedCountBadge");
       if (badge) badge.textContent = `(${checkedCount})`;
 
+      // Nếu chỉ chọn 1 phần duy nhất thì tự động đổi tiêu đề báo cáo theo phần đó
       const titleEl = document.getElementById("expTitle");
       if (titleEl) {
         if (checkedParts.length === 1) {
@@ -1103,7 +1081,7 @@
       }
     }
 
-    // Xuất trực tiếp file PDF (.pdf) các phần đã tích chọn
+    // Xuất trực tiếp file PDF (.pdf) các phần đã tích chọn (không mở hộp thoại In)
     function exportSelectedToPDF() {
       document.querySelectorAll(".tb-dropdown").forEach(el => el.classList.remove("open"));
       const sheet = document.getElementById("reportSheet");
@@ -1187,29 +1165,73 @@
       });
     }
 
-    // Xuất toàn bộ khối nội dung của một Phần ra ảnh PNG chuẩn (Dùng html2canvas - Chống lỗi tainted canvas trên Safari/Mobile)
+    // Xuất toàn bộ khối nội dung của một Phần (Tiêu đề + Đồ thị + Bảng số liệu) ra ảnh PNG
     function exportPartAsImage(partId, fileTag) {
       const section = document.getElementById(partId);
       if (!section) return;
 
-      if (typeof html2canvas === "undefined") {
-        exportSinglePartToPDF(partId, fileTag);
-        return;
-      }
+      const clone = section.cloneNode(true);
+      clone.querySelectorAll(".no-print").forEach(el => el.remove());
 
-      showToast(`⏳ Đang kết xuất ảnh ${fileTag}...`);
-      const hiddenBtns = section.querySelectorAll(".no-print");
-      hiddenBtns.forEach(el => { el.style.display = "none"; });
+      const origCanvases = section.querySelectorAll("canvas");
+      const cloneCanvases = clone.querySelectorAll("canvas");
+      origCanvases.forEach((origC, idx) => {
+        if (cloneCanvases[idx]) {
+          const img = document.createElement("img");
+          img.src = origC.toDataURL("image/png");
+          img.style.width = origC.offsetWidth + "px";
+          img.style.maxWidth = "100%";
+          img.style.height = "auto";
+          img.style.display = "block";
+          img.style.margin = "0 auto";
+          cloneCanvases[idx].parentNode.replaceChild(img, cloneCanvases[idx]);
+        }
+      });
 
-      html2canvas(section, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: "#ffffff",
-        scrollY: -window.scrollY
-      }).then((canvas) => {
-        hiddenBtns.forEach(el => { el.style.display = ""; });
+      const rect = section.getBoundingClientRect();
+      const width = Math.ceil(rect.width) || 740;
+      const height = Math.ceil(rect.height) + 24;
 
-        canvas.toBlob((blob) => {
+      const styleText = document.querySelector("style").innerHTML;
+      const groupName = document.getElementById("groupName").textContent.trim();
+      const className = document.getElementById("className").textContent.trim();
+
+      const wrapperHtml = `
+        <div xmlns="http://www.w3.org/1999/xhtml" style="background:#ffffff; padding:12px 16px; font-family:'Times New Roman', serif; color:#0f172a;">
+          <style>${styleText}</style>
+          <div style="display:flex; justify-content:space-between; font-size:11pt; border-bottom:1px solid #94a3b8; padding-bottom:4px; margin-bottom:6px;">
+            <span><strong>FOX_LAB</strong> | ${groupName} – Lớp ${className}</span>
+            <span>Thời gian: ${new Date().toLocaleString("vi-VN")}</span>
+          </div>
+          ${clone.outerHTML}
+        </div>
+      `;
+
+      const svg = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height + 36}">
+          <foreignObject width="100%" height="100%">
+            ${wrapperHtml}
+          </foreignObject>
+        </svg>
+      `;
+
+      const svgBlob = new Blob([svg], { type: "image/svg+xml;charset=utf-8" });
+      const url = URL.createObjectURL(svgBlob);
+      const img = new Image();
+
+      img.onload = () => {
+        const scale = 2;
+        const outCanvas = document.createElement("canvas");
+        outCanvas.width = width * scale;
+        outCanvas.height = (height + 36) * scale;
+        const ctx = outCanvas.getContext("2d");
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, outCanvas.width, outCanvas.height);
+        ctx.scale(scale, scale);
+        ctx.drawImage(img, 0, 0);
+        URL.revokeObjectURL(url);
+
+        outCanvas.toBlob((blob) => {
           if (!blob) return;
           const pngUrl = URL.createObjectURL(blob);
           const a = document.createElement("a");
@@ -1221,11 +1243,12 @@
           setTimeout(() => URL.revokeObjectURL(pngUrl), 1000);
           showToast(`✅ Đã xuất ảnh: FOXLAB_${fileTag}.png`);
         }, "image/png");
-      }).catch((err) => {
-        hiddenBtns.forEach(el => { el.style.display = ""; });
-        console.error(err);
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(url);
         exportSinglePartToPDF(partId, fileTag);
-      });
+      };
+      img.src = url;
     }
 
     function reloadSyncedData(notifyUser) {
@@ -1245,7 +1268,7 @@
       const bannerText = document.getElementById("statusBannerText");
       if (banner) banner.classList.remove("live-mode");
       if (bannerText) {
-        bannerText.innerHTML = "<strong>Chưa có dữ liệu đo mới:</strong> Hãy bấm <strong>⬅ Quay lại</strong> để thực hiện phép đo trên FOX_LAB, sau đó bấm <strong>Xuất Báo cáo A4</strong> để đồng bộ sang trang này.";
+        bannerText.innerHTML = "<strong>Chưa có dữ liệu đo mới:</strong> Hãy bấm <strong>⬅ Quay lại</strong> để thực hiện phép đo trên FOX_LAB, sau đó bấm <strong>Xuất báo cáo</strong> để đồng bộ sang trang này.";
       }
       initEmptyTables();
     }
@@ -1265,6 +1288,7 @@
       reloadSyncedData(false);
       syncCheckboxes();
 
+      // Hỗ trợ mở thẳng từng phần từ link URL: report.html?part=1 hoặc report.html?parts=1,2
       const params = new URLSearchParams(window.location.search);
       const partParam = params.get("parts") || params.get("part");
       if (partParam) {
@@ -1574,17 +1598,16 @@
     function renderDbTable() {
       const tbody = document.getElementById("dbBody");
       tbody.innerHTML = "";
-      const baseL = dbRows.length ? Number(dbRows[0].lAvg) || 0 : 0;
+      const baseL = dbRows.length ? dbRows[0].lAvg : 0;
       dbRows.forEach((r, i) => {
-        const curAvg = Number(r.lAvg) || 0;
-        const diff = i === 0 ? "0,0 dB (Mốc)" : (curAvg - baseL).toFixed(1) + " dB";
+        const diff = i === 0 ? "0,0 dB (Mốc)" : (r.lAvg - baseL).toFixed(1) + " dB";
         const tr = document.createElement("tr");
         tr.innerHTML = `
           <td contenteditable="true" onblur="dbRows[${i}].viTri=this.textContent;persistReportEdits()">${r.viTri}</td>
           <td contenteditable="true" onblur="dbRows[${i}].r=parseFloat(this.textContent.replace(',','.'))||0;persistReportEdits()">${Number(r.r).toFixed(1)}</td>
           <td contenteditable="true" onblur="dbRows[${i}].lMin=parseFloat(this.textContent.replace(',','.'))||0;persistReportEdits()">${Number(r.lMin).toFixed(1)}</td>
           <td contenteditable="true" onblur="dbRows[${i}].lMax=parseFloat(this.textContent.replace(',','.'))||0;persistReportEdits()">${Number(r.lMax).toFixed(1)}</td>
-          <td contenteditable="true" onblur="dbRows[${i}].lAvg=parseFloat(this.textContent.replace(',','.'))||0;renderDbTable();persistReportEdits()">${curAvg.toFixed(1)}</td>
+          <td contenteditable="true" onblur="dbRows[${i}].lAvg=parseFloat(this.textContent.replace(',','.'))||0;renderDbTable();persistReportEdits()">${Number(r.lAvg).toFixed(1)}</td>
           <td>${diff}</td>
           <td class="no-print"><button type="button" class="row-del-btn" onclick="dbRows.splice(${i},1);renderDbTable();persistReportEdits()">✕</button></td>
         `;
