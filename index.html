@@ -4786,6 +4786,7 @@
     }
 
     function closeFFTModal() {
+        if (typeof cacheFftSnapshotForReport === 'function') cacheFftSnapshotForReport();
         stopFftSweepAnimation();
         closeFftHarmonicTable(true);
         fftSelectedPeakFreq = null;
@@ -6019,7 +6020,8 @@
         <button type="button" class="exp-rep-btn exp-rep-btn-secondary" onclick="loadExpSampleAll()">Nạp dữ liệu mẫu</button>
         <button type="button" class="exp-rep-btn exp-rep-btn-success" onclick="exportAllExpCSV()">📊 Xuất Excel (.CSV)</button>
         <button type="button" class="exp-rep-btn exp-rep-btn-primary" onclick="printCurrentExpReport()">🖨️ In / Xuất PDF đang chọn</button>
-        <button type="button" class="exp-rep-btn exp-rep-btn-danger" onclick="closeExpReportModal()">✕ Đóng</button>
+        <button type="button" class="exp-rep-btn exp-rep-btn-info" onclick="navigateToStandaloneReport()" title="Mở sang trang báo cáo riêng (report.html) với toàn bộ số liệu &amp; đồ thị đã đồng bộ">↗ Sang trang báo cáo</button>
+        <button type="button" class="exp-rep-btn exp-rep-btn-danger" onclick="closeExpReportModal()" title="Quay lại màn hình đo chính FOX_LAB">⬅ Quay lại</button>
       </div>
     </div>
     <div class="exp-rep-toolbar-row">
@@ -6632,6 +6634,7 @@
     let expFftRows = [];
     let expDbRows = [];
     let expLiveImages = { osc: null, fft: null, db: null };
+    let cachedFftSnapshot = null;
 
     function showExpToast(text) {
         const toast = document.getElementById("expToastMsg");
@@ -6641,6 +6644,33 @@
         clearTimeout(window._expToastTimer);
         window._expToastTimer = setTimeout(() => toast.classList.remove("show"), 2600);
     }
+
+    // Lưu lại kết quả & ảnh đồ thị FFT ngay trước khi đóng modal FFT
+    window.cacheFftSnapshotForReport = function () {
+        if (typeof fftLastAnalysis === "undefined" || !fftLastAnalysis || fftLastAnalysis.isEmptySignal) return;
+        const f0 = fftLastAnalysis.hasValidF0
+            ? fftLastAnalysis.f0
+            : (fftLastAnalysis.presentPeaks && fftLastAnalysis.presentPeaks[0] ? fftLastAnalysis.presentPeaks[0].freq : 0);
+        const harms = (fftLastAnalysis.harmonicsList || [])
+            .filter(h => h.isPresent)
+            .map(h => `${h.order}f₀ (${Math.round(h.targetFreq)} Hz)`)
+            .join(", ");
+        let fftImg = null;
+        const fftCanvas = document.getElementById("fftDisplayCanvas");
+        if (fftCanvas && fftCanvas.width > 0) {
+            try { fftImg = fftCanvas.toDataURL("image/png"); } catch (e) {}
+        }
+        if (f0 > 0) {
+            cachedFftSnapshot = {
+                f0,
+                harms: harms || "Chỉ có 1 đỉnh cơ bản f₀ rõ nét",
+                dacDiem: (fftLastAnalysis.harmonicsList && fftLastAnalysis.harmonicsList.filter(h => h.isPresent).length > 1)
+                    ? "Sóng tuần hoàn giàu họa âm"
+                    : "Sóng hình sin gần thuần khiết",
+                img: fftImg
+            };
+        }
+    };
 
     window.openExpReportModal = function () {
         const overlay = document.getElementById("expReportModalOverlay");
@@ -6657,9 +6687,23 @@
     };
 
     window.closeExpReportModal = function () {
+        saveExpReportToStorage(false);
         const overlay = document.getElementById("expReportModalOverlay");
         if (overlay) overlay.style.display = "none";
         document.body.classList.remove("printing-exp-report");
+    };
+
+    // Chuyển sang trang báo cáo độc lập (report.html / reprt.html) đã được đồng bộ đầy đủ dữ liệu
+    window.navigateToStandaloneReport = function () {
+        syncFoxLabToReport(false);
+        const payload = saveExpReportToStorage(true);
+        try {
+            const bc = new BroadcastChannel("foxlab_report_sync");
+            bc.postMessage({ type: "SYNC_REPORT_DATA", payload });
+            bc.close();
+        } catch (e) {}
+        const targetPage = window.FOX_REPORT_PAGE || "reprt.html";
+        window.location.href = targetPage;
     };
 
     // Thu thập tự động số liệu và ảnh đồ thị đang đo từ FOX_LAB
@@ -6667,6 +6711,20 @@
         let hasLive = false;
         const banner = document.getElementById("expReportStatusBanner");
         const statusText = document.getElementById("expReportStatusText");
+
+        // Giữ lại thông tin hành chính người dùng đã nhập trước đó (nếu có)
+        try {
+            const prevRaw = localStorage.getItem(EXP_STORAGE_KEY);
+            if (prevRaw) {
+                const prev = JSON.parse(prevRaw);
+                if (prev.truong) document.getElementById("expSchoolName").textContent = prev.truong;
+                if (prev.toChuyenMon) document.getElementById("expDeptName").textContent = prev.toChuyenMon;
+                if (prev.nhom) document.getElementById("expGroupName").textContent = prev.nhom;
+                if (prev.lop) document.getElementById("expClassName").textContent = prev.lop;
+                if (prev.thanhVien) document.getElementById("expStudentNames").textContent = prev.thanhVien;
+                if (prev.nhanXet) document.getElementById("expStudentNotes").innerHTML = prev.nhanXet;
+            }
+        } catch (e) {}
 
         // 1. Cập nhật thanh thông số kỹ thuật từ FOX_LAB
         if (typeof totalTimeOnScreen === "number" && totalTimeOnScreen > 0) {
@@ -6702,9 +6760,14 @@
                 }
             }
         }
-        const liveFreq = (typeof lockedFrequency === "number" && lockedFrequency > 0 && typeof detectedFrequency === "number" && detectedFrequency > 0)
+        let liveFreq = (typeof detectedFrequency === "number" && detectedFrequency > 0)
             ? detectedFrequency
-            : (typeof detectedFrequency === "number" && detectedFrequency > 0 ? detectedFrequency : 0);
+            : ((typeof lockedFrequency === "number" && lockedFrequency > 0 && lockedFrequency !== 440) ? lockedFrequency : 0);
+
+        if (liveFreq <= 0 && typeof computeFrozenAutoFrequency === "function") {
+            const frozenF = computeFrozenAutoFrequency();
+            if (frozenF > 0) liveFreq = frozenF;
+        }
 
         if (liveFreq > 0) {
             const T_ms = 1000 / liveFreq;
@@ -6738,30 +6801,19 @@
             } catch (e) {}
         }
 
-        // 4. Thu thập dữ liệu Phổ tần số FFT nếu đã quét
+        // 4. Thu thập dữ liệu Phổ tần số FFT (đang mở hoặc đã quét trước đó)
         if (typeof fftLastAnalysis !== "undefined" && fftLastAnalysis && !fftLastAnalysis.isEmptySignal) {
-            const f0 = fftLastAnalysis.hasValidF0 ? fftLastAnalysis.f0 : (fftLastAnalysis.presentPeaks && fftLastAnalysis.presentPeaks[0] ? fftLastAnalysis.presentPeaks[0].freq : 0);
-            const harms = (fftLastAnalysis.harmonicsList || [])
-                .filter(h => h.isPresent)
-                .map(h => `${h.order}f₀ (${Math.round(h.targetFreq)} Hz)`)
-                .join(", ");
-            if (f0 > 0) {
-                expFftRows = [{
-                    nguon: document.getElementById("expSoundSource").textContent.trim() || "Nguồn âm khảo sát",
-                    f0: f0.toFixed(1).replace(".", ","),
-                    hoaAm: harms || "Chỉ có 1 đỉnh cơ bản f₀ rõ nét",
-                    dacDiem: (fftLastAnalysis.harmonicsList && fftLastAnalysis.harmonicsList.filter(h => h.isPresent).length > 1)
-                        ? "Sóng tuần hoàn giàu họa âm"
-                        : "Sóng hình sin gần thuần khiết"
-                }];
-                hasLive = true;
-            }
-            const fftCanvas = document.getElementById("fftDisplayCanvas");
-            if (fftCanvas && fftCanvas.width > 0) {
-                try {
-                    expLiveImages.fft = fftCanvas.toDataURL("image/png");
-                } catch (e) {}
-            }
+            cacheFftSnapshotForReport();
+        }
+        if (cachedFftSnapshot && cachedFftSnapshot.f0 > 0) {
+            expFftRows = [{
+                nguon: document.getElementById("expSoundSource").textContent.trim() || "Nguồn âm khảo sát",
+                f0: cachedFftSnapshot.f0.toFixed(1).replace(".", ","),
+                hoaAm: cachedFftSnapshot.harms,
+                dacDiem: cachedFftSnapshot.dacDiem
+            }];
+            if (cachedFftSnapshot.img) expLiveImages.fft = cachedFftSnapshot.img;
+            hasLive = true;
         }
 
         // 5. Thu thập dữ liệu Mức cường độ âm (dB) nếu có lịch sử đo
@@ -6782,6 +6834,25 @@
                     lMax: Number(lMax.toFixed(1)),
                     lAvg: Number(lAvg.toFixed(1))
                 }];
+                if (typeof dbHistoryB !== "undefined" && Array.isArray(dbHistoryB) && dbHistoryB.length > 0) {
+                    const valsB = dbHistoryB.map(item => typeof item === "number" ? item : (item.db || item.val || 0)).filter(v => v > 0);
+                    if (valsB.length > 0) {
+                        const lMinB = Math.min(...valsB);
+                        const lMaxB = Math.max(...valsB);
+                        const lAvgB = valsB.reduce((a, b) => a + b, 0) / valsB.length;
+                        let rEstB = 1.0;
+                        if (typeof sourceRefState !== "undefined" && sourceRefState && sourceRefState.r0 > 0 && sourceRefState.L0 > 0) {
+                            rEstB = Number((sourceRefState.r0 * Math.pow(10, (sourceRefState.L0 - lAvgB) / 20)).toFixed(2));
+                        }
+                        expDbRows.push({
+                            viTri: "Vị trí đo Kênh B",
+                            r: rEstB,
+                            lMin: Number(lMinB.toFixed(1)),
+                            lMax: Number(lMaxB.toFixed(1)),
+                            lAvg: Number(lAvgB.toFixed(1))
+                        });
+                    }
+                }
                 hasLive = true;
             }
         }
@@ -6789,9 +6860,8 @@
         if (hasLive) {
             if (banner) banner.classList.add("live-mode");
             if (statusText) {
-                statusText.innerHTML = "<strong>✅ Đã đồng bộ số liệu &amp; đồ thị thực tế từ máy đo FOX_LAB!</strong> Bạn có thể nhấn trực tiếp vào từng ô để chỉnh sửa hoặc xuất PDF / Ảnh từng phần.";
+                statusText.innerHTML = "<strong>✅ Đã đồng bộ số liệu &amp; đồ thị thực tế từ máy đo FOX_LAB!</strong> Bạn có thể chỉnh sửa trực tiếp, xuất PDF/Ảnh từng phần hoặc bấm <strong>Sang trang báo cáo</strong>.";
             }
-            // Nếu chưa có dữ liệu ở một phần phụ, giữ dữ liệu mẫu bổ trợ cho phần đó để bảng không bị trống
             if (expOscRows.length === 0) expOscRows = [{ soChuKi: 5, deltaT_ms: 11.36 }];
             if (expFftRows.length === 0) expFftRows = [{ nguon: "Âm thoa / Nguồn âm", f0: liveFreq > 0 ? liveFreq.toFixed(1).replace(".", ",") : "440,0", hoaAm: "f₀ (chưa mở tab quét FFT)", dacDiem: "Dao động điều hòa" }];
             if (expDbRows.length === 0) expDbRows = [{ viTri: "Điểm 1", r: 1.0, lMin: 65.0, lMax: 67.2, lAvg: 66.1 }];
@@ -6800,10 +6870,9 @@
             renderExpFftTable();
             renderExpDbTable();
             redrawAllExpCanvases();
-            saveExpReportToStorage();
+            saveExpReportToStorage(true);
             if (notifyUser) showExpToast("Đã cập nhật số liệu mới nhất từ máy đo FOX_LAB!");
         } else {
-            // Kiểm tra localStorage hoặc nạp dữ liệu mẫu
             if (banner) banner.classList.remove("live-mode");
             if (statusText) {
                 statusText.innerHTML = "<strong>Chế độ xem trước (Dữ liệu mẫu):</strong> Chưa có phép đo đang chạy trên máy đo. Hãy đo sóng trên FOX_LAB rồi mở lại báo cáo, hoặc dùng ngay mẫu dưới đây.";
@@ -6820,13 +6889,25 @@
         }
     };
 
-    function saveExpReportToStorage() {
+    function saveExpReportToStorage(isLiveMeasurement) {
         try {
             const payload = {
+                isLiveMeasurement: Boolean(isLiveMeasurement),
+                truong: document.getElementById("expSchoolName").textContent.trim(),
+                toChuyenMon: document.getElementById("expDeptName").textContent.trim(),
                 tenThiNghiem: document.getElementById("expReportTitle").textContent.trim(),
+                tieuDePhu: document.getElementById("expReportSubtitle").textContent.trim(),
                 nguonAm: document.getElementById("expSoundSource").textContent.trim(),
                 nhom: document.getElementById("expGroupName").textContent.trim(),
                 lop: document.getElementById("expClassName").textContent.trim(),
+                thanhVien: document.getElementById("expStudentNames").textContent.trim(),
+                scaleX: document.getElementById("expScaleX").textContent.trim(),
+                scaleY: document.getElementById("expScaleY").textContent.trim(),
+                sampleRate: document.getElementById("expSampleRate").textContent.trim(),
+                filterStatus: document.getElementById("expFilterStatus").textContent.trim(),
+                filterBand: document.getElementById("expFilterBandCell")?.textContent.trim() || "45 – 3000 Hz",
+                filterFreq: document.getElementById("expFilterFreqCell")?.textContent.trim() || "440,1 Hz (ổn định)",
+                nhanXet: document.getElementById("expStudentNotes").innerHTML,
                 cacLanDo: expOscRows,
                 phoTanSo: expFftRows,
                 mucCuongDoAm: expDbRows,
@@ -6835,14 +6916,26 @@
                 anhDbBase64: expLiveImages.db
             };
             localStorage.setItem(EXP_STORAGE_KEY, JSON.stringify(payload));
-        } catch (e) {}
+            return payload;
+        } catch (e) {
+            return null;
+        }
     }
 
     function applyExpIncomingData(data) {
+        if (data.truong) document.getElementById("expSchoolName").textContent = data.truong;
+        if (data.toChuyenMon) document.getElementById("expDeptName").textContent = data.toChuyenMon;
         if (data.tenThiNghiem) document.getElementById("expReportTitle").textContent = data.tenThiNghiem;
+        if (data.tieuDePhu) document.getElementById("expReportSubtitle").textContent = data.tieuDePhu;
         if (data.nguonAm) document.getElementById("expSoundSource").textContent = data.nguonAm;
         if (data.nhom) document.getElementById("expGroupName").textContent = data.nhom;
         if (data.lop) document.getElementById("expClassName").textContent = data.lop;
+        if (data.thanhVien) document.getElementById("expStudentNames").textContent = data.thanhVien;
+        if (data.scaleX) document.getElementById("expScaleX").textContent = data.scaleX;
+        if (data.scaleY) document.getElementById("expScaleY").textContent = data.scaleY;
+        if (data.sampleRate) document.getElementById("expSampleRate").textContent = data.sampleRate;
+        if (data.filterStatus) document.getElementById("expFilterStatus").textContent = data.filterStatus;
+        if (data.nhanXet) document.getElementById("expStudentNotes").innerHTML = data.nhanXet;
         if (Array.isArray(data.cacLanDo) && data.cacLanDo.length) expOscRows = data.cacLanDo;
         if (Array.isArray(data.phoTanSo) && data.phoTanSo.length) expFftRows = data.phoTanSo;
         if (Array.isArray(data.mucCuongDoAm) && data.mucCuongDoAm.length) expDbRows = data.mucCuongDoAm;
@@ -7067,6 +7160,7 @@
         renderExpFftTable();
         renderExpDbTable();
         redrawAllExpCanvases();
+        saveExpReportToStorage(false);
         if (notifyUser) showExpToast("Đã nạp bộ dữ liệu mẫu tham khảo!");
     };
 
@@ -7270,7 +7364,6 @@
                     sumLum += 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
                     samples++;
                 }
-                // Chỉ đảo nền nếu ảnh gốc thực sự là nền tối (< 115)
                 if (samples > 0 && (sumLum / samples) < 115) {
                     for (let i = 0; i < d.length; i += 4) {
                         const r = d[i], g = d[i + 1], b = d[i + 2];
@@ -7359,10 +7452,10 @@
         const n = parseFloat(val.replace(",", ".").trim());
         if (!isNaN(n) && n >= 0) expOscRows[i][k] = k === "soChuKi" ? Math.max(1, Math.round(n)) : n;
         renderExpOscTable();
-        saveExpReportToStorage();
+        saveExpReportToStorage(true);
     };
-    window.addExpOscRow = function () { expOscRows.push({ soChuKi: 5, deltaT_ms: 11.35 }); renderExpOscTable(); };
-    window.delExpOsc = function (i) { expOscRows.splice(i, 1); renderExpOscTable(); };
+    window.addExpOscRow = function () { expOscRows.push({ soChuKi: 5, deltaT_ms: 11.35 }); renderExpOscTable(); saveExpReportToStorage(true); };
+    window.delExpOsc = function (i) { expOscRows.splice(i, 1); renderExpOscTable(); saveExpReportToStorage(true); };
 
     // --- Render Bảng Phần II ---
     function renderExpFftTable() {
@@ -7381,12 +7474,13 @@
             tbody.appendChild(tr);
         });
     }
-    window.updateExpFft = function (i, k, val) { expFftRows[i][k] = val.trim(); saveExpReportToStorage(); };
+    window.updateExpFft = function (i, k, val) { expFftRows[i][k] = val.trim(); saveExpReportToStorage(true); };
     window.addExpFftRow = function () {
         expFftRows.push({ nguon: "Nguồn âm mới", f0: "512,0", hoaAm: "f₀, 2f₀", dacDiem: "Dao động tuần hoàn" });
         renderExpFftTable();
+        saveExpReportToStorage(true);
     };
-    window.delExpFft = function (i) { expFftRows.splice(i, 1); renderExpFftTable(); };
+    window.delExpFft = function (i) { expFftRows.splice(i, 1); renderExpFftTable(); saveExpReportToStorage(true); };
 
     // --- Render Bảng Phần III ---
     function renderExpDbTable() {
@@ -7413,13 +7507,14 @@
         if (k === "viTri") expDbRows[i][k] = val.trim();
         else expDbRows[i][k] = parseFloat(val.replace(",", ".")) || 0;
         if (rerender) renderExpDbTable();
-        saveExpReportToStorage();
+        saveExpReportToStorage(true);
     };
     window.addExpDbRow = function () {
         expDbRows.push({ viTri: `Điểm ${expDbRows.length + 1}`, r: 3.0, lMin: 58.0, lMax: 59.5, lAvg: 58.8 });
         renderExpDbTable();
+        saveExpReportToStorage(true);
     };
-    window.delExpDb = function (i) { expDbRows.splice(i, 1); renderExpDbTable(); };
+    window.delExpDb = function (i) { expDbRows.splice(i, 1); renderExpDbTable(); saveExpReportToStorage(true); };
 
     // --- Xuất CSV từng phần & Toàn bộ ---
     window.exportSingleExpPartCSV = function (partId) {
