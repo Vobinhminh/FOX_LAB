@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FOX_LAB - Báo Cáo Thí Nghiệm Xuất Từng Phần Theo Yêu Cầu</title>
+  <title>FOX_LAB - Báo Cáo Thí Nghiệm Sóng Âm</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <style>
     :root {
       --primary: #0f172a;
@@ -33,34 +34,30 @@
       text-decoration: overline;
     }
 
-    /* Thanh công cụ điều khiển (Ẩn khi in) */
+    /* Thanh công cụ tối ưu gọn nhẹ cho thiết bị thông minh */
     .toolbar {
       position: sticky;
       top: 0;
-      z-index: 100;
-      background: #1e293b;
+      z-index: 200;
+      background: #0f172a;
       color: #f8fafc;
-      padding: 9px 18px;
+      padding: 8px 12px;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
       font-size: 13px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.3);
     }
 
-    .toolbar-row {
+    .toolbar-compact-bar {
+      max-width: 210mm;
+      margin: 0 auto;
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
-      gap: 8px;
+      gap: 6px;
     }
 
-    .toolbar-row + .toolbar-row {
-      margin-top: 7px;
-      padding-top: 7px;
-      border-top: 1px solid #334155;
-    }
-
-    .toolbar-group {
+    .toolbar-left, .toolbar-right {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
@@ -69,8 +66,8 @@
 
     .btn {
       border: none;
-      border-radius: 5px;
-      padding: 6px 11px;
+      border-radius: 6px;
+      padding: 7px 11px;
       font-size: 12.5px;
       font-weight: 600;
       cursor: pointer;
@@ -78,59 +75,117 @@
       align-items: center;
       gap: 5px;
       transition: background 0.15s, transform 0.05s;
+      white-space: nowrap;
     }
 
     .btn:active {
-      transform: translateY(1px);
+      transform: scale(0.97);
     }
 
-    .btn-back { background: #f97316; color: #fff; }
-    .btn-back:hover { background: #ea580c; }
-
-    .btn-primary { background: #2563eb; color: #fff; }
-    .btn-primary:hover { background: #1d4ed8; }
-
-    .btn-success { background: #059669; color: #fff; }
-    .btn-success:hover { background: #047857; }
+    .btn-back { background: #ea580c; color: #fff; }
+    .btn-back:hover { background: #c2410c; }
 
     .btn-info { background: #0284c7; color: #fff; }
     .btn-info:hover { background: #0369a1; }
 
-    .btn-secondary { background: #334155; color: #f1f5f9; }
-    .btn-secondary:hover { background: #475569; }
+    .btn-custom { background: #334155; color: #f8fafc; border: 1px solid #475569; }
+    .btn-custom:hover { background: #475569; }
 
-    .btn-preset {
-      background: #0f172a;
-      color: #cbd5e1;
+    .btn-export { background: #059669; color: #fff; }
+    .btn-export:hover { background: #047857; }
+
+    /* Dropdown Menu */
+    .tb-dropdown {
+      position: relative;
+      display: inline-block;
+    }
+
+    .tb-dropdown-menu {
+      display: none;
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      min-width: 245px;
+      background: #1e293b;
       border: 1px solid #475569;
-      padding: 4px 9px;
-      font-size: 12px;
-    }
-    .btn-preset:hover, .btn-preset.active {
-      background: #0284c7;
-      color: #ffffff;
-      border-color: #38bdf8;
+      border-radius: 8px;
+      padding: 8px;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
+      z-index: 300;
     }
 
-    .chip-toggle {
-      display: inline-flex;
+    .tb-dropdown-menu.align-right {
+      left: auto;
+      right: 0;
+    }
+
+    .tb-dropdown.open .tb-dropdown-menu {
+      display: block;
+    }
+
+    .tb-dd-header {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      color: #94a3b8;
+      padding: 2px 6px 6px;
+      margin-bottom: 4px;
+      border-bottom: 1px solid #334155;
+    }
+
+    .tb-check-item {
+      display: flex;
       align-items: center;
-      gap: 5px;
+      gap: 9px;
+      padding: 7px 6px;
+      border-radius: 6px;
+      font-size: 13px;
+      color: #f1f5f9;
       cursor: pointer;
       user-select: none;
+    }
+
+    .tb-check-item:hover {
       background: #334155;
-      padding: 4px 9px;
-      border-radius: 5px;
-      font-size: 12px;
-      border: 1px solid #475569;
     }
 
-    .chip-toggle:has(input:checked) {
-      background: #0f172a;
-      border-color: #38bdf8;
-      color: #e0f2fe;
+    .tb-check-item input[type="checkbox"] {
+      width: 17px;
+      height: 17px;
+      accent-color: #38bdf8;
+      cursor: pointer;
+      margin: 0;
+      flex-shrink: 0;
     }
 
+    .tb-dd-divider {
+      height: 1px;
+      background: #334155;
+      margin: 6px 0;
+    }
+
+    .tb-action-item {
+      width: 100%;
+      background: transparent;
+      border: none;
+      color: #f8fafc;
+      text-align: left;
+      padding: 9px 10px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tb-action-item:hover {
+      background: #0284c7;
+    }
+
+    /* Banner trạng thái đồng bộ */
     .status-banner {
       max-width: 210mm;
       margin: 10px auto 0;
@@ -156,9 +211,9 @@
     /* Khổ giấy A4 chuẩn */
     .a4-sheet {
       width: 210mm;
-      max-width: calc(100vw - 24px);
+      max-width: calc(100vw - 16px);
       min-height: 297mm;
-      margin: 14px auto 32px;
+      margin: 12px auto 32px;
       padding: 14mm 15mm;
       background: var(--bg-paper);
       box-shadow: 0 4px 20px rgba(15, 23, 42, 0.12);
@@ -169,6 +224,7 @@
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
+      gap: 12px;
       border-bottom: 1.5px solid #0f172a;
       padding-bottom: 7px;
       margin-bottom: 10px;
@@ -204,7 +260,7 @@
     [contenteditable="true"] {
       border-bottom: 1px dashed #94a3b8;
       padding: 0 3px;
-      min-width: 26px;
+      min-width: 30px;
       display: inline-block;
       outline: none;
     }
@@ -241,7 +297,7 @@
     }
 
     .report-part.hidden-part,
-    .report-part.temp-print-hide {
+    .report-part.temp-export-hide {
       display: none !important;
     }
 
@@ -273,6 +329,7 @@
       margin: 9px 0 5px;
       color: #1e293b;
       display: flex;
+      flex-wrap: wrap;
       justify-content: space-between;
       align-items: center;
       gap: 8px;
@@ -304,6 +361,12 @@
     }
 
     /* Bảng số liệu khoa học */
+    .table-responsive {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
     table.data-table {
       width: 100%;
       border-collapse: collapse;
@@ -427,99 +490,149 @@
     }
     .toast-msg.show { opacity: 1; transform: translateY(0); }
 
-    @page {
-      size: A4 portrait;
-      margin: 11mm 13mm;
+    /* Tối ưu giao diện trên Điện thoại / Máy tính bảng */
+    @media (max-width: 768px) {
+      .toolbar {
+        padding: 7px 8px;
+      }
+      .toolbar-compact-bar {
+        justify-content: center;
+        gap: 5px;
+      }
+      .toolbar-left, .toolbar-right {
+        justify-content: center;
+        gap: 5px;
+      }
+      .btn {
+        padding: 6px 9px;
+        font-size: 12px;
+      }
+      .status-banner {
+        margin: 8px 8px 0;
+        font-size: 12px;
+        padding: 7px 10px;
+      }
+      .a4-sheet {
+        padding: 14px 12px;
+        margin: 8px auto 24px;
+      }
+      .header-top {
+        flex-direction: column;
+        gap: 6px;
+        font-size: 10.5pt;
+      }
+      .header-meta-right {
+        text-align: left;
+      }
+      .report-title {
+        font-size: 13pt;
+      }
+      .info-grid {
+        grid-template-columns: 1fr;
+        gap: 4px;
+        font-size: 10.8pt;
+      }
+      .tech-bar {
+        flex-direction: column;
+        gap: 4px;
+        font-size: 10pt;
+      }
+      .part-title {
+        font-size: 10.8pt;
+      }
+      table.data-table {
+        font-size: 9.8pt;
+      }
     }
 
-    @media print {
-      body { background: #fff; margin: 0; padding: 0; }
-      .toolbar, .status-banner, .toast-msg, .no-print { display: none !important; }
-      .a4-sheet {
-        width: 100%;
-        max-width: 100%;
-        min-height: auto;
-        margin: 0;
-        padding: 0;
-        box-shadow: none;
-      }
-      [contenteditable="true"] { border-bottom: none; padding: 0; }
-      .notes-box { border: 1px solid #334155 !important; }
-      .part-title, .sub-heading {
-        break-after: avoid;
-        page-break-after: avoid;
-      }
-      .graph-box, .result-box, .notes-box, table.data-table tr {
-        break-inside: avoid;
-        page-break-inside: avoid;
-      }
-      .part-title, .tech-bar, .result-box, table.data-table th, table.data-table tr.summary-row td {
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-      }
+    /* Chế độ ẩn các nút phụ khi kết xuất PDF */
+    .exporting-pdf .no-print {
+      display: none !important;
+    }
+    .exporting-pdf [contenteditable="true"] {
+      border-bottom: none !important;
+      padding: 0 !important;
+    }
+    .exporting-pdf.a4-sheet {
+      width: 194mm !important;
+      max-width: 194mm !important;
+      margin: 0 !important;
+      padding: 6mm 8mm !important;
+      box-shadow: none !important;
     }
   </style>
 </head>
 <body>
 
-  <!-- Thanh công cụ cấu hình & xuất từng phần theo yêu cầu -->
+  <!-- Thanh công cụ gọn nhẹ cho thiết bị thông minh -->
   <div class="toolbar no-print">
-    <div class="toolbar-row">
-      <div class="toolbar-group">
-        <button type="button" class="btn btn-back" onclick="returnToMainPage()" title="Quay lại trang đo chính FOX_LAB (index.html)">⬅ Quay lại trang chính</button>
-        <strong>Chọn nhanh:</strong>
-        <button type="button" class="btn btn-preset active" id="preset-all" onclick="applyPreset('all')">Tất cả các phần</button>
-        <button type="button" class="btn btn-preset" id="preset-1" onclick="applyPreset('1')">Phần I (Dao động kí)</button>
-        <button type="button" class="btn btn-preset" id="preset-2" onclick="applyPreset('2')">Phần II (Phổ FFT)</button>
-        <button type="button" class="btn btn-preset" id="preset-3" onclick="applyPreset('3')">Phần III (Mức dB)</button>
-        <button type="button" class="btn btn-preset" id="preset-4" onclick="applyPreset('4')">Phần IV (Bộ lọc số)</button>
+    <div class="toolbar-compact-bar">
+      <div class="toolbar-left">
+        <button type="button" class="btn btn-back" onclick="returnToMainPage()" title="Quay lại trang đo chính FOX_LAB">⬅ Quay lại</button>
+        <button type="button" class="btn btn-info" onclick="reloadSyncedData(true)" title="Đồng bộ dữ liệu mới nhất từ FOX_LAB">🔄 Đồng bộ dữ liệu</button>
       </div>
-      <div class="toolbar-group">
-        <button type="button" class="btn btn-info" onclick="reloadSyncedData(true)" title="Đồng bộ lại dữ liệu mới nhất từ trang chính FOX_LAB">🔄 Đồng bộ lại</button>
-        <button type="button" class="btn btn-secondary" onclick="loadSampleAll(true)">Nạp dữ liệu mẫu</button>
-        <button type="button" class="btn btn-success" onclick="exportAllCSV()">📊 Xuất Excel (.CSV)</button>
-        <button type="button" class="btn btn-primary" onclick="window.print()">🖨️ In / Xuất PDF đang chọn</button>
-      </div>
-    </div>
-    <div class="toolbar-row">
-      <div class="toolbar-group">
-        <span>Tùy chỉnh ghép phần:</span>
-        <label class="chip-toggle">
-          <input type="checkbox" id="chk-part1" checked onchange="syncCheckboxes()" />
-          Phần I: Dao động kí
-        </label>
-        <label class="chip-toggle">
-          <input type="checkbox" id="chk-part2" checked onchange="syncCheckboxes()" />
-          Phần II: Phổ FFT
-        </label>
-        <label class="chip-toggle">
-          <input type="checkbox" id="chk-part3" checked onchange="syncCheckboxes()" />
-          Phần III: Mức dB
-        </label>
-        <label class="chip-toggle">
-          <input type="checkbox" id="chk-part4" checked onchange="syncCheckboxes()" />
-          Phần IV: Bộ lọc số
-        </label>
-        <label class="chip-toggle">
-          <input type="checkbox" id="chk-part5" checked onchange="syncCheckboxes()" />
-          Phần V: Nhận xét &amp; Chữ ký
-        </label>
-      </div>
-      <div class="toolbar-group">
-        <label class="chip-toggle" title="Đảo nền tối của ảnh đồ thị sang nền trắng để in rõ nét">
-          <input type="checkbox" id="invertDarkToggle" checked onchange="redrawAllCanvases()" />
-          Nền trắng đồ thị
-        </label>
+
+      <div class="toolbar-right">
+        <!-- Dropdown Tùy chỉnh phần (tích ô vuông) -->
+        <div class="tb-dropdown" id="ddCustomParts">
+          <button type="button" class="btn btn-custom" onclick="toggleTbDropdown('ddCustomParts', event)">
+            ☑️ Tùy chỉnh <span id="selectedCountBadge">(5)</span> ▼
+          </button>
+          <div class="tb-dropdown-menu" onclick="event.stopPropagation()">
+            <div class="tb-dd-header">Chọn phần hiển thị &amp; xuất file</div>
+            <label class="tb-check-item">
+              <input type="checkbox" id="chk-part1" checked onchange="syncCheckboxes()" />
+              <span>Phần I: Dao động kí (T, f)</span>
+            </label>
+            <label class="tb-check-item">
+              <input type="checkbox" id="chk-part2" checked onchange="syncCheckboxes()" />
+              <span>Phần II: Phổ tần số (FFT)</span>
+            </label>
+            <label class="tb-check-item">
+              <input type="checkbox" id="chk-part3" checked onchange="syncCheckboxes()" />
+              <span>Phần III: Mức cường độ âm (dB)</span>
+            </label>
+            <label class="tb-check-item">
+              <input type="checkbox" id="chk-part4" checked onchange="syncCheckboxes()" />
+              <span>Phần IV: Bộ lọc số</span>
+            </label>
+            <label class="tb-check-item">
+              <input type="checkbox" id="chk-part5" checked onchange="syncCheckboxes()" />
+              <span>Phần V: Nhận xét &amp; Chữ ký</span>
+            </label>
+            <div class="tb-dd-divider"></div>
+            <label class="tb-check-item">
+              <input type="checkbox" id="invertDarkToggle" checked onchange="redrawAllCanvases()" />
+              <span>Nền trắng đồ thị</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Dropdown Xuất file (PDF & Excel trực tiếp) -->
+        <div class="tb-dropdown" id="ddExportFile">
+          <button type="button" class="btn btn-export" onclick="toggleTbDropdown('ddExportFile', event)">
+            📥 Xuất file ▼
+          </button>
+          <div class="tb-dropdown-menu align-right" onclick="event.stopPropagation()">
+            <div class="tb-dd-header">Xuất các phần đã tích chọn</div>
+            <button type="button" class="tb-action-item" onclick="exportSelectedToPDF()">
+              📄 Xuất file PDF (.pdf)
+            </button>
+            <button type="button" class="tb-action-item" onclick="exportSelectedToExcelCSV()">
+              📊 Xuất file Excel (.csv)
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
   <!-- Banner thông báo trạng thái đồng bộ -->
   <div class="status-banner no-print" id="statusBanner">
-    <span id="statusBannerText"><strong>Chế độ xem trước (Dữ liệu mẫu):</strong> Hãy bấm <strong>Quay lại trang chính</strong> để đo sóng trên FOX_LAB, sau đó bấm <strong>Xuất báo cáo</strong> để tự động đổ số liệu và đồ thị vào trang này.</span>
+    <span id="statusBannerText"><strong>Sẵn sàng đồng bộ:</strong> Bấm <strong>🔄 Đồng bộ dữ liệu</strong> để lấy số liệu &amp; đồ thị mới nhất từ máy đo FOX_LAB.</span>
   </div>
 
-  <!-- Trang giấy A4 -->
+<!-- Trang giấy A4 -->
   <div class="a4-sheet" id="reportSheet">
     <div class="header-top">
       <div>
@@ -560,7 +673,7 @@
       <div class="part-title">
         <span>PHẦN I. KHẢO SÁT DẠNG SÓNG VÀ ĐO CHU KÌ, TẦN SỐ (DAO ĐỘNG KÍ)</span>
         <div class="part-actions no-print">
-          <button type="button" class="inline-btn inline-btn-pdf" onclick="printSinglePart('part1')" title="In hoặc lưu PDF A4 chỉ riêng Phần I kèm thông tin nhóm và chữ ký">🖨️ In/PDF phần này</button>
+          <button type="button" class="inline-btn inline-btn-pdf" onclick="exportSinglePartToPDF('part1', 'Phan1_DaoDongKi')" title="Tải trực tiếp file PDF riêng Phần I kèm thông tin nhóm và chữ ký">📄 PDF phần này</button>
           <button type="button" class="inline-btn inline-btn-img" onclick="exportPartAsImage('part1', 'Phan1_DaoDongKi')" title="Xuất toàn bộ Phần I (đồ thị + bảng số liệu) thành 1 file ảnh PNG">🖼️ Xuất ảnh phần này</button>
           <button type="button" class="inline-btn inline-btn-csv" onclick="exportSinglePartCSV('part1')" title="Xuất bảng số liệu Phần I ra file Excel CSV">📊 CSV</button>
         </div>
@@ -624,7 +737,7 @@
       <div class="part-title">
         <span>PHẦN II. PHÂN TÍCH PHỔ TẦN SỐ VÀ ÂM SẮC (QUÉT PHỔ FFT)</span>
         <div class="part-actions no-print">
-          <button type="button" class="inline-btn inline-btn-pdf" onclick="printSinglePart('part2')">🖨️ In/PDF phần này</button>
+          <button type="button" class="inline-btn inline-btn-pdf" onclick="exportSinglePartToPDF('part2', 'Phan2_PhoFFT')">📄 PDF phần này</button>
           <button type="button" class="inline-btn inline-btn-img" onclick="exportPartAsImage('part2', 'Phan2_PhoFFT')">🖼️ Xuất ảnh phần này</button>
           <button type="button" class="inline-btn inline-btn-csv" onclick="exportSinglePartCSV('part2')">📊 CSV</button>
         </div>
@@ -666,7 +779,7 @@
       <div class="part-title">
         <span>PHẦN III. ĐO MỨC CƯỜNG ĐỘ ÂM VÀ SỰ TRUYỀN ÂM (MÁY ĐO dB)</span>
         <div class="part-actions no-print">
-          <button type="button" class="inline-btn inline-btn-pdf" onclick="printSinglePart('part3')">🖨️ In/PDF phần này</button>
+          <button type="button" class="inline-btn inline-btn-pdf" onclick="exportSinglePartToPDF('part3', 'Phan3_MucCuongDoAm')">📄 PDF phần này</button>
           <button type="button" class="inline-btn inline-btn-img" onclick="exportPartAsImage('part3', 'Phan3_MucCuongDoAm')">🖼️ Xuất ảnh phần này</button>
           <button type="button" class="inline-btn inline-btn-csv" onclick="exportSinglePartCSV('part3')">📊 CSV</button>
         </div>
@@ -710,7 +823,7 @@
       <div class="part-title">
         <span>PHẦN IV. KHẢO SÁT HIỆU QUẢ KHỬ NHIỄU CỦA BỘ LỌC SỐ</span>
         <div class="part-actions no-print">
-          <button type="button" class="inline-btn inline-btn-pdf" onclick="printSinglePart('part4')">🖨️ In/PDF phần này</button>
+          <button type="button" class="inline-btn inline-btn-pdf" onclick="exportSinglePartToPDF('part4', 'Phan4_BoLocSo')">📄 PDF phần này</button>
           <button type="button" class="inline-btn inline-btn-img" onclick="exportPartAsImage('part4', 'Phan4_BoLocSo')">🖼️ Xuất ảnh phần này</button>
         </div>
       </div>
@@ -784,7 +897,49 @@
 
   <div class="toast-msg no-print" id="toastMsg"></div>
 
+  
   <script>
+    // =========================================================================
+    // ĐỒNG BỘ GIỚI HẠN PHIÊN 30 PHÚT VỚI TRANG CHÍNH FOX_LAB
+    // =========================================================================
+    (function syncReportSessionLimit() {
+      const SESSION_LIMIT_MS = 30 * 60 * 1000;
+      const SESSION_START_KEY = "foxlab_session_start_ts";
+      const SESSION_EXPIRED_KEY = "foxlab_session_expired";
+
+      function silentExitReport() {
+        try { sessionStorage.setItem(SESSION_EXPIRED_KEY, "1"); } catch (e) {}
+        try { window.close(); } catch (e) {}
+        try { window.location.replace("about:blank"); } catch (e) {
+          document.documentElement.innerHTML = "";
+        }
+      }
+
+      if (sessionStorage.getItem(SESSION_EXPIRED_KEY) === "1") {
+        silentExitReport();
+        return;
+      }
+      let startTs = parseInt(sessionStorage.getItem(SESSION_START_KEY) || "0", 10);
+      if (!startTs || isNaN(startTs)) {
+        startTs = Date.now();
+        sessionStorage.setItem(SESSION_START_KEY, String(startTs));
+      }
+
+      const check = () => {
+        if (sessionStorage.getItem(SESSION_EXPIRED_KEY) === "1" || (Date.now() - startTs) >= SESSION_LIMIT_MS) {
+          silentExitReport();
+        }
+      };
+      check();
+      setInterval(check, 5000);
+      try {
+        const bc = new BroadcastChannel("foxlab_session_sync");
+        bc.onmessage = (ev) => {
+          if (ev && ev.data && ev.data.type === "SESSION_EXPIRED") silentExitReport();
+        };
+      } catch (e) {}
+    })();
+
     const STORAGE_KEY = "daodongki_report_data";
     const DEFAULT_TITLE = "BÁO CÁO KẾT QUẢ THỰC HÀNH KHẢO SÁT SÓNG ÂM";
 
@@ -802,12 +957,18 @@
       window._toastTimer = setTimeout(() => toast.classList.remove("show"), 2600);
     }
 
-    // Chặn phím Enter tạo thẻ div/br ở các trường đơn dòng (cho phép Enter ở ô Nhận xét)
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" && e.target && e.target.isContentEditable && e.target.id !== "studentNotes") {
-        e.preventDefault();
-        e.target.blur();
-      }
+    // Quản lý đóng/mở Dropdown trên thanh công cụ
+    function toggleTbDropdown(dropdownId, event) {
+      if (event) event.stopPropagation();
+      document.querySelectorAll(".tb-dropdown").forEach(el => {
+        if (el.id !== dropdownId) el.classList.remove("open");
+      });
+      const target = document.getElementById(dropdownId);
+      if (target) target.classList.toggle("open");
+    }
+
+    document.addEventListener("click", () => {
+      document.querySelectorAll(".tb-dropdown").forEach(el => el.classList.remove("open"));
     });
 
     // Quay lại trang chính FOX_LAB (index.html)
@@ -849,43 +1010,74 @@
       } catch (e) {}
     }
 
-    // Chế độ Preset chọn nhanh từng phần
-    function applyPreset(mode) {
-      document.querySelectorAll(".btn-preset").forEach(b => b.classList.remove("active"));
-      const activeBtn = document.getElementById(`preset-${mode}`);
-      if (activeBtn) activeBtn.classList.add("active");
-
-      const parts = ["1", "2", "3", "4"];
-      if (mode === "all") {
-        parts.forEach(p => document.getElementById(`chk-part${p}`).checked = true);
-        document.getElementById("chk-part5").checked = true;
-        document.getElementById("expTitle").textContent = DEFAULT_TITLE;
-      } else {
-        const selected = String(mode).split(",");
-        parts.forEach(p => {
-          document.getElementById(`chk-part${p}`).checked = selected.includes(p);
-        });
-        document.getElementById("chk-part5").checked = true;
-        if (selected.length === 1) {
-          const sec = document.getElementById(`part${selected[0]}`);
-          if (sec && sec.dataset.title) {
-            document.getElementById("expTitle").textContent = sec.dataset.title;
-          }
-        }
-      }
-      syncCheckboxes();
-    }
-
+    // Cập nhật hiển thị theo các ô vuông checkbox đã tích chọn
     function syncCheckboxes() {
+      let checkedCount = 0;
+      const checkedParts = [];
       ["part1", "part2", "part3", "part4", "part5"].forEach(id => {
         const chk = document.getElementById(`chk-${id}`);
         const el = document.getElementById(id);
-        if (chk && el) el.classList.toggle("hidden-part", !chk.checked);
+        if (chk && el) {
+          el.classList.toggle("hidden-part", !chk.checked);
+          if (chk.checked) {
+            checkedCount++;
+            if (id !== "part5") checkedParts.push(id);
+          }
+        }
+      });
+      const badge = document.getElementById("selectedCountBadge");
+      if (badge) badge.textContent = `(${checkedCount})`;
+
+      // Nếu chỉ chọn 1 phần duy nhất thì tự động đổi tiêu đề báo cáo theo phần đó
+      const titleEl = document.getElementById("expTitle");
+      if (titleEl) {
+        if (checkedParts.length === 1) {
+          const sec = document.getElementById(checkedParts[0]);
+          if (sec && sec.dataset.title) titleEl.textContent = sec.dataset.title;
+        } else {
+          titleEl.textContent = DEFAULT_TITLE;
+        }
+      }
+    }
+
+    // Xuất trực tiếp file PDF (.pdf) các phần đã tích chọn (không mở hộp thoại In)
+    function exportSelectedToPDF() {
+      document.querySelectorAll(".tb-dropdown").forEach(el => el.classList.remove("open"));
+      const sheet = document.getElementById("reportSheet");
+      if (!sheet) return;
+
+      const groupSlug = (document.getElementById("groupName")?.textContent || "Nhom01").trim().replace(/\s+/g, "_");
+      const fileName = `FOXLAB_BaoCao_${groupSlug}.pdf`;
+
+      if (typeof html2pdf === "undefined") {
+        showToast("⚠️ Chưa tải được thư viện xuất PDF, vui lòng kiểm tra kết nối mạng!");
+        return;
+      }
+
+      showToast("⏳ Đang tạo file PDF, vui lòng đợi...");
+      sheet.classList.add("exporting-pdf");
+
+      const opt = {
+        margin: [8, 8, 8, 8],
+        filename: fileName,
+        image: { type: "jpeg", quality: 0.96 },
+        html2canvas: { scale: 2, useCORS: true, backgroundColor: "#ffffff", scrollY: 0 },
+        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+        pagebreak: { mode: ["avoid-all", "css", "legacy"] }
+      };
+
+      html2pdf().set(opt).from(sheet).save().then(() => {
+        sheet.classList.remove("exporting-pdf");
+        showToast(`✅ Đã tải xuống file PDF: ${fileName}`);
+      }).catch((err) => {
+        sheet.classList.remove("exporting-pdf");
+        console.error(err);
+        showToast("❌ Có lỗi xảy ra khi xuất PDF!");
       });
     }
 
-    // In / Lưu PDF A4 CHỈ RIÊNG một Phần cụ thể
-    function printSinglePart(partId) {
+    // Xuất trực tiếp file PDF chỉ riêng 1 phần cụ thể
+    function exportSinglePartToPDF(partId, fileTag) {
       const allParts = ["part1", "part2", "part3", "part4"];
       const prevStates = {};
       const prevTitle = document.getElementById("expTitle").textContent;
@@ -894,33 +1086,45 @@
         const el = document.getElementById(id);
         prevStates[id] = el.classList.contains("hidden-part");
         if (id === partId) {
-          el.classList.remove("hidden-part", "temp-print-hide");
-          if (el.dataset.title) {
-            document.getElementById("expTitle").textContent = el.dataset.title;
-          }
+          el.classList.remove("hidden-part", "temp-export-hide");
+          if (el.dataset.title) document.getElementById("expTitle").textContent = el.dataset.title;
         } else {
-          el.classList.add("temp-print-hide");
+          el.classList.add("temp-export-hide");
         }
       });
 
       const part5 = document.getElementById("part5");
       const prevPart5 = part5.classList.contains("hidden-part");
-      part5.classList.remove("hidden-part", "temp-print-hide");
+      part5.classList.remove("hidden-part", "temp-export-hide");
 
-      window.print();
+      const sheet = document.getElementById("reportSheet");
+      sheet.classList.add("exporting-pdf");
+      showToast(`⏳ Đang tạo PDF ${fileTag}...`);
 
-      setTimeout(() => {
+      const opt = {
+        margin: [8, 8, 8, 8],
+        filename: `FOXLAB_${fileTag}.pdf`,
+        image: { type: "jpeg", quality: 0.96 },
+        html2canvas: { scale: 2, useCORS: true, backgroundColor: "#ffffff", scrollY: 0 },
+        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+      };
+
+      html2pdf().set(opt).from(sheet).save().then(() => {
+        sheet.classList.remove("exporting-pdf");
         allParts.forEach(id => {
           const el = document.getElementById(id);
-          el.classList.remove("temp-print-hide");
+          el.classList.remove("temp-export-hide");
           el.classList.toggle("hidden-part", prevStates[id]);
         });
         part5.classList.toggle("hidden-part", prevPart5);
         document.getElementById("expTitle").textContent = prevTitle;
-      }, 300);
+        showToast(`✅ Đã tải PDF: FOXLAB_${fileTag}.pdf`);
+      }).catch(() => {
+        sheet.classList.remove("exporting-pdf");
+      });
     }
 
-    // Xuất toàn bộ khối nội dung của một Phần ra ảnh PNG (sử dụng CSS nội bộ sạch, tránh lỗi tainted canvas)
+    // Xuất toàn bộ khối nội dung của một Phần (Tiêu đề + Đồ thị + Bảng số liệu) ra ảnh PNG
     function exportPartAsImage(partId, fileTag) {
       const section = document.getElementById(partId);
       if (!section) return;
@@ -934,7 +1138,7 @@
         if (cloneCanvases[idx]) {
           const img = document.createElement("img");
           img.src = origC.toDataURL("image/png");
-          img.style.width = (origC.offsetWidth || 720) + "px";
+          img.style.width = origC.offsetWidth + "px";
           img.style.maxWidth = "100%";
           img.style.height = "auto";
           img.style.display = "block";
@@ -943,31 +1147,18 @@
         }
       });
 
-      const width = Math.max(Math.ceil(section.getBoundingClientRect().width), 740);
-      const height = Math.ceil(section.getBoundingClientRect().height) + 56;
+      const rect = section.getBoundingClientRect();
+      const width = Math.ceil(rect.width) || 740;
+      const height = Math.ceil(rect.height) + 24;
 
-      const scopedCss = `
-        * { box-sizing: border-box; }
-        .overline { text-decoration: overline; }
-        .part-title { font-size: 12pt; font-weight: bold; text-transform: uppercase; color: #0f172a; background: #f1f5f9; border-left: 4px solid #0f172a; padding: 5px 8px; margin-bottom: 8px; }
-        .sub-heading { font-size: 11.8pt; font-weight: bold; margin: 9px 0 5px; color: #1e293b; }
-        .graph-box { border: 1px solid #334155; padding: 7px; text-align: center; background: #ffffff; margin-bottom: 10px; }
-        .graph-caption { font-size: 10.8pt; font-style: italic; margin-top: 5px; color: #1e293b; }
-        table.data-table { width: 100%; border-collapse: collapse; margin-bottom: 9px; font-size: 11pt; }
-        table.data-table th, table.data-table td { border: 1px solid #0f172a; padding: 4px 6px; text-align: center; vertical-align: middle; }
-        table.data-table th { background-color: #f1f5f9; font-weight: bold; }
-        table.data-table tr.summary-row td { background-color: #f8fafc; font-weight: bold; }
-        .result-box { border: 1px solid #0f172a; background: #f8fafc; padding: 7px 11px; margin-bottom: 10px; font-size: 11.5pt; }
-        .result-box p { margin: 2px 0; }
-      `;
-
+      const styleText = document.querySelector("style").innerHTML;
       const groupName = document.getElementById("groupName").textContent.trim();
       const className = document.getElementById("className").textContent.trim();
 
       const wrapperHtml = `
-        <div xmlns="http://www.w3.org/1999/xhtml" style="width:${width}px; background:#ffffff; padding:14px 18px; font-family:'Times New Roman', Times, serif; color:#0f172a; line-height:1.42;">
-          <style>${scopedCss}</style>
-          <div style="display:flex; justify-content:space-between; font-size:11pt; border-bottom:1.5px solid #0f172a; padding-bottom:5px; margin-bottom:8px;">
+        <div xmlns="http://www.w3.org/1999/xhtml" style="background:#ffffff; padding:12px 16px; font-family:'Times New Roman', serif; color:#0f172a;">
+          <style>${styleText}</style>
+          <div style="display:flex; justify-content:space-between; font-size:11pt; border-bottom:1px solid #94a3b8; padding-bottom:4px; margin-bottom:6px;">
             <span><strong>FOX_LAB</strong> | ${groupName} – Lớp ${className}</span>
             <span>Thời gian: ${new Date().toLocaleString("vi-VN")}</span>
           </div>
@@ -975,42 +1166,48 @@
         </div>
       `;
 
-      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}"><foreignObject width="100%" height="100%">${wrapperHtml}</foreignObject></svg>`;
-      const svgDataUrl = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+      const svg = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height + 36}">
+          <foreignObject width="100%" height="100%">
+            ${wrapperHtml}
+          </foreignObject>
+        </svg>
+      `;
+
+      const svgBlob = new Blob([svg], { type: "image/svg+xml;charset=utf-8" });
+      const url = URL.createObjectURL(svgBlob);
       const img = new Image();
 
       img.onload = () => {
         const scale = 2;
         const outCanvas = document.createElement("canvas");
         outCanvas.width = width * scale;
-        outCanvas.height = height * scale;
+        outCanvas.height = (height + 36) * scale;
         const ctx = outCanvas.getContext("2d");
         ctx.fillStyle = "#ffffff";
         ctx.fillRect(0, 0, outCanvas.width, outCanvas.height);
         ctx.scale(scale, scale);
         ctx.drawImage(img, 0, 0);
+        URL.revokeObjectURL(url);
 
-        try {
-          outCanvas.toBlob((blob) => {
-            if (!blob) return;
-            const pngUrl = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = pngUrl;
-            a.download = `FOXLAB_${fileTag}.png`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            setTimeout(() => URL.revokeObjectURL(pngUrl), 1000);
-            showToast(`Đã xuất ảnh trọn gói: FOXLAB_${fileTag}.png`);
-          }, "image/png");
-        } catch (err) {
-          printSinglePart(partId);
-        }
+        outCanvas.toBlob((blob) => {
+          if (!blob) return;
+          const pngUrl = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = pngUrl;
+          a.download = `FOXLAB_${fileTag}.png`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          setTimeout(() => URL.revokeObjectURL(pngUrl), 1000);
+          showToast(`✅ Đã xuất ảnh: FOXLAB_${fileTag}.png`);
+        }, "image/png");
       };
       img.onerror = () => {
-        printSinglePart(partId);
+        URL.revokeObjectURL(url);
+        exportSinglePartToPDF(partId, fileTag);
       };
-      img.src = svgDataUrl;
+      img.src = url;
     }
 
     function reloadSyncedData(notifyUser) {
@@ -1030,18 +1227,36 @@
       const bannerText = document.getElementById("statusBannerText");
       if (banner) banner.classList.remove("live-mode");
       if (bannerText) {
-        bannerText.innerHTML = "<strong>Chế độ xem trước (Dữ liệu mẫu):</strong> Chưa có phép đo nào được gửi từ trang chính. Hãy bấm <strong>Quay lại trang chính</strong> để đo sóng rồi xuất báo cáo.";
+        bannerText.innerHTML = "<strong>Chưa có dữ liệu đo mới:</strong> Hãy bấm <strong>⬅ Quay lại</strong> để thực hiện phép đo trên FOX_LAB, sau đó bấm <strong>Xuất báo cáo</strong> để đồng bộ sang trang này.";
       }
-      loadSampleAll(notifyUser);
+      initEmptyTables();
+    }
+
+    function initEmptyTables() {
+      liveImages = { osc: null, fft: null, db: null };
+      oscRows = [{ soChuKi: 5, deltaT_ms: 0 }];
+      fftRows = [{ nguon: "Nguồn âm 1", f0: "—", hoaAm: "—", dacDiem: "—" }];
+      dbRows = [{ viTri: "Điểm 1", r: 0.5, lMin: 0, lMax: 0, lAvg: 0 }];
+      renderOscTable();
+      renderFftTable();
+      renderDbTable();
+      redrawAllCanvases();
     }
 
     window.addEventListener("DOMContentLoaded", () => {
       reloadSyncedData(false);
+      syncCheckboxes();
 
+      // Hỗ trợ mở thẳng từng phần từ link URL: report.html?part=1 hoặc report.html?parts=1,2
       const params = new URLSearchParams(window.location.search);
       const partParam = params.get("parts") || params.get("part");
       if (partParam) {
-        applyPreset(partParam);
+        const selected = String(partParam).split(",");
+        ["1", "2", "3", "4"].forEach(p => {
+          const chk = document.getElementById(`chk-part${p}`);
+          if (chk) chk.checked = selected.includes(p);
+        });
+        syncCheckboxes();
       }
     });
 
@@ -1070,12 +1285,12 @@
       if (data.isLiveMeasurement) {
         if (banner) banner.classList.add("live-mode");
         if (bannerText) {
-          bannerText.innerHTML = "<strong>✅ Đã đồng bộ số liệu &amp; đồ thị thực tế từ máy đo FOX_LAB!</strong> Bạn có thể nhấn trực tiếp vào từng ô để chỉnh sửa hoặc bấm <strong>Quay lại trang chính</strong> để đo tiếp.";
+          bannerText.innerHTML = "<strong>✅ Đã đồng bộ số liệu &amp; đồ thị thực tế từ máy đo FOX_LAB!</strong> Bạn có thể chạm vào từng ô để chỉnh sửa hoặc bấm <strong>📥 Xuất file</strong> để tải PDF / Excel.";
         }
       } else {
         if (banner) banner.classList.remove("live-mode");
         if (bannerText) {
-          bannerText.innerHTML = "<strong>Chế độ xem trước (Dữ liệu mẫu):</strong> Hãy bấm <strong>Quay lại trang chính</strong> để đo sóng trên FOX_LAB, sau đó bấm <strong>Xuất báo cáo</strong> để tự động đổ số liệu và đồ thị vào trang này.";
+          bannerText.innerHTML = "<strong>Sẵn sàng đồng bộ:</strong> Hãy bấm <strong>⬅ Quay lại</strong> để đo sóng trên FOX_LAB, sau đó bấm <strong>🔄 Đồng bộ dữ liệu</strong>.";
         }
       }
 
@@ -1120,40 +1335,15 @@
       redrawAllCanvases();
     }
 
-    function loadSampleAll(notifyUser) {
-      liveImages = { osc: null, fft: null, db: null };
-      oscRows = [
-        { soChuKi: 5, deltaT_ms: 11.35 },
-        { soChuKi: 5, deltaT_ms: 11.38 },
-        { soChuKi: 5, deltaT_ms: 11.34 }
-      ];
-      fftRows = [
-        { nguon: "Âm thoa chuẩn 440 Hz", f0: "440,2", hoaAm: "Chỉ có 1 đỉnh cơ bản rõ nét", dacDiem: "Sóng sin thuần khiết, âm thanh trong" },
-        { nguon: "Sáo trúc (Nốt La 4)", f0: "442,0", hoaAm: "f₀, 2f₀ (884 Hz), 3f₀ (1326 Hz)", dacDiem: "Đường sóng có các gợn hài hòa, âm êm" },
-        { nguon: "Giọng nói (Nguyên âm A)", f0: "215,5", hoaAm: "Nhiều họa âm bậc cao (431, 646, 862 Hz)", dacDiem: "Dạng sóng tuần hoàn phức tạp" }
-      ];
-      dbRows = [
-        { viTri: "Điểm 1", r: 0.5, lMin: 74.2, lMax: 75.8, lAvg: 75.0 },
-        { viTri: "Điểm 2", r: 1.0, lMin: 68.1, lMax: 69.5, lAvg: 68.8 },
-        { viTri: "Điểm 3", r: 2.0, lMin: 62.0, lMax: 63.4, lAvg: 62.7 }
-      ];
-
-      renderOscTable();
-      renderFftTable();
-      renderDbTable();
-      redrawAllCanvases();
-      if (notifyUser) showToast("Đã nạp bộ dữ liệu mẫu tham khảo!");
-    }
-
     function redrawAllCanvases() {
       if (liveImages.osc) drawBase64ToCanvas("canvasOsc", liveImages.osc);
-      else drawSampleOsc();
+      else drawPlaceholderCanvas("canvasOsc", "Chưa có ảnh đồ thị Dao động kí — Bấm 'Đồng bộ dữ liệu' từ máy đo FOX_LAB");
 
       if (liveImages.fft) drawBase64ToCanvas("canvasFFT", liveImages.fft);
-      else drawSampleFFT();
+      else drawPlaceholderCanvas("canvasFFT", "Chưa có ảnh biểu đồ Phổ FFT — Bấm 'Đồng bộ dữ liệu' từ máy đo FOX_LAB");
 
       if (liveImages.db) drawBase64ToCanvas("canvasDb", liveImages.db);
-      else drawSampleDb();
+      else drawPlaceholderCanvas("canvasDb", "Chưa có ảnh đồ thị Mức cường độ âm (dB) — Bấm 'Đồng bộ dữ liệu' từ máy đo FOX_LAB");
 
       drawSampleFilter();
     }
@@ -1161,7 +1351,7 @@
     function drawGrid(ctx, w, h, cols, rows) {
       ctx.fillStyle = "#ffffff";
       ctx.fillRect(0, 0, w, h);
-      ctx.strokeStyle = "#cbd5e1";
+      ctx.strokeStyle = "#e2e8f0";
       ctx.lineWidth = 1;
       for (let i = 0; i <= cols; i++) {
         ctx.beginPath();
@@ -1177,114 +1367,22 @@
       }
     }
 
-    function drawSampleOsc() {
-      const c = document.getElementById("canvasOsc");
+    function drawPlaceholderCanvas(canvasId, message) {
+      const c = document.getElementById(canvasId);
+      if (!c) return;
       const ctx = c.getContext("2d");
       const w = c.width, h = c.height;
       drawGrid(ctx, w, h, 14, 6);
-
-      ctx.strokeStyle = "#475569";
-      ctx.lineWidth = 1.4;
-      ctx.beginPath();
-      ctx.moveTo(0, h / 2);
-      ctx.lineTo(w, h / 2);
-      ctx.stroke();
-
-      ctx.strokeStyle = "#0f172a";
-      ctx.lineWidth = 2.1;
-      ctx.beginPath();
-      const totalMs = 28;
-      for (let x = 0; x <= w; x++) {
-        const t = ((x / w) * totalMs) / 1000;
-        const y = h / 2 - h * 0.36 * Math.sin(2 * Math.PI * 440 * t);
-        x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-      }
-      ctx.stroke();
-
-      const x1 = (2.27 / totalMs) * w;
-      const x2 = (13.64 / totalMs) * w;
-      ctx.strokeStyle = "#dc2626";
-      ctx.setLineDash([5, 4]);
-      [x1, x2].forEach((xp, i) => {
-        ctx.beginPath();
-        ctx.moveTo(xp, 8);
-        ctx.lineTo(xp, h - 8);
-        ctx.stroke();
-        ctx.fillStyle = "#dc2626";
-        ctx.font = "bold 13px Times New Roman";
-        ctx.fillText(i === 0 ? "t₁" : "t₂", xp + 5, 20);
-      });
-      ctx.setLineDash([]);
-    }
-
-    function drawSampleFFT() {
-      const c = document.getElementById("canvasFFT");
-      const ctx = c.getContext("2d");
-      const w = c.width, h = c.height;
-      drawGrid(ctx, w, h, 12, 5);
-
-      const baseLine = h - 24;
-      ctx.strokeStyle = "#334155";
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.moveTo(30, baseLine);
-      ctx.lineTo(w - 15, baseLine);
-      ctx.stroke();
-
-      ctx.strokeStyle = "#1d4ed8";
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      for (let x = 30; x < w - 15; x++) {
-        const freq = ((x - 30) / (w - 45)) * 2000;
-        const p1 = 145 * Math.exp(-Math.pow((freq - 440) / 18, 2));
-        const p2 = 62 * Math.exp(-Math.pow((freq - 880) / 18, 2));
-        const p3 = 28 * Math.exp(-Math.pow((freq - 1320) / 18, 2));
-        const y = baseLine - (p1 + p2 + p3 + 4);
-        x === 30 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-      }
-      ctx.stroke();
-
-      ctx.fillStyle = "#0f172a";
-      ctx.font = "bold 12px Times New Roman";
-      const x440 = 30 + (440 / 2000) * (w - 45);
-      const x880 = 30 + (880 / 2000) * (w - 45);
-      ctx.fillText("f₀ = 440 Hz", x440 - 28, baseLine - 152);
-      ctx.fillText("2f₀ = 880 Hz", x880 - 30, baseLine - 70);
-      ctx.fillText("Tần số f (Hz)", w - 95, h - 6);
-    }
-
-    function drawSampleDb() {
-      const c = document.getElementById("canvasDb");
-      const ctx = c.getContext("2d");
-      const w = c.width, h = c.height;
-      drawGrid(ctx, w, h, 10, 5);
-
-      const steps = [
-        { label: "r = 0,5 m (75 dB)", y: h * 0.25 },
-        { label: "r = 1,0 m (68,8 dB)", y: h * 0.48 },
-        { label: "r = 2,0 m (62,7 dB)", y: h * 0.72 }
-      ];
-
-      ctx.strokeStyle = "#059669";
-      ctx.lineWidth = 2.2;
-      ctx.beginPath();
-      for (let x = 20; x <= w - 20; x++) {
-        const ratio = x / w;
-        const baseY = ratio < 0.35 ? steps[0].y : ratio < 0.68 ? steps[1].y : steps[2].y;
-        const y = baseY + Math.sin(x * 0.35) * 4;
-        x === 20 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-      }
-      ctx.stroke();
-
-      ctx.fillStyle = "#0f172a";
-      ctx.font = "bold 12px Times New Roman";
-      ctx.fillText(steps[0].label, 45, steps[0].y - 10);
-      ctx.fillText(steps[1].label, w * 0.39, steps[1].y - 10);
-      ctx.fillText(steps[2].label, w * 0.72, steps[2].y - 10);
+      ctx.fillStyle = "#64748b";
+      ctx.font = "italic 14px Times New Roman";
+      ctx.textAlign = "center";
+      ctx.fillText(message, w / 2, h / 2);
+      ctx.textAlign = "start";
     }
 
     function drawSampleFilter() {
       const c = document.getElementById("canvasFilter");
+      if (!c) return;
       const ctx = c.getContext("2d");
       const w = c.width, h = c.height;
       drawGrid(ctx, w, h, 14, 4);
@@ -1377,7 +1475,7 @@
         a.click();
         document.body.removeChild(a);
         setTimeout(() => URL.revokeObjectURL(url), 1000);
-        showToast(`Đã xuất ảnh đồ thị: ${fileName}`);
+        showToast(`✅ Đã xuất ảnh đồ thị: ${fileName}`);
       }, "image/png");
     }
 
@@ -1430,7 +1528,7 @@
       renderOscTable();
       persistReportEdits();
     }
-    function addOscRow() { oscRows.push({ soChuKi: 5, deltaT_ms: 11.35 }); renderOscTable(); persistReportEdits(); }
+    function addOscRow() { oscRows.push({ soChuKi: 5, deltaT_ms: 0 }); renderOscTable(); persistReportEdits(); }
     function delOsc(i) { oscRows.splice(i, 1); renderOscTable(); persistReportEdits(); }
 
     // --- Render Bảng Phần II ---
@@ -1440,17 +1538,17 @@
       fftRows.forEach((r, i) => {
         const tr = document.createElement("tr");
         tr.innerHTML = `
-          <td contenteditable="true" onblur="fftRows[${i}].nguon=this.textContent.trim();persistReportEdits()">${r.nguon}</td>
-          <td contenteditable="true" onblur="fftRows[${i}].f0=this.textContent.trim();persistReportEdits()">${r.f0}</td>
-          <td contenteditable="true" onblur="fftRows[${i}].hoaAm=this.textContent.trim();persistReportEdits()">${r.hoaAm}</td>
-          <td contenteditable="true" onblur="fftRows[${i}].dacDiem=this.textContent.trim();persistReportEdits()">${r.dacDiem}</td>
+          <td contenteditable="true" onblur="fftRows[${i}].nguon=this.textContent;persistReportEdits()">${r.nguon}</td>
+          <td contenteditable="true" onblur="fftRows[${i}].f0=this.textContent;persistReportEdits()">${r.f0}</td>
+          <td contenteditable="true" onblur="fftRows[${i}].hoaAm=this.textContent;persistReportEdits()">${r.hoaAm}</td>
+          <td contenteditable="true" onblur="fftRows[${i}].dacDiem=this.textContent;persistReportEdits()">${r.dacDiem}</td>
           <td class="no-print"><button type="button" class="row-del-btn" onclick="fftRows.splice(${i},1);renderFftTable();persistReportEdits()">✕</button></td>
         `;
         tbody.appendChild(tr);
       });
     }
     function addFftRow() {
-      fftRows.push({ nguon: "Nguồn âm mới", f0: "512,0", hoaAm: "f₀, 2f₀", dacDiem: "Dao động tuần hoàn" });
+      fftRows.push({ nguon: "Nguồn âm mới", f0: "—", hoaAm: "—", dacDiem: "—" });
       renderFftTable();
       persistReportEdits();
     }
@@ -1461,29 +1559,22 @@
       tbody.innerHTML = "";
       const baseL = dbRows.length ? dbRows[0].lAvg : 0;
       dbRows.forEach((r, i) => {
-        const delta = r.lAvg - baseL;
-        const diff = i === 0 ? "0,0 dB (Mốc)" : (delta > 0 ? "+" : "") + delta.toFixed(1) + " dB";
+        const diff = i === 0 ? "0,0 dB (Mốc)" : (r.lAvg - baseL).toFixed(1) + " dB";
         const tr = document.createElement("tr");
         tr.innerHTML = `
-          <td contenteditable="true" onblur="dbRows[${i}].viTri=this.textContent.trim();persistReportEdits()">${r.viTri}</td>
-          <td contenteditable="true" onblur="updateDbNum(${i}, 'r', this.textContent)">${Number(r.r).toFixed(1)}</td>
-          <td contenteditable="true" onblur="updateDbNum(${i}, 'lMin', this.textContent)">${Number(r.lMin).toFixed(1)}</td>
-          <td contenteditable="true" onblur="updateDbNum(${i}, 'lMax', this.textContent)">${Number(r.lMax).toFixed(1)}</td>
-          <td contenteditable="true" onblur="updateDbNum(${i}, 'lAvg', this.textContent)">${Number(r.lAvg).toFixed(1)}</td>
+          <td contenteditable="true" onblur="dbRows[${i}].viTri=this.textContent;persistReportEdits()">${r.viTri}</td>
+          <td contenteditable="true" onblur="dbRows[${i}].r=parseFloat(this.textContent.replace(',','.'))||0;persistReportEdits()">${Number(r.r).toFixed(1)}</td>
+          <td contenteditable="true" onblur="dbRows[${i}].lMin=parseFloat(this.textContent.replace(',','.'))||0;persistReportEdits()">${Number(r.lMin).toFixed(1)}</td>
+          <td contenteditable="true" onblur="dbRows[${i}].lMax=parseFloat(this.textContent.replace(',','.'))||0;persistReportEdits()">${Number(r.lMax).toFixed(1)}</td>
+          <td contenteditable="true" onblur="dbRows[${i}].lAvg=parseFloat(this.textContent.replace(',','.'))||0;renderDbTable();persistReportEdits()">${Number(r.lAvg).toFixed(1)}</td>
           <td>${diff}</td>
           <td class="no-print"><button type="button" class="row-del-btn" onclick="dbRows.splice(${i},1);renderDbTable();persistReportEdits()">✕</button></td>
         `;
         tbody.appendChild(tr);
       });
     }
-    function updateDbNum(i, k, val) {
-      const n = parseFloat(val.replace(",", ".").trim());
-      if (!isNaN(n) && n >= 0) dbRows[i][k] = n;
-      renderDbTable();
-      persistReportEdits();
-    }
     function addDbRow() {
-      dbRows.push({ viTri: `Điểm ${dbRows.length + 1}`, r: 3.0, lMin: 58.0, lMax: 59.5, lAvg: 58.8 });
+      dbRows.push({ viTri: `Điểm ${dbRows.length + 1}`, r: 1.0, lMin: 0, lMax: 0, lAvg: 0 });
       renderDbTable();
       persistReportEdits();
     }
@@ -1518,29 +1609,47 @@
       downloadCSV(rows, fileName);
     }
 
-    function exportAllCSV() {
+    // --- Xuất Excel (.CSV) chỉ tính các phần đang được tích ô vuông ---
+    function exportSelectedToExcelCSV() {
+      document.querySelectorAll(".tb-dropdown").forEach(el => el.classList.remove("open"));
       const rows = [
         ["BÁO CÁO KẾT QUẢ THÍ NGHIỆM SÓNG ÂM - FOX_LAB"],
         ["Nhóm", document.getElementById("groupName").textContent.trim(), "Lớp", document.getElementById("className").textContent.trim()],
-        [],
-        ["PHẦN I: DAO ĐỘNG KÍ (T, f)"],
-        ["Lần đo", "Số chu kì N", "Δt (ms)", "Chu kì T (ms)", "Tần số f (Hz)"]
+        []
       ];
-      oscRows.forEach((r, i) => {
-        const T = r.deltaT_ms / (r.soChuKi || 1);
-        const f = T > 0 ? 1000 / T : 0;
-        rows.push([`Lần ${i + 1}`, r.soChuKi, r.deltaT_ms.toFixed(2), T.toFixed(2), f.toFixed(1)]);
-      });
-      rows.push([], ["PHẦN II: PHỔ TẦN SỐ (FFT)"], ["Nguồn âm", "f0 (Hz)", "Họa âm", "Đặc điểm"]);
-      fftRows.forEach(r => rows.push([r.nguon, r.f0, r.hoaAm, r.dacDiem]));
-      rows.push([], ["PHẦN III: MỨC CƯỜNG ĐỘ ÂM (dB)"], ["Vị trí", "Khoảng cách r (m)", "L_min (dB)", "L_max (dB)", "L_TB (dB)"]);
-      dbRows.forEach(r => rows.push([r.viTri, r.r, r.lMin, r.lMax, r.lAvg]));
 
-      downloadCSV(rows, "FOXLAB_BaoCao_DayDu.csv");
+      if (document.getElementById("chk-part1")?.checked) {
+        rows.push(["PHẦN I: DAO ĐỘNG KÍ (T, f)"], ["Lần đo", "Số chu kì N", "Δt (ms)", "Chu kì T (ms)", "Tần số f (Hz)"]);
+        oscRows.forEach((r, i) => {
+          const T = r.deltaT_ms / (r.soChuKi || 1);
+          const f = T > 0 ? 1000 / T : 0;
+          rows.push([`Lần ${i + 1}`, r.soChuKi, r.deltaT_ms.toFixed(2), T.toFixed(2), f.toFixed(1)]);
+        });
+        rows.push([]);
+      }
+
+      if (document.getElementById("chk-part2")?.checked) {
+        rows.push(["PHẦN II: PHỔ TẦN SỐ (FFT)"], ["Nguồn âm", "f0 (Hz)", "Họa âm", "Đặc điểm"]);
+        fftRows.forEach(r => rows.push([r.nguon, r.f0, r.hoaAm, r.dacDiem]));
+        rows.push([]);
+      }
+
+      if (document.getElementById("chk-part3")?.checked) {
+        rows.push(["PHẦN III: MỨC CƯỜNG ĐỘ ÂM (dB)"], ["Vị trí", "Khoảng cách r (m)", "L_min (dB)", "L_max (dB)", "L_TB (dB)"]);
+        dbRows.forEach(r => rows.push([r.viTri, r.r, r.lMin, r.lMax, r.lAvg]));
+        rows.push([]);
+      }
+
+      if (document.getElementById("chk-part4")?.checked) {
+        rows.push(["PHẦN IV: BỘ LỌC SỐ"], ["Trạng thái bộ lọc", document.getElementById("filterStatus").textContent.trim()]);
+        rows.push([]);
+      }
+
+      downloadCSV(rows, "FOXLAB_BaoCao_DaChon.csv");
     }
 
     function downloadCSV(rows, fileName) {
-      const csv = "\uFEFF" + rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(",")).join("\n");
+      const csv = "\uFEFF" + rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(",")).join("\r\n");
       const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -1549,8 +1658,8 @@
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
-      showToast(`Đã xuất file Excel: ${fileName}`);
+      URL.revokeObjectURL(url);
+      showToast(`✅ Đã xuất file Excel: ${fileName}`);
     }
   </script>
 </body>
