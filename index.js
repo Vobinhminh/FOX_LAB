@@ -4770,7 +4770,7 @@ async function checkAppVersion() {
     let uploadedImageScanReport = "";
     let activeConversationImageScanReport = "";
 
-    function prepareDetailedImageBase64(dataUrl, maxDim = 1280, quality = 0.85) {
+    function prepareDetailedImageBase64(dataUrl, maxDim = 1920, quality = 0.93) {
         return new Promise((resolve) => {
             const img = new Image();
             img.onload = () => {
@@ -4807,15 +4807,7 @@ async function checkAppVersion() {
                     ctx.putImageData(imgData, 0, 0);
                 } catch (e) { }
 
-                let out = c.toDataURL('image/jpeg', quality);
-                const maxDataUrlLen = 650000;
-                if (out.length > maxDataUrlLen) {
-                    out = c.toDataURL('image/jpeg', 0.72);
-                }
-                if (out.length > maxDataUrlLen) {
-                    out = c.toDataURL('image/jpeg', 0.58);
-                }
-                resolve(out);
+                resolve(c.toDataURL('image/jpeg', quality));
             };
             img.onerror = () => resolve(dataUrl);
             img.src = dataUrl;
@@ -5096,13 +5088,9 @@ async function checkAppVersion() {
         }
         const reader = new FileReader();
         reader.onload = async function(e) {
-            const rawDataUrl = e.target.result;
-            const [optimizedDataUrl, scanReport] = await Promise.all([
-                prepareDetailedImageBase64(rawDataUrl, 1280, 0.85),
-                analyzeOscilloscopeImagePixels(rawDataUrl)
-            ]);
+            const optimizedDataUrl = await prepareDetailedImageBase64(e.target.result, 1920, 0.93);
             uploadedImageBase64 = optimizedDataUrl;
-            uploadedImageScanReport = scanReport;
+            uploadedImageScanReport = await analyzeOscilloscopeImagePixels(optimizedDataUrl);
             const thumb = document.getElementById('imagePreviewThumb');
             const nameEl = document.getElementById('imagePreviewName');
             const prevBox = document.getElementById('imagePreviewContainer');
@@ -5283,7 +5271,7 @@ async function checkAppVersion() {
     const KhoaHocTTS = (function () {
         const CONFIG = {
             voice: 'vi-VN-Neural2-A', // Giọng nữ tự nhiên
-            speakingRate: 1.15,
+            speakingRate: 1.0,
             maxChunkChars: 900
         };
 
@@ -5525,34 +5513,18 @@ async function checkAppVersion() {
                     throw new Error(result.message || 'GAS trả về lỗi TTS');
                 }
                 const mimeType = result.mimeType || 'audio/mp3';
-                const playbackRate = result.rateApplied ? 1.0 : CONFIG.speakingRate;
-                return {
-                    src: `data:${mimeType};base64,${result.audioBase64}`,
-                    playbackRate: playbackRate
-                };
+                return `data:${mimeType};base64,${result.audioBase64}`;
             } catch (err) {
                 clearTimeout(timerId);
                 throw err;
             }
         }
 
-        function playAudioPromise(audioItem, btn) {
+        function playAudioPromise(audioSrc, btn) {
             return new Promise((resolve, reject) => {
                 if (isStoppedByUser) return resolve();
-                const audioSrc = typeof audioItem === 'string' ? audioItem : audioItem.src;
-                const targetRate = (audioItem && typeof audioItem === 'object' && audioItem.playbackRate)
-                    ? audioItem.playbackRate
-                    : CONFIG.speakingRate;
                 currentAudio = new Audio(audioSrc);
-                currentAudio.preservesPitch = true;
-                currentAudio.mozPreservesPitch = true;
-                currentAudio.webkitPreservesPitch = true;
-                currentAudio.defaultPlaybackRate = targetRate;
-                currentAudio.playbackRate = targetRate;
-                currentAudio.onplay = () => {
-                    if (currentAudio) currentAudio.playbackRate = targetRate;
-                    updateBtnUI(btn, '⏹️ Dừng đọc', true);
-                };
+                currentAudio.onplay = () => updateBtnUI(btn, '⏹️ Dừng đọc', true);
                 currentAudio.onended = () => {
                     currentAudio = null;
                     resolve();
@@ -5821,7 +5793,7 @@ async function checkAppVersion() {
         }
     }
 
-    async function fetchGasChatWithRetry(payload, maxRetries = 2, timeoutMs = 45000) {
+    async function fetchGasChatWithRetry(payload, maxRetries = 2, timeoutMs = 35000) {
         const excludedKeys = Array.isArray(payload.excludeKeyIndices) ? payload.excludeKeyIndices.slice() : [];
         for (let attempt = 0; attempt <= maxRetries; attempt++) {
             const controller = new AbortController();
@@ -5838,32 +5810,26 @@ async function checkAppVersion() {
                     signal: controller.signal
                 });
                 clearTimeout(timerId);
-                if (!response.ok) {
-                    const errSnippet = await response.text().catch(() => '');
-                    throw new Error(`HTTP ${response.status}${errSnippet ? ': ' + errSnippet.slice(0, 120) : ''}`);
-                }
-                const data = await response.json();
-                if (!data || typeof data !== 'object') {
-                    throw new Error('Phản hồi máy chủ AI không hợp lệ');
-                }
-                const replyStr = data.reply ? String(data.reply) : '';
-                const isQuotaOrOverload =
-                    (data.status === 'quota_exhausted' || data.retryWithNextKey === true) ||
-                    /quá tải|quota|429|RESOURCE_EXHAUSTED/i.test(replyStr);
-                if (isQuotaOrOverload && attempt < maxRetries) {
-                    if (typeof data.usedKeyIndex === 'number' && !excludedKeys.includes(data.usedKeyIndex)) {
-                        excludedKeys.push(data.usedKeyIndex);
+                if (response.ok) {
+                    const data = await response.json();
+                    const replyStr = (data && data.reply) ? String(data.reply) : '';
+                    const isQuotaOrOverload =
+                        (data && (data.status === 'quota_exhausted' || data.retryWithNextKey === true)) ||
+                        /quá tải|quota|429|RESOURCE_EXHAUSTED/i.test(replyStr);
+                    if (isQuotaOrOverload && attempt < maxRetries) {
+                        if (typeof data.usedKeyIndex === 'number' && !excludedKeys.includes(data.usedKeyIndex)) {
+                            excludedKeys.push(data.usedKeyIndex);
+                        }
+                        const statusText = document.getElementById('foxStatusText');
+                        if (statusText) statusText.innerText = "Đang kết nối token mới...";
+                        await new Promise(r => setTimeout(r, 400));
+                        continue;
                     }
-                    const statusText = document.getElementById('foxStatusText');
-                    if (statusText) statusText.innerText = "Đang kết nối token mới...";
-                    await new Promise(r => setTimeout(r, 400));
-                    continue;
+                    return data;
                 }
-                return data;
             } catch (err) {
                 clearTimeout(timerId);
-                const isTimeoutAbort = err && err.name === 'AbortError' && timeoutMs >= 80000;
-                if (!isTimeoutAbort && attempt < maxRetries) {
+                if (attempt < maxRetries) {
                     const statusText = document.getElementById('foxStatusText');
                     if (statusText) statusText.innerText = "Đang kết nối token mới...";
                     await new Promise(r => setTimeout(r, 500));
@@ -6053,9 +6019,6 @@ async function checkAppVersion() {
 
         const recentHistory = foxChatHistory.slice(-12);
 
-        const reqTimeoutMs = imgBase64ToSend ? 90000 : 45000;
-        const reqMaxRetries = imgBase64ToSend ? 1 : 2;
-
         try {
             let result = await fetchGasChatWithRetry({
                 message: promptMessage,
@@ -6065,7 +6028,7 @@ async function checkAppVersion() {
                 imageBase64: imgBase64ToSend,
                 history: recentHistory,
                 labData: labTelemetry
-            }, reqMaxRetries, reqTimeoutMs);
+            }, 2, 35000);
 
             let fullReply = (result && result.reply) ? String(result.reply) : "Fox-lab AI đã ghi nhận câu hỏi của bạn.";
             let contRounds = 0;
@@ -6107,7 +6070,7 @@ async function checkAppVersion() {
                     isContinuation: true,
                     continuationRound: contRounds,
                     excludeKeyIndices: usedKeysForContinuation
-                }, reqMaxRetries, reqTimeoutMs);
+                }, 2, 35000);
 
                 if (result && typeof result.usedKeyIndex === 'number' && !usedKeysForContinuation.includes(result.usedKeyIndex)) {
                     usedKeysForContinuation.push(result.usedKeyIndex);
@@ -6132,12 +6095,9 @@ async function checkAppVersion() {
 
             addChatMessage('bot', replyText);
         } catch (e) {
-            console.error('Fox-lab AI error:', e);
             removeTypingIndicator(thinkingId); 
             document.getElementById('foxStatusText').innerText = "Trực tuyến";
-            let fallbackText = (e && e.name === 'AbortError')
-                ? "Fox-lab AI đã ghi nhận câu hỏi của bạn. Quá trình phân tích ảnh đang mất nhiều thời gian hơn dự kiến, vui lòng thử gửi lại sau giây lát."
-                : "Fox-lab AI đã ghi nhận câu hỏi của bạn. Hiện kết nối mạng tới máy chủ AI đang gián đoạn tạm thời, vui lòng thử gửi lại sau giây lát.";
+            let fallbackText = "Fox-lab AI đã ghi nhận câu hỏi của bạn. Hiện kết nối mạng tới máy chủ AI đang gián đoạn tạm thời, vui lòng thử gửi lại sau giây lát.";
             fallbackText = formatCompleteSentences(fallbackText);
             addChatMessage('bot', fallbackText);
         } finally {

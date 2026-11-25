@@ -8,7 +8,7 @@ const KhoaHocTTS = (function () {
     // URL Web App Google Apps Script FOX-Lab
     gasWebAppUrl: 'https://script.google.com/macros/s/AKfycbwllsi_eXt98JRwTDyHPtD8qtgx6nnyhnDD8sSk5mIgEeB0EGLHkIwydpATOWohKJLuEg/exec',
     voice: 'vi-VN-Neural2-A', // 'vi-VN-Neural2-A' (Giọng Nữ) hoặc 'vi-VN-Neural2-D' (Giọng Nam)
-    speakingRate: 1.15,       // Tốc độ đọc (0.85 - 1.25)
+    speakingRate: 1.0,        // Tốc độ đọc (0.85 - 1.15)
     maxChunkChars: 900        // Độ dài tối đa mỗi đoạn gửi lên TTS
   };
   // ========================================================
@@ -235,7 +235,7 @@ const KhoaHocTTS = (function () {
       const silent = new SpeechSynthesisUtterance('');
       silent.volume = 0;
       window.speechSynthesis.speak(silent);
-    } catch (e) { }
+    } catch (e) {}
   }
 
   // 3. Gọi Google Apps Script Proxy
@@ -265,11 +265,7 @@ const KhoaHocTTS = (function () {
       }
 
       const mimeType = result.mimeType || 'audio/mp3';
-      const playbackRate = result.rateApplied ? 1.0 : CONFIG.speakingRate;
-      return {
-        src: `data:${mimeType};base64,${result.audioBase64}`,
-        playbackRate: playbackRate
-      };
+      return `data:${mimeType};base64,${result.audioBase64}`;
     } catch (err) {
       clearTimeout(timerId);
       throw err;
@@ -277,23 +273,11 @@ const KhoaHocTTS = (function () {
   }
 
   // Phát 1 file audio base64 và chờ kết thúc
-  function playAudioPromise(audioItem, btn) {
+  function playAudioPromise(audioSrc, btn) {
     return new Promise((resolve, reject) => {
       if (isStoppedByUser) return resolve();
-      const audioSrc = typeof audioItem === 'string' ? audioItem : audioItem.src;
-      const targetRate = (audioItem && typeof audioItem === 'object' && audioItem.playbackRate)
-        ? audioItem.playbackRate
-        : CONFIG.speakingRate;
       currentAudio = new Audio(audioSrc);
-      currentAudio.preservesPitch = true;
-      currentAudio.mozPreservesPitch = true;
-      currentAudio.webkitPreservesPitch = true;
-      currentAudio.defaultPlaybackRate = targetRate;
-      currentAudio.playbackRate = targetRate;
-      currentAudio.onplay = () => {
-        if (currentAudio) currentAudio.playbackRate = targetRate;
-        updateBtnUI(btn, '⏹️ Dừng đọc', true);
-      };
+      currentAudio.onplay = () => updateBtnUI(btn, '⏹️ Dừng đọc', true);
       currentAudio.onended = () => {
         currentAudio = null;
         resolve();
@@ -315,7 +299,7 @@ const KhoaHocTTS = (function () {
     try {
       window.speechSynthesis.cancel();
       if (window.speechSynthesis.paused) window.speechSynthesis.resume();
-    } catch (e) { }
+    } catch (e) {}
 
     const plainText = chuanHoaVanBanThuan(rawText)
       .replace(/\n+/g, '. ')
@@ -446,11 +430,11 @@ const KhoaHocTTS = (function () {
       try {
         currentAudio.pause();
         currentAudio.currentTime = 0;
-      } catch (e) { }
+      } catch (e) {}
       currentAudio = null;
     }
     if ('speechSynthesis' in window) {
-      try { window.speechSynthesis.cancel(); } catch (e) { }
+      try { window.speechSynthesis.cancel(); } catch (e) {}
     }
     resetState();
   }
