@@ -8,7 +8,7 @@ const KhoaHocTTS = (function () {
     // URL Web App Google Apps Script FOX-Lab
     gasWebAppUrl: 'https://script.google.com/macros/s/AKfycbwllsi_eXt98JRwTDyHPtD8qtgx6nnyhnDD8sSk5mIgEeB0EGLHkIwydpATOWohKJLuEg/exec',
     voice: 'vi-VN-Neural2-A', // 'vi-VN-Neural2-A' (Giọng Nữ) hoặc 'vi-VN-Neural2-D' (Giọng Nam)
-    speakingRate: 1.0,        // Tốc độ đọc (0.85 - 1.15)
+    speakingRate: 1.15,        // Tốc độ đọc (0.85 - 1.15)
     maxChunkChars: 900        // Độ dài tối đa mỗi đoạn gửi lên TTS
   };
   // ========================================================
