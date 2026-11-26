@@ -1029,13 +1029,13 @@
  <!-- Khối 1 nguồn Phần II -->
  <div id="part2SingleBlock">
  <div class="sub-heading">
- <span>II.1. Đồ thị liên quan dao động điều hòa <i>u</i>(<i>t</i>) – <i>v</i>(<i>t</i>) – <i>a</i>(<i>t</i>) – 1 nguồn</span>
+ <span>II.1. Đồ thị khảo sát</span>
  </div>
  <div class="per-row-graphs-grid single-item" id="kinGraphsGrid1"></div>
 
  <div class="sub-heading">
  <span>
- II.2. Bảng thông số và phương trình các đại lượng <i>u</i>(<i>t</i>), <i>v</i>(<i>t</i>), <i>a</i>(<i>t</i>) – 1 nguồn
+ II.2. Bảng số liệu
  <span class="row-counter-badge no-print" id="kinCountBadge1">1 / 10 dòng</span>
  </span>
  <button type="button" class="inline-btn no-print" id="btnAddKin1" onclick="addKinRow1()">+ Thêm lần khảo sát 1 nguồn (Tối đa 10)</button>
@@ -1068,13 +1068,13 @@
  <!-- Khối 2 nguồn Phần II -->
  <div id="part2DualBlock">
  <div class="sub-heading">
- <span>II.3. Đồ thị liên quan dao động điều hòa <i>u</i>(<i>t</i>) – <i>v</i>(<i>t</i>) – <i>a</i>(<i>t</i>) – 2 nguồn (So sánh Kênh A &amp; Kênh B)</span>
+ <span>II.1. Đồ thị khảo sát</span>
  </div>
  <div class="per-row-graphs-grid single-item" id="kinGraphsGrid2"></div>
 
  <div class="sub-heading">
  <span>
- II.4. Bảng thông số và phương trình các đại lượng <i>u</i>(<i>t</i>), <i>v</i>(<i>t</i>), <i>a</i>(<i>t</i>) – 2 nguồn
+ II.2. Bảng số liệu
  <span class="row-counter-badge no-print" id="kinCountBadge2">1 / 10 cặp</span>
  </span>
  <button type="button" class="inline-btn no-print" id="btnAddKin2" onclick="addKinRow2()">+ Thêm cặp khảo sát 2 nguồn (Tối đa 10)</button>
@@ -1337,7 +1337,7 @@
  if (dualSourceMode) {
  routeBtn.classList.add("dual-route-active");
  routeBtn.textContent = "Chế độ: 2 nguồn";
- routeBtn.title = "Đang bật chế độ 2 nguồn: hiển thị đầy đủ mục I.3–I.4, II.3–II.4 và III.3–III.4. Bấm để chuyển về 1 nguồn.";
+ routeBtn.title = "Đang bật chế độ 2 nguồn: hiển thị đầy đủ mục I.3–I.4, II.1–II.2 và III.3–III.4. Bấm để chuyển về 1 nguồn.";
  } else {
  routeBtn.classList.remove("dual-route-active");
  routeBtn.textContent = "Chế độ: 1 nguồn";
@@ -1383,7 +1383,7 @@
  persistReportEdits();
  showToast(
  dualSourceMode
- ? "Đã chuyển sang chế độ 2 nguồn: hiển thị I.3–I.4, II.3–II.4 và III.3–III.4."
+ ? "Đã chuyển sang chế độ 2 nguồn: hiển thị I.3–I.4, II.1–II.2 và III.3–III.4."
  : "Đã chuyển sang chế độ 1 nguồn: hiển thị I.1–I.2, II.1–II.2 và III.1–III.2."
  );
  }
@@ -3085,7 +3085,7 @@
  card.className = "graph-card";
  card.innerHTML = `
  <div class="graph-card-header">
- <span>Hình II.1.${idx + 1}. Đồ thị liên quan 1 nguồn – Lần ${idx + 1}${chSuffix}</span>
+ <span>Hình II.1.${idx + 1}. Đồ thị khảo sát 1 nguồn – Lần ${idx + 1}${chSuffix}</span>
  <button type="button" class="inline-btn inline-btn-img no-print" onclick="exportSingleCanvas('${canvasId}', 'Phan2_DoThiLienQuan_1Nguon_Lan${idx + 1}')">Tải hình</button>
  </div>
  <canvas id="${canvasId}" width="580" height="190"></canvas>
@@ -3188,7 +3188,7 @@
  const cIdB = `canvasKin2B_${idx}`;
  card.innerHTML = `
  <div class="graph-card-header">
- <span>Hình II.3.${idx + 1}. Đồ thị liên quan 2 nguồn – Lần ${idx + 1} (Kênh A &amp; Kênh B)</span>
+ <span>Hình II.1.${idx + 1}. Đồ thị khảo sát 2 nguồn – Lần ${idx + 1} (Kênh A &amp; Kênh B)</span>
  </div>
  <div class="dual-canvas-pair">
  <div class="dual-canvas-sub">
@@ -3217,7 +3217,7 @@
  const canvasId = `canvasKin2_${idx}`;
  card.innerHTML = `
  <div class="graph-card-header">
- <span>Hình II.3.${idx + 1}. Đồ thị liên quan 2 nguồn – Lần ${idx + 1} (So sánh Kênh A &amp; Kênh B)</span>
+ <span>Hình II.1.${idx + 1}. Đồ thị khảo sát 2 nguồn – Lần ${idx + 1} (So sánh Kênh A &amp; Kênh B)</span>
  <button type="button" class="inline-btn inline-btn-img no-print" onclick="exportSingleCanvas('${canvasId}', 'Phan2_DoThiLienQuan_2Nguon_Lan${idx + 1}')">Tải hình</button>
  </div>
  <canvas id="${canvasId}" width="620" height="195"></canvas>
@@ -3409,7 +3409,7 @@
 
  function delKin2(i) {
  if (kinRows2.length <= 1) {
- showToast("Cần giữ lại ít nhất 1 cặp khảo sát ở bảng II.4!");
+ showToast("Cần giữ lại ít nhất 1 cặp khảo sát ở bảng II.2!");
  return;
  }
  kinRows2.splice(i, 1);
@@ -4380,7 +4380,7 @@
  targetRows.push([`Lần ${i + 1}`, f > 0 ? f.toFixed(1) : "—", A > 0 ? A.toFixed(2) : "—", r.eqU || "—", r.eqV || "—", r.eqA || "—"]);
  });
  } else {
- targetRows.push(["PHẦN II (II.4): KHẢO SÁT ĐỒ THỊ LIÊN QUAN - 2 NGUỒN"], ["Lần", "Nguồn / Kênh", "Tần số f (Hz)", "Biên độ A", "Phương trình li độ u(t)", "Phương trình vận tốc v(t)", "Phương trình gia tốc a(t)"]);
+ targetRows.push(["PHẦN II (II.2): KHẢO SÁT ĐỒ THỊ LIÊN QUAN - 2 NGUỒN"], ["Lần", "Nguồn / Kênh", "Tần số f (Hz)", "Biên độ A", "Phương trình li độ u(t)", "Phương trình vận tốc v(t)", "Phương trình gia tốc a(t)"]);
  kinRows2.forEach((p, i) => {
  const fA = Number(p.a.f_Hz) || 0;
  const ampA = Number(p.a.ampU) || 0;
