@@ -1649,10 +1649,20 @@ async function checkAppVersion() {
         // Sử dụng đúng N = winInfo.samplesNeeded khớp 100% với drawWaveform
         const N = winInfo.samplesNeeded;
         const halfN = (typeof winInfo.halfSamples === 'number') ? winInfo.halfSamples : Math.floor(N / 2);
+        const smoothedDisplay = (channelConfig.A && channelConfig.A.data && typeof computeSmoothedDisplaySlice === 'function')
+            ? computeSmoothedDisplaySlice(channelConfig.A.data, channelConfig.A.data.length, channelConfig.A.index, winInfo.startIdx, N, oscAmpGainA)
+            : null;
         const coords = manualPoints.map((pt, index) => {
             const localIdx = pt.absIdx - winInfo.startIdx;
             const x = (width / 2) + ((localIdx - halfN) / N) * width;
-            const y = Math.max(0, Math.min(height, height / 2 - (pt.y * currentZoomY * height / 2)));
+            let dispY = pt.y;
+            if (smoothedDisplay && smoothedDisplay.length === N) {
+                const clampedLocal = Math.max(0, Math.min(N - 1, localIdx));
+                const i0 = Math.max(0, Math.min(N - 2, Math.floor(clampedLocal)));
+                const frac = Math.max(0, Math.min(1, clampedLocal - i0));
+                dispY = smoothedDisplay[i0] + frac * (smoothedDisplay[i0 + 1] - smoothedDisplay[i0]);
+            }
+            const y = Math.max(0, Math.min(height, height / 2 - (dispY * currentZoomY * height / 2)));
             return { x, y, label: index === 0 ? 'P₁' : 'P₂', color: index === 0 ? '#f59e0b' : '#10b981' };
         });
 
@@ -3016,17 +3026,94 @@ async function checkAppVersion() {
         }
     }
 
+    // Bộ đệm tạm tái sử dụng cho làm mượt hiển thị pha không (zero-phase) trên dao động ký
+    let _oscSmoothScratchA = new Float32Array(0);
+    let _oscSmoothScratchB = new Float32Array(0);
+    let _oscSmoothPref = new Float64Array(0);
+
+    // Làm mượt nhẹ đối xứng 2 lượt (Zero-Phase) chỉ phục vụ vẽ đồ thị dao động ký;
+    // không làm lệch pha, không làm thay đổi dữ liệu gốc của FFT và máy đo dB.
+    function computeSmoothedDisplaySlice(dataArray, len, currentIndex, startIdx, samplesNeeded, ampGain = 1.0) {
+        if (!dataArray || len <= 0 || samplesNeeded <= 0) return new Float32Array(0);
+        if (_oscSmoothScratchA.length < samplesNeeded) {
+            _oscSmoothScratchA = new Float32Array(samplesNeeded);
+        }
+        const out = _oscSmoothScratchA.subarray(0, samplesNeeded);
+
+        if (samplesNeeded < 16) {
+            for (let i = 0; i < samplesNeeded; i++) {
+                const rawIdx = startIdx + i;
+                const safeIdx = (currentIndex > 0 && rawIdx >= currentIndex)
+                    ? (currentIndex - 1)
+                    : rawIdx;
+                const idx = ((safeIdx % len) + len) % len;
+                out[i] = dataArray[idx] * ampGain;
+            }
+            return out;
+        }
+
+        const radius = Math.max(2, Math.min(4, Math.round(samplesNeeded / 180)));
+        const winLen = 2 * radius + 1;
+        const pad = radius * 2;
+        const totalLen = samplesNeeded + 2 * pad;
+
+        if (_oscSmoothScratchB.length < totalLen) {
+            _oscSmoothScratchB = new Float32Array(totalLen);
+        }
+        if (_oscSmoothPref.length < totalLen + 1) {
+            _oscSmoothPref = new Float64Array(totalLen + 1);
+        }
+
+        const padded = _oscSmoothScratchB.subarray(0, totalLen);
+        const pref = _oscSmoothPref.subarray(0, totalLen + 1);
+
+        // Nạp đoạn mẫu có phần đệm hai biên từ bộ đệm vòng để triệt tiêu méo biên
+        pref[0] = 0;
+        for (let k = 0; k < totalLen; k++) {
+            const rawIdx = startIdx - pad + k;
+            const safeIdx = (currentIndex > 0 && rawIdx >= currentIndex)
+                ? (currentIndex - 1)
+                : rawIdx;
+            const idx = ((safeIdx % len) + len) % len;
+            const v = dataArray[idx] * ampGain;
+            padded[k] = v;
+            pref[k + 1] = pref[k] + v;
+        }
+
+        // Lượt 1: Trung bình trượt đối xứng
+        for (let k = 0; k < totalLen; k++) {
+            const left = Math.max(0, k - radius);
+            const right = Math.min(totalLen - 1, k + radius);
+            padded[k] = (pref[right + 1] - pref[left]) / (right - left + 1);
+        }
+
+        // Lượt 2: Trung bình trượt đối xứng lần 2 (tạo đáp ứng Gaussian pha không mượt mịn)
+        pref[0] = 0;
+        for (let k = 0; k < totalLen; k++) {
+            pref[k + 1] = pref[k] + padded[k];
+        }
+        for (let i = 0; i < samplesNeeded; i++) {
+            const c = pad + i;
+            const left = Math.max(0, c - radius);
+            const right = Math.min(totalLen - 1, c + radius);
+            out[i] = (pref[right + 1] - pref[left]) / (right - left + 1);
+        }
+
+        return out;
+    }
+
     function drawWaveform(ctx, dataArray, currentIndex, offset, samplesNeeded, boxX, boxY, boxW, boxH, color, ampGain = 1.0) {
-        ctx.beginPath(); ctx.lineWidth = 2.5; ctx.strokeStyle = color; ctx.lineJoin = 'round';
+        if (!dataArray || samplesNeeded <= 0) return;
+        ctx.beginPath(); ctx.lineWidth = 2.5; ctx.strokeStyle = color; ctx.lineJoin = 'round'; ctx.lineCap = 'round';
         const len = dataArray.length;
         const halfSamples = Math.floor(samplesNeeded / 2);
         const centerIdx = currentIndex - offset;
         const startIdx = centerIdx - halfSamples;
+        const smoothed = computeSmoothedDisplaySlice(dataArray, len, currentIndex, startIdx, samplesNeeded, ampGain);
         const step = Math.max(1, Math.floor(samplesNeeded / (boxW * 2)));
         for (let i = 0; i < samplesNeeded; i += step) {
-            let idx = ((startIdx + i) % len + len) % len;
-            let val = dataArray[idx] * ampGain;
-            let x = boxX + boxW / 2 + ((i - halfSamples) / samplesNeeded) * boxW;
+            const val = smoothed[i];
+            const x = boxX + boxW / 2 + ((i - halfSamples) / samplesNeeded) * boxW;
             let y = boxY + boxH / 2 - (val * currentZoomY * boxH / 2);
             y = Math.max(boxY, Math.min(boxY + boxH, y));
             if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
