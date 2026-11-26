@@ -1,12 +1,3 @@
 {
-  "appName": "FoxLab Dao Dong Ky",
-  "version": "6.5.2",
-  "cacheVersion": "app-cache-v1.0.22",
-  "patchedFeatures": [
-    "rawU",
-    "rawV",
-    "rawA",
-    "styles.css"
-  ],
-  "offlineReady": true
+  "version": "6.5.1-part2-kinematics-1-2-sources"
 }

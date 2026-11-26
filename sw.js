@@ -1,20 +1,28 @@
-const CACHE_NAME = 'app-cache-v1.0.22';
-const ASSETS_TO_CACHE = [
+const CACHE_NAME = 'app-cache-v1.0.21';
+const CORE_ASSETS = [
   './',
   './index.html',
-  './report.html',
   './index.js',
-  './styles.css',
-  './version.json'
+  './style.css',
+  './report.html'
+];
+const OPTIONAL_ASSETS = [
+  './manifest.json',
+  './manifest.js',
+  './icon-192.png',
+  './icon.png'
 ];
 
 self.addEventListener('install', (event) => {
+  self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE);
+    caches.open(CACHE_NAME).then(async (cache) => {
+      await cache.addAll(CORE_ASSETS);
+      await Promise.all(
+        OPTIONAL_ASSETS.map((asset) => cache.add(asset).catch(() => {}))
+      );
     })
   );
-  self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
@@ -23,18 +31,38 @@ self.addEventListener('activate', (event) => {
       return Promise.all(
         keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
       );
-    })
+    }).then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
 self.addEventListener('fetch', (event) => {
+  const url = new URL(event.request.url);
+  if (url.origin !== location.origin) return;
+
+  if (
+    event.request.mode === 'navigate' ||
+    url.pathname.endsWith('.html') ||
+    url.pathname.endsWith('.js') ||
+    url.pathname.endsWith('.css') ||
+    url.pathname.endsWith('version.json')
+  ) {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          if (response && response.ok) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+          }
+          return response;
+        })
+        .catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-      return fetch(event.request).catch(() => caches.match('./index.html'));
+    caches.match(event.request).then((cached) => {
+      return cached || fetch(event.request);
     })
   );
 });

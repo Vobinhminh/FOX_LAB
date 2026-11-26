@@ -1,93 +1,1039 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FoxLab v6.5.2 - Dao Dong Ky & Do Luong</title>
-  <link rel="stylesheet" href="styles.css" />
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+ <meta name="referrer" content="no-referrer">
+ <link rel="manifest" href="manifest.json">
+ <link rel="icon" type="image/png" sizes="192x192" href="icon-512.png">
+ <link rel="apple-touch-icon" href="icon-512.png">
+ <meta name="theme-color" content="#f97316">
+ <meta name="apple-mobile-web-app-capable" content="yes">
+ <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+ <title>FOX_LAB - Phòng thí nghiệm Vật lý về sóng cơ học</title>
+ <link rel="preconnect" href="https://fonts.googleapis.com">
+ <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+ <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+
+ <!-- QRCode.js library for reliable QR code generation -->
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+ <!-- MathJax v3 Configuration & CDN -->
+ <script>
+ window.MathJax = {
+ tex: {
+ inlineMath: [['$', '$'], ['\\(', '\\)']],
+ displayMath: [['$$', '$$'], ['\\[', '\\]']],
+ processEscapes: true,
+ processEnvironments: true,
+ packages: ['base', 'ams', 'noerrors', 'noundefined']
+ },
+ options: {
+ ignoreHtmlClass: 'tex2jax_ignore',
+ processHtmlClass: 'tex2jax_process|fox-msg-bubble|hud-overlay'
+ },
+ chtml: {
+ scale: 1.05,
+ displayAlign: 'left'
+ }
+ };
+ </script>
+ <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+ <link rel="stylesheet" href="style.css">
+ <style>
+ /* Bổ sung style cho lưới đồ thị từng lần đo & badge tự động nhận dữ liệu trong Modal Báo cáo */
+ .exp-live-pill {
+ display: inline-flex;
+ align-items: center;
+ gap: 6px;
+ background: #064e3b;
+ color: #a7f3d0;
+ border: 1px solid #10b981;
+ border-radius: 999px;
+ padding: 4px 10px;
+ font-size: 11.5px;
+ font-weight: 600;
+ white-space: nowrap;
+ }
+ .exp-live-dot {
+ width: 7px;
+ height: 7px;
+ border-radius: 50%;
+ background: #34d399;
+ box-shadow: 0 0 6px #34d399;
+ }
+ .exp-row-counter-badge {
+ font-family: system-ui, sans-serif;
+ font-size: 11px;
+ font-weight: 600;
+ color: #334155;
+ background: #e2e8f0;
+ padding: 2px 7px;
+ border-radius: 999px;
+ margin-left: 6px;
+ }
+ /* Lưới đồ thị từng lần đo (mỗi dòng 1 hình tương ứng, đồng bộ 100% với report.html) */
+ .exp-per-row-graphs-grid {
+ display: grid;
+ grid-template-columns: repeat(2, 1fr);
+ gap: 8px;
+ margin-bottom: 10px;
+ }
+ .exp-per-row-graphs-grid.single-item {
+ grid-template-columns: 1fr;
+ }
+ .exp-graph-card {
+ border: 1px solid #334155;
+ padding: 6px;
+ text-align: center;
+ background: #ffffff;
+ break-inside: avoid;
+ page-break-inside: avoid;
+ position: relative;
+ }
+ .exp-graph-card-header {
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ font-size: 10.2pt;
+ font-weight: bold;
+ color: #0f172a;
+ margin-bottom: 4px;
+ padding-bottom: 3px;
+ border-bottom: 1px dashed #cbd5e1;
+ }
+ .exp-graph-card canvas {
+ width: 100%;
+ max-height: 46mm;
+ height: auto;
+ display: block;
+ margin: 0 auto;
+ }
+ .exp-per-row-graphs-grid.single-item .exp-graph-card canvas {
+ max-height: 60mm;
+ }
+ .exp-graph-caption {
+ font-size: 10pt;
+ font-style: italic;
+ margin-top: 4px;
+ color: #1e293b;
+ }
+ /* Khung đồ thị đơn (Phần IV) */
+ .exp-graph-box {
+ border: 1px solid #334155;
+ padding: 7px;
+ text-align: center;
+ background: #ffffff;
+ margin-bottom: 10px;
+ position: relative;
+ break-inside: avoid;
+ page-break-inside: avoid;
+ }
+ .exp-graph-box canvas {
+ max-width: 100%;
+ max-height: 58mm;
+ height: auto;
+ display: block;
+ margin: 0 auto;
+ }
+ .exp-inline-btn:disabled {
+ opacity: 0.48;
+ cursor: not-allowed;
+ }
+ @media (max-width: 768px) {
+ .exp-per-row-graphs-grid {
+ grid-template-columns: 1fr;
+ }
+ }
+ </style>
 </head>
 <body>
-  <div class="container">
-    <div class="card">
-      <h1>FoxLab v6.5.2 - Dao Dong Ky</h1>
-      <p>Phien ban da dong bo du lieu dao ham tho (rawU, rawV, rawA) cho tung lan do.</p>
-      <div class="toolbar">
-        <button id="btnSample">Ghi nhan mau dao dong (440 Hz)</button>
-        <button id="btnReport" class="secondary" onclick="window.location.href='report.html'">Mo trang bao cao</button>
-        <button id="btnClear" class="secondary">Xoa du lieu mau</button>
-      </div>
-      <p id="statusText" class="status-text">San sang ghi nhan.</p>
-      <div class="legend">
-        <span class="legend-item"><span class="legend-swatch swatch-u"></span>rawU</span>
-        <span class="legend-item"><span class="legend-swatch swatch-v"></span>rawV</span>
-        <span class="legend-item"><span class="legend-swatch swatch-a"></span>rawA</span>
-      </div>
-      <canvas id="scopeCanvas" class="scope-canvas" width="780" height="220"></canvas>
+
+<!-- MODAL BẢN QUYỀN -->
+<div id="licenseModalOverlay" class="license-modal-overlay" style="display: none;">
+ <div class="license-selection-box">
+ <h2>FOX_LAB - Phòng thí nghiệm Vật lý về sóng cơ</h2>
+ <p>Phần mềm phòng thí nghiệm Vật lý chuyên đề sóng cơ dành cho Giáo viên & Học sinh.</p>
+ <div class="license-btn-group">
+ <button class="license-btn btn-demo-mode" onclick="selectMode('demo')">Dùng thử Demo (Giới hạn tính năng)</button>
+ <button class="license-btn btn-full-mode" onclick="selectMode('full')">Kích hoạt Bản Full (Nhập Key)</button>
+ </div>
+ <div id="keyInputContainer" style="display: none; margin-bottom: 15px;">
+ <input type="text" id="licenseKeyInput" placeholder="Nhập mã Key bản quyền..." style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #cbd5e1; margin-bottom: 8px; box-sizing: border-box; text-align: center; font-weight: bold;">
+ <div style="color: #dc2626; font-size: 11px; font-weight: bold; margin-bottom: 8px; text-align: center; background: #fee2e2; padding: 6px; border-radius: 4px; border: 1px dashed #f87171;">
+ LƯU Ý: KHÔNG DÙNG TAB ẨN DANH!<br>Key hỗ trợ tối đa 3 thiết bị / lượt đổi.
+ </div>
+ <div style="display: flex; gap: 8px;">
+ <button class="btn-green" style="flex: 1; padding: 10px; font-size: 12.5px; font-weight: bold;" onclick="verifyEnteredKey('verify')">Xác thực & Mở khóa</button>
+ <button class="btn-orange" style="flex: 1; padding: 10px; font-size: 12.5px; font-weight: bold;" onclick="verifyEnteredKey('change')">Đổi sang máy này</button>
+ </div>
+ </div>
+ <div class="contact-box">
+ <b>Cần nhận bản Full chính thức?</b><br>
+ Liên hệ tác giả / Giáo viên hướng dẫn: VÕ BÌNH MINH<br>
+ • Điện thoại / Zalo: <b>0939323579</b><br>
+ </div>
+ </div>
+</div>
+
+<div class="top-bar">
+ <div class="controls-wrapper">
+ <select id="channelModeSelect" style="display:none">
+ <option value="1" selected>1 nguồn âm</option>
+ <option value="2">2 nguồn âm</option>
+ </select>
+ <select id="modeSelect" style="display:none">
+ <option value="auto" selected>Khảo sát tần số (Tự dừng)</option>
+ <option value="continuous">Khảo sát liên tục</option>
+ </select>
+ <select id="displayModeSelect" style="display:none">
+ <option value="oscilloscope" selected>Dao động ký</option>
+ <option value="dbMeter">Cường độ âm (dB)</option>
+ </select>
+ <select id="speedSelect" style="display:none">
+ <option value="fast" selected>Nhanh</option>
+ <option value="slow">Chậm</option>
+ </select>
+
+ <div class="toolbar-row">
+ <div class="settings-dropdown" id="settingsDropdown">
+ <div class="settings-dropdown-toggle" id="settingsToggle">
+ <span>Cài đặt</span><span class="dropdown-arrow"></span>
+ </div>
+ <div class="settings-dropdown-menu" id="settingsMenu">
+ <div class="settings-group" id="groupChannelMode">
+ <div class="settings-group-header" data-group="channelMode"><span>Chế độ nguồn âm</span><span class="group-arrow">›</span></div>
+ <div class="settings-group-items">
+ <div class="settings-item active" data-target="channelModeSelect" data-value="1">1 Nguồn</div>
+ <div class="settings-item" data-target="channelModeSelect" data-value="2">2 Nguồn</div>
+ </div>
+ </div>
+ <div class="settings-group" id="groupMode">
+ <div class="settings-group-header" data-group="mode"><span>Chức năng khảo sát</span><span class="group-arrow">›</span></div>
+ <div class="settings-group-items">
+ <div class="settings-item active" data-target="modeSelect" data-value="auto">Tự dừng</div>
+ <div class="settings-item" data-target="modeSelect" data-value="continuous">Liên tục</div>
+ </div>
+ </div>
+ <div class="settings-group" id="groupDisplayMode">
+ <div class="settings-group-header" data-group="displayMode"><span>Chế độ hiển thị</span><span class="group-arrow">›</span></div>
+ <div class="settings-group-items">
+ <div class="settings-item active" data-target="displayModeSelect" data-value="oscilloscope">Dao động ký</div>
+ <div class="settings-item" data-target="displayModeSelect" data-value="dbMeter">Cường độ âm (dB)</div>
+ </div>
+ </div>
+ <div class="settings-group" id="groupSpeed" style="display: none;">
+ <div class="settings-group-header" data-group="speed"><span>Tốc độ quét</span><span class="group-arrow">›</span></div>
+ <div class="settings-group-items">
+ <div class="settings-item active" data-target="speedSelect" data-value="fast">Nhanh</div>
+ <div class="settings-item" data-target="speedSelect" data-value="slow">Chậm</div>
+ </div>
+ </div>
+
+ <div class="settings-group" id="groupLicense">
+ <div class="settings-group-header" data-group="license" style="color: #38bdf8; border-top: 1px solid #1e293b;">
+ <span>Quản lý Bản quyền</span><span class="group-arrow">›</span>
+ </div>
+ <div class="settings-group-items" style="flex-direction: column; gap: 6px; padding: 8px;">
+ <div class="settings-action-btn" onclick="handleLicenseAction('change')">Đổi thiết bị (Đăng nhập máy khác)</div>
+ <div class="settings-action-btn" onclick="handleLicenseAction('logout')">Đăng xuất (Tạm thời)</div>
+ <div class="settings-action-btn btn-danger" onclick="handleLicenseAction('delete')">Xóa Key vĩnh viễn</div>
+ </div>
+ </div>
+ </div>
+ </div>
+
+ <button id="pauseButton" class="btn-green" disabled>Đo / Dừng</button>
+ <div class="analysis-point-dropdown" id="analysisPointDropdown">
+ <button id="btnManualAnalysis" class="btn-purple" style="display: inline-block;" disabled title="Chọn chức năng phân tích đồ thị Kênh A (chế độ Tự dừng, 1 nguồn)">Phân tích đồ thị</button>
+ <div class="analysis-point-menu" id="analysisPointMenu">
+ <button type="button" class="ap-menu-item" id="optPickTwoPoints">1. Chọn 2 điểm đo T, f, Δφ</button>
+ <button type="button" class="ap-menu-item" id="optKinematicsGraphs">2. Vẽ các đồ thị liên quan (u-t, v-t, a-t)</button>
+ </div>
+ </div>
+ <button id="resetButton" class="btn-orange">Làm mới</button>
+ <button id="btnOscCalib" class="btn-orange" style="display: none;" onclick="openOscCalibModal()">Hiệu chỉnh biên độ</button>
+            <button id="btnCalib" class="btn-orange" style="display: none;">Hiệu chuẩn</button>
+ <button id="btnAnalysis" class="btn-slate" disabled>Xử lý nguồn âm</button>
+ <button id="btnExportReport" class="btn-blue" onclick="navigateToStandaloneReport()" title="Mở trang phiếu báo cáo thí nghiệm A4 (report.html)">Xuất báo cáo</button>
+ <button id="fullscreenButton" class="btn-slate" onclick="toggleFullScreen()">Mở rộng</button>
+ </div>
+
+ <div class="channel-row">
+ <div class="channel-card channel-a-indicator">
+ <button id="btnStartA" class="btn-slate" disabled>Kênh A (Khóa)</button>
+ <select id="micSelectA" style="color: #dc2626;">
+ <option value="">-- Kênh A: Chờ tải thiết bị --</option>
+ </select>
+ </div>
+ <div class="channel-card channel-b-indicator" id="cardChannelB" style="display:none;">
+ <button id="btnStartB" class="btn-slate" disabled>Kênh B (Khóa)</button>
+ <select id="micSelectB" style="color: #2563eb;">
+ <option value="">-- Kênh B: Chờ tải thiết bị --</option>
+ </select>
+ </div>
+ </div>
+
+ <div class="info-panel" id="infoText">
+ <span id="infoMessageText">Đang tải hệ thống phân tích...</span>
+ <button class="license-gear-btn" onclick="openLicenseModal()" title="Kích hoạt bản Full">Nhập Key</button>
+ </div>
+ </div>
+
+ <div class="qr-panel" id="qrPanel" title="Quét mã QR để mở ứng dụng">
+ <div id="qrCodeContainer" style="width:48px; height:48px; display:flex; align-items:center; justify-content:center; background:#fff; padding:2px; border-radius:4px;"></div>
+ <span class="scan-title">FOX_LAB</span>
+ </div>
+</div>
+
+<div id="oscilloscopeWrapper">
+ <canvas id="oscilloscope"></canvas>
+ <div id="manualAnalysisHud">
+ <div class="ma-header">
+ <span>KẾT QUẢ PHÂN TÍCH 2 ĐIỂM &amp; ĐỐI CHIẾU TỰ ĐỘNG</span>
+ <button class="ma-close" onclick="closeManualHud()" title="Ẩn bảng kết quả"></button>
+ </div>
+ <div id="manualAnalysisHudBody"></div>
+ </div>
+</div>
+
+<!-- MODAL PHÂN TÍCH HỌA ÂM FFT -->
+<div id="fftModalOverlay" class="modal-overlay">
+ <div id="fftModal" class="modal-content" onclick="event.stopPropagation()">
+ <div class="modal-header">
+ <span>Phân tích Họa âm (Spectrum)</span>
+ </div>
+ <div class="modal-controls">
+ <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+ <button class="btn-dark" onclick="closeFFTModal()">Quay lại</button>
+ <label for="fftTargetFreq" style="font-weight: 600; font-size: 11.5px; margin-left:6px;">Tần số (f<sub>0</sub>):</label>
+ <input type="number" id="fftTargetFreq" value="" placeholder="Tự nhập f₀..." min="20" max="5000" style="width: 105px; padding: 4px 6px; border: 1px solid #cbd5e1; border-radius: 4px; font-weight: 700; text-align: center;" oninput="onFftFreqInput()" onkeydown="if(event.key==='Enter') startHarmonicSweep()">
+ <span style="font-weight: 600; font-size: 11.5px;">Hz</span>
+ <button id="btnScanHarmonics" class="btn-green" onclick="startHarmonicSweep()">Quét Họa âm</button>
+ </div>
+ <div style="display:flex; align-items:center; gap:6px;">
+ <button id="btnToggleFftTable" class="btn-blue" style="display:none;" onclick="toggleFftHarmonicTable()">Bảng tần số &amp; họa âm</button>
+ <button type="button" id="btnSyncFftReport" class="btn-green" onclick="syncFeatureToReport('fft')" title="Đồng bộ kết quả &amp; đồ thị phổ FFT sang Phần II báo cáo">Đồng bộ báo cáo</button>
+ </div>
+ </div>
+ <div class="fft-canvas-container" id="fftCanvasContainer">
+ <div class="fft-canvas-wrap" style="position:relative; flex:1; min-width:0; height:100%; display:flex;">
+ <canvas id="fftDisplayCanvas" class="modal-display-canvas"></canvas>
+ </div>
+ <div id="fftHarmonicTablePanel" class="fft-harmonic-table-panel">
+ <div class="fft-ht-header">
+ <div class="fft-ht-title">
+ <span></span>
+ <span>TẦN SỐ GÓP MẶT &amp; HỌA ÂM</span>
+ </div>
+ <button type="button" class="fft-ht-close" onclick="closeFftHarmonicTable()" title="Đóng bảng"></button>
+ </div>
+ <div class="fft-ht-scroll">
+ <table class="fft-ht-table">
+ <thead>
+ <tr>
+ <th style="text-align:center;">STT</th>
+ <th style="text-align:left;">Tần số (Hz)</th>
+ <th style="text-align:left;">Biên độ / Độ lớn (A)</th>
+ <th style="text-align:center;">Phân loại / Họa âm</th>
+ </tr>
+ </thead>
+ <tbody id="fftHarmonicTableBody"></tbody>
+ </table>
+ </div>
+ </div>
+ </div>
+ </div>
+</div>
+
+<!-- MODAL PHÂN TÍCH 2 NGUỒN ÂM -->
+<div id="twoSourceModalOverlay" class="modal-overlay">
+ <div id="twoSourceModal" class="modal-content" onclick="event.stopPropagation()">
+ <div class="modal-header">
+ <span>Phân tích & Xử lý 2 Nguồn âm</span>
+ </div>
+ <div class="modal-controls" style="justify-content: space-between; padding: 6px 12px; display: flex; align-items: center;">
+ <button class="btn-dark" onclick="closeTwoSourceModal()">Quay lại</button>
+ <div class="ts-mode-toggle">
+ <button id="btnModeOverlay" class="active-mode" onclick="setTsMode('overlay')">Ghép sóng</button>
+ <button id="btnModeSum" onclick="setTsMode('sum')">Tổng hợp (A+B)</button>
+ </div>
+ <div style="display: flex; align-items: center; gap: 4px;">
+ <button id="tsPlayBtn" onclick="toggleTsPlay()" class="btn-orange" style="margin-left: 4px;">Dừng</button>
+ <button id="tsResultBtn" onclick="showTsResultModal()" style="display: none !important; margin-left: 4px;" class="btn-blue">Kết quả</button>
+ <button id="tsEquationBtn" onclick="showTsEquationModal()" style="display: none !important; margin-left: 4px;" class="btn-slate">Phương trình</button>
+ <button type="button" id="btnSyncTwoSourceReport" onclick="syncFeatureToReport('twoSource')" class="btn-green" style="margin-left: 4px;" title="Đồng bộ kết quả 2 nguồn âm sang báo cáo">Đồng bộ báo cáo</button>
+ </div>
+ </div>
+ <div class="fft-canvas-container" id="tsContainer">
+ <canvas id="twoSourceCanvas" class="modal-display-canvas"></canvas>
+
+ <div id="hudResults" class="hud-overlay">
+ <div class="hud-title">BẢNG KẾT QUẢ ĐỐI CHIẾU</div>
+ <div>Tần số Kênh A: <span class="hud-highlight" id="hudFreqA">0.0</span> Hz &nbsp;|&nbsp; Chu kỳ T<sub>A</sub> = <span class="hud-highlight" id="hudPerA">0.00</span> ms &nbsp;|&nbsp; Biên độ A: <span class="hud-highlight" id="hudAmpA">0.00</span></div>
+ <div>Tần số Kênh B: <span class="hud-highlight" id="hudFreqB">0.0</span> Hz &nbsp;|&nbsp; Chu kỳ T<sub>B</sub> = <span class="hud-highlight" id="hudPerB">0.00</span> ms &nbsp;|&nbsp; Biên độ B: <span class="hud-highlight" id="hudAmpB">0.00</span></div>
+ <div style="margin-top:4px; padding-top:4px; border-top:1px dashed rgba(255,255,255,0.2);">
+ Độ lệch pha Δφ: <span class="hud-highlight" id="hudPhaseRad">0.00</span> rad (<span class="hud-highlight" id="hudPhaseDeg">0</span>°)
+ </div>
+ </div>
+
+ <div id="hudEquations" class="hud-overlay" style="top: auto; bottom: 16px; left: 16px;">
+ <div class="hud-title">PHƯƠNG TRÌNH DAO ĐỘNG</div>
+ <div class="hud-eq">Kênh A: <span class="math-symbol">u<sub>A</sub> = <span id="eqAmpA">A</span>·cos(2π·<span id="eqFreqA">0</span>·t)</span></div>
+ <div class="hud-eq">Kênh B: <span class="math-symbol">u<sub>B</sub> = <span id="eqAmpB">A</span>·cos(2π·<span id="eqFreqB">0</span>·t <span id="eqPhase">+ 0.00</span>)</span></div>
+ <div class="hud-eq" id="eqSumLine" style="margin-top:4px;">Tổng hợp: <span class="math-symbol">u = u<sub>A</sub> + u<sub>B</sub></span></div>
+ </div>
+
+ <div id="tsWarningText" class="beat-warning">Hai nguồn khác tần số (Tạo Sóng Phách)</div>
+ </div>
+ </div>
+</div>
+
+
+<!-- MODAL VẼ CÁC ĐỒ THỊ LIÊN QUAN u-t, v-t, a-t -->
+<div id="kinematicsModalOverlay" class="modal-overlay">
+ <div id="kinematicsModal" class="modal-content" onclick="event.stopPropagation()">
+ <div class="modal-header">
+ <span>Đồ thị liên quan dao động điều hòa: Li độ u(t) — Vận tốc v(t) — Gia tốc a(t)</span>
+ </div>
+ <div class="modal-controls" style="justify-content: space-between; padding: 6px 12px; display: flex; align-items: center;">
+ <button class="btn-dark" onclick="closeKinematicsModal()">Quay lại</button>
+ <div class="kin-mode-group" id="kinModeGroup">
+ <button type="button" class="kin-mode-btn active" data-kin-mode="uv" onclick="setKinematicsDisplayMode('uv')">u-t &amp; v-t</button>
+ <button type="button" class="kin-mode-btn" data-kin-mode="ua" onclick="setKinematicsDisplayMode('ua')">u-t &amp; a-t</button>
+ <button type="button" class="kin-mode-btn" data-kin-mode="all" onclick="setKinematicsDisplayMode('all')">Cả hai (v-t &amp; a-t)</button>
+ </div>
+ <div class="kin-legend-bar">
+ <span class="kin-legend-item"><span class="kin-dot" style="background:#2563eb;"></span> u-t: Xanh dương</span>
+ <span class="kin-legend-item" id="kinLegV"><span class="kin-dot" style="background:#16a34a;"></span> v-t: Xanh lá</span>
+ <span class="kin-legend-item" id="kinLegA" style="display:none;"><span class="kin-dot" style="background:#dc2626;"></span> a-t: Đỏ</span>
+ </div>
+ <div style="display: flex; align-items: center; gap: 6px;">
+ <button id="kinResultBtn" onclick="toggleKinematicsResultHud()" class="btn-blue">Kết quả</button>
+ <button type="button" id="btnSyncKinematicsReport" onclick="syncFeatureToReport('kinematics')" class="btn-green" title="Đồng bộ đồ thị &amp; thông số dao động sang Phần II báo cáo">Đồng bộ báo cáo</button>
+ </div>
+ </div>
+ <div class="fft-canvas-container" id="kinContainer">
+ <canvas id="kinematicsCanvas" class="modal-display-canvas"></canvas>
+
+ <div id="kinResultHud" class="hud-overlay" style="top: 14px; left: 14px; max-width: min(560px, calc(100% - 28px));">
+ <div class="hud-title" style="display:flex; justify-content:space-between; align-items:center;">
+ <span>PHƯƠNG TRÌNH TƯƠNG ỨNG TỪNG ĐỒ THỊ</span>
+ <button onclick="toggleKinematicsResultHud()" style="background:rgba(255,255,255,0.15); border:none; color:#fff; padding:1px 6px; border-radius:4px; font-size:11px; cursor:pointer;"></button>
+ </div>
+ <div id="kinMetaInfo" style="font-size: 11.5px; color: #cbd5e1; margin-bottom: 4px;"></div>
+ <div class="kin-eq-grid">
+ <div class="kin-eq-card" style="border-left-color: #3b82f6;">
+ <div style="color:#60a5fa; font-weight:700; font-size:11.5px;">1. Phương trình Li độ u(t) — Đồ thị Xanh dương:</div>
+ <div class="math-symbol" id="kinEqU" style="color:#f8fafc; font-size:14px; margin-top:2px;">u(t) = 0</div>
+ </div>
+ <div class="kin-eq-card" id="kinCardV" style="border-left-color: #22c55e;">
+ <div style="color:#4ade80; font-weight:700; font-size:11.5px;">2. Phương trình Vận tốc v(t) — Đồ thị Xanh lá (sớm pha π/2 so với u):</div>
+ <div class="math-symbol" id="kinEqV" style="color:#f8fafc; font-size:14px; margin-top:2px;">v(t) = 0</div>
+ </div>
+ <div class="kin-eq-card" id="kinCardA" style="border-left-color: #ef4444; display:none;">
+ <div style="color:#f87171; font-weight:700; font-size:11.5px;">3. Phương trình Gia tốc a(t) — Đồ thị Đỏ (ngược pha với u):</div>
+ <div class="math-symbol" id="kinEqA" style="color:#f8fafc; font-size:14px; margin-top:2px;">a(t) = 0</div>
+ </div>
+ </div>
+ </div>
+ </div>
+ </div>
+</div>
+
+<!-- MODAL PHÂN TÍCH MỨC CƯỜNG ĐỘ ÂM -->
+<div id="mcdModalOverlay" class="modal-overlay">
+ <div id="mcdModal" class="modal-content tex2jax_process" style="background: #ffffff; color: #0f172a;" onclick="event.stopPropagation()">
+ <div class="modal-header" style="background: linear-gradient(90deg, #059669, #10b981);">
+ <span>Phân tích Mức Cường độ âm & Khoảng cách Nguồn âm</span>
+ </div>
+ 
+ <div class="modal-controls" style="background: #f8fafc; border-bottom: 1px solid #e2e8f0; display:flex; gap:8px; align-items:center; justify-content:space-between;">
+ <div style="display:flex; gap:8px; align-items:center;">
+ <button class="btn-dark" onclick="closeMcdModal()" style="display:inline-flex; align-items:center; gap:4px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Quay lại</button>
+ </div>
+ <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+ <button class="btn-blue" onclick="calculateAvgDistance()" style="display:inline-flex; align-items:center; gap:4px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v8M8 12h8"></path></svg>Tính khoảng cách nguồn âm</button>
+ <button type="button" id="btnSyncDbReport" class="btn-green" onclick="syncFeatureToReport('db')" title="Đồng bộ số liệu &amp; biểu đồ mức cường độ âm sang Phần III báo cáo">Đồng bộ báo cáo</button>
+ </div>
+ </div>
+
+ <div style="padding: 20px; overflow-y: auto; flex-grow: 1;">
+ <div id="mcdReportTableContainer" style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+ <h3 style="margin-top: 0; color: #1e293b; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px;" id="mcdTableHeaderTitle">
+ BẢNG THỐNG KÊ MỨC CƯỜNG ĐỘ ÂM THU ĐƯỢC
+ </h3>
+ 
+ <table style="width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 14px;">
+ <thead>
+ <tr style="background: #f1f5f9; text-align: left; color: #475569;">
+ <th style="padding: 10px; border: 1px solid #cbd5e1;">Thông số đo</th>
+ <th style="padding: 10px; border: 1px solid #cbd5e1;">Giá trị (dB)</th>
+ <th style="padding: 10px; border: 1px solid #cbd5e1;">Đánh giá ngưỡng an toàn</th>
+ </tr>
+ </thead>
+ <tbody id="mcdTableBody">
+ </tbody>
+ </table>
+ </div>
+
+ <!-- CONTAINER KẾT QUẢ KHOẢNG CÁCH NGUỒN ÂM -->
+ <div id="distanceResultBox" style="display: none; margin-top: 16px; padding: 16px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px;">
+ </div>
+ </div>
+ </div>
+</div>
+
+<!-- MODAL HIỆU CHUẨN MICROPHONE & MỐC CHUẨN NGUỒN ÂM -->
+<div id="calibModalOverlay" class="modal-overlay" style="z-index: 150000;">
+ <div id="calibModal" class="modal-content" style="max-width: 560px; height: auto; max-height: 92dvh; background: #ffffff; color: #0f172a; border-radius: 12px; margin: auto; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);" onclick="event.stopPropagation()">
+ <div class="modal-header" style="background: linear-gradient(90deg, #059669, #10b981); padding: 12px 16px;">
+ <span style="display:flex; align-items:center; gap:8px; font-size:15px; font-weight:700;">
+ <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+ Hiệu chuẩn Micro &amp; Mốc chuẩn Nguồn âm (r₀, L₀)
+ </span>
+ <button class="btn-slate" onclick="closeCalibModal()" style="padding: 2px 8px; font-size:12px;">Đóng</button>
+ </div>
+ <div style="padding: 16px 20px; overflow-y: auto; line-height: 1.5; font-size: 13px;">
+            <!-- PHẦN 1: HIỆU CHUẨN ĐỘ NHẠY MICRO -->
+ <div style="margin-bottom: 14px;">
+ <div style="font-weight: 700; color: #059669; font-size: 13.5px; margin-bottom: 4px; text-transform: uppercase;">
+ 1. Hiệu chuẩn độ nhạy Micro (Tùy chọn theo máy chuẩn)
+ </div>
+ <p style="margin: 0 0 10px 0; color:#475569; font-size: 12.5px;">
+ Đồng bộ độ nhạy Micro với <i>Máy đo Mức cường độ âm (dB) chuẩn</i> thực tế để loại bỏ sai số phần cứng (nếu có).
+ </p>
+ 
+ <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:8px; padding:12px; margin-bottom:10px;">
+ <h4 style="margin:0 0 8px 0; color:#0f172a; font-size:13.5px; display:flex; align-items:center; gap:6px;">
+ Hiệu chuẩn Kênh A
+ </h4>
+ <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+ <label style="flex:1; font-weight:600; color:#334155;">Giá trị đo thô hiện tại (Uncalibrated):</label>
+ <span id="calibRawValueA" style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#dc2626; font-size:14px;">-- dB</span>
+ </div>
+ <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+ <label style="flex:1; font-weight:600; color:#334155;">Nhập MCĐ Chuẩn từ Máy đo chuẩn (dB):</label>
+ <input type="number" id="calibRefInputA" placeholder="VD: 75.0" step="0.1" style="width:100px; padding:4px 8px; border:1px solid #cbd5e1; border-radius:4px; font-weight:700; text-align:center;">
+ </div>
+ <div style="display:flex; align-items:center; gap:8px;">
+ <label style="flex:1; font-weight:600; color:#334155;">Hằng số lệch bù (Offset ΔL):</label>
+ <span id="calibOffsetDisplayA" style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#059669; font-size:14px;">+0.0 dB</span>
+ <button class="btn-green" onclick="applyCalibFromRef('A')" style="padding:4px 10px; font-size:12px;">Áp dụng A</button>
+ </div>
+ </div>
+
+ <div id="calibChannelBBox" style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:8px; padding:12px;">
+ <h4 style="margin:0 0 8px 0; color:#0f172a; font-size:13.5px; display:flex; align-items:center; gap:6px;">
+ Hiệu chuẩn Kênh B
+ </h4>
+ <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+ <label style="flex:1; font-weight:600; color:#334155;">Giá trị đo thô hiện tại (Uncalibrated):</label>
+ <span id="calibRawValueB" style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#2563eb; font-size:14px;">-- dB</span>
+ </div>
+ <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+ <label style="flex:1; font-weight:600; color:#334155;">Nhập MCĐ Chuẩn từ Máy đo chuẩn (dB):</label>
+ <input type="number" id="calibRefInputB" placeholder="VD: 75.0" step="0.1" style="width:100px; padding:4px 8px; border:1px solid #cbd5e1; border-radius:4px; font-weight:700; text-align:center;">
+ </div>
+ <div style="display:flex; align-items:center; gap:8px;">
+ <label style="flex:1; font-weight:600; color:#334155;">Hằng số lệch bù (Offset ΔL):</label>
+ <span id="calibOffsetDisplayB" style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#059669; font-size:14px;">+0.0 dB</span>
+ <button class="btn-blue" onclick="applyCalibFromRef('B')" style="padding:4px 10px; font-size:12px;">Áp dụng B</button>
+ </div>
+ </div>
+ </div>
+
+ <!-- PHẦN 2: XÁC ĐỊNH MỐC CHUẨN NGUỒN ÂM (r0, L0) TẠI CHỖ -->
+ <div style="background:#eff6ff; border:1.5px solid #93c5fd; border-radius:10px; padding:12px 14px; margin-bottom:14px;">
+ <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:6px;">
+ <span style="font-weight:700; color:#1d4ed8; font-size:13.5px; text-transform:uppercase;">
+ 2. Xác định mốc chuẩn nguồn âm (r₀, L₀) tại chỗ
+ </span>
+ <span id="sourceRefBadge" style="padding:2px 9px; border-radius:999px; font-size:11px; font-weight:700; background:#fef3c7; color:#b45309; border:1px solid #fcd34d;">
+ Chưa xác định mốc
+ </span>
+ </div>
+ <p style="margin:0 0 10px 0; color:#334155; font-size:12.5px;">
+ Đặt Micro cách nguồn âm một khoảng tự chọn <b>r₀</b> (VD: <code>0.5</code> m), nhập <b>r₀</b> rồi bấm <b>"Đo lấy mốc L₀ (1.5s)"</b> (hoặc nhập trực tiếp cặp số <b>r₀, L₀</b> từ đề bài).
+ </p>
+
+ <div style="display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom:10px;">
+ <div style="display:flex; align-items:center; gap:6px; flex:1; min-width:135px;">
+ <label for="sourceRefR0Input" style="font-weight:700; color:#0f172a; white-space:nowrap;">r₀ (m):</label>
+ <input type="number" id="sourceRefR0Input" placeholder="VD: 0.5" min="0.01" max="100" step="0.05" oninput="syncSourceRefFromInputs()" style="width:100%; padding:5px 8px; border:1px solid #93c5fd; border-radius:6px; font-weight:700; text-align:center; background:#ffffff; color:#0f172a;">
+ </div>
+ <div style="display:flex; align-items:center; gap:6px; flex:1; min-width:135px;">
+ <label for="sourceRefL0Input" style="font-weight:700; color:#0f172a; white-space:nowrap;">L₀ (dB):</label>
+ <input type="number" id="sourceRefL0Input" placeholder="Tự đo / nhập" min="10" max="140" step="0.1" oninput="syncSourceRefFromInputs()" style="width:100%; padding:5px 8px; border:1px solid #93c5fd; border-radius:6px; font-weight:700; text-align:center; background:#ffffff; color:#0f172a;">
+ </div>
+ </div>
+
+ <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
+ <button type="button" id="btnMeasureSourceL0" class="btn-blue" onclick="measureSourceRefL0()" style="flex:2; min-width:170px; padding:7px 10px; font-size:12.5px;">Đo lấy mốc L₀ (1.5s)</button>
+ <button type="button" class="btn-slate" onclick="clearSourceRefCalibration()" style="flex:1; min-width:95px; padding:7px 10px; font-size:12px;">Xóa mốc r₀, L₀</button>
+ </div>
+ <div id="sourceRefStatusMsg" style="margin-top:8px; font-size:12px; font-weight:600; color:#475569;">
+ Bắt buộc xác định <b>r₀, L₀</b> trước khi tính khoảng cách nguồn âm (<i>r = r₀ · 10<sup>(L₀ − L)/20</sup></i>).
+ </div>
+ </div>
+
+ <div style="display:flex; justify-content:space-between; gap:10px;">
+ <button class="btn-orange" onclick="resetCalibOffsets()" style="flex:1; padding:8px;">Đặt lại tất cả về Mặc định</button>
+ <button class="btn-dark" onclick="closeCalibModal()" style="flex:1; padding:8px;">Lưu &amp; Hoàn tất</button>
+ </div>
+ </div>
+ </div>
+</div>
+
+
+<!-- MODAL HIỆU CHỈNH BIÊN ĐỘ DAO ĐỘNG KÝ (TÁCH RIÊNG) -->
+<div id="oscCalibModalOverlay" class="modal-overlay" style="z-index: 150000;" onclick="closeOscCalibModal()">
+    <div id="oscCalibModal" class="modal-content" style="max-width: 560px; height: auto; max-height: 92dvh; background: #ffffff; color: #0f172a; border-radius: 12px; margin: auto; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);" onclick="event.stopPropagation()">
+        <div class="modal-header" style="background: linear-gradient(90deg, #059669, #10b981); padding: 12px 16px;">
+            <span style="display:flex; align-items:center; gap:8px; font-size:15px; font-weight:700;">
+                Hiệu chỉnh biên độ Dao động ký &amp; Tự động
+            </span>
+            <button type="button" class="btn-slate" onclick="closeOscCalibModal()" style="padding: 2px 8px; font-size:12px;">Đóng</button>
+        </div>
+        <div style="padding: 16px 20px; overflow-y: auto; line-height: 1.5; font-size: 13px;">
+            <div style="background:#ecfdf5; border:1.5px solid #6ee7b7; border-radius:10px; padding:12px 14px; margin-bottom:14px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:6px;">
+                    <span style="font-weight:700; color:#047857; font-size:13px; text-transform:uppercase;">
+                        Hiệu chỉnh tự động theo tín hiệu đo
+                    </span>
+                    <span id="oscAutoCalibStatus" style="font-size:11.5px; font-weight:700; color:#065f46; background:#d1fae5; padding:2px 8px; border-radius:999px;">
+                        Chế độ tự động: Tắt
+                    </span>
+                </div>
+                <p style="margin:0 0 10px 0; color:#334155; font-size:12.5px;">
+                    Tự động tính và áp dụng hệ số nhân biên độ để đỉnh sóng đạt mức mục tiêu chuẩn (mặc định <b>0.80</b> đv), hoặc bấm <b>Hiệu chỉnh tự động ngay</b> theo các mẫu sóng hiện có.
+                </p>
+                <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
+                    <label for="oscAutoTargetAmpInput" style="font-weight:700; color:#0f172a;">Biên độ đích (đv):</label>
+                    <input type="number" id="oscAutoTargetAmpInput" value="0.80" min="0.05" max="10.0" step="0.05" style="width:86px; padding:5px 8px; border:1px solid #34d399; border-radius:6px; font-weight:700; text-align:center; background:#ffffff; color:#0f172a;">
+                    <button type="button" class="btn-green" onclick="runAutoOscCalibrationNow()" style="padding:6px 12px; font-size:12.5px;">Hiệu chỉnh tự động ngay</button>
+                    <button type="button" id="btnToggleOscAutoLive" class="btn-blue" onclick="toggleOscAutoLiveCalib()" style="padding:6px 12px; font-size:12.5px;">Bật tự động liên tục</button>
+                </div>
+            </div>
+
+            <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:8px; padding:12px; margin-bottom:10px;">
+                <h4 style="margin:0 0 8px 0; color:#dc2626; font-size:13.5px;">Hiệu chỉnh biên độ Kênh A</h4>
+                <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+                    <label style="flex:1; font-weight:600; color:#334155;">Biên độ đỉnh đo thô hiện tại (A<sub>0</sub>):</label>
+                    <span id="oscRawAmpA" style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#dc2626; font-size:13.5px;">--</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+                    <label for="oscAmpGainSliderA" style="font-weight:600; color:#334155; white-space:nowrap;">Hệ số nhân (k<sub>A</sub>):</label>
+                    <input type="range" id="oscAmpGainSliderA" min="0.10" max="10.00" step="0.05" value="1.00" oninput="setOscAmpGain('A', this.value)" style="flex:1;">
+                    <input type="number" id="oscAmpGainInputA" min="0.05" max="50" step="0.05" value="1.00" onchange="setOscAmpGain('A', this.value)" style="width:76px; padding:4px 6px; border:1px solid #cbd5e1; border-radius:4px; font-weight:700; text-align:center;">
+                </div>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <label for="oscRefAmpInputA" style="flex:1; font-weight:600; color:#334155;">Nhập biên độ chuẩn (đv):</label>
+                    <input type="number" id="oscRefAmpInputA" placeholder="VD: 1.00" step="0.05" min="0.01" style="width:92px; padding:4px 8px; border:1px solid #cbd5e1; border-radius:4px; font-weight:700; text-align:center;">
+                    <button type="button" class="btn-green" onclick="applyOscAmpFromRef('A')" style="padding:4px 10px; font-size:12px;">Áp dụng A</button>
+                </div>
+            </div>
+
+            <div id="calibOscChannelBBox" style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:8px; padding:12px; margin-bottom:14px;">
+                <h4 style="margin:0 0 8px 0; color:#2563eb; font-size:13.5px;">Hiệu chỉnh biên độ Kênh B</h4>
+                <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+                    <label style="flex:1; font-weight:600; color:#334155;">Biên độ đỉnh đo thô hiện tại (B<sub>0</sub>):</label>
+                    <span id="oscRawAmpB" style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#2563eb; font-size:13.5px;">--</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+                    <label for="oscAmpGainSliderB" style="font-weight:600; color:#334155; white-space:nowrap;">Hệ số nhân (k<sub>B</sub>):</label>
+                    <input type="range" id="oscAmpGainSliderB" min="0.10" max="10.00" step="0.05" value="1.00" oninput="setOscAmpGain('B', this.value)" style="flex:1;">
+                    <input type="number" id="oscAmpGainInputB" min="0.05" max="50" step="0.05" value="1.00" onchange="setOscAmpGain('B', this.value)" style="width:76px; padding:4px 6px; border:1px solid #cbd5e1; border-radius:4px; font-weight:700; text-align:center;">
+                </div>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <label for="oscRefAmpInputB" style="flex:1; font-weight:600; color:#334155;">Nhập biên độ chuẩn (đv):</label>
+                    <input type="number" id="oscRefAmpInputB" placeholder="VD: 1.00" step="0.05" min="0.01" style="width:92px; padding:4px 8px; border:1px solid #cbd5e1; border-radius:4px; font-weight:700; text-align:center;">
+                    <button type="button" class="btn-blue" onclick="applyOscAmpFromRef('B')" style="padding:4px 10px; font-size:12px;">Áp dụng B</button>
+                </div>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; gap:10px;">
+                <button type="button" class="btn-orange" onclick="resetOscAmpCalibration()" style="flex:1; padding:8px;">Đặt lại biên độ (1.00)</button>
+                <button type="button" class="btn-dark" onclick="closeOscCalibModal()" style="flex:1; padding:8px;">Lưu &amp; Hoàn tất</button>
+            </div>
+        </div>
     </div>
-  </div>
+</div>
 
-  <script src="index.js"></script>
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').catch(() => {});
-      });
-    }
+<!-- FOX CHAT WIDGET -->
+<div id="fox-chat-widget">
+ <div class="fox-trigger-wrapper">
+ <div class="fox-ping-ring"></div>
+ <button id="fox-chat-trigger" onclick="toggleChat()"><span class="fox-trigger-icon fox-trigger-fox-icon" id="trigger-fox-icon-container"></span><span class="fox-trigger-icon fox-trigger-close-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span></button>
+ </div>
+ <div id="fox-chat-box">
+ <div class="fox-chat-header">
+ <div class="fox-header-left">
+ <div class="fox-avatar-container" id="header-fox-icon-container"></div>
+ <div class="fox-header-info">
+ <div class="fox-header-title">Fox-lab AI</div>
+ <div class="fox-header-status"><span class="fox-status-dot"></span><span id="foxStatusText">Trực tuyến</span></div>
+ </div>
+ </div>
+ <div class="fox-header-actions">
+ <button class="fox-role-toggle" id="foxRoleToggleBtn" onclick="toggleFoxRole()" title="Chuyển đổi chế độ Học sinh / Giáo viên">HS</button>
+ <button class="fox-btn-icon" id="themeToggleBtn" onclick="toggleChatTheme()" title="Đổi giao diện Sáng / Tối"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg></button>
+ </div>
+ </div>
 
-    const canvas = document.getElementById('scopeCanvas');
-    const ctx = canvas.getContext('2d');
+ <!-- QUICK PROMPT CHIPS -->
+ <div class="fox-chips-container" id="foxChipsContainer">
+ <button class="fox-chip" onclick="sendQuickPrompt('Giải thích hiện tượng sóng phách')">Sóng phách</button>
+ <button class="fox-chip" onclick="sendQuickPrompt('Công thức tính mức cường độ âm')">Mức cường độ âm</button>
+ <button class="fox-chip" onclick="sendQuickPrompt('Các bước thực hành đo tần số sóng cơ')">Các bước thí nghiệm</button>
+ <button class="fox-chip" onclick="sendQuickPrompt('Hướng dẫn phân tích đồ thị FFT')">Phân tích FFT</button>
+ </div>
 
-    function drawWaveform(tMs, rawU, rawV, rawA) {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      const midY = canvas.height / 2;
-      ctx.strokeStyle = '#e2e8f0';
-      ctx.beginPath();
-      ctx.moveTo(0, midY);
-      ctx.lineTo(canvas.width, midY);
-      ctx.stroke();
+ <div id="fox-chat-content">
+ <div class="fox-msg-row fox-msg-bot">
+ <div class="fox-msg-avatar" id="msg-fox-icon-container"></div>
+ <div class="fox-msg-group">
+ <div class="fox-msg-bubble">Xin chào quý Thầy/Cô và các em Học sinh! Mình là <b>Fox-lab AI</b>, trợ lý ảo hướng dẫn thí nghiệm Vật lý. Quý Thầy/Cô và các em Học sinh cần mình hỗ trợ vấn đề gì?</div>
+ <div class="fox-msg-actions-bar">
+ <button class="fox-speak-btn" onclick="speakFoxText(this)" title="Nghe AI đọc phản hồi">Nghe</button>
+ <button class="fox-export-btn" onclick="exportChatReport(this)">Tải báo cáo</button>
+ </div>
+ </div>
+ </div>
+ </div>
 
-      if (!rawU || rawU.length === 0) return;
-      const stepX = canvas.width / Math.max(rawU.length - 1, 1);
+ <!-- IMAGE PREVIEW CONTAINER -->
+ <div id="imagePreviewContainer">
+ <img id="imagePreviewThumb" src="" alt="Preview">
+ <span id="imagePreviewName">image.jpg</span>
+ <button class="fox-remove-img" onclick="clearImageUpload()"></button>
+ </div>
 
-      const drawSeries = (arr, color, scale) => {
-        ctx.strokeStyle = color;
-        ctx.lineWidth = 1.5;
-        ctx.beginPath();
-        arr.forEach((val, idx) => {
-          const x = idx * stepX;
-          const y = midY - val * scale;
-          if (idx === 0) ctx.moveTo(x, y);
-          else ctx.lineTo(x, y);
-        });
-        ctx.stroke();
-      };
+ <div class="fox-input-container">
+ <div class="fox-input-box">
+ <input type="file" id="foxImageUpload" accept="image/*" style="display: none;" onchange="handleImageSelected(event)">
+ <button class="fox-action-icon-btn" onclick="document.getElementById('foxImageUpload').click()" title="Tải lên hình ảnh đề bài"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg></button>
+ <button class="fox-action-icon-btn fox-mic-btn" id="foxMicBtn" title="Nói để nhập tin nhắn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg></button>
+ <input type="text" id="fox-chat-input" placeholder="Hỏi AI, nói hoặc tải ảnh..." autocomplete="off">
+ <button class="fox-send-btn" id="foxSendBtn" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg></button>
+ </div>
+ <div class="fox-footer-meta">FOX_LAB • AI Physics Assistant</div>
+ </div>
+ </div>
+</div>
 
-      drawSeries(rawU, '#0f172a', 70);
-      drawSeries(rawV, '#2563eb', 0.08);
-      drawSeries(rawA, '#dc2626', 0.0001);
-    }
+<!-- ========================================================================= -->
+<!-- MODAL BÁO CÁO THÍ NGHIỆM A4 XUẤT TỪNG PHẦN (TỰ ĐỘNG NHẬN DỮ LIỆU ĐO) -->
+<!-- ========================================================================= -->
+<div id="expReportModalOverlay" onclick="if(event.target===this) closeExpReportModal()">
+ <!-- Thanh công cụ gọn nhẹ: dữ liệu đo và xử lý chuyển qua tự động -->
+ <div class="exp-rep-toolbar no-print">
+ <div class="exp-rep-toolbar-compact">
+ <div class="exp-rep-tb-left">
+ <button type="button" class="exp-rep-btn exp-rep-btn-danger" onclick="closeExpReportModal()" title="Quay lại màn hình đo chính FOX_LAB">Quay lại</button>
+ <span class="exp-live-pill" title="Số liệu và đồ thị từ máy đo FOX_LAB được chuyển tự động sang báo cáo">
+ <span class="exp-live-dot"></span> Tự động nhận dữ liệu đo
+ </span>
+ <button type="button" class="exp-rep-btn exp-rep-btn-secondary" onclick="navigateToStandaloneReport()" title="Mở sang trang báo cáo riêng (report.html)">Trang riêng</button>
+ </div>
 
-    document.getElementById('btnSample').addEventListener('click', () => {
-      const sampleCount = 120;
-      const tMs = [];
-      const uVal = [];
-      const freq = 440;
-      for (let i = 0; i < sampleCount; i++) {
-        const tSec = i * 0.00005;
-        tMs.push(Number((tSec * 1000).toFixed(4)));
-        uVal.push(Math.sin(2 * Math.PI * freq * tSec));
-      }
-      const saved = window.FoxLabCore.recordMeasurement('Am thoa 440 Hz', tMs, uVal);
-      drawWaveform(saved.tMs, saved.rawU, saved.rawV, saved.rawA);
-      document.getElementById('statusText').textContent =
-        'Da luu ' + saved.label + ' (' + saved.rawU.length + ' mau rawU, rawV, rawA).';
-    });
+ <div class="exp-rep-tb-right">
+ <div class="exp-tb-dropdown" id="expDdCustomParts">
+ <button type="button" class="exp-rep-btn exp-rep-btn-secondary exp-dd-toggle-btn" onclick="toggleExpTbDropdown('expDdCustomParts', event)">Tùy chỉnh<span id="expSelectedCountBadge">(5)</span></button>
+ <div class="exp-tb-dropdown-menu" onclick="event.stopPropagation()">
+ <div class="exp-tb-dd-header">Chọn phần hiển thị &amp; xuất file</div>
+ <label class="exp-rep-chip">
+ <input type="checkbox" id="expChk-part1" checked onchange="syncExpCheckboxes()" />
+ <span>Phần I: Đo chu kì &amp; tần số</span>
+ </label>
+ <label class="exp-rep-chip">
+ <input type="checkbox" id="expChk-part2" checked onchange="syncExpCheckboxes()" />
+ <span>Phần II: Đồ thị liên quan</span>
+ </label>
+ <label class="exp-rep-chip">
+ <input type="checkbox" id="expChk-part3" checked onchange="syncExpCheckboxes()" />
+ <span>Phần III: Phân tích FFT</span>
+ </label>
+ <label class="exp-rep-chip">
+ <input type="checkbox" id="expChk-part4" checked onchange="syncExpCheckboxes()" />
+ <span>Phần IV: Mức cường độ âm (dB)</span>
+ </label>
+ <div class="exp-tb-dd-divider"></div>
+ <label class="exp-rep-chip" title="Tự động chuyển đồ thị nền tối sang nền trắng để xuất rõ nét">
+ <input type="checkbox" id="expInvertDarkToggle" checked onchange="redrawAllExpCanvases()" />
+ <span>Nền trắng đồ thị</span>
+ </label>
+ </div>
+ </div>
 
-    document.getElementById('btnClear').addEventListener('click', () => {
-      window.FoxLabCore.clearMeasurements();
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      document.getElementById('statusText').textContent = 'Da xoa toan bo du lieu do.';
-    });
-  </script>
+ <div class="exp-tb-dropdown" id="expDdExportFile">
+ <button type="button" class="exp-rep-btn exp-rep-btn-success" onclick="toggleExpTbDropdown('expDdExportFile', event)">Xuất file</button>
+ <div class="exp-tb-dropdown-menu align-right" onclick="event.stopPropagation()">
+ <div class="exp-tb-dd-header">Xuất các phần đã tích chọn</div>
+ <button type="button" class="exp-tb-action-item" onclick="exportSelectedExpToPDF()">Xuất file PDF (.pdf)</button>
+ <button type="button" class="exp-tb-action-item" onclick="exportSelectedExpToExcelCSV()">Xuất file Excel (.csv)</button>
+ </div>
+ </div>
+ </div>
+ </div>
+ </div>
+
+ <!-- Trang giấy A4 -->
+ <div class="exp-a4-sheet" id="expReportSheet">
+ <div class="exp-header-top">
+ <div>
+ <div class="exp-header-school" contenteditable="true" id="expSchoolName" oninput="saveExpReportToStorage(true)">TRƯỜNG THPT ........................................</div>
+ <div>Tổ chuyên môn: <span contenteditable="true" id="expDeptName" oninput="saveExpReportToStorage(true)">Vật lí - Công nghệ</span></div>
+ </div>
+ <div class="exp-header-meta-right">
+ <div><strong>PHIẾU BÁO CÁO THÍ NGHIỆM SÓNG ÂM</strong></div>
+ <div>Hệ thống đo: <strong>FOX_LAB</strong> | Xuất lúc: <span id="expExportTime">--/--/----</span></div>
+ </div>
+ </div>
+
+ <div class="exp-report-title" contenteditable="true" id="expReportTitle" oninput="saveExpReportToStorage(true)">
+ BÁO CÁO KẾT QUẢ THỰC HÀNH KHẢO SÁT SÓNG ÂM
+ </div>
+ <div class="exp-report-subtitle" contenteditable="true" id="expReportSubtitle" oninput="saveExpReportToStorage(true)">
+ (Chương trình Vật lí 11 – Kết nối tri thức với cuộc sống)
+ </div>
+
+ <div class="exp-info-grid">
+ <div><strong>Nhóm thực hiện:</strong> <span contenteditable="true" id="expGroupName" oninput="saveExpReportToStorage(true)">Nhóm 01</span></div>
+ <div><strong>Lớp:</strong> <span contenteditable="true" id="expClassName" oninput="saveExpReportToStorage(true)">11A1</span></div>
+ <div><strong>Thành viên nhóm:</strong> <span contenteditable="true" id="expStudentNames" oninput="saveExpReportToStorage(true)">..........................................................</span></div>
+ <div><strong>Đối tượng / Nguồn âm:</strong> <span contenteditable="true" id="expSoundSource" oninput="saveExpReportToStorage(true)">Âm thoa chuẩn 440 Hz &amp; Nhạc cụ</span></div>
+ </div>
+
+ <div class="exp-tech-bar">
+ <span><strong>Trục thời gian:</strong> <span contenteditable="true" id="expScaleX" oninput="saveExpReportToStorage(true)">2,00 ms/ô</span></span>
+ <span><strong>Trục biên độ:</strong> <span contenteditable="true" id="expScaleY" oninput="saveExpReportToStorage(true)">0,20 V/ô</span></span>
+ <span><strong>Lấy mẫu:</strong> <span contenteditable="true" id="expSampleRate" oninput="saveExpReportToStorage(true)">48000 Hz</span></span>
+ <span><strong>Chế độ bộ lọc số:</strong> <span contenteditable="true" id="expFilterStatus" oninput="saveExpReportToStorage(true)">Thông dải (45 – 3000 Hz)</span></span>
+ </div>
+
+ <!-- PHẦN I: DAO ĐỘNG KÍ -->
+ <section class="exp-report-part" id="expPart1" data-title="BÁO CÁO THỰC HÀNH: KHẢO SÁT DẠNG SÓNG VÀ ĐO CHU KÌ, TẦN SỐ">
+ <div class="exp-part-title">
+ <span>PHẦN I. KHẢO SÁT DẠNG SÓNG VÀ ĐO CHU KÌ, TẦN SỐ (DAO ĐỘNG KÍ)</span>
+ <div class="exp-part-actions no-print">
+ <button type="button" class="exp-inline-btn exp-inline-btn-pdf" onclick="exportSingleExpPartToPDF('expPart1', 'Phan1_DaoDongKi')">PDF phần này</button>
+ <button type="button" class="exp-inline-btn exp-inline-btn-img" onclick="exportExpPartAsImage('expPart1', 'Phan1_DaoDongKi')">Xuất ảnh phần này</button>
+ <button type="button" class="exp-inline-btn exp-inline-btn-csv" onclick="exportSingleExpPartCSV('expPart1')">CSV</button>
+ </div>
+ </div>
+
+ <div class="exp-sub-heading">
+ <span>
+ 1.1. Bảng số liệu đo chu kì (<i>T</i>), tần số (<i>f</i>) và tính toán sai số
+ <span class="exp-row-counter-badge no-print" id="expOscCountBadge">1 / 10 dòng</span>
+ </span>
+ <button type="button" class="exp-inline-btn no-print" id="btnAddExpOsc" onclick="addExpOscRow()">+ Thêm lần đo (Tối đa 10)</button>
+ </div>
+ <table class="exp-data-table">
+ <thead>
+ <tr>
+ <th style="width: 12%;">Lần đo</th>
+ <th style="width: 16%;">Số chu kì (<i>N</i>)</th>
+ <th style="width: 22%;">Thời gian Δ<i>t</i> = <i>t</i><sub>2</sub> − <i>t</i><sub>1</sub> (ms)</th>
+ <th style="width: 22%;">Chu kì <i>T</i> = Δ<i>t</i> / <i>N</i> (ms)</th>
+ <th style="width: 22%;">Tần số <i>f</i> = 1 / <i>T</i> (Hz)</th>
+ <th class="no-print" style="width: 6%;">Xóa</th>
+ </tr>
+ </thead>
+ <tbody id="expOscBody"></tbody>
+ <tfoot>
+ <tr class="summary-row">
+ <td colspan="3">Giá trị trung bình (<span class="overline"><i>x</i></span>)</td>
+ <td id="expAvgT">—</td>
+ <td id="expAvgF">—</td>
+ <td class="no-print"></td>
+ </tr>
+ <tr class="summary-row">
+ <td colspan="3">Sai số tuyệt đối trung bình (<span class="overline">Δ<i>x</i></span>)</td>
+ <td id="expErrT">—</td>
+ <td id="expErrF">—</td>
+ <td class="no-print"></td>
+ </tr>
+ </tfoot>
+ </table>
+
+ <div class="exp-result-box">
+ <p><strong>Kết quả phép đo dao động kí:</strong> &nbsp;
+ <span id="expResT"><i>T</i> = (— ± —) ms</span> &nbsp;|&nbsp;
+ <span id="expResF"><i>f</i> = (— ± —) Hz</span> &nbsp;(Sai số tỉ đối: <span id="expRelF">—</span>)
+ </p>
+ </div>
+
+ <div class="exp-sub-heading">
+ <span>1.2. Đồ thị dao động điều hòa tương ứng với từng lần đo (<i>t</i><sub>1</sub>, <i>t</i><sub>2</sub>)</span>
+ </div>
+ <div class="exp-per-row-graphs-grid single-item" id="expOscGraphsGrid"></div>
+ </section>
+
+ <!-- PHẦN II: PHỔ TẦN SỐ FFT -->
+ <section class="exp-report-part" id="expPart2" data-title="BÁO CÁO THỰC HÀNH: PHÂN TÍCH PHỔ TẦN SỐ VÀ ÂM SẮC (FFT)">
+ <div class="exp-part-title">
+ <span>PHẦN II. PHÂN TÍCH PHỔ TẦN SỐ VÀ ÂM SẮC (QUÉT PHỔ FFT)</span>
+ <div class="exp-part-actions no-print">
+ <button type="button" class="exp-inline-btn exp-inline-btn-pdf" onclick="exportSingleExpPartToPDF('expPart2', 'Phan2_PhoFFT')">PDF phần này</button>
+ <button type="button" class="exp-inline-btn exp-inline-btn-img" onclick="exportExpPartAsImage('expPart2', 'Phan2_PhoFFT')">Xuất ảnh phần này</button>
+ <button type="button" class="exp-inline-btn exp-inline-btn-csv" onclick="exportSingleExpPartCSV('expPart2')">CSV</button>
+ </div>
+ </div>
+
+ <div class="exp-sub-heading">
+ <span>
+ 2.1. Bảng phân tích tần số cơ bản và đặc trưng họa âm giữa các nguồn âm
+ <span class="exp-row-counter-badge no-print" id="expFftCountBadge">1 / 10 dòng</span>
+ </span>
+ <button type="button" class="exp-inline-btn no-print" id="btnAddExpFft" onclick="addExpFftRow()">+ Thêm nguồn âm (Tối đa 10)</button>
+ </div>
+ <table class="exp-data-table">
+ <thead>
+ <tr>
+ <th style="width: 8%;">STT</th>
+ <th style="width: 22%;">Nguồn âm khảo sát</th>
+ <th style="width: 16%;">Tần số cơ bản <i>f</i><sub>0</sub> (Hz)</th>
+ <th style="width: 24%;">Các họa âm ghi nhận được</th>
+ <th style="width: 24%;">Đặc điểm dạng sóng &amp; Âm sắc</th>
+ <th class="no-print" style="width: 6%;">Xóa</th>
+ </tr>
+ </thead>
+ <tbody id="expFftBody"></tbody>
+ </table>
+
+ <div class="exp-sub-heading">
+ <span>2.2. Biểu đồ phổ biên độ – tần số tương ứng từng nguồn âm</span>
+ </div>
+ <div class="exp-per-row-graphs-grid single-item" id="expFftGraphsGrid"></div>
+ </section>
+
+ <!-- PHẦN III: MỨC CƯỜNG ĐỘ ÂM (dB) -->
+ <section class="exp-report-part" id="expPart3" data-title="BÁO CÁO THỰC HÀNH: ĐO MỨC CƯỜNG ĐỘ ÂM VÀ SỰ TRUYỀN ÂM (dB)">
+ <div class="exp-part-title">
+ <span>PHẦN III. ĐO MỨC CƯỜNG ĐỘ ÂM VÀ SỰ TRUYỀN ÂM (MÁY ĐO dB)</span>
+ <div class="exp-part-actions no-print">
+ <button type="button" class="exp-inline-btn exp-inline-btn-pdf" onclick="exportSingleExpPartToPDF('expPart3', 'Phan3_MucCuongDoAm')">PDF phần này</button>
+ <button type="button" class="exp-inline-btn exp-inline-btn-img" onclick="exportExpPartAsImage('expPart3', 'Phan3_MucCuongDoAm')">Xuất ảnh phần này</button>
+ <button type="button" class="exp-inline-btn exp-inline-btn-csv" onclick="exportSingleExpPartCSV('expPart3')">CSV</button>
+ </div>
+ </div>
+
+ <div class="exp-sub-heading">
+ <span>
+ 3.1. Bảng số liệu mức cường độ âm theo vị trí / khoảng cách
+ <span class="exp-row-counter-badge no-print" id="expDbCountBadge">1 / 10 dòng</span>
+ </span>
+ <button type="button" class="exp-inline-btn no-print" id="btnAddExpDb" onclick="addExpDbRow()">+ Thêm vị trí đo (Tối đa 10)</button>
+ </div>
+ <table class="exp-data-table">
+ <thead>
+ <tr>
+ <th style="width: 14%;">Vị trí đo</th>
+ <th style="width: 18%;">Khoảng cách <i>r</i> (m)</th>
+ <th style="width: 16%;"><i>L</i><sub>min</sub> (dB)</th>
+ <th style="width: 16%;"><i>L</i><sub>max</sub> (dB)</th>
+ <th style="width: 16%;"><i>L</i><sub>TB</sub> (dB)</th>
+ <th style="width: 14%;">Độ giảm Δ<i>L</i></th>
+ <th class="no-print" style="width: 6%;">Xóa</th>
+ </tr>
+ </thead>
+ <tbody id="expDbBody"></tbody>
+ </table>
+
+ <div class="exp-sub-heading">
+ <span>3.2. Đồ thị biến thiên mức cường độ âm <i>L</i>(<i>t</i>) theo từng vị trí đo</span>
+ </div>
+ <div class="exp-per-row-graphs-grid single-item" id="expDbGraphsGrid"></div>
+ </section>
+
+ <!-- PHẦN IV: BỘ LỌC SỐ VÀ XỬ LÝ TÍN HIỆU -->
+ <section class="exp-report-part" id="expPart4" data-title="BÁO CÁO THỰC HÀNH: KHẢO SÁT HIỆU QUẢ BỘ LỌC SỐ VÀ KHỬ NHIỄU">
+ <div class="exp-part-title">
+ <span>PHẦN IV. KHẢO SÁT HIỆU QUẢ KHỬ NHIỄU CỦA BỘ LỌC SỐ</span>
+ <div class="exp-part-actions no-print">
+ <button type="button" class="exp-inline-btn exp-inline-btn-pdf" onclick="exportSingleExpPartToPDF('expPart4', 'Phan4_BoLocSo')">PDF phần này</button>
+ <button type="button" class="exp-inline-btn exp-inline-btn-img" onclick="exportExpPartAsImage('expPart4', 'Phan4_BoLocSo')">Xuất ảnh phần này</button>
+ </div>
+ </div>
+
+ <div class="exp-sub-heading">
+ <span>4.1. So sánh dạng sóng trước và sau khi áp dụng bộ lọc số</span>
+ <button type="button" class="exp-inline-btn exp-inline-btn-img no-print" onclick="exportSingleExpCanvas('expCanvasFilter', 'Phan4_ChiDoThiLoc')">Xuất ảnh đồ thị</button>
+ </div>
+ <div class="exp-graph-box">
+ <canvas id="expCanvasFilter" data-no-export="true" width="820" height="200"></canvas>
+ <div class="exp-graph-caption" contenteditable="true" oninput="saveExpReportToStorage(true)">
+ Hình 4.1. Tín hiệu thu trực tiếp lẫn tạp âm môi trường (trái) và tín hiệu hình sin sạch sau khi qua bộ lọc thông dải (phải).
+ </div>
+ </div>
+
+ <div class="exp-sub-heading">
+ <span>4.2. Đánh giá thông số bộ lọc và độ ổn định kết quả đo</span>
+ </div>
+ <table class="exp-data-table">
+ <thead>
+ <tr>
+ <th style="width: 26%;">Trạng thái bộ lọc</th>
+ <th style="width: 24%;">Dải tần số cho qua</th>
+ <th style="width: 24%;">Độ ổn định dạng sóng</th>
+ <th style="width: 26%;">Tần số đọc được (Hz)</th>
+ </tr>
+ </thead>
+ <tbody id="expFilterBody">
+ <tr>
+ <td contenteditable="true" oninput="saveExpReportToStorage(true)">Tắt bộ lọc (Tín hiệu thô)</td>
+ <td contenteditable="true" oninput="saveExpReportToStorage(true)">Toàn dải (20 – 20000 Hz)</td>
+ <td contenteditable="true" oninput="saveExpReportToStorage(true)">Có gợn nhiễu tần số cao/thấp</td>
+ <td contenteditable="true" id="expFilterRawFreqCell" oninput="saveExpReportToStorage(true)">Dao động theo nhiễu nền</td>
+ </tr>
+ <tr>
+ <td contenteditable="true" oninput="saveExpReportToStorage(true)">Bật lọc thông dải (Band-pass)</td>
+ <td contenteditable="true" id="expFilterBandCell" oninput="saveExpReportToStorage(true)">45 – 3000 Hz</td>
+ <td contenteditable="true" oninput="saveExpReportToStorage(true)">Đường sin mượt, đỉnh rõ nét</td>
+ <td contenteditable="true" id="expFilterFreqCell" oninput="saveExpReportToStorage(true)">Ổn định tại tần số cơ bản</td>
+ </tr>
+ </tbody>
+ </table>
+ </section>
+ </div>
+
+ <div class="exp-toast-msg no-print" id="expToastMsg"></div>
+</div>
+
+ <script src="index.js"></script>
+ <script>
+ window.FOX_REPORT_PAGE = "report.html";
+ (function () {
+ const REPORT_KEY = "daodongki_report_data";
+ window.navigateToStandaloneReport = function () {
+ try {
+ const isDual = (typeof window.getActiveChannelMode === "function") && (window.getActiveChannelMode() === "2");
+ const raw = localStorage.getItem(REPORT_KEY);
+ const parsed = raw ? JSON.parse(raw) : {};
+ parsed.isDualChannel = isDual;
+ parsed.dualSource = isDual;
+ parsed._source = "main_app";
+ parsed._updatedAt = Date.now();
+ parsed.syncFeature = "mode_only";
+ delete parsed.cacLanDo;
+ delete parsed.phoTanSo;
+ delete parsed.mucCuongDoAm;
+ const cleanStr = JSON.stringify(parsed);
+ localStorage.setItem(REPORT_KEY, cleanStr);
+ window.name = "FOXLAB_DATA:" + cleanStr;
+ const bc = new BroadcastChannel("foxlab_report_sync");
+ bc.postMessage({ type: "SYNC_REPORT_DATA", payload: parsed });
+ bc.close();
+ } catch (e) {}
+ const reportWin = window.open("report.html", "FoxLabReportWindow");
+ if (!reportWin) {
+ window.location.href = "report.html";
+ }
+ };
+ })();
+ </script>
 </body>
 </html>
