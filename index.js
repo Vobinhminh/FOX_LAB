@@ -11,7 +11,7 @@ async function checkAppVersion() {
                 localStorage.setItem('fox_app_version', serverVersion);
             } else if (localVersion !== serverVersion) {
                 localStorage.setItem('fox_app_version', serverVersion);
-                if ('caches' in window) {
+                if ('caches'in window) {
                     const keys = await caches.keys();
                     await Promise.all(keys.map(key => caches.delete(key)));
                 }
@@ -84,7 +84,7 @@ async function checkAppVersion() {
         }
     }
 
-    const FOX_AVATAR_SVG = `<svg viewBox="0 0 100 100" fill="none"><polygon points="22,12 10,48 36,40" fill="#ff7a30"/><polygon points="23,19 16,44 32,38" fill="#1e293b"/><path d="M 19 36 Q 23 32 28 34" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round"/><polygon points="78,12 64,40 90,48" fill="#ff7a30"/><polygon points="77,19 68,38 84,44" fill="#1e293b"/><path d="M 81 36 Q 77 32 72 34" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round"/><polygon points="50,22 36,40 50,46" fill="#ff8f4a"/><polygon points="50,22 50,46 64,40" fill="#ff7a30"/><polygon points="36,40 10,48 20,68 38,58" fill="#d4380d"/><polygon points="64,40 38,58 50,46" fill="#e04006"/><polygon points="64,40 50,46 62,58" fill="#d4380d"/><polygon points="64,40 90,48 80,68 62,58" fill="#d4380d"/><polygon points="20,68 12,74 26,76 34,68" fill="#e2e8f0"/><polygon points="80,68 88,74 74,76 66,68" fill="#cbd5e1"/><polygon points="38,58 50,46 50,78 36,68" fill="#ff7a30"/><polygon points="62,58 50,46 50,78 64,68" fill="#e04006"/><polygon points="50,78 36,68 44,88 50,88" fill="#f8fafc"/><polygon points="50,78 64,68 56,88 50,88" fill="#e2e8f0"/><polygon points="50,88 45,82 55,82" fill="#0f172a"/><polygon points="25,48 50,54 75,48 71,59 50,65 29,59" fill="#090d16" stroke="rgba(56,189,248,0.5)" stroke-width="0.9"/><circle cx="34.5" cy="48" r="1.5" fill="#ffffff"/><circle cx="44.5" cy="60" r="1.5" fill="#ffffff"/><circle cx="54.5" cy="48" r="1.5" fill="#ffffff"/><circle cx="64.5" cy="60" r="1.5" fill="#ffffff"/></svg>`;
+    const FOX_AVATAR_SVG = `<svg viewBox="0 0 100 100"fill="none"><polygon points="22,12 10,48 36,40"fill="#ff7a30"/><polygon points="23,19 16,44 32,38"fill="#1e293b"/><path d="M 19 36 Q 23 32 28 34"stroke="#38bdf8"stroke-width="1.3"stroke-linecap="round"/><polygon points="78,12 64,40 90,48"fill="#ff7a30"/><polygon points="77,19 68,38 84,44"fill="#1e293b"/><path d="M 81 36 Q 77 32 72 34"stroke="#38bdf8"stroke-width="1.3"stroke-linecap="round"/><polygon points="50,22 36,40 50,46"fill="#ff8f4a"/><polygon points="50,22 50,46 64,40"fill="#ff7a30"/><polygon points="36,40 10,48 20,68 38,58"fill="#d4380d"/><polygon points="64,40 38,58 50,46"fill="#e04006"/><polygon points="64,40 50,46 62,58"fill="#d4380d"/><polygon points="64,40 90,48 80,68 62,58"fill="#d4380d"/><polygon points="20,68 12,74 26,76 34,68"fill="#e2e8f0"/><polygon points="80,68 88,74 74,76 66,68"fill="#cbd5e1"/><polygon points="38,58 50,46 50,78 36,68"fill="#ff7a30"/><polygon points="62,58 50,46 50,78 64,68"fill="#e04006"/><polygon points="50,78 36,68 44,88 50,88"fill="#f8fafc"/><polygon points="50,78 64,68 56,88 50,88"fill="#e2e8f0"/><polygon points="50,88 45,82 55,82"fill="#0f172a"/><polygon points="25,48 50,54 75,48 71,59 50,65 29,59"fill="#090d16"stroke="rgba(56,189,248,0.5)"stroke-width="0.9"/><circle cx="34.5"cy="48"r="1.5"fill="#ffffff"/><circle cx="44.5"cy="60"r="1.5"fill="#ffffff"/><circle cx="54.5"cy="48"r="1.5"fill="#ffffff"/><circle cx="64.5"cy="60"r="1.5"fill="#ffffff"/></svg>`;
     const LICENSE_GAS_ID = "AKfycbwC9gwiwBdIsfvv2nGZQNrkeR1O43GTW9lhMCu6fEn-LGjjbmMEcy-3153DZRkOaLdx3Q";
     const CHAT_GAS_ID = "AKfycbwllsi_eXt98JRwTDyHPtD8qtgx6nnyhnDD8sSk5mIgEeB0EGLHkIwydpATOWohKJLuEg";
 
@@ -111,7 +111,7 @@ async function checkAppVersion() {
     if (btnCalib) {
         btnCalib.addEventListener('click', () => {
             if (isDemoMode) {
-                alert("⚠️ Chức năng Hiệu chuẩn Micro bị khóa ở bản Dùng thử Demo. Vui lòng kích hoạt bản Full để sử dụng!");
+                alert("Chức năng Hiệu chuẩn Micro bị khóa ở bản Dùng thử Demo. Vui lòng kích hoạt bản Full để sử dụng!");
                 openLicenseModal();
                 return;
             }
@@ -150,7 +150,7 @@ async function checkAppVersion() {
     let dbStartTime = 0;
     const SAFETY_THRESHOLD_DB = 85.0;
 
-    let currentFoxRole = 'student'; // 'student' or 'teacher'
+    let currentFoxRole = 'student'; // 'student'or 'teacher'
     let uploadedImageBase64 = null;
 
     function getDisplayMode() {
@@ -231,11 +231,11 @@ async function checkAppVersion() {
         if (!key) { alert("Bạn chưa kích hoạt Key nào hoặc đang ở chế độ Dùng thử!"); return; }
 
         if (action === 'logout') {
-            if (confirm("🚪 Bạn muốn Đăng xuất khỏi thiết bị này?\n(Key vẫn giữ quyền sử dụng trên hệ thống)")) {
+            if (confirm("Bạn muốn Đăng xuất khỏi thiết bị này?\n(Key vẫn giữ quyền sử dụng trên hệ thống)")) {
                 forceLogout(false);
             }
         } else if (action === 'change') {
-            if (confirm("🔄 Bạn muốn Đổi thiết bị?\n(Thiết bị này sẽ bị gỡ bỏ khỏi Google Sheet để bạn kích hoạt trên máy mới - Tối đa 3 lần đổi/Key)")) {
+            if (confirm("Bạn muốn Đổi thiết bị?\n(Thiết bị này sẽ bị gỡ bỏ khỏi Google Sheet để bạn kích hoạt trên máy mới - Tối đa 3 lần đổi/Key)")) {
                 try {
                     infoMessageText.innerHTML = "Đang gửi yêu cầu giải phóng device ID...";
                     await fetch(LICENSE_GAS_URL, {
@@ -243,14 +243,14 @@ async function checkAppVersion() {
                         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                         body: JSON.stringify({ action: "releaseDevice", key: key, deviceId: getDeviceId() })
                     });
-                    alert("✅ Đã tự động xóa Device ID trên Google Sheet! Bạn có thể nhập Key này trên máy mới.");
+                    alert("Đã tự động xóa Device ID trên Google Sheet! Bạn có thể nhập Key này trên máy mới.");
                 } catch (e) {
                     console.log("Lỗi gửi releaseDevice:", e);
                 }
                 forceLogout(false);
             }
         } else if (action === 'delete') {
-            if (confirm("🗑 XÓA KEY VĨNH VIỄN?\nBạn có chắc chắn muốn xóa Key và xóa Device ID khỏi Google Sheet? (Thao tác không thể hoàn tác)")) {
+            if (confirm("XÓA KEY VĨNH VIỄN?\nBạn có chắc chắn muốn xóa Key và xóa Device ID khỏi Google Sheet? (Thao tác không thể hoàn tác)")) {
                 try {
                     infoMessageText.innerHTML = "Đang xóa Key & Device ID trên Google Sheet...";
                     await fetch(LICENSE_GAS_URL, {
@@ -258,7 +258,7 @@ async function checkAppVersion() {
                         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                         body: JSON.stringify({ action: "deleteKey", key: key, deviceId: getDeviceId() })
                     });
-                    alert("✅ Đã gửi lệnh xóa Key & Device ID vĩnh viễn khỏi hệ thống!");
+                    alert("Đã gửi lệnh xóa Key & Device ID vĩnh viễn khỏi hệ thống!");
                 } catch (e) {
                     console.log("Lỗi xóa key:", e);
                 }
@@ -271,7 +271,7 @@ async function checkAppVersion() {
     function activateFullMode(key) {
         isDemoMode = false; localStorage.setItem('fox_license_key', key); localStorage.setItem('fox_last_verify_time', Date.now().toString());
         document.getElementById('licenseModalOverlay').style.display = 'none';
-        infoMessageText.innerHTML = "✅ Bản Full Chính Thức đã kích hoạt thành công!";
+        infoMessageText.innerHTML = "Bản Full Chính Thức đã kích hoạt thành công!";
         const gearBtn = document.querySelector('.license-gear-btn');
         if (gearBtn) gearBtn.style.display = 'none';
 
@@ -311,7 +311,7 @@ async function checkAppVersion() {
                 activateFullMode(key);
             } else {
                 if (!isSilent) {
-                    let confirmChange = confirm(`❌ Lỗi: ${result.message}\n\nMã Key này có thể đang được sử dụng ở thiết bị khác.\nBạn có muốn XÁC NHẬN ĐỔI THIẾT BỊ (tự động đăng xuất máy cũ, lưu vào máy mới - tối đa 3 lần) không?`);
+                    let confirmChange = confirm(` Lỗi: ${result.message}\n\nMã Key này có thể đang được sử dụng ở thiết bị khác.\nBạn có muốn XÁC NHẬN ĐỔI THIẾT BỊ (tự động đăng xuất máy cũ, lưu vào máy mới - tối đa 3 lần) không?`);
                     if (confirmChange) {
                         forceChangeDevice(key, type);
                     } else {
@@ -320,7 +320,7 @@ async function checkAppVersion() {
                 } else { forceLogout(); }
             }
         } catch (e) {
-            if (isSilent) { activateFullMode(key); infoMessageText.innerHTML = "✅ Bản Full (Ngoại tuyến)"; }
+            if (isSilent) { activateFullMode(key); infoMessageText.innerHTML = "Bản Full (Ngoại tuyến)"; }
             else { alert("Lỗi mạng khi kiểm tra Key."); forceLogout(); }
         }
     }
@@ -334,10 +334,10 @@ async function checkAppVersion() {
             });
             const result = await response.json();
             if (result.status === "success") {
-                alert("✅ Đổi thiết bị thành công! Key đã được gán cho máy này.");
+                alert("Đổi thiết bị thành công! Key đã được gán cho máy này.");
                 activateFullMode(key);
             } else {
-                alert(`❌ Không thể đổi thiết bị: ${result.message}\n(Có thể mã Key này đã hết số lần Đổi thiết bị)`);
+                alert(` Không thể đổi thiết bị: ${result.message}\n(Có thể mã Key này đã hết số lần Đổi thiết bị)`);
                 forceLogout();
             }
         } catch (e) { alert("Lỗi kết nối khi yêu cầu đổi thiết bị!"); forceLogout(); }
@@ -345,7 +345,7 @@ async function checkAppVersion() {
 
     async function verifyEnteredKey(actionType = 'verify') {
         const keyInput = document.getElementById('licenseKeyInput').value.trim();
-        if (!keyInput) { alert("⚠️ Vui lòng nhập mã Key hợp lệ!"); return; }
+        if (!keyInput) { alert("Vui lòng nhập mã Key hợp lệ!"); return; }
         if (actionType === 'change') {
             await forceChangeDevice(keyInput, "full");
         } else {
@@ -452,7 +452,7 @@ async function checkAppVersion() {
                 const response = await fetch(LICENSE_GAS_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: "verifyKey", key: activeKey, deviceId: getDeviceId(), type: "full" }) });
                 const result = await response.json();
                 if (result.status !== "success") {
-                    alert("⚠️ Key bản quyền của bạn đã bị đăng xuất hoặc giải phóng khỏi thiết bị. Ứng dụng sẽ quay lại bản dùng thử!");
+                    alert("Key bản quyền của bạn đã bị đăng xuất hoặc giải phóng khỏi thiết bị. Ứng dụng sẽ quay lại bản dùng thử!");
                     forceLogout();
                 } else {
                     localStorage.setItem('fox_last_verify_time', Date.now().toString());
@@ -482,10 +482,10 @@ async function checkAppVersion() {
                     correctLevel: QRCode.CorrectLevel.M
                 });
             } else {
-                container.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrUrl)}" style="width:44px;height:44px;">`;
+                container.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrUrl)}"style="width:44px;height:44px;">`;
             }
         } catch(e) {
-            container.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrUrl)}" style="width:44px;height:44px;">`;
+            container.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrUrl)}"style="width:44px;height:44px;">`;
         }
     }
     window.addEventListener('resize', checkAndShowQR);
@@ -557,7 +557,7 @@ async function checkAppVersion() {
         item.addEventListener('mouseenter', () => updateSettingsPill(item.parentElement, item, true));
         item.addEventListener('click', (e) => {
             e.stopPropagation();
-            if (isDemoMode && item.dataset.target === 'speedSelect' && item.dataset.value === 'slow') { alert("Tốc độ quét 'Chậm' chỉ hỗ trợ trên bản Full."); return; }
+            if (isDemoMode && item.dataset.target === 'speedSelect' && item.dataset.value === 'slow') { alert("Tốc độ quét 'Chậm'chỉ hỗ trợ trên bản Full."); return; }
             const targetSelect = document.getElementById(item.dataset.target);
             item.parentElement.querySelectorAll('.settings-item').forEach(s => s.classList.remove('active'));
             item.classList.add('active');
@@ -661,7 +661,7 @@ async function checkAppVersion() {
 
         if (displayMode === 'dbMeter') {
             if (isDemoMode) {
-                alert("⚠️ Chức năng Phân tích Mức cường độ âm bị khóa ở chế độ Dùng thử Demo. Vui lòng nhập Key bản Full!");
+                alert("Chức năng Phân tích Mức cường độ âm bị khóa ở chế độ Dùng thử Demo. Vui lòng nhập Key bản Full!");
                 openLicenseModal();
                 return;
             }
@@ -669,7 +669,7 @@ async function checkAppVersion() {
         } else if (mode === '1') {
             if (surveyMode !== 'auto') return;
             if (isDemoMode) {
-                alert("⚠️ Chức năng Phân tích Họa âm FFT chỉ dành cho bản Full.");
+                alert("Chức năng Phân tích Họa âm FFT chỉ dành cho bản Full.");
                 openLicenseModal();
                 return;
             }
@@ -677,7 +677,7 @@ async function checkAppVersion() {
         } else {
             if (surveyMode !== 'continuous') return;
             if (isDemoMode) {
-                alert("⚠️ Chức năng Xử lý 2 Nguồn âm chỉ dành cho bản Full.");
+                alert("Chức năng Xử lý 2 Nguồn âm chỉ dành cho bản Full.");
                 openLicenseModal();
                 return;
             }
@@ -786,7 +786,7 @@ async function checkAppVersion() {
         if (mode === '1') {
             if (isTwoSourceGraphAnalysisMode) resetManualAnalysisState();
             if (!isManualAnalysisMode) {
-                btnManualAnalysis.textContent = "Phân tích đồ thị ▼";
+                btnManualAnalysis.textContent = "Phân tích đồ thị ";
                 btnManualAnalysis.className = "btn-purple";
             }
             const hasEnoughDataA = channelConfig.A.active && channelConfig.A.data && channelConfig.A.index > minSamples;
@@ -824,7 +824,7 @@ async function checkAppVersion() {
         draggingTwoSourcePoint = null;
         if (analysisPointDropdown) analysisPointDropdown.classList.remove('open');
         if (btnManualAnalysis) {
-            btnManualAnalysis.textContent = (getActiveChannelMode() === '2') ? "Phân tích đồ thị" : "Phân tích đồ thị ▼";
+            btnManualAnalysis.textContent = (getActiveChannelMode() === '2') ? "Phân tích đồ thị" : "Phân tích đồ thị ";
             btnManualAnalysis.className = "btn-purple";
         }
         closeManualHud();
@@ -842,19 +842,19 @@ async function checkAppVersion() {
                 return;
             }
             if (isDemoMode) {
-                alert("⚠️ Chức năng Phân tích đồ thị bị khóa ở chế độ Dùng thử Demo. Vui lòng nhập Key bản Full!");
+                alert("Chức năng Phân tích đồ thị bị khóa ở chế độ Dùng thử Demo. Vui lòng nhập Key bản Full!");
                 openLicenseModal();
                 return;
             }
             const mode = getActiveChannelMode();
             if (!isPaused || getDisplayMode() !== 'oscilloscope') {
-                alert("⚠️ Chức năng Phân tích đồ thị chỉ khả dụng ở chế độ đo Tự dừng, hiển thị Dao động ký và đã bấm Dừng đo!");
+                alert("Chức năng Phân tích đồ thị chỉ khả dụng ở chế độ đo Tự dừng, hiển thị Dao động ký và đã bấm Dừng đo!");
                 return;
             }
 
             if (mode === '2') {
                 if (!channelConfig.A.active || !channelConfig.B.active) {
-                    alert("⚠️ Vui lòng bật cả Kênh A và Kênh B và bấm Đo / Dừng trước khi phân tích!");
+                    alert("Vui lòng bật cả Kênh A và Kênh B và bấm Đo / Dừng trước khi phân tích!");
                     return;
                 }
                 if (isTwoSourceGraphAnalysisMode) {
@@ -869,7 +869,7 @@ async function checkAppVersion() {
             }
 
             if (!channelConfig.A.active) {
-                alert("⚠️ Vui lòng bật Kênh A và bấm Đo / Dừng trước khi phân tích!");
+                alert("Vui lòng bật Kênh A và bấm Đo / Dừng trước khi phân tích!");
                 return;
             }
             if (isManualAnalysisMode) {
@@ -893,7 +893,7 @@ async function checkAppVersion() {
         optPickTwoPoints.addEventListener('click', (e) => {
             e.stopPropagation();
             if (isDemoMode) {
-                alert("⚠️ Chức năng Chọn 2 điểm đo chỉ dành cho bản Full.");
+                alert("Chức năng Chọn 2 điểm đo chỉ dành cho bản Full.");
                 openLicenseModal();
                 return;
             }
@@ -1045,13 +1045,13 @@ async function checkAppVersion() {
             return;
         }
         if (isDemoMode) {
-            alert("⚠️ Chức năng Vẽ các đồ thị liên quan (u-t, v-t, a-t) chỉ dành cho bản Full.");
+            alert("Chức năng Vẽ các đồ thị liên quan (u-t, v-t, a-t) chỉ dành cho bản Full.");
             openLicenseModal();
             return;
         }
         const winInfo = getVisibleChannelAWindow();
         if (!winInfo || !winInfo.slice || winInfo.slice.length < 8) {
-            alert("⚠️ Chưa có đủ dữ liệu sóng Kênh A để vẽ các đồ thị liên quan!");
+            alert("Chưa có đủ dữ liệu sóng Kênh A để vẽ các đồ thị liên quan!");
             return;
         }
         const rawSlice = winInfo.slice;
@@ -1260,9 +1260,14 @@ async function checkAppVersion() {
     }
 
     function updateToolbarButtonsVisibility() {
+        const isOsc = (getDisplayMode() === 'oscilloscope');
+        const btnOscCalib = document.getElementById('btnOscCalib');
+        if (btnOscCalib) {
+            btnOscCalib.style.display = isOsc ? 'inline-block' : 'none';
+        }
         if (btnCalib) {
-            btnCalib.style.display = 'inline-block';
-            btnCalib.textContent = (getDisplayMode() === 'oscilloscope') ? 'Hiệu chỉnh biên độ' : 'Hiệu chuẩn';
+            btnCalib.style.display = isOsc ? 'none' : 'inline-block';
+            btnCalib.textContent = 'Hiệu chuẩn';
         }
         updateManualAnalysisButtonState();
         if (typeof updateAnalysisButtonState === 'function') updateAnalysisButtonState();
@@ -1667,7 +1672,7 @@ async function checkAppVersion() {
         drawFrame();
 
         if (!res) {
-            infoMessageText.innerHTML = "⚠️ Hai điểm quá gần nhau hoặc biên độ sóng quá nhỏ. Hãy chọn 2 điểm cách xa nhau hơn!";
+            infoMessageText.innerHTML = "Hai điểm quá gần nhau hoặc biên độ sóng quá nhỏ. Hãy chọn 2 điểm cách xa nhau hơn!";
             infoMessageText.style.color = "#dc2626";
             return;
         }
@@ -1683,30 +1688,55 @@ async function checkAppVersion() {
         if (autoFreq > 0) {
             summaryHtml += ` &nbsp;⇔&nbsp; Tự động: <span class="channel-tag-a">f<sub>auto</sub> = ${autoFreq.toFixed(1)} Hz</span> (Sai lệch: <b>${relErrorPct.toFixed(2)}%</b>)`;
         }
-        infoMessageText.innerHTML = summaryHtml;
-        infoMessageText.style.color = "#0f172a";
+        if (statusPrompt) {
+            infoMessageText.innerHTML = statusPrompt;
+            infoMessageText.style.color = "#7c3aed";
+        } else {
+            const countA = Array.isArray(twoSourcePoints.A) ? twoSourcePoints.A.length : 0;
+            const countB = Array.isArray(twoSourcePoints.B) ? twoSourcePoints.B.length : 0;
+            const totalPicked = Math.min(2, countA) + Math.min(2, countB);
+            const hasAllFourPoints = (countA >= 2 && countB >= 2 && resA && resB);
+
+            if (!hasAllFourPoints) {
+                const nextHint = countA < 2
+                    ? `Chọn điểm thứ ${countA + 1}/2 trên Kênh A (đồ thị trên)`
+                    : `Đã đủ 2 điểm Kênh A; chọn điểm thứ ${countB + 1}/2 trên Kênh B (đồ thị dưới)`;
+                infoMessageText.innerHTML =
+                    `Đã chọn <b>${totalPicked}/4 điểm</b> (Kênh A: ${Math.min(2, countA)}/2, Kênh B: ${Math.min(2, countB)}/2) — ${nextHint}. Bảng kết quả hiện sau khi đủ 4 điểm.`;
+                infoMessageText.style.color = "#7c3aed";
+            } else {
+                infoMessageText.innerHTML =
+                    `Đã chọn đủ 4/4 điểm: ` +
+                    `<span class="channel-tag-a">Kênh A: T<sub>A</sub>=${dispTA_ms > 0 ? dispTA_ms.toFixed(2) + 'ms' : '--'} (${dispFA > 0 ? dispFA.toFixed(1) + 'Hz' : '--'})</span> | ` +
+                    `<span class="channel-tag-b">Kênh B: T<sub>B</sub>=${dispTB_ms > 0 ? dispTB_ms.toFixed(2) + 'ms' : '--'} (${dispFB > 0 ? dispFB.toFixed(1) + 'Hz' : '--'})</span> | ` +
+                    `<span class="info-badge">Δφ = ${autoPhaseRad.toFixed(2)} rad (${autoPhaseDeg.toFixed(1)}°)</span>`;
+                infoMessageText.style.color = "#0f172a";
+            }
+        }
 
         const hud = document.getElementById('manualAnalysisHud');
         const hudBody = document.getElementById('manualAnalysisHudBody');
         if (hud && hudBody) {
-            const hudTitle = hud.querySelector('.ma-header span');
-            if (hudTitle) hudTitle.textContent = "📐 KẾT QUẢ PHÂN TÍCH 2 ĐIỂM & ĐỐI CHIẾU TỰ ĐỘNG";
-            hudBody.innerHTML = `
-                <div class="ma-grid">
-                    <div>• Khoảng thời gian Δt: <span class="ma-val-manual">${res.dt_ms.toFixed(2)} ms</span></div>
-                    <div>• Độ lệch pha Δφ: <span class="ma-val-manual">${res.deltaPhiRad.toFixed(2)} rad (${res.deltaPhiDeg.toFixed(1)}°)</span></div>
-                    <div>• Chu kỳ đo 2 điểm (T): <span class="ma-val-manual">${res.T_ms.toFixed(2)} ms</span></div>
-                    <div>• Tần số đo 2 điểm (f): <span class="ma-val-manual">${res.f_Hz.toFixed(2)} Hz</span></div>
-                    <div>• Chu kỳ tự động (T<sub>auto</sub>): <span class="ma-val-auto">${autoFreq > 0 ? autoT_ms.toFixed(2) + ' ms' : '--'}</span></div>
-                    <div>• Tần số tự động (f<sub>auto</sub>): <span class="ma-val-auto">${autoFreq > 0 ? autoFreq.toFixed(2) + ' Hz' : '--'}</span></div>
-                </div>
-                <div style="margin-top:6px; padding-top:5px; border-top:1px dashed rgba(255,255,255,0.18); font-size:11.5px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;">
-                    <span>Công thức: <i>T = 2π·Δt / Δφ</i> &nbsp;|&nbsp; <i>f = 1 / T</i></span>
-                    <span>Sai số tương đối δ: <span class="ma-val-err">${relErrorPct !== null ? relErrorPct.toFixed(2) + '%' : 'Chưa xác định'}</span></span>
-                    <button type="button" onclick="syncFeatureToReport('osc')" style="background:#059669; color:#ffffff; border:none; border-radius:4px; padding:3px 9px; font-size:11px; font-weight:700; cursor:pointer;" title="Đồng bộ kết quả phân tích đồ thị này sang Phần I báo cáo">🔄 Đồng bộ báo cáo</button>
-                </div>
-            `;
-            hud.style.display = 'block';
+            const countA = Array.isArray(twoSourcePoints.A) ? twoSourcePoints.A.length : 0;
+            const countB = Array.isArray(twoSourcePoints.B) ? twoSourcePoints.B.length : 0;
+            const hasAllFourPoints = (countA >= 2 && countB >= 2 && resA && resB);
+            if (!hasAllFourPoints) {
+                hud.style.display = 'none';
+            } else {
+                const hudTitle = hud.querySelector('.ma-header span');
+                if (hudTitle) hudTitle.textContent = "KẾT QUẢ PHÂN TÍCH 4 ĐIỂM (2 ĐIỂM / ĐỒ THỊ)";
+                hudBody.innerHTML = `
+                    <div class="ma-grid">
+                        <div>• Đồ thị 1 (P<sub>A1</sub>–P<sub>A2</sub>): <b>T<sub>A</sub> = ${dispTA_ms > 0 ? dispTA_ms.toFixed(2) + ' ms' : '--'}</b> | <b>f<sub>A</sub> = ${dispFA > 0 ? dispFA.toFixed(1) + ' Hz' : '--'}</b></div>
+                        <div>• Đồ thị 2 (P<sub>B1</sub>–P<sub>B2</sub>): <b>T<sub>B</sub> = ${dispTB_ms > 0 ? dispTB_ms.toFixed(2) + ' ms' : '--'}</b> | <b>f<sub>B</sub> = ${dispFB > 0 ? dispFB.toFixed(1) + ' Hz' : '--'}</b></div>
+                        <div>• Độ lệch tần số |f<sub>A</sub> − f<sub>B</sub>|: <b>${(dispFA > 0 && dispFB > 0) ? Math.abs(dispFA - dispFB).toFixed(1) + ' Hz' : '--'}</b></div>
+                        <div>• Độ lệch pha Δφ (tức thời): <b>${autoPhaseRad.toFixed(2)} rad (${autoPhaseDeg.toFixed(1)}°)</b></div>
+                    </div>
+                    <div class="ma-ref">• Nhận xét: <b>${phaseStateText}</b></div>
+                    <div class="ma-ref">• Kéo thả trực tiếp các điểm P<sub>A1</sub>, P<sub>A2</sub> (đồ thị 1) và P<sub>B1</sub>, P<sub>B2</sub> (đồ thị 2) để cập nhật ngay.</div>
+                `;
+                hud.style.display = 'block';
+            }
         }
     }
 
@@ -1787,7 +1817,7 @@ async function checkAppVersion() {
         const winA = getVisibleChannelWindow('A');
         const winB = getVisibleChannelWindow('B');
         if (!winA || !winB) {
-            alert("⚠️ Chưa đủ dữ liệu sóng ở Kênh A và Kênh B để phân tích!");
+            alert("Chưa đủ dữ liệu sóng ở Kênh A và Kênh B để phân tích!");
             return;
         }
         isTwoSourceGraphAnalysisMode = true;
@@ -1797,13 +1827,10 @@ async function checkAppVersion() {
         btnManualAnalysis.textContent = "Đang phân tích 4 điểm (Thoát)";
         btnManualAnalysis.className = "btn-orange";
 
-        if (resetPoints || !Array.isArray(twoSourcePoints.A) || twoSourcePoints.A.length < 2) {
-            twoSourcePoints.A = findDefaultTwoPointsForChannel(winA, 'A');
+        if (resetPoints) {
+            twoSourcePoints = { A: [], B: [] };
         }
-        if (resetPoints || !Array.isArray(twoSourcePoints.B) || twoSourcePoints.B.length < 2) {
-            twoSourcePoints.B = findDefaultTwoPointsForChannel(winB, 'B');
-        }
-        updateTwoSourceGraphAnalysisDisplay(winA, winB);
+        updateTwoSourceGraphAnalysisDisplay(winA, winB, "Chế độ 2 nguồn: Chọn 4 điểm (2 điểm trên Kênh A và 2 điểm trên Kênh B). Bảng kết quả sẽ hiển thị sau khi chọn đủ 4 điểm.");
     }
 
     function updateTwoSourceGraphAnalysisDisplay(winA, winB, statusPrompt = null) {
@@ -1852,8 +1879,8 @@ async function checkAppVersion() {
         } else {
             infoMessageText.innerHTML =
                 `4 điểm (2 điểm/đồ thị): ` +
-                `<span class="channel-tag-a">Kênh A: T<sub>A</sub>=${dispTA_ms > 0 ? dispTA_ms.toFixed(2) + ' ms' : '--'} (${dispFA > 0 ? dispFA.toFixed(1) + ' Hz' : '--'})</span> | ` +
-                `<span class="channel-tag-b">Kênh B: T<sub>B</sub>=${dispTB_ms > 0 ? dispTB_ms.toFixed(2) + ' ms' : '--'} (${dispFB > 0 ? dispFB.toFixed(1) + ' Hz' : '--'})</span> | ` +
+                `<span class="channel-tag-a">Kênh A: T<sub>A</sub>=${dispTA_ms > 0 ? dispTA_ms.toFixed(2) + 'ms' : '--'} (${dispFA > 0 ? dispFA.toFixed(1) + 'Hz' : '--'})</span> | ` +
+                `<span class="channel-tag-b">Kênh B: T<sub>B</sub>=${dispTB_ms > 0 ? dispTB_ms.toFixed(2) + 'ms' : '--'} (${dispFB > 0 ? dispFB.toFixed(1) + 'Hz' : '--'})</span> | ` +
                 `<span class="info-badge">Δφ = ${autoPhaseRad.toFixed(2)} rad (${autoPhaseDeg.toFixed(1)}°)</span>`;
             infoMessageText.style.color = "#0f172a";
         }
@@ -1862,21 +1889,21 @@ async function checkAppVersion() {
         const hudBody = document.getElementById('manualAnalysisHudBody');
         if (hud && hudBody) {
             const hudTitle = hud.querySelector('.ma-header span');
-            if (hudTitle) hudTitle.textContent = "📐 KẾT QUẢ PHÂN TÍCH 4 ĐIỂM (2 ĐIỂM / ĐỒ THỊ)";
+            if (hudTitle) hudTitle.textContent = "KẾT QUẢ PHÂN TÍCH 4 ĐIỂM (2 ĐIỂM / ĐỒ THỊ)";
             hudBody.innerHTML = `
                 <div class="ma-grid">
-                    <div>• Đồ thị 1 (P<sub>A1</sub>, P<sub>A2</sub>): Δt<sub>A</sub> = <span class="ma-val-manual">${resA ? resA.dt_ms.toFixed(2) + ' ms' : '--'}</span></div>
-                    <div>• Chu kỳ Đồ thị 1 (T<sub>A</sub>): <span class="ma-val-manual">${dispTA_ms > 0 ? dispTA_ms.toFixed(2) + ' ms' : '--'}</span> <span style="color:#94a3b8;">(f<sub>A</sub> = ${dispFA > 0 ? dispFA.toFixed(1) + ' Hz' : '--'})</span></div>
-                    <div>• Đồ thị 2 (P<sub>B1</sub>, P<sub>B2</sub>): Δt<sub>B</sub> = <span class="ma-val-auto">${resB ? resB.dt_ms.toFixed(2) + ' ms' : '--'}</span></div>
-                    <div>• Chu kỳ Đồ thị 2 (T<sub>B</sub>): <span class="ma-val-auto">${dispTB_ms > 0 ? dispTB_ms.toFixed(2) + ' ms' : '--'}</span> <span style="color:#94a3b8;">(f<sub>B</sub> = ${dispFB > 0 ? dispFB.toFixed(1) + ' Hz' : '--'})</span></div>
+                    <div>• Đồ thị 1 (P<sub>A1</sub>, P<sub>A2</sub>): Δt<sub>A</sub> = <span class="ma-val-manual">${resA ? resA.dt_ms.toFixed(2) + 'ms' : '--'}</span></div>
+                    <div>• Chu kỳ Đồ thị 1 (T<sub>A</sub>): <span class="ma-val-manual">${dispTA_ms > 0 ? dispTA_ms.toFixed(2) + 'ms' : '--'}</span> <span style="color:#94a3b8;">(f<sub>A</sub> = ${dispFA > 0 ? dispFA.toFixed(1) + 'Hz' : '--'})</span></div>
+                    <div>• Đồ thị 2 (P<sub>B1</sub>, P<sub>B2</sub>): Δt<sub>B</sub> = <span class="ma-val-auto">${resB ? resB.dt_ms.toFixed(2) + 'ms' : '--'}</span></div>
+                    <div>• Chu kỳ Đồ thị 2 (T<sub>B</sub>): <span class="ma-val-auto">${dispTB_ms > 0 ? dispTB_ms.toFixed(2) + 'ms' : '--'}</span> <span style="color:#94a3b8;">(f<sub>B</sub> = ${dispFB > 0 ? dispFB.toFixed(1) + 'Hz' : '--'})</span></div>
                     <div>• Độ lệch pha 2 nguồn (Δφ): <span class="ma-val-manual">${autoPhaseRad.toFixed(2)} rad (${autoPhaseDeg.toFixed(1)}°)</span></div>
                     <div>• Chu kỳ tự động (T<sub>A0</sub> / T<sub>B0</sub>): <span style="color:#cbd5e1; font-weight:600;">${autoTA_ms > 0 ? autoTA_ms.toFixed(2) : '--'} / ${autoTB_ms > 0 ? autoTB_ms.toFixed(2) : '--'} ms</span></div>
                 </div>
                 <div style="margin-top:6px; padding-top:5px; border-top:1px dashed rgba(255,255,255,0.18); font-size:11.5px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
                     <span>Trạng thái: <b style="color:#38bdf8;">${phaseStateText}</b></span>
                     <div style="display:flex; gap:6px; align-items:center;">
-                        <button type="button" onclick="startTwoSourceGraphAnalysis(true)" style="background:#334155; color:#f8fafc; border:1px solid #475569; border-radius:4px; padding:2px 8px; font-size:11px; cursor:pointer;">🔄 Đặt lại 4 mốc</button>
-                        <button type="button" onclick="syncFeatureToReport('twoSource')" style="background:#059669; color:#ffffff; border:none; border-radius:4px; padding:3px 9px; font-size:11px; font-weight:700; cursor:pointer;" title="Đồng bộ kết quả 2 nguồn sang báo cáo">🔄 Đồng bộ báo cáo</button>
+                        <button type="button"onclick="startTwoSourceGraphAnalysis(true)"style="background:#334155; color:#f8fafc; border:1px solid #475569; border-radius:4px; padding:2px 8px; font-size:11px; cursor:pointer;"> Đặt lại 4 mốc</button>
+                        <button type="button"onclick="syncFeatureToReport('twoSource')"style="background:#059669; color:#ffffff; border:none; border-radius:4px; padding:3px 9px; font-size:11px; font-weight:700; cursor:pointer;"title="Đồng bộ kết quả 2 nguồn sang báo cáo"> Đồng bộ báo cáo</button>
                     </div>
                 </div>
             `;
@@ -2161,47 +2188,42 @@ async function checkAppVersion() {
                 const width = canvas.clientWidth;
                 const subH = canvas.clientHeight / 2;
 
-                const targetCh = (clickY < subH) ? 'A' : 'B';
+                if (!Array.isArray(twoSourcePoints.A)) twoSourcePoints.A = [];
+                if (!Array.isArray(twoSourcePoints.B)) twoSourcePoints.B = [];
+
+                let targetCh = (clickY < subH) ? 'A' : 'B';
+                if (twoSourcePoints.A.length < 2 && twoSourcePoints.B.length < 2) {
+                    targetCh = (clickY < subH) ? 'A' : 'B';
+                } else if (twoSourcePoints.A.length < 2 && twoSourcePoints.B.length >= 2 && targetCh === 'B') {
+                    targetCh = 'A';
+                } else if (twoSourcePoints.B.length < 2 && twoSourcePoints.A.length >= 2 && targetCh === 'A') {
+                    targetCh = 'B';
+                }
+
                 const winTarget = (targetCh === 'A') ? winA : winB;
                 const localY = (targetCh === 'A') ? clickY : (clickY - subH);
-                const halfT = (typeof winTarget.halfSamples === 'number') ? winTarget.halfSamples : Math.floor(winTarget.samplesNeeded / 2);
+                const snapped = snapToWaveFeature(winTarget, clickX, localY, width, subH);
 
-                if (!Array.isArray(twoSourcePoints[targetCh])) twoSourcePoints[targetCh] = [];
-                for (let i = 0; i < twoSourcePoints[targetCh].length; i++) {
-                    const ptX = (width / 2) + (((twoSourcePoints[targetCh][i].absIdx - winTarget.startIdx) - halfT) / winTarget.samplesNeeded) * width;
-                    if (Math.abs(clickX - ptX) < 3) return;
-                }
-
-                const pickedPoint = snapToWaveFeature(winTarget, clickX, localY, width, subH);
-                const chLabel = (targetCh === 'A') ? 'Kênh A' : 'Kênh B';
-                const p1Name = (targetCh === 'A') ? 'P<sub>A1</sub>' : 'P<sub>B1</sub>';
-                const p2Name = (targetCh === 'A') ? 'P<sub>A2</sub>' : 'P<sub>B2</sub>';
-
-                if (twoSourcePoints[targetCh].length >= 2) {
-                    twoSourcePoints[targetCh] = [pickedPoint];
-                    updateTwoSourceGraphAnalysisDisplay(
-                        winA,
-                        winB,
-                        `Đã chọn lại <span class='info-badge'>${p1Name}</span> trên ${chLabel}. Hãy chọn tiếp <span class='info-badge'>${p2Name}</span> trên ${chLabel} (hoặc kéo thả điểm).`
-                    );
-                    return;
-                }
-
-                twoSourcePoints[targetCh].push(pickedPoint);
-                if (twoSourcePoints[targetCh].length === 1) {
-                    updateTwoSourceGraphAnalysisDisplay(
-                        winA,
-                        winB,
-                        `Đã chọn <span class='info-badge'>${p1Name}</span> trên ${chLabel}. Hãy chọn tiếp <span class='info-badge'>${p2Name}</span> trên ${chLabel}.`
-                    );
+                if (twoSourcePoints[targetCh].length < 2) {
+                    twoSourcePoints[targetCh].push(snapped);
+                    if (twoSourcePoints[targetCh].length === 2 && twoSourcePoints[targetCh][0].absIdx > twoSourcePoints[targetCh][1].absIdx) {
+                        const tmp = twoSourcePoints[targetCh][0];
+                        twoSourcePoints[targetCh][0] = twoSourcePoints[targetCh][1];
+                        twoSourcePoints[targetCh][1] = tmp;
+                    }
                 } else {
+                    const halfT = (typeof winTarget.halfSamples === 'number') ? winTarget.halfSamples : Math.floor(winTarget.samplesNeeded / 2);
+                    const x0 = (width / 2) + (((twoSourcePoints[targetCh][0].absIdx - winTarget.startIdx) - halfT) / winTarget.samplesNeeded) * width;
+                    const x1 = (width / 2) + (((twoSourcePoints[targetCh][1].absIdx - winTarget.startIdx) - halfT) / winTarget.samplesNeeded) * width;
+                    const replaceIdx = (Math.abs(clickX - x0) <= Math.abs(clickX - x1)) ? 0 : 1;
+                    twoSourcePoints[targetCh][replaceIdx] = snapped;
                     if (twoSourcePoints[targetCh][0].absIdx > twoSourcePoints[targetCh][1].absIdx) {
                         const tmp = twoSourcePoints[targetCh][0];
                         twoSourcePoints[targetCh][0] = twoSourcePoints[targetCh][1];
                         twoSourcePoints[targetCh][1] = tmp;
                     }
-                    updateTwoSourceGraphAnalysisDisplay(winA, winB);
                 }
+                updateTwoSourceGraphAnalysisDisplay(winA, winB);
                 return;
             }
 
@@ -2845,7 +2867,7 @@ async function checkAppVersion() {
 
                 let curElapsed = selItem.elapsedMs !== undefined ? selItem.elapsedMs : (selectedIndex * 50);
                 let timeStr = curElapsed >= 1000 ? `${(curElapsed / 1000).toFixed(2)} s` : `${curElapsed} ms`;
-                let tooltipText = `📍 ${selItem.db.toFixed(1)} dB | t = ${timeStr}`;
+                let tooltipText = ` ${selItem.db.toFixed(1)} dB | t = ${timeStr}`;
 
                 ctx.save();
                 ctx.font = 'bold 11px "Be Vietnam Pro", sans-serif';
@@ -2900,10 +2922,10 @@ async function checkAppVersion() {
 
         if (mode === '2') {
             let subH = height / 2;
-            renderSingleDbChart(ctx, dbHistoryA, selectedBarIndexA, '🔴 KÊNH A - MỨC CƯỜNG ĐỘ ÂM (dB)', '#dc2626', 0, 0, width, subH);
-            renderSingleDbChart(ctx, dbHistoryB, selectedBarIndexB, '🔵 KÊNH B - MỨC CƯỜNG ĐỘ ÂM (dB)', '#2563eb', 0, subH, width, subH);
+            renderSingleDbChart(ctx, dbHistoryA, selectedBarIndexA, 'KÊNH A - MỨC CƯỜNG ĐỘ ÂM (dB)', '#dc2626', 0, 0, width, subH);
+            renderSingleDbChart(ctx, dbHistoryB, selectedBarIndexB, 'KÊNH B - MỨC CƯỜNG ĐỘ ÂM (dB)', '#2563eb', 0, subH, width, subH);
         } else {
-            renderSingleDbChart(ctx, dbHistoryA, selectedBarIndexA, '🔴 KÊNH A - MỨC CƯỜNG ĐỘ ÂM (dB)', '#10b981', 0, 0, width, height);
+            renderSingleDbChart(ctx, dbHistoryA, selectedBarIndexA, 'KÊNH A - MỨC CƯỜNG ĐỘ ÂM (dB)', '#10b981', 0, 0, width, height);
         }
     }
 
@@ -3093,7 +3115,7 @@ async function checkAppVersion() {
         const btn = document.getElementById('btnMeasureSourceL0');
         if (btn) {
             btn.disabled = false;
-            btn.textContent = '🎙️ Đo lấy mốc L₀ (1.5s)';
+            btn.textContent = 'Đo lấy mốc L₀ (1.5s)';
         }
     }
 
@@ -3112,7 +3134,7 @@ async function checkAppVersion() {
 
         if (badge) {
             if (isSourceRefReady()) {
-                badge.textContent = `✅ Đã chốt: r₀ = ${sourceRefState.r0} m | L₀ = ${sourceRefState.L0.toFixed(1)} dB`;
+                badge.textContent = ` Đã chốt: r₀ = ${sourceRefState.r0} m | L₀ = ${sourceRefState.L0.toFixed(1)} dB`;
                 badge.style.background = '#dcfce7';
                 badge.style.color = '#15803d';
                 badge.style.borderColor = '#86efac';
@@ -3126,10 +3148,10 @@ async function checkAppVersion() {
 
         if (msgEl && !sourceRefState.isSampling) {
             if (isSourceRefReady()) {
-                msgEl.innerHTML = `✅ Sẵn sàng tính khoảng cách nguồn âm theo mốc chuẩn <b>r₀ = ${sourceRefState.r0} m</b>, <b>L₀ = ${sourceRefState.L0.toFixed(1)} dB</b>.`;
+                msgEl.innerHTML = ` Sẵn sàng tính khoảng cách nguồn âm theo mốc chuẩn <b>r₀ = ${sourceRefState.r0} m</b>, <b>L₀ = ${sourceRefState.L0.toFixed(1)} dB</b>.`;
                 msgEl.style.color = '#15803d';
             } else {
-                msgEl.innerHTML = '💡 Bắt buộc xác định <b>r₀, L₀</b> trước khi tính khoảng cách nguồn âm (<i>r = r₀ · 10<sup>(L₀ − L)/20</sup></i>).';
+                msgEl.innerHTML = 'Bắt buộc xác định <b>r₀, L₀</b> trước khi tính khoảng cách nguồn âm (<i>r = r₀ · 10<sup>(L₀ − L)/20</sup></i>).';
                 msgEl.style.color = '#475569';
             }
         }
@@ -3188,13 +3210,13 @@ async function checkAppVersion() {
 
         const r0Val = parseFloat(r0El ? r0El.value : '');
         if (!Number.isFinite(r0Val) || r0Val <= 0) {
-            alert('⚠️ Vui lòng nhập khoảng cách mốc r₀ > 0 (mét) trước khi đo lấy mốc L₀!');
+            alert('Vui lòng nhập khoảng cách mốc r₀ > 0 (mét) trước khi đo lấy mốc L₀!');
             if (r0El) r0El.focus();
             return;
         }
 
         if (!channelConfig.A.active) {
-            alert('⚠️ Kênh A đang khóa! Vui lòng bật Micro Kênh A trên thanh công cụ trước khi đo lấy mốc L₀.');
+            alert('Kênh A đang khóa! Vui lòng bật Micro Kênh A trên thanh công cụ trước khi đo lấy mốc L₀.');
             return;
         }
 
@@ -3215,7 +3237,7 @@ async function checkAppVersion() {
             btn.textContent = '⏳ Đang lấy mẫu 1.5s...';
         }
         if (msgEl) {
-            msgEl.innerHTML = `🎙️ Đang thu mẫu âm thanh tại vị trí mốc <b>r₀ = ${r0Val} m</b> trong 1,5 giây...`;
+            msgEl.innerHTML = ` Đang thu mẫu âm thanh tại vị trí mốc <b>r₀ = ${r0Val} m</b> trong 1,5 giây...`;
             msgEl.style.color = '#0284c7';
         }
 
@@ -3243,7 +3265,7 @@ async function checkAppVersion() {
                 updateSourceRefUI();
             } else {
                 if (msgEl) {
-                    msgEl.innerHTML = '❌ Không thu được tín hiệu âm thanh hợp lệ! Hãy kiểm tra Micro Kênh A và thử lại.';
+                    msgEl.innerHTML = 'Không thu được tín hiệu âm thanh hợp lệ! Hãy kiểm tra Micro Kênh A và thử lại.';
                     msgEl.style.color = '#dc2626';
                 }
             }
@@ -3322,31 +3344,140 @@ async function checkAppVersion() {
         }
         const rawPeak = getLatestRawOscPeak(channel);
         if (rawPeak === null) {
-            alert(`Chưa có dữ liệu sóng trên Kênh ${channel}. Hãy bật Micro và bấm "Đo / Dừng" trước khi hiệu chỉnh.`);
+            alert(`Chưa có dữ liệu sóng trên Kênh ${channel}. Hãy bật Micro và bấm "Đo / Dừng"trước khi hiệu chỉnh.`);
             return;
         }
         setOscAmpGain(channel, targetAmp / rawPeak);
     }
 
-    function openCalibModal(focusSourceRef = false) {
-        const overlay = document.getElementById('calibModalOverlay');
-        if (overlay) overlay.style.display = 'flex';
-        const isOsc = (getDisplayMode() === 'oscilloscope' && !focusSourceRef);
-        const oscSec = document.getElementById('calibOscAmpSection');
-        const dbSec = document.getElementById('calibDbSection');
-        if (oscSec) oscSec.style.display = isOsc ? 'block' : 'none';
-        if (dbSec) dbSec.style.display = isOsc ? 'none' : 'block';
+    let oscAutoLiveEnabled = (localStorage.getItem('fox_osc_auto_calib_live') === '1');
+    let oscAutoLiveTimer = null;
 
-        const chBBox = document.getElementById('calibChannelBBox');
-        if (chBBox) {
-            chBBox.style.display = (getActiveChannelMode() === '2') ? 'block' : 'none';
+    function getOscAutoTargetAmp() {
+        const el = document.getElementById('oscAutoTargetAmpInput');
+        const v = parseFloat(el ? el.value : localStorage.getItem('fox_osc_auto_target_amp') || '0.8');
+        if (!Number.isFinite(v) || v <= 0.01) return 0.8;
+        return Math.min(5.0, Math.max(0.05, v));
+    }
+
+    function updateOscAutoCalibStatusUI() {
+        const statusEl = document.getElementById('oscAutoCalibStatus');
+        const toggleBtn = document.getElementById('btnToggleOscAutoLive');
+        if (statusEl) {
+            statusEl.textContent = oscAutoLiveEnabled ? 'Chế độ tự động: Đang bật' : 'Chế độ tự động: Tắt';
         }
+        if (toggleBtn) {
+            toggleBtn.textContent = oscAutoLiveEnabled ? 'Tắt tự động liên tục' : 'Bật tự động liên tục';
+        }
+    }
+
+    function computeAutoGainForChannel(channel, targetAmp) {
+        const rawPeak = getLatestRawOscPeak(channel);
+        if (rawPeak === null || rawPeak <= 1e-5) return null;
+        const ratio = targetAmp / rawPeak;
+        return Math.max(0.05, Math.min(20.0, Number(ratio.toFixed(2))));
+    }
+
+    function applyAutoCalibrationStep(silent = false) {
+        const targetAmp = getOscAutoTargetAmp();
+        localStorage.setItem('fox_osc_auto_target_amp', targetAmp.toString());
+        let appliedAny = false;
+
+        const gainA = computeAutoGainForChannel('A', targetAmp);
+        if (gainA !== null) {
+            oscAmpGainA = gainA;
+            localStorage.setItem('fox_osc_amp_gain_a', gainA.toString());
+            appliedAny = true;
+        }
+
+        if (getActiveChannelMode() === '2') {
+            const gainB = computeAutoGainForChannel('B', targetAmp);
+            if (gainB !== null) {
+                oscAmpGainB = gainB;
+                localStorage.setItem('fox_osc_amp_gain_b', gainB.toString());
+                appliedAny = true;
+            }
+        }
+
+        updateOscAmpCalibUI();
+        updateOscAutoCalibStatusUI();
+        if (getDisplayMode() === 'oscilloscope' && typeof drawFrame === 'function') drawFrame();
+
+        if (!silent) {
+            if (appliedAny) {
+                alert('Đã hiệu chỉnh tự động biên độ về mức đích ' + targetAmp.toFixed(2) + '.');
+            } else {
+                alert('Chưa có mẫu sóng tín hiệu trên kênh đang đo để hiệu chỉnh tự động.');
+            }
+        }
+        return appliedAny;
+    }
+
+    function runAutoOscCalibrationNow() {
+        applyAutoCalibrationStep(false);
+    }
+
+    function setOscAutoLiveLoop(enable) {
+        oscAutoLiveEnabled = Boolean(enable);
+        localStorage.setItem('fox_osc_auto_calib_live', oscAutoLiveEnabled ? '1' : '0');
+        if (oscAutoLiveTimer) {
+            clearInterval(oscAutoLiveTimer);
+            oscAutoLiveTimer = null;
+        }
+        if (oscAutoLiveEnabled) {
+            applyAutoCalibrationStep(true);
+            oscAutoLiveTimer = setInterval(() => {
+                if (getDisplayMode() === 'oscilloscope' && getLatestRawOscPeak('A') !== null) {
+                    applyAutoCalibrationStep(true);
+                }
+            }, 500);
+        }
+        updateOscAutoCalibStatusUI();
+    }
+
+    function toggleOscAutoLiveCalib() {
+        setOscAutoLiveLoop(!oscAutoLiveEnabled);
+    }
+
+    function openOscCalibModal() {
+        const overlay = document.getElementById('oscCalibModalOverlay');
+        if (overlay) overlay.style.display = 'flex';
         const oscBBox = document.getElementById('calibOscChannelBBox');
         if (oscBBox) {
             oscBBox.style.display = (getActiveChannelMode() === '2') ? 'block' : 'none';
         }
-        updateCalibDisplay();
+        const targetEl = document.getElementById('oscAutoTargetAmpInput');
+        if (targetEl) {
+            const savedTarget = parseFloat(localStorage.getItem('fox_osc_auto_target_amp') || '0.8');
+            if (Number.isFinite(savedTarget) && savedTarget > 0) targetEl.value = savedTarget.toFixed(2);
+        }
         updateOscAmpCalibUI();
+        updateOscAutoCalibStatusUI();
+    }
+
+    function closeOscCalibModal() {
+        const overlay = document.getElementById('oscCalibModalOverlay');
+        if (overlay) overlay.style.display = 'none';
+    }
+
+    function resetOscAmpCalibration() {
+        setOscAutoLiveLoop(false);
+        oscAmpGainA = 1.0;
+        oscAmpGainB = 1.0;
+        localStorage.setItem('fox_osc_amp_gain_a', '1.0');
+        localStorage.setItem('fox_osc_amp_gain_b', '1.0');
+        updateOscAmpCalibUI();
+        if (getDisplayMode() === 'oscilloscope' && typeof drawFrame === 'function') drawFrame();
+    }
+
+    function openCalibModal(focusSourceRef = false) {
+        const overlay = document.getElementById('calibModalOverlay');
+        if (overlay) overlay.style.display = 'flex';
+        const chBBox = document.getElementById('calibChannelBBox');
+        if (chBBox) {
+            chBBox.style.display = (getActiveChannelMode() === '2') ? 'block' : 'none';
+        }
+        updateCalibDisplay();
         updateSourceRefUI();
         if (focusSourceRef) {
             setTimeout(() => {
@@ -3409,24 +3540,24 @@ async function checkAppVersion() {
         const lastA = getLatestRawDb('A');
         const lastB = getLatestRawDb('B');
 
-        if (rawAEl) rawAEl.innerText = (lastA !== null) ? (lastA.toFixed(1) + " dB") : "-- dB (Chưa có mẫu)";
-        if (rawBEl) rawBEl.innerText = (lastB !== null) ? (lastB.toFixed(1) + " dB") : "-- dB (Chưa có mẫu)";
+        if (rawAEl) rawAEl.innerText = (lastA !== null) ? (lastA.toFixed(1) + "dB") : "-- dB (Chưa có mẫu)";
+        if (rawBEl) rawBEl.innerText = (lastB !== null) ? (lastB.toFixed(1) + "dB") : "-- dB (Chưa có mẫu)";
 
-        if (offAEl) offAEl.innerText = (micCalibOffsetA >= 0 ? "+" : "") + micCalibOffsetA.toFixed(1) + " dB";
-        if (offBEl) offBEl.innerText = (micCalibOffsetB >= 0 ? "+" : "") + micCalibOffsetB.toFixed(1) + " dB";
+        if (offAEl) offAEl.innerText = (micCalibOffsetA >= 0 ? "+" : "") + micCalibOffsetA.toFixed(1) + "dB";
+        if (offBEl) offBEl.innerText = (micCalibOffsetB >= 0 ? "+" : "") + micCalibOffsetB.toFixed(1) + "dB";
     }
 
     function applyCalibFromRef(channel) {
         let inputId = (channel === 'B') ? 'calibRefInputB' : 'calibRefInputA';
         let refVal = parseFloat(document.getElementById(inputId).value);
         if (isNaN(refVal) || refVal <= 0) {
-            alert("⚠️ Vui lòng nhập Mức cường độ âm chuẩn hợp lệ (dB)!");
+            alert("Vui lòng nhập Mức cường độ âm chuẩn hợp lệ (dB)!");
             return;
         }
 
         let rawVal = getLatestRawDb(channel);
         if (rawVal === null) {
-            alert(`⚠️ Chưa có dữ liệu âm thanh đo được trên Kênh ${channel}! Vui lòng bật Micro và bấm "Đo / Dừng" lấy mẫu trước khi hiệu chuẩn.`);
+            alert(` Chưa có dữ liệu âm thanh đo được trên Kênh ${channel}! Vui lòng bật Micro và bấm "Đo / Dừng"lấy mẫu trước khi hiệu chuẩn.`);
             return;
         }
 
@@ -3442,7 +3573,7 @@ async function checkAppVersion() {
         syncDbHistoryWithOffsets();
         updateCalibDisplay();
         if (getDisplayMode() === 'dbMeter' && typeof drawFrame === 'function') drawFrame();
-        alert(`✅ Đã hiệu chuẩn Kênh ${channel}! Offset mới ΔL = ${offset >= 0 ? '+' : ''}${offset.toFixed(1)} dB`);
+        alert(` Đã hiệu chuẩn Kênh ${channel}! Offset mới ΔL = ${offset >= 0 ? '+' : ''}${offset.toFixed(1)} dB`);
     }
 
     function resetCalibOffsets() {
@@ -3460,7 +3591,7 @@ async function checkAppVersion() {
         syncDbHistoryWithOffsets();
         updateCalibDisplay();
         if (getDisplayMode() === 'dbMeter' && typeof drawFrame === 'function') drawFrame();
-        alert("🔄 Đã đặt lại Offset Micro về 0 dB và xóa mốc chuẩn (r₀, L₀)!");
+        alert("Đã đặt lại Offset Micro về 0 dB và xóa mốc chuẩn (r₀, L₀)!");
     }
 
     function openMcdModal() {
@@ -3511,7 +3642,7 @@ async function checkAppVersion() {
             let htmlContent = `
                 <div style="padding: 14px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px;">
                     <h3 style="margin-top: 0; color: #1e293b; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; font-size: 15px; text-transform: uppercase;">
-                        📊 BẢNG THỐNG KÊ MỨC CƯỜNG ĐỘ ÂM (MCĐ)
+                         BẢNG THỐNG KÊ MỨC CƯỜNG ĐỘ ÂM (MCĐ)
                     </h3>
                     <table style="width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13.5px;">
                         <thead>
@@ -3528,7 +3659,7 @@ async function checkAppVersion() {
                                 <td style="padding: 8px 10px; border: 1px solid #cbd5e1; font-weight: bold; font-size: 14px;">${calAvgA.toFixed(1)} dB</td>
                                 <td style="padding: 8px 10px; border: 1px solid #cbd5e1; font-weight: bold; color: #64748b;">${calMaxA.toFixed(1)} dB</td>
                                 <td style="padding: 8px 10px; border: 1px solid #cbd5e1; color: ${calAvgA > SAFETY_THRESHOLD_DB ? '#dc2626' : '#059669'}; font-weight: bold;">
-                                    ${calAvgA > SAFETY_THRESHOLD_DB ? '⚠️ CẢNH BÁO Ô NHIỄM TIẾNG ỒN' : '✅ Đạt chuẩn môi trường'}
+                                    ${calAvgA > SAFETY_THRESHOLD_DB ? 'CẢNH BÁO Ô NHIỄM TIẾNG ỒN' : 'Đạt chuẩn môi trường'}
                                 </td>
                             </tr>
                             <tr>
@@ -3536,12 +3667,12 @@ async function checkAppVersion() {
                                 <td style="padding: 8px 10px; border: 1px solid #cbd5e1; font-weight: bold; font-size: 14px;">${calAvgB.toFixed(1)} dB</td>
                                 <td style="padding: 8px 10px; border: 1px solid #cbd5e1; font-weight: bold; color: #64748b;">${calMaxB.toFixed(1)} dB</td>
                                 <td style="padding: 8px 10px; border: 1px solid #cbd5e1; color: ${calAvgB > SAFETY_THRESHOLD_DB ? '#dc2626' : '#059669'}; font-weight: bold;">
-                                    ${calAvgB > SAFETY_THRESHOLD_DB ? '⚠️ CẢNH BÁO Ô NHIỄM TIẾNG ỒN' : '✅ Đạt chuẩn môi trường'}
+                                    ${calAvgB > SAFETY_THRESHOLD_DB ? 'CẢNH BÁO Ô NHIỄM TIẾNG ỒN' : 'Đạt chuẩn môi trường'}
                                 </td>
                             </tr>
                             <tr style="background: #faf5ff;">
                                 <td style="padding: 8px 10px; border: 1px solid #cbd5e1; font-weight: bold;">Chênh lệch (ΔL = L<sub>A</sub> - L<sub>B</sub>)</td>
-                                <td colspan="2" style="padding: 8px 10px; border: 1px solid #cbd5e1; font-weight: bold; color: #8b5cf6; font-size: 14px;">${(calAvgA - calAvgB).toFixed(1)} dB</td>
+                                <td colspan="2"style="padding: 8px 10px; border: 1px solid #cbd5e1; font-weight: bold; color: #8b5cf6; font-size: 14px;">${(calAvgA - calAvgB).toFixed(1)} dB</td>
                                 <td style="padding: 8px 10px; border: 1px solid #cbd5e1; color: #6b21a8; font-weight: 600;">Dùng tính tỷ số khoảng cách r<sub>B</sub>/r<sub>A</sub></td>
                             </tr>
                         </tbody>
@@ -3558,7 +3689,7 @@ async function checkAppVersion() {
             let htmlContent = `
                 <div style="padding: 14px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px;">
                     <h3 style="margin-top: 0; color: #1e293b; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; font-size: 15px; text-transform: uppercase;">
-                        📊 BẢNG THỐNG KÊ MỨC CƯỜNG ĐỘ ÂM (MCĐ)
+                         BẢNG THỐNG KÊ MỨC CƯỜNG ĐỘ ÂM (MCĐ)
                     </h3>
                     <table style="width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13.5px;">
                         <thead>
@@ -3573,19 +3704,19 @@ async function checkAppVersion() {
                                 <td style="padding: 8px 10px; border: 1px solid #cbd5e1;">Mức cường độ âm Lớn nhất (L<sub>max</sub>)</td>
                                 <td style="padding: 8px 10px; border: 1px solid #cbd5e1; font-weight: bold; color: ${calMaxDb > SAFETY_THRESHOLD_DB ? '#dc2626' : '#0f172a'}; font-size: 14px;">${calMaxDb.toFixed(1)} dB</td>
                                 <td style="padding: 8px 10px; border: 1px solid #cbd5e1; color: ${calMaxDb > SAFETY_THRESHOLD_DB ? '#dc2626' : '#059669'}; font-weight: bold;">
-                                    ${calMaxDb > SAFETY_THRESHOLD_DB ? `⚠️ VƯỢT NGƯỠNG AN TOÀN (>${SAFETY_THRESHOLD_DB} dB)` : '✅ An toàn thính giác'}
+                                    ${calMaxDb > SAFETY_THRESHOLD_DB ? ` VƯỢT NGƯỠNG AN TOÀN (>${SAFETY_THRESHOLD_DB} dB)` : 'An toàn thính giác'}
                                 </td>
                             </tr>
                             <tr>
                                 <td style="padding: 8px 10px; border: 1px solid #cbd5e1;">Mức cường độ âm Nhỏ nhất (L<sub>min</sub>)</td>
                                 <td style="padding: 8px 10px; border: 1px solid #cbd5e1; font-weight: bold; font-size: 14px;">${calMinDb.toFixed(1)} dB</td>
-                                <td style="padding: 8px 10px; border: 1px solid #cbd5e1; color: #059669; font-weight: bold;">✅ Bình thường</td>
+                                <td style="padding: 8px 10px; border: 1px solid #cbd5e1; color: #059669; font-weight: bold;"> Bình thường</td>
                             </tr>
                             <tr>
                                 <td style="padding: 8px 10px; border: 1px solid #cbd5e1;">Mức cường độ âm Trung bình (L<sub>tb</sub>)</td>
                                 <td style="padding: 8px 10px; border: 1px solid #cbd5e1; font-weight: bold; color: ${calAvgDb > SAFETY_THRESHOLD_DB ? '#dc2626' : '#0f172a'}; font-size: 14px;">${calAvgDb.toFixed(1)} dB</td>
                                 <td style="padding: 8px 10px; border: 1px solid #cbd5e1; color: ${calAvgDb > SAFETY_THRESHOLD_DB ? '#dc2626' : '#059669'}; font-weight: bold;">
-                                    ${calAvgDb > SAFETY_THRESHOLD_DB ? '⚠️ CẢNH BÁO Ô NHIỄM TIẾNG ỒN' : '✅ Đạt chuẩn môi trường'}
+                                    ${calAvgDb > SAFETY_THRESHOLD_DB ? 'CẢNH BÁO Ô NHIỄM TIẾNG ỒN' : 'Đạt chuẩn môi trường'}
                                 </td>
                             </tr>
                         </tbody>
@@ -3616,11 +3747,11 @@ async function checkAppVersion() {
             box.innerHTML = `
                 <div style="background:#fffbeb; border:1.5px solid #f59e0b; border-radius:8px; padding:12px 14px; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px;">
                     <div style="color:#92400e; font-size:13px; line-height:1.5;">
-                        <b>⚠️ Chưa xác định mốc chuẩn nguồn âm (r₀, L₀)!</b><br>
-                        Vui lòng mở mục <b>🎯 Hiệu chuẩn</b> để đo hoặc nhập cặp thông số tham chiếu <b>(r₀, L₀)</b> tại chỗ trước khi tính khoảng cách.
+                        <b> Chưa xác định mốc chuẩn nguồn âm (r₀, L₀)!</b><br>
+                        Vui lòng mở mục <b> Hiệu chuẩn</b> để đo hoặc nhập cặp thông số tham chiếu <b>(r₀, L₀)</b> tại chỗ trước khi tính khoảng cách.
                     </div>
-                    <button type="button" class="btn-orange" onclick="openCalibModal(true)" style="padding:7px 12px; font-size:12.5px;">
-                        🎯 Mở Hiệu chuẩn &amp; Xác định r₀, L₀
+                    <button type="button"class="btn-orange"onclick="openCalibModal(true)"style="padding:7px 12px; font-size:12.5px;">
+                         Mở Hiệu chuẩn &amp; Xác định r₀, L₀
                     </button>
                 </div>
             `;
@@ -3632,7 +3763,7 @@ async function checkAppVersion() {
 
         if (mode === '2') {
             if (dbHistoryA.length === 0 || dbHistoryB.length === 0) {
-                box.innerHTML = `<div style="color:#dc2626; font-weight:bold; padding:8px;">⚠️ Chưa đủ dữ liệu đo ở cả 2 kênh A và B! Vui lòng bấm "Đo / Dừng" để lấy mẫu trước.</div>`;
+                box.innerHTML = `<div style="color:#dc2626; font-weight:bold; padding:8px;"> Chưa đủ dữ liệu đo ở cả 2 kênh A và B! Vui lòng bấm "Đo / Dừng"để lấy mẫu trước.</div>`;
                 return;
             }
 
@@ -3647,9 +3778,9 @@ async function checkAppVersion() {
             box.innerHTML = `
                 <div class="dist-header-bar">
                     <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-                        <span style="font-size:16px;">📐</span>
+                        <span style="font-size:16px;"></span>
                         <span style="font-weight:700; color:#0f172a; font-size:14px; text-transform:uppercase;">KẾT QUẢ TÍNH KHOẢNG CÁCH NGUỒN ÂM ($r_A, r_B$)</span>
-                        <button type="button" class="btn-slate" onclick="openCalibModal(true)" style="padding:2px 8px; font-size:11px;">✏️ Đổi mốc (r₀=${r0}m; L₀=${L0.toFixed(1)}dB)</button>
+                        <button type="button"class="btn-slate"onclick="openCalibModal(true)"style="padding:2px 8px; font-size:11px;"> Đổi mốc (r₀=${r0}m; L₀=${L0.toFixed(1)}dB)</button>
                     </div>
                     <div class="dist-formula-badge">
                         <span>Công thức:</span>
@@ -3660,32 +3791,32 @@ async function checkAppVersion() {
                 <div class="dist-card-container">
                     <div class="dist-card dist-card-border-a">
                         <div class="dist-card-title">KHOẢNG CÁCH KÊNH A:</div>
-                        <div class="dist-card-value" style="color:#ef4444;">${rA.toFixed(2)} <span style="font-size:14px; font-weight:bold;">m</span></div>
+                        <div class="dist-card-value"style="color:#ef4444;">${rA.toFixed(2)} <span style="font-size:14px; font-weight:bold;">m</span></div>
                         <div class="dist-card-sub">$L_{A,tb} = ${avgDbA.toFixed(1)}\\text{ dB}$ (Mốc $r_0=${r0}\\text{ m}, L_0=${L0.toFixed(1)}\\text{ dB}$)</div>
                     </div>
 
                     <div class="dist-card dist-card-border-b">
                         <div class="dist-card-title">KHOẢNG CÁCH KÊNH B:</div>
-                        <div class="dist-card-value" style="color:#3b82f6;">${rB.toFixed(2)} <span style="font-size:14px; font-weight:bold;">m</span></div>
+                        <div class="dist-card-value"style="color:#3b82f6;">${rB.toFixed(2)} <span style="font-size:14px; font-weight:bold;">m</span></div>
                         <div class="dist-card-sub">$L_{B,tb} = ${avgDbB.toFixed(1)}\\text{ dB}$ (Mốc $r_0=${r0}\\text{ m}, L_0=${L0.toFixed(1)}\\text{ dB}$)</div>
                     </div>
 
                     <div class="dist-card dist-card-border-diff">
                         <div class="dist-card-title">KHOẢNG CÁCH GIỮA HAI KÊNH</div>
-                        <div class="dist-card-value" style="color:#10b981;">${deltaR.toFixed(2)} <span style="font-size:14px; font-weight:bold;">m</span></div>
+                        <div class="dist-card-value"style="color:#10b981;">${deltaR.toFixed(2)} <span style="font-size:14px; font-weight:bold;">m</span></div>
                         <div class="dist-card-sub">$\\Delta r = |r_A - r_B|$</div>
                     </div>
 
                     <div class="dist-card dist-card-border-ratio">
                         <div class="dist-card-title">TỶ SỐ KHOẢNG CÁCH HAI KÊNH</div>
-                        <div class="dist-card-value" style="color:#8b5cf6;">${ratio.toFixed(3)} <span style="font-size:14px; font-weight:bold;">lần</span></div>
+                        <div class="dist-card-value"style="color:#8b5cf6;">${ratio.toFixed(3)} <span style="font-size:14px; font-weight:bold;">lần</span></div>
                         <div class="dist-card-sub">$10^{\\frac{L_A - L_B}{20}}$</div>
                     </div>
                 </div>
             `;
         } else {
             if (dbHistoryA.length === 0) {
-                box.innerHTML = `<div style="color:#dc2626; font-weight:bold; padding:8px;">⚠️ Chưa có dữ liệu đo cường độ âm! Vui lòng thực hiện đo trước.</div>`;
+                box.innerHTML = `<div style="color:#dc2626; font-weight:bold; padding:8px;"> Chưa có dữ liệu đo cường độ âm! Vui lòng thực hiện đo trước.</div>`;
                 return;
             }
             let avgDb = dbHistoryA.reduce((sum, item) => sum + item.db, 0) / dbHistoryA.length;
@@ -3694,9 +3825,9 @@ async function checkAppVersion() {
             box.innerHTML = `
                 <div class="dist-header-bar">
                     <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-                        <span style="font-size:16px;">📐</span>
+                        <span style="font-size:16px;"></span>
                         <span style="font-weight:700; color:#0f172a; font-size:14px; text-transform:uppercase;">KẾT QUẢ TÍNH KHOẢNG CÁCH NGUỒN ÂM TỚI MICRO</span>
-                        <button type="button" class="btn-slate" onclick="openCalibModal(true)" style="padding:2px 8px; font-size:11px;">✏️ Đổi mốc (r₀=${r0}m; L₀=${L0.toFixed(1)}dB)</button>
+                        <button type="button"class="btn-slate"onclick="openCalibModal(true)"style="padding:2px 8px; font-size:11px;"> Đổi mốc (r₀=${r0}m; L₀=${L0.toFixed(1)}dB)</button>
                     </div>
                     <div class="dist-formula-badge">
                         <span>Công thức:</span>
@@ -3707,7 +3838,7 @@ async function checkAppVersion() {
                 <div class="dist-card-container">
                     <div class="dist-card dist-card-border-a">
                         <div class="dist-card-title">KHOẢNG CÁCH ĐO ĐƯỢC</div>
-                        <div class="dist-card-value" style="color:#ef4444;">${dist.toFixed(2)} <span style="font-size:14px; font-weight:bold;">m</span></div>
+                        <div class="dist-card-value"style="color:#ef4444;">${dist.toFixed(2)} <span style="font-size:14px; font-weight:bold;">m</span></div>
                         <div class="dist-card-sub">Theo mốc chuẩn tại chỗ: $L_0 = ${L0.toFixed(1)}\\text{ dB}$ tại $r_0 = ${r0}\\text{ m}$ ($L_{tb} = ${avgDb.toFixed(1)}\\text{ dB}$)</div>
                     </div>
                 </div>
@@ -3794,7 +3925,7 @@ async function checkAppVersion() {
         if (!tbody) return;
 
         if (!analysis || analysis.isEmptySignal || !analysis.presentPeaks || analysis.presentPeaks.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:18px 10px; color:#64748b; font-style:italic;">Chưa ghi nhận đỉnh tần số nổi bật nào trên phổ Kênh A.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="4"style="text-align:center; padding:18px 10px; color:#64748b; font-style:italic;">Chưa ghi nhận đỉnh tần số nổi bật nào trên phổ Kênh A.</td></tr>`;
             return;
         }
 
@@ -3872,7 +4003,7 @@ async function checkAppVersion() {
             const isSelected = (fftSelectedPeakFreq !== null && Math.abs(fftSelectedPeakFreq - item.freq) < 0.2);
 
             rowsHtml += `
-                <tr class="${isSelected ? 'fft-ht-row-active' : ''}" onclick="selectFftTableRow(${item.freq.toFixed(1)})" title="Nhấn để đánh dấu tần số ${item.freq.toFixed(1)} Hz trên đồ thị">
+                <tr class="${isSelected ? 'fft-ht-row-active' : ''}"onclick="selectFftTableRow(${item.freq.toFixed(1)})"title="Nhấn để đánh dấu tần số ${item.freq.toFixed(1)} Hz trên đồ thị">
                     <td class="fft-ht-stt">${idx + 1}</td>
                     <td class="fft-ht-freq">${item.freq.toFixed(1)} Hz</td>
                     <td>
@@ -3882,7 +4013,7 @@ async function checkAppVersion() {
                                 <span class="fft-ht-amp-pct">(${pctVal}%)</span>
                             </div>
                             <div class="fft-ht-bar-track">
-                                <div class="fft-ht-bar-fill" style="width:${barWidth}%; background:${barColor};"></div>
+                                <div class="fft-ht-bar-fill"style="width:${barWidth}%; background:${barColor};"></div>
                             </div>
                         </div>
                     </td>
@@ -4170,7 +4301,7 @@ async function checkAppVersion() {
         }
         fCtx.font = 'bold 11px "Inter", sans-serif';
         fCtx.textAlign = 'right';
-        fCtx.fillText("Tần số (Hz) ➔", plotRight, ch - 10);
+        fCtx.fillText("Tần số (Hz) ", plotRight, ch - 10);
 
         // Nhãn trục biên độ (A)
         fCtx.textAlign = 'right';
@@ -4249,7 +4380,7 @@ async function checkAppVersion() {
             fCtx.lineTo(xScan, plotBottom);
             fCtx.stroke();
 
-            const badgeText = `🔍 Quét: ${Math.round(currentScanFreq)} Hz`;
+            const badgeText = ` Quét: ${Math.round(currentScanFreq)} Hz`;
             fCtx.font = 'bold 11px "JetBrains Mono", monospace';
             const bw = fCtx.measureText(badgeText).width + 12;
             const bx = Math.min(plotRight - bw - 4, Math.max(plotLeft + 4, xScan - bw / 2));
@@ -4333,7 +4464,7 @@ async function checkAppVersion() {
             // Huy hiệu trạng thái quét góc trên bên phải
             if (!fftSweepActive) {
                 const maxOrder = revealedHarmonics[revealedHarmonics.length - 1].order;
-                const statusBadge = `✅ Họa âm f₀ = ${analysis.f0} Hz (1f₀ → ${maxOrder}f₀)`;
+                const statusBadge = ` Họa âm f₀ = ${analysis.f0} Hz (1f₀ → ${maxOrder}f₀)`;
                 fCtx.font = 'bold 11px "Inter", sans-serif';
                 const sw = fCtx.measureText(statusBadge).width + 14;
                 const sx = plotRight - sw - 6;
@@ -4359,7 +4490,7 @@ async function checkAppVersion() {
             fCtx.stroke();
             fCtx.setLineDash([]);
 
-            const selText = `📍 ${fftSelectedPeakFreq.toFixed(1)} Hz`;
+            const selText = ` ${fftSelectedPeakFreq.toFixed(1)} Hz`;
             fCtx.font = 'bold 11px "JetBrains Mono", monospace';
             const bw = fCtx.measureText(selText).width + 12;
             const bx = Math.min(plotRight - bw - 4, Math.max(plotLeft + 4, sx - bw / 2));
@@ -4417,7 +4548,7 @@ async function checkAppVersion() {
             if (freqA > 10 && freqB > 10 && diff > 3.0) {
                 let f_beat = diff.toFixed(1);
                 let f_carrier = ((freqA + freqB) / 2).toFixed(1);
-                sumLine.innerHTML = `Tổng hợp (Sóng Phách): <span class="math-symbol" style="color:#a78bfa;">u = 2A·cos(2π·${(diff/2).toFixed(1)}·t)·cos(2π·${f_carrier}·t) &rarr; f<sub>phách</sub> = ${f_beat} Hz</span>`;
+                sumLine.innerHTML = `Tổng hợp (Sóng Phách): <span class="math-symbol"style="color:#a78bfa;">u = 2A·cos(2π·${(diff/2).toFixed(1)}·t)·cos(2π·${f_carrier}·t) &rarr; f<sub>phách</sub> = ${f_beat} Hz</span>`;
             } else {
                 let a1 = parseFloat(ampA) || 0;
                 let a2 = parseFloat(ampB) || 0;
@@ -4692,7 +4823,7 @@ async function checkAppVersion() {
                     if (warnEl) {
                         warnEl.style.display = 'block';
                         warnEl.style.background = 'linear-gradient(135deg, #7c3aed, #6d28d9)';
-                        warnEl.innerText = `🌊 Hiện tượng Sóng Phách: f_phách = ${diff.toFixed(1)} Hz (f₁ = ${currentCalcFreqA.toFixed(1)} Hz, f₂ = ${currentCalcFreqB.toFixed(1)} Hz)`;
+                        warnEl.innerText = ` Hiện tượng Sóng Phách: f_phách = ${diff.toFixed(1)} Hz (f₁ = ${currentCalcFreqA.toFixed(1)} Hz, f₂ = ${currentCalcFreqB.toFixed(1)} Hz)`;
                     }
                 } else {
                     if (warnEl) warnEl.style.display = 'none';
@@ -4759,8 +4890,8 @@ async function checkAppVersion() {
         if (!trimmed) return '';
 
         let cleanText = trimmed
-            .replace(/\$\$[\s\S]*?\$\$/g, ' MATH ')
-            .replace(/\$[^$\n]+?\$/g, ' MATH ')
+            .replace(/\$\$[\s\S]*?\$\$/g, 'MATH ')
+            .replace(/\$[^$\n]+?\$/g, 'MATH ')
             .replace(/<[^>]+>/g, ' ')
             .replace(/\s+/g, ' ')
             .trim();
@@ -4821,7 +4952,7 @@ async function checkAppVersion() {
 
     function toggleChat() { const widget = document.getElementById('fox-chat-widget'); widget.classList.toggle('open'); if (widget.classList.contains('open')) { setTimeout(() => document.getElementById('fox-chat-input').focus(), 300); } else if (typeof KhoaHocTTS !== 'undefined') { KhoaHocTTS.stop(); } }
     function toggleChatTheme() { const chatBox = document.getElementById('fox-chat-box'); chatBox.classList.toggle('light-theme'); }
-    function updateFoxLiveFrequency(freq) { const freqTag = document.getElementById('foxLiveFreqTag'); if (freqTag) freqTag.innerText = freq.toFixed(1) + ' Hz'; }
+    function updateFoxLiveFrequency(freq) { const freqTag = document.getElementById('foxLiveFreqTag'); if (freqTag) freqTag.innerText = freq.toFixed(1) + 'Hz'; }
 
     function toggleFoxRole() {
         const btn = document.getElementById('foxRoleToggleBtn');
@@ -5162,7 +5293,7 @@ async function checkAppVersion() {
     async function processSelectedImageFile(file, inputElToReset = null) {
         if (!file) return;
         if (file.size > 15 * 1024 * 1024) {
-            alert("⚠️ Dung lượng ảnh quá lớn (> 15MB). Vui lòng chọn ảnh nhẹ hơn!");
+            alert("Dung lượng ảnh quá lớn (> 15MB). Vui lòng chọn ảnh nhẹ hơn!");
             if (inputElToReset) inputElToReset.value = '';
             return;
         }
@@ -5204,7 +5335,7 @@ async function checkAppVersion() {
         let reportText = "=== BÁO CÁO LỊCH SỬ CHAT - Fox-lab ===\n";
         reportText += "Thời gian xuất: " + new Date().toLocaleString() + "\n";
         if (detectedFrequency > 0) {
-            reportText += "Tần số khảo sát hiện tại: " + detectedFrequency.toFixed(1) + " Hz\n";
+            reportText += "Tần số khảo sát hiện tại: " + detectedFrequency.toFixed(1) + "Hz\n";
         }
         reportText += "\n";
 
@@ -5254,7 +5385,7 @@ async function checkAppVersion() {
     let isListening = false;
     let isVoiceSession = false;
 
-    if ('speechSynthesis' in window) {
+    if ('speechSynthesis'in window) {
         window.speechSynthesis.onvoiceschanged = () => {
             try { window.speechSynthesis.getVoices(); } catch (e) { }
         };
@@ -5291,7 +5422,7 @@ async function checkAppVersion() {
             isVoiceSession = false;
             stopSpeechRecognition();
             if (event.error === 'not-allowed') {
-                alert("⚠️ Vui lòng cấp quyền truy cập Microphone trên trình duyệt để sử dụng tính năng này!");
+                alert("Vui lòng cấp quyền truy cập Microphone trên trình duyệt để sử dụng tính năng này!");
             }
         };
 
@@ -5328,7 +5459,7 @@ async function checkAppVersion() {
         foxMicBtn.style.opacity = '0.4';
         foxMicBtn.title = "Trình duyệt không hỗ trợ nhận diện giọng nói";
         foxMicBtn.addEventListener('click', () => {
-            alert("⚠️ Trình duyệt hiện tại chưa hỗ trợ Nhận diện giọng nói. Vui lòng thử trên Google Chrome hoặc Cốc Cốc!");
+            alert("Trình duyệt hiện tại chưa hỗ trợ Nhận diện giọng nói. Vui lòng thử trên Google Chrome hoặc Cốc Cốc!");
         });
     }
 
@@ -5382,50 +5513,50 @@ async function checkAppVersion() {
             }
 
             // Lũy thừa & chỉ số dưới Vật lý / Toán
-            t = t.replace(/\^\{2\}/g, ' bình phương');
-            t = t.replace(/\^\{3\}/g, ' lập phương');
-            t = t.replace(/\^\{([^{}]+)\}/g, ' mũ $1');
-            t = t.replace(/\^2\b/g, ' bình phương');
-            t = t.replace(/\^3\b/g, ' lập phương');
-            t = t.replace(/\^([a-zA-Z0-9])/g, ' mũ $1');
+            t = t.replace(/\^\{2\}/g, 'bình phương');
+            t = t.replace(/\^\{3\}/g, 'lập phương');
+            t = t.replace(/\^\{([^{}]+)\}/g, 'mũ $1');
+            t = t.replace(/\^2\b/g, 'bình phương');
+            t = t.replace(/\^3\b/g, 'lập phương');
+            t = t.replace(/\^([a-zA-Z0-9])/g, 'mũ $1');
             t = t.replace(/_\{([^{}]+)\}/g, ' $1');
             t = t.replace(/_([a-zA-Z0-9])/g, ' $1');
 
             const latexDict = [
-                { regex: /\\Delta\b/g, replace: ' đen-ta ' },
-                { regex: /\\delta\b/g, replace: ' đen-ta ' },
-                { regex: /\\omega\b/g, replace: ' ô-mê-ga ' },
-                { regex: /\\Omega\b/g, replace: ' ôm ' },
-                { regex: /\\pi\b/g, replace: ' pi ' },
-                { regex: /\\lambda\b/g, replace: ' lam-đa ' },
-                { regex: /\\varphi\b|\\phi\b|\\Phi\b/g, replace: ' phi ' },
-                { regex: /\\alpha\b/g, replace: ' an-pha ' },
-                { regex: /\\beta\b/g, replace: ' bê-ta ' },
-                { regex: /\\gamma\b/g, replace: ' gam-ma ' },
-                { regex: /\\theta\b/g, replace: ' thê-ta ' },
-                { regex: /\\mu\b/g, replace: ' muy ' },
-                { regex: /\\rho\b/g, replace: ' rô ' },
-                { regex: /\\sigma\b/g, replace: ' xích-ma ' },
-                { regex: /\\varepsilon\b|\\epsilon\b/g, replace: ' ép-xi-lon ' },
+                { regex: /\\Delta\b/g, replace: 'đen-ta ' },
+                { regex: /\\delta\b/g, replace: 'đen-ta ' },
+                { regex: /\\omega\b/g, replace: 'ô-mê-ga ' },
+                { regex: /\\Omega\b/g, replace: 'ôm ' },
+                { regex: /\\pi\b/g, replace: 'pi ' },
+                { regex: /\\lambda\b/g, replace: 'lam-đa ' },
+                { regex: /\\varphi\b|\\phi\b|\\Phi\b/g, replace: 'phi ' },
+                { regex: /\\alpha\b/g, replace: 'an-pha ' },
+                { regex: /\\beta\b/g, replace: 'bê-ta ' },
+                { regex: /\\gamma\b/g, replace: 'gam-ma ' },
+                { regex: /\\theta\b/g, replace: 'thê-ta ' },
+                { regex: /\\mu\b/g, replace: 'muy ' },
+                { regex: /\\rho\b/g, replace: 'rô ' },
+                { regex: /\\sigma\b/g, replace: 'xích-ma ' },
+                { regex: /\\varepsilon\b|\\epsilon\b/g, replace: 'ép-xi-lon ' },
 
-                { regex: /\\times\b|\\cdot\b/g, replace: ' nhân ' },
-                { regex: /\\div\b/g, replace: ' chia ' },
-                { regex: /\\pm\b/g, replace: ' cộng trừ ' },
-                { regex: /\\approx\b/g, replace: ' xấp xỉ ' },
-                { regex: /\\neq\b/g, replace: ' khác ' },
-                { regex: /\\leq\b|\\le\b/g, replace: ' nhỏ hơn hoặc bằng ' },
-                { regex: /\\geq\b|\\ge\b/g, replace: ' lớn hơn hoặc bằng ' },
-                { regex: /\\Rightarrow\b|\\implies\b|\\rightarrow\b|\\to\b/g, replace: ' suy ra ' },
-                { regex: /\\Leftrightarrow\b|\\iff\b/g, replace: ' tương đương ' },
-                { regex: /\\infty\b/g, replace: ' vô cùng ' },
-                { regex: /\\circ\b/g, replace: ' độ ' },
+                { regex: /\\times\b|\\cdot\b/g, replace: 'nhân ' },
+                { regex: /\\div\b/g, replace: 'chia ' },
+                { regex: /\\pm\b/g, replace: 'cộng trừ ' },
+                { regex: /\\approx\b/g, replace: 'xấp xỉ ' },
+                { regex: /\\neq\b/g, replace: 'khác ' },
+                { regex: /\\leq\b|\\le\b/g, replace: 'nhỏ hơn hoặc bằng ' },
+                { regex: /\\geq\b|\\ge\b/g, replace: 'lớn hơn hoặc bằng ' },
+                { regex: /\\Rightarrow\b|\\implies\b|\\rightarrow\b|\\to\b/g, replace: 'suy ra ' },
+                { regex: /\\Leftrightarrow\b|\\iff\b/g, replace: 'tương đương ' },
+                { regex: /\\infty\b/g, replace: 'vô cùng ' },
+                { regex: /\\circ\b/g, replace: 'độ ' },
 
-                { regex: /\\sin\b/g, replace: ' sin ' },
-                { regex: /\\cos\b/g, replace: ' cốt ' },
-                { regex: /\\tan\b/g, replace: ' tang ' },
-                { regex: /\\cot\b/g, replace: ' cô-tang ' },
-                { regex: /\\log\b/g, replace: ' lô-ga-rít ' },
-                { regex: /\\ln\b/g, replace: ' lô-ga-rít tự nhiên của ' },
+                { regex: /\\sin\b/g, replace: 'sin ' },
+                { regex: /\\cos\b/g, replace: 'cốt ' },
+                { regex: /\\tan\b/g, replace: 'tang ' },
+                { regex: /\\cot\b/g, replace: 'cô-tang ' },
+                { regex: /\\log\b/g, replace: 'lô-ga-rít ' },
+                { regex: /\\ln\b/g, replace: 'lô-ga-rít tự nhiên của ' },
 
                 { regex: /\\(?:text|mathrm|mathbf|unit)\{([^{}]+)\}/g, replace: ' $1 ' },
                 { regex: /\\left|\\right|\\,|\\;|\\!/g, replace: ' ' },
@@ -5460,23 +5591,23 @@ async function checkAppVersion() {
                 { regex: /km\/h/gi, replace: 'ki-lô-mét trên giờ' },
                 { regex: /(\d+(?:[.,]\d+)?)\s*ms\b/g, replace: '$1 mi-li-giây' },
                 { regex: /(\d+(?:[.,]\d+)?)\s*°C/g, replace: '$1 độ Xê' },
-                { regex: /λ/g, replace: ' lam-đa ' },
-                { regex: /ω/g, replace: ' ô-mê-ga ' },
-                { regex: /φ/g, replace: ' phi ' },
-                { regex: /Δ/g, replace: ' đen-ta ' },
-                { regex: /π/g, replace: ' pi ' },
+                { regex: /λ/g, replace: 'lam-đa ' },
+                { regex: /ω/g, replace: 'ô-mê-ga ' },
+                { regex: /φ/g, replace: 'phi ' },
+                { regex: /Δ/g, replace: 'đen-ta ' },
+                { regex: /π/g, replace: 'pi ' },
                 { regex: /√\(([^)]+)\)/g, replace: 'căn bậc hai của $1' },
                 { regex: /√(\w+)/g, replace: 'căn bậc hai của $1' },
-                { regex: /≈/g, replace: ' xấp xỉ ' },
-                { regex: /≠/g, replace: ' khác ' },
-                { regex: /≤/g, replace: ' nhỏ hơn hoặc bằng ' },
-                { regex: /≥/g, replace: ' lớn hơn hoặc bằng ' },
-                { regex: /⇒|→/g, replace: ' suy ra ' },
-                { regex: /⇔/g, replace: ' tương đương ' },
-                { regex: /×/g, replace: ' nhân ' },
-                { regex: /÷/g, replace: ' chia ' },
-                { regex: /²/g, replace: ' bình phương' },
-                { regex: /³/g, replace: ' lập phương' },
+                { regex: /≈/g, replace: 'xấp xỉ ' },
+                { regex: /≠/g, replace: 'khác ' },
+                { regex: /≤/g, replace: 'nhỏ hơn hoặc bằng ' },
+                { regex: /≥/g, replace: 'lớn hơn hoặc bằng ' },
+                { regex: /⇒|→/g, replace: 'suy ra ' },
+                { regex: /⇔/g, replace: 'tương đương ' },
+                { regex: /×/g, replace: 'nhân ' },
+                { regex: /÷/g, replace: 'chia ' },
+                { regex: /²/g, replace: 'bình phương' },
+                { regex: /³/g, replace: 'lập phương' },
                 { regex: /Fox-lab/gi, replace: 'Phốc Láp' }
             ];
 
@@ -5557,7 +5688,7 @@ async function checkAppVersion() {
         }
 
         function unlockBrowserSpeech() {
-            if (!('speechSynthesis' in window)) return;
+            if (!('speechSynthesis'in window)) return;
             try {
                 window.speechSynthesis.getVoices();
                 if (window.speechSynthesis.paused) window.speechSynthesis.resume();
@@ -5618,8 +5749,8 @@ async function checkAppVersion() {
         }
 
         function speakFallbackBrowser(rawText, btn) {
-            if (!('speechSynthesis' in window)) {
-                alert('⚠️ Trình duyệt hiện tại chưa hỗ trợ đọc văn bản thành tiếng.');
+            if (!('speechSynthesis'in window)) {
+                alert('Trình duyệt hiện tại chưa hỗ trợ đọc văn bản thành tiếng.');
                 resetState();
                 return;
             }
@@ -5630,7 +5761,7 @@ async function checkAppVersion() {
 
             const plainText = chuanHoaVanBanThuan(rawText)
                 .replace(/\n+/g, '. ')
-                .replace(/\s*=\s*/g, ' bằng ')
+                .replace(/\s*=\s*/g, 'bằng ')
                 .replace(/\s+/g, ' ')
                 .trim();
 
@@ -5674,10 +5805,10 @@ async function checkAppVersion() {
                     console.warn('[SpeechSynthesis Error]:', errCode);
                     activeUtterance = null;
                     if (btn) {
-                        updateBtnUI(btn, '⚠️ Chưa có giọng đọc', false);
+                        updateBtnUI(btn, 'Chưa có giọng đọc', false);
                         setTimeout(() => {
                             if (!currentBtn && btn.textContent.includes('Chưa có giọng đọc')) {
-                                updateBtnUI(btn, '🔊 Nghe', false);
+                                updateBtnUI(btn, 'Nghe', false);
                             }
                         }, 2200);
                     }
@@ -5725,7 +5856,7 @@ async function checkAppVersion() {
                     if (isStoppedByUser) break;
                     const plainChunk = chuanHoaVanBanThuan(chunks[i])
                         .replace(/\n+/g, '. ')
-                        .replace(/\s*=\s*/g, ' bằng ')
+                        .replace(/\s*=\s*/g, 'bằng ')
                         .replace(/\s+/g, ' ')
                         .trim();
                     const ssmlString = taoChuoiSSML(chunks[i]);
@@ -5761,7 +5892,7 @@ async function checkAppVersion() {
                 } catch (e) {}
                 currentAudio = null;
             }
-            if ('speechSynthesis' in window) {
+            if ('speechSynthesis'in window) {
                 try { window.speechSynthesis.cancel(); } catch (e) {}
             }
             resetState();
@@ -5824,12 +5955,12 @@ async function checkAppVersion() {
         if (pDegEl && pDegEl.innerText) phaseDeg = pDegEl.innerText;
         if (pRadEl && pRadEl.innerText) phaseRad = pRadEl.innerText;
 
-        let timeBase = (typeof totalTimeOnScreen !== 'undefined') ? (totalTimeOnScreen / 10 * 1000).toFixed(2) + ' ms/ô' : '1.42 ms/ô';
+        let timeBase = (typeof totalTimeOnScreen !== 'undefined') ? (totalTimeOnScreen / 10 * 1000).toFixed(2) + 'ms/ô' : '1.42 ms/ô';
 
         let fftPeak = null;
         const fftTargetEl = document.getElementById('fftTargetFreq');
         if (fftTargetEl && fftTargetEl.value) {
-            fftPeak = fftTargetEl.value + ' Hz';
+            fftPeak = fftTargetEl.value + 'Hz';
         }
 
         return {
@@ -5838,19 +5969,19 @@ async function checkAppVersion() {
             timeBaseMs: timeBase,
             channelA: {
                 active: !!(channelConfig && channelConfig.A && channelConfig.A.active),
-                frequency: fA > 0 ? fA.toFixed(1) + ' Hz' : '0.0 Hz',
-                period: fA > 0 ? (1000 / fA).toFixed(2) + ' ms' : '0.00 ms',
+                frequency: fA > 0 ? fA.toFixed(1) + 'Hz' : '0.0 Hz',
+                period: fA > 0 ? (1000 / fA).toFixed(2) + 'ms' : '0.00 ms',
                 amplitudePeak: ampA
             },
             channelB: {
                 active: !!(channelConfig && channelConfig.B && channelConfig.B.active),
-                frequency: fB > 0 ? fB.toFixed(1) + ' Hz' : '0.0 Hz',
-                period: fB > 0 ? (1000 / fB).toFixed(2) + ' ms' : '0.00 ms',
+                frequency: fB > 0 ? fB.toFixed(1) + 'Hz' : '0.0 Hz',
+                period: fB > 0 ? (1000 / fB).toFixed(2) + 'ms' : '0.00 ms',
                 amplitudePeak: ampB
             },
             phaseDifference: {
                 degrees: phaseDeg + '°',
-                radians: phaseRad + ' rad'
+                radians: phaseRad + 'rad'
             },
             fftPeak: fftPeak
         };
@@ -5978,8 +6109,8 @@ async function checkAppVersion() {
             return true;
         }
         const clean = String(currentText)
-            .replace(/\$\$[\s\S]*?\$\$/g, ' MATH ')
-            .replace(/\$[^$\n]+?\$/g, ' MATH ')
+            .replace(/\$\$[\s\S]*?\$\$/g, 'MATH ')
+            .replace(/\$[^$\n]+?\$/g, 'MATH ')
             .replace(/<[^>]+>/g, ' ')
             .trim();
         if (!clean) return false;
@@ -6014,7 +6145,7 @@ async function checkAppVersion() {
         if (!text && !uploadedImageBase64) return;
         if (isDemoMode) {
             if (demoChatCount >= MAX_DEMO_CHAT) {
-                alert(`⚠️ Bản Demo chỉ cho phép hỏi AI tối đa ${MAX_DEMO_CHAT} lần. Vui lòng nhập Key Bản Full để sử dụng tiếp!`);
+                alert(` Bản Demo chỉ cho phép hỏi AI tối đa ${MAX_DEMO_CHAT} lần. Vui lòng nhập Key Bản Full để sử dụng tiếp!`);
                 openLicenseModal();
                 return;
             }
@@ -6046,7 +6177,7 @@ async function checkAppVersion() {
         let scanReportToSend = "";
 
         if (hasNewUpload) {
-            userDisplayHtml = `<img src="${uploadedImageBase64}" class="fox-preview-img"><br>` + safeUserText;
+            userDisplayHtml = `<img src="${uploadedImageBase64}"class="fox-preview-img"><br>` + safeUserText;
             imgBase64ToSend = uploadedImageBase64;
             activeConversationImageBase64 = uploadedImageBase64;
             activeConversationImageScanReport = uploadedImageScanReport;
@@ -6191,7 +6322,7 @@ async function checkAppVersion() {
         const textToCopy = btn.dataset.copyText || (bubble ? bubble.innerText : '');
         navigator.clipboard.writeText(textToCopy).then(() => {
             let oldText = btn.innerText;
-            btn.innerText = "Đã Copy ✓";
+            btn.innerText = "Đã Copy ";
             setTimeout(() => btn.innerText = oldText, 1500);
         });
     };
@@ -6202,7 +6333,7 @@ async function checkAppVersion() {
         const safeText = sanitizeChatHtml(text);
         const formattedText = sender === 'bot' ? formatMathText(safeText) : safeText;
         let actionBtns = sender === 'bot'
-            ? `<button class="fox-speak-btn" onclick="speakFoxText(this)" title="Nghe AI đọc phản hồi">Nghe</button><button class="fox-copy-btn" onclick="copyFoxText(this)">Copy</button><button class="fox-export-btn" onclick="exportChatReport(this)">Tải báo cáo</button>`
+            ? `<button class="fox-speak-btn"onclick="speakFoxText(this)"title="Nghe AI đọc phản hồi">Nghe</button><button class="fox-copy-btn"onclick="copyFoxText(this)">Copy</button><button class="fox-export-btn"onclick="exportChatReport(this)">Tải báo cáo</button>`
             : '';
         let actionsBar = sender === 'bot' ? `<div class="fox-msg-actions-bar">${actionBtns}</div>` : '';
         html += `<div class="fox-msg-group"><div class="fox-msg-bubble">${formattedText}</div>${actionsBar}</div>`;
@@ -6236,7 +6367,7 @@ async function checkAppVersion() {
 
 /**
  * graph-snapshot.js
- * Module tự động gắn nút "📷 Xuất ảnh đồ thị" lên TẤT CẢ các vùng đồ thị (<canvas>)
+ * Module tự động gắn nút "Xuất ảnh đồ thị"lên TẤT CẢ các vùng đồ thị (<canvas>)
  * trên mọi trang/tab của ứng dụng đo (Dao động kí, Phổ tần số, Mức cường độ âm, Báo cáo...).
  *
  * Đặc điểm:
@@ -6468,7 +6599,7 @@ async function checkAppVersion() {
       <div class="gs-modal-card">
         <div style="font-weight:bold; font-size:14px;">Ảnh chụp vùng đồ thị (${fileName})</div>
         <div style="font-size:12px; color:#cbd5e1; margin-top:4px;">Nhấn giữ vào ảnh bên dưới để lưu về máy</div>
-        <img src="${dataUrl}" alt="Đồ thị sóng âm" />
+        <img src="${dataUrl}"alt="Đồ thị sóng âm" />
         <button class="gs-modal-close">Đóng</button>
       </div>
     `;
@@ -6653,7 +6784,7 @@ async function checkAppVersion() {
         }
     };
 
-    // Giữ nguyên nút "📄 Xuất báo cáo" trên thanh công cụ, đồng thời hỗ trợ đồng bộ từng chức năng sang report.html
+    // Giữ nguyên nút "Xuất báo cáo"trên thanh công cụ, đồng thời hỗ trợ đồng bộ từng chức năng sang report.html
     function upgradeExportReportButtonsToSync() {
         const btn = document.getElementById("btnExportReport");
         if (!btn) return;
@@ -6707,13 +6838,13 @@ async function checkAppVersion() {
         });
 
         if (typeof totalTimeOnScreen === "number" && totalTimeOnScreen > 0) {
-            payload.scaleX = ((totalTimeOnScreen / 10) * 1000).toFixed(2).replace(".", ",") + " ms/ô";
+            payload.scaleX = ((totalTimeOnScreen / 10) * 1000).toFixed(2).replace(".", ",") + "ms/ô";
         }
         if (typeof currentZoomY === "number" && currentZoomY > 0) {
-            payload.scaleY = (1.0 / currentZoomY).toFixed(2).replace(".", ",") + " V/ô";
+            payload.scaleY = (1.0 / currentZoomY).toFixed(2).replace(".", ",") + "V/ô";
         }
         if (typeof sampleRate === "number" && sampleRate > 0) {
-            payload.sampleRate = Math.round(sampleRate) + " Hz";
+            payload.sampleRate = Math.round(sampleRate) + "Hz";
         }
         if (typeof channelConfig !== "undefined" && channelConfig.A) {
             const hp = channelConfig.A.filterHP ? Math.round(channelConfig.A.filterHP.frequency.value) : 45;
@@ -6760,7 +6891,7 @@ async function checkAppVersion() {
                 }
             }
             if (!entry) {
-                showExpToast("⚠️ Chưa có dữ liệu đồ thị hợp lệ để đồng bộ!");
+                showExpToast("Chưa có dữ liệu đồ thị hợp lệ để đồng bộ!");
                 return;
             }
             payload.cacLanDo = [entry];
@@ -6808,7 +6939,7 @@ async function checkAppVersion() {
         } else if (featureType === "fft") {
             if (typeof cacheFftSnapshotForReport === "function") cacheFftSnapshotForReport();
             if (!cachedFftSnapshot || !(cachedFftSnapshot.f0 > 0)) {
-                showExpToast("⚠️ Hãy nhấn 'Quét Họa âm' hoặc nhập f₀ trên phổ FFT trước khi đồng bộ!");
+                showExpToast("Hãy nhấn 'Quét Họa âm'hoặc nhập f₀ trên phổ FFT trước khi đồng bộ!");
                 return;
             }
             payload.phoTanSo = [{
@@ -6824,7 +6955,7 @@ async function checkAppVersion() {
             const hasDbA = (typeof dbHistoryA !== "undefined" && Array.isArray(dbHistoryA) && dbHistoryA.length > 0);
             const hasDbB = (isDual && typeof dbHistoryB !== "undefined" && Array.isArray(dbHistoryB) && dbHistoryB.length > 0);
             if (!hasDbA && !hasDbB) {
-                showExpToast("⚠️ Chưa có dữ liệu mức cường độ âm (dB) để đồng bộ!");
+                showExpToast("Chưa có dữ liệu mức cường độ âm (dB) để đồng bộ!");
                 return;
             }
             const mainCanvas = document.getElementById("oscilloscope");
@@ -6862,7 +6993,7 @@ async function checkAppVersion() {
                 if (eB) listDb.push(eB);
             }
             if (listDb.length === 0) {
-                showExpToast("⚠️ Chưa có giá trị dB hợp lệ để đồng bộ!");
+                showExpToast("Chưa có giá trị dB hợp lệ để đồng bộ!");
                 return;
             }
             payload.mucCuongDoAm = listDb;
@@ -6896,7 +7027,7 @@ async function checkAppVersion() {
             fft: "Phổ họa âm FFT",
             db: "Mức cường độ âm (dB)"
         };
-        showExpToast(`✅ Đã đồng bộ [${labelMap[featureType] || featureType}] sang báo cáo!`);
+        showExpToast(` Đã đồng bộ [${labelMap[featureType] || featureType}] sang báo cáo!`);
     };
 
     window.syncReportToStandalone = function () {
@@ -6949,7 +7080,7 @@ async function checkAppVersion() {
             if (prev.anhPhoBase64 && !expLiveImages.fft) expLiveImages.fft = prev.anhPhoBase64;
             if (prev.anhDbBase64 && !expLiveImages.db) expLiveImages.db = prev.anhDbBase64;
 
-            // Đồng bộ chính xác trạng thái "Chỉnh 1 dòng (Ghi đè)" từ report_5.html
+            // Đồng bộ chính xác trạng thái "Chỉnh 1 dòng (Ghi đè)"từ report_5.html
             const prevFlags = prev.singleRowFlags || {};
             const isGlobalSingle = (prev.singleRowMode === true);
             expSingleRowFlags = {
@@ -6963,16 +7094,16 @@ async function checkAppVersion() {
         const techMeta = {};
         if (typeof totalTimeOnScreen === "number" && totalTimeOnScreen > 0) {
             const msPerDiv = (totalTimeOnScreen / 10) * 1000;
-            techMeta.scaleX = msPerDiv.toFixed(2).replace(".", ",") + " ms/ô";
+            techMeta.scaleX = msPerDiv.toFixed(2).replace(".", ",") + "ms/ô";
             setTxt("expScaleX", techMeta.scaleX);
         }
         if (typeof currentZoomY === "number" && currentZoomY > 0) {
             const vPerDiv = 1.0 / currentZoomY;
-            techMeta.scaleY = vPerDiv.toFixed(2).replace(".", ",") + " V/ô";
+            techMeta.scaleY = vPerDiv.toFixed(2).replace(".", ",") + "V/ô";
             setTxt("expScaleY", techMeta.scaleY);
         }
         if (typeof sampleRate === "number" && sampleRate > 0) {
-            techMeta.sampleRate = Math.round(sampleRate) + " Hz";
+            techMeta.sampleRate = Math.round(sampleRate) + "Hz";
             setTxt("expSampleRate", techMeta.sampleRate);
         }
         if (typeof channelConfig !== "undefined" && channelConfig.A) {
@@ -7147,7 +7278,7 @@ async function checkAppVersion() {
         if (hasAnyLiveData) {
             if (banner) banner.classList.add("live-mode");
             if (statusText) {
-                statusText.innerHTML = "<strong>✅ Đã đồng bộ số liệu &amp; đồ thị từ máy đo Fox-lab!</strong> Mỗi lần đồng bộ thêm 1 dòng dữ liệu (hoặc cập nhật 1 dòng mới nhất nếu bảng chỉ có 1 dòng).";
+                statusText.innerHTML = "<strong> Đã đồng bộ số liệu &amp; đồ thị từ máy đo Fox-lab!</strong> Mỗi lần đồng bộ thêm 1 dòng dữ liệu (hoặc cập nhật 1 dòng mới nhất nếu bảng chỉ có 1 dòng).";
             }
             renderExpOscTable();
             renderExpFftTable();
@@ -7339,7 +7470,7 @@ async function checkAppVersion() {
         const fileName = `FoxLab_BaoCao_${groupSlug}.pdf`;
 
         if (typeof html2pdf === "undefined") {
-            showExpToast("⚠️ Chưa tải được thư viện xuất PDF, vui lòng kiểm tra kết nối mạng!");
+            showExpToast("Chưa tải được thư viện xuất PDF, vui lòng kiểm tra kết nối mạng!");
             return;
         }
         showExpToast("⏳ Đang tạo file PDF, vui lòng đợi...");
@@ -7355,10 +7486,10 @@ async function checkAppVersion() {
         };
         html2pdf().set(opt).from(sheet).save().then(() => {
             sheet.classList.remove("exp-exporting-pdf");
-            showExpToast(`✅ Đã tải xuống file PDF: ${fileName}`);
+            showExpToast(` Đã tải xuống file PDF: ${fileName}`);
         }).catch(() => {
             sheet.classList.remove("exp-exporting-pdf");
-            showExpToast("❌ Có lỗi xảy ra khi xuất PDF!");
+            showExpToast("Có lỗi xảy ra khi xuất PDF!");
         });
     };
 
@@ -7405,7 +7536,7 @@ async function checkAppVersion() {
             });
             if (part5) part5.classList.toggle("hidden-part", prevPart5);
             if (titleEl) titleEl.textContent = prevTitle;
-            showExpToast(`✅ Đã tải PDF: FoxLab_${fileTag}.pdf`);
+            showExpToast(` Đã tải PDF: FoxLab_${fileTag}.pdf`);
         }).catch(() => {
             sheet.classList.remove("exp-exporting-pdf");
         });
@@ -7544,7 +7675,7 @@ async function checkAppVersion() {
         const className = document.getElementById("expClassName")?.textContent?.trim() || "11";
 
         const wrapperHtml = `
-            <div xmlns="http://www.w3.org/1999/xhtml" style="background:#ffffff; padding:12px 16px; font-family:'Times New Roman', serif; color:#0f172a;">
+            <div xmlns="http://www.w3.org/1999/xhtml"style="background:#ffffff; padding:12px 16px; font-family:'Times New Roman', serif; color:#0f172a;">
               <style>${scopedStyle}</style>
               <div style="display:flex; justify-content:space-between; font-size:11pt; border-bottom:1px solid #94a3b8; padding-bottom:4px; margin-bottom:6px;">
                 <span><strong>Fox-lab</strong> | ${groupName} – Lớp ${className}</span>
@@ -7555,8 +7686,8 @@ async function checkAppVersion() {
         `;
 
         const svg = `
-            <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height + 36}">
-              <foreignObject width="100%" height="100%">
+            <svg xmlns="http://www.w3.org/2000/svg"width="${width}"height="${height + 36}">
+              <foreignObject width="100%"height="100%">
                 ${wrapperHtml}
               </foreignObject>
             </svg>
@@ -7887,11 +8018,11 @@ async function checkAppVersion() {
             const tr = document.createElement("tr");
             tr.innerHTML = `
                 <td><strong>Lần ${idx + 1}</strong></td>
-                <td contenteditable="true" onblur="updateExpOsc(${idx}, 'soChuKi', this.textContent)">${N}</td>
-                <td contenteditable="true" onblur="updateExpOsc(${idx}, 'deltaT_ms', this.textContent)">${dt.toFixed(2)}</td>
+                <td contenteditable="true"onblur="updateExpOsc(${idx}, 'soChuKi', this.textContent)">${N}</td>
+                <td contenteditable="true"onblur="updateExpOsc(${idx}, 'deltaT_ms', this.textContent)">${dt.toFixed(2)}</td>
                 <td>${T > 0 ? T.toFixed(2) : "—"}</td>
                 <td>${f > 0 ? f.toFixed(1) : "—"}</td>
-                <td class="no-print"><button type="button" class="exp-row-del-btn" onclick="delExpOsc(${idx})">✕</button></td>
+                <td class="no-print"><button type="button"class="exp-row-del-btn"onclick="delExpOsc(${idx})"></button></td>
             `;
             tbody.appendChild(tr);
         });
@@ -7943,11 +8074,11 @@ async function checkAppVersion() {
         expFftRows.forEach((r, i) => {
             const tr = document.createElement("tr");
             tr.innerHTML = `
-                <td contenteditable="true" onblur="updateExpFft(${i}, 'nguon', this.textContent)">${r.nguon}</td>
-                <td contenteditable="true" onblur="updateExpFft(${i}, 'f0', this.textContent)">${r.f0}</td>
-                <td contenteditable="true" onblur="updateExpFft(${i}, 'hoaAm', this.textContent)">${r.hoaAm}</td>
-                <td contenteditable="true" onblur="updateExpFft(${i}, 'dacDiem', this.textContent)">${r.dacDiem}</td>
-                <td class="no-print"><button type="button" class="exp-row-del-btn" onclick="delExpFft(${i})">✕</button></td>
+                <td contenteditable="true"onblur="updateExpFft(${i}, 'nguon', this.textContent)">${r.nguon}</td>
+                <td contenteditable="true"onblur="updateExpFft(${i}, 'f0', this.textContent)">${r.f0}</td>
+                <td contenteditable="true"onblur="updateExpFft(${i}, 'hoaAm', this.textContent)">${r.hoaAm}</td>
+                <td contenteditable="true"onblur="updateExpFft(${i}, 'dacDiem', this.textContent)">${r.dacDiem}</td>
+                <td class="no-print"><button type="button"class="exp-row-del-btn"onclick="delExpFft(${i})"></button></td>
             `;
             tbody.appendChild(tr);
         });
@@ -7978,16 +8109,16 @@ async function checkAppVersion() {
         tbody.innerHTML = "";
         const baseL = expDbRows.length ? expDbRows[0].lAvg : 0;
         expDbRows.forEach((r, i) => {
-            const diff = i === 0 ? "0,0 dB (Mốc)" : (r.lAvg - baseL).toFixed(1) + " dB";
+            const diff = i === 0 ? "0,0 dB (Mốc)" : (r.lAvg - baseL).toFixed(1) + "dB";
             const tr = document.createElement("tr");
             tr.innerHTML = `
-                <td contenteditable="true" onblur="updateExpDb(${i}, 'viTri', this.textContent, false)">${r.viTri}</td>
-                <td contenteditable="true" onblur="updateExpDb(${i}, 'r', this.textContent, false)">${Number(r.r).toFixed(1)}</td>
-                <td contenteditable="true" onblur="updateExpDb(${i}, 'lMin', this.textContent, false)">${Number(r.lMin).toFixed(1)}</td>
-                <td contenteditable="true" onblur="updateExpDb(${i}, 'lMax', this.textContent, false)">${Number(r.lMax).toFixed(1)}</td>
-                <td contenteditable="true" onblur="updateExpDb(${i}, 'lAvg', this.textContent, true)">${Number(r.lAvg).toFixed(1)}</td>
+                <td contenteditable="true"onblur="updateExpDb(${i}, 'viTri', this.textContent, false)">${r.viTri}</td>
+                <td contenteditable="true"onblur="updateExpDb(${i}, 'r', this.textContent, false)">${Number(r.r).toFixed(1)}</td>
+                <td contenteditable="true"onblur="updateExpDb(${i}, 'lMin', this.textContent, false)">${Number(r.lMin).toFixed(1)}</td>
+                <td contenteditable="true"onblur="updateExpDb(${i}, 'lMax', this.textContent, false)">${Number(r.lMax).toFixed(1)}</td>
+                <td contenteditable="true"onblur="updateExpDb(${i}, 'lAvg', this.textContent, true)">${Number(r.lAvg).toFixed(1)}</td>
                 <td>${diff}</td>
-                <td class="no-print"><button type="button" class="exp-row-del-btn" onclick="delExpDb(${i})">✕</button></td>
+                <td class="no-print"><button type="button"class="exp-row-del-btn"onclick="delExpDb(${i})"></button></td>
             `;
             tbody.appendChild(tr);
         });
@@ -8095,7 +8226,7 @@ async function checkAppVersion() {
 })();
 
 // Đăng ký Service Worker duy nhất
-if ('serviceWorker' in navigator) {
+if ('serviceWorker'in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js').then((reg) => {
             reg.update();
