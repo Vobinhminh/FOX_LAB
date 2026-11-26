@@ -5,7 +5,8 @@
   "patchedFeatures": [
     "rawU",
     "rawV",
-    "rawA"
+    "rawA",
+    "styles.css"
   ],
   "offlineReady": true
 }

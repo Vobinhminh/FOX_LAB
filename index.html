@@ -4,23 +4,26 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>FoxLab v6.5.2 - Dao Dong Ky & Do Luong</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 20px; background: #f8fafc; color: #0f172a; }
-    .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin-bottom: 16px; }
-    button { padding: 8px 14px; border: 1px solid #0f172a; background: #0f172a; color: #fff; border-radius: 6px; cursor: pointer; margin-right: 8px; }
-    button.secondary { background: #fff; color: #0f172a; }
-    canvas { width: 100%; max-width: 780px; height: 220px; border: 1px solid #cbd5e1; background: #ffffff; display: block; margin-top: 10px; }
-  </style>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div class="card">
-    <h1>FoxLab v6.5.2 - Dao Dong Ky</h1>
-    <p>Phien ban da dong bo du lieu dao ham tho (rawU, rawV, rawA) cho tung lan do.</p>
-    <button id="btnSample">Ghi nhan mau dao dong (440 Hz)</button>
-    <button id="btnReport" class="secondary" onclick="window.location.href='report.html'">Mo trang bao cao</button>
-    <button id="btnClear" class="secondary">Xoa du lieu mau</button>
-    <p id="statusText">San sang ghi nhan.</p>
-    <canvas id="scopeCanvas" width="780" height="220"></canvas>
+  <div class="container">
+    <div class="card">
+      <h1>FoxLab v6.5.2 - Dao Dong Ky</h1>
+      <p>Phien ban da dong bo du lieu dao ham tho (rawU, rawV, rawA) cho tung lan do.</p>
+      <div class="toolbar">
+        <button id="btnSample">Ghi nhan mau dao dong (440 Hz)</button>
+        <button id="btnReport" class="secondary" onclick="window.location.href='report.html'">Mo trang bao cao</button>
+        <button id="btnClear" class="secondary">Xoa du lieu mau</button>
+      </div>
+      <p id="statusText" class="status-text">San sang ghi nhan.</p>
+      <div class="legend">
+        <span class="legend-item"><span class="legend-swatch swatch-u"></span>rawU</span>
+        <span class="legend-item"><span class="legend-swatch swatch-v"></span>rawV</span>
+        <span class="legend-item"><span class="legend-swatch swatch-a"></span>rawA</span>
+      </div>
+      <canvas id="scopeCanvas" class="scope-canvas" width="780" height="220"></canvas>
+    </div>
   </div>
 
   <script src="index.js"></script>

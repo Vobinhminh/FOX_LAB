@@ -4,20 +4,19 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Bao cao du lieu thuc nghiem - FoxLab v6.5.2</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 20px; background: #f8fafc; color: #0f172a; }
-    .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin-bottom: 16px; }
-    canvas { width: 100%; max-width: 780px; height: 180px; border: 1px solid #cbd5e1; background: #ffffff; display: block; margin-top: 8px; }
-    button { padding: 8px 14px; border: 1px solid #0f172a; background: #0f172a; color: #fff; border-radius: 6px; cursor: pointer; }
-  </style>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div class="card">
-    <h1>Bao cao do thi dao ham so (FoxLab v6.5.2)</h1>
-    <p>Hien thi day du mang du lieu thuc nghiem rawU, rawV, rawA cua tung lan do.</p>
-    <button onclick="window.location.href='index.html'">Quay lai dao dong ky</button>
+  <div class="container">
+    <div class="card">
+      <h1>Bao cao do thi dao ham so (FoxLab v6.5.2)</h1>
+      <p>Hien thi day du mang du lieu thuc nghiem rawU, rawV, rawA cua tung lan do.</p>
+      <div class="toolbar">
+        <button onclick="window.location.href='index.html'">Quay lai dao dong ky</button>
+      </div>
+    </div>
+    <div id="reportContainer"></div>
   </div>
-  <div id="reportContainer"></div>
 
   <script src="index.js"></script>
   <script>
@@ -36,12 +35,14 @@
         card.appendChild(title);
 
         const meta = document.createElement('p');
+        meta.className = 'meta-text';
         meta.textContent = 'So mau rawU: ' + (rec.rawU ? rec.rawU.length : 0) +
           ' | rawV: ' + (rec.rawV ? rec.rawV.length : 0) +
           ' | rawA: ' + (rec.rawA ? rec.rawA.length : 0);
         card.appendChild(meta);
 
         const canvas = document.createElement('canvas');
+        canvas.className = 'report-canvas';
         canvas.width = 780;
         canvas.height = 180;
         card.appendChild(canvas);

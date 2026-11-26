@@ -1,0 +1,150 @@
+:root {
+  --bg-page: #f8fafc;
+  --bg-card: #ffffff;
+  --text-main: #0f172a;
+  --text-muted: #475569;
+  --border-color: #cbd5e1;
+  --border-light: #e2e8f0;
+  --accent-primary: #0f172a;
+  --accent-secondary: #ffffff;
+  --wave-u: #0f172a;
+  --wave-v: #2563eb;
+  --wave-a: #dc2626;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  margin: 20px;
+  background-color: var(--bg-page);
+  color: var(--text-main);
+  line-height: 1.5;
+}
+
+.container {
+  max-width: 840px;
+  margin: 0 auto;
+}
+
+.card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+}
+
+h1 {
+  margin-top: 0;
+  margin-bottom: 8px;
+  font-size: 22px;
+  color: var(--text-main);
+}
+
+h2 {
+  margin-top: 0;
+  margin-bottom: 6px;
+  font-size: 17px;
+  color: var(--text-main);
+}
+
+p {
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: var(--text-muted);
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+button {
+  padding: 8px 14px;
+  border: 1px solid var(--accent-primary);
+  background-color: var(--accent-primary);
+  color: var(--accent-secondary);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+button.secondary {
+  background-color: var(--accent-secondary);
+  color: var(--accent-primary);
+}
+
+button:hover {
+  opacity: 0.92;
+}
+
+.status-text {
+  font-size: 14px;
+  color: var(--text-main);
+  margin-bottom: 10px;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legend-swatch {
+  width: 14px;
+  height: 3px;
+  display: inline-block;
+}
+
+.swatch-u {
+  background-color: var(--wave-u);
+}
+
+.swatch-v {
+  background-color: var(--wave-v);
+}
+
+.swatch-a {
+  background-color: var(--wave-a);
+}
+
+canvas.scope-canvas {
+  width: 100%;
+  max-width: 780px;
+  height: 220px;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-card);
+  display: block;
+  border-radius: 4px;
+}
+
+canvas.report-canvas {
+  width: 100%;
+  max-width: 780px;
+  height: 180px;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-card);
+  display: block;
+  margin-top: 8px;
+  border-radius: 4px;
+}
+
+.meta-text {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
