@@ -1264,6 +1264,9 @@ async function checkAppVersion() {
         const btnOscCalib = document.getElementById('btnOscCalib');
         if (btnOscCalib) {
             btnOscCalib.style.display = isOsc ? 'inline-block' : 'none';
+            btnOscCalib.textContent = (typeof oscAutoLiveEnabled !== 'undefined' && oscAutoLiveEnabled)
+                ? 'Hiệu chỉnh biên độ (Tự động)'
+                : 'Hiệu chỉnh biên độ';
         }
         if (btnCalib) {
             btnCalib.style.display = isOsc ? 'none' : 'inline-block';
@@ -1688,55 +1691,30 @@ async function checkAppVersion() {
         if (autoFreq > 0) {
             summaryHtml += ` &nbsp;⇔&nbsp; Tự động: <span class="channel-tag-a">f<sub>auto</sub> = ${autoFreq.toFixed(1)} Hz</span> (Sai lệch: <b>${relErrorPct.toFixed(2)}%</b>)`;
         }
-        if (statusPrompt) {
-            infoMessageText.innerHTML = statusPrompt;
-            infoMessageText.style.color = "#7c3aed";
-        } else {
-            const countA = Array.isArray(twoSourcePoints.A) ? twoSourcePoints.A.length : 0;
-            const countB = Array.isArray(twoSourcePoints.B) ? twoSourcePoints.B.length : 0;
-            const totalPicked = Math.min(2, countA) + Math.min(2, countB);
-            const hasAllFourPoints = (countA >= 2 && countB >= 2 && resA && resB);
-
-            if (!hasAllFourPoints) {
-                const nextHint = countA < 2
-                    ? `Chọn điểm thứ ${countA + 1}/2 trên Kênh A (đồ thị trên)`
-                    : `Đã đủ 2 điểm Kênh A; chọn điểm thứ ${countB + 1}/2 trên Kênh B (đồ thị dưới)`;
-                infoMessageText.innerHTML =
-                    `Đã chọn <b>${totalPicked}/4 điểm</b> (Kênh A: ${Math.min(2, countA)}/2, Kênh B: ${Math.min(2, countB)}/2) — ${nextHint}. Bảng kết quả hiện sau khi đủ 4 điểm.`;
-                infoMessageText.style.color = "#7c3aed";
-            } else {
-                infoMessageText.innerHTML =
-                    `Đã chọn đủ 4/4 điểm: ` +
-                    `<span class="channel-tag-a">Kênh A: T<sub>A</sub>=${dispTA_ms > 0 ? dispTA_ms.toFixed(2) + 'ms' : '--'} (${dispFA > 0 ? dispFA.toFixed(1) + 'Hz' : '--'})</span> | ` +
-                    `<span class="channel-tag-b">Kênh B: T<sub>B</sub>=${dispTB_ms > 0 ? dispTB_ms.toFixed(2) + 'ms' : '--'} (${dispFB > 0 ? dispFB.toFixed(1) + 'Hz' : '--'})</span> | ` +
-                    `<span class="info-badge">Δφ = ${autoPhaseRad.toFixed(2)} rad (${autoPhaseDeg.toFixed(1)}°)</span>`;
-                infoMessageText.style.color = "#0f172a";
-            }
-        }
+        infoMessageText.innerHTML = summaryHtml;
+        infoMessageText.style.color = "#0f172a";
 
         const hud = document.getElementById('manualAnalysisHud');
         const hudBody = document.getElementById('manualAnalysisHudBody');
         if (hud && hudBody) {
-            const countA = Array.isArray(twoSourcePoints.A) ? twoSourcePoints.A.length : 0;
-            const countB = Array.isArray(twoSourcePoints.B) ? twoSourcePoints.B.length : 0;
-            const hasAllFourPoints = (countA >= 2 && countB >= 2 && resA && resB);
-            if (!hasAllFourPoints) {
-                hud.style.display = 'none';
-            } else {
-                const hudTitle = hud.querySelector('.ma-header span');
-                if (hudTitle) hudTitle.textContent = "KẾT QUẢ PHÂN TÍCH 4 ĐIỂM (2 ĐIỂM / ĐỒ THỊ)";
-                hudBody.innerHTML = `
-                    <div class="ma-grid">
-                        <div>• Đồ thị 1 (P<sub>A1</sub>–P<sub>A2</sub>): <b>T<sub>A</sub> = ${dispTA_ms > 0 ? dispTA_ms.toFixed(2) + ' ms' : '--'}</b> | <b>f<sub>A</sub> = ${dispFA > 0 ? dispFA.toFixed(1) + ' Hz' : '--'}</b></div>
-                        <div>• Đồ thị 2 (P<sub>B1</sub>–P<sub>B2</sub>): <b>T<sub>B</sub> = ${dispTB_ms > 0 ? dispTB_ms.toFixed(2) + ' ms' : '--'}</b> | <b>f<sub>B</sub> = ${dispFB > 0 ? dispFB.toFixed(1) + ' Hz' : '--'}</b></div>
-                        <div>• Độ lệch tần số |f<sub>A</sub> − f<sub>B</sub>|: <b>${(dispFA > 0 && dispFB > 0) ? Math.abs(dispFA - dispFB).toFixed(1) + ' Hz' : '--'}</b></div>
-                        <div>• Độ lệch pha Δφ (tức thời): <b>${autoPhaseRad.toFixed(2)} rad (${autoPhaseDeg.toFixed(1)}°)</b></div>
-                    </div>
-                    <div class="ma-ref">• Nhận xét: <b>${phaseStateText}</b></div>
-                    <div class="ma-ref">• Kéo thả trực tiếp các điểm P<sub>A1</sub>, P<sub>A2</sub> (đồ thị 1) và P<sub>B1</sub>, P<sub>B2</sub> (đồ thị 2) để cập nhật ngay.</div>
-                `;
-                hud.style.display = 'block';
-            }
+            const hudTitle = hud.querySelector('.ma-header span');
+            if (hudTitle) hudTitle.textContent = "KẾT QUẢ PHÂN TÍCH 2 ĐIỂM & ĐỐI CHIẾU TỰ ĐỘNG";
+            hudBody.innerHTML = `
+                <div class="ma-grid">
+                    <div>• Khoảng thời gian Δt: <span class="ma-val-manual">${res.dt_ms.toFixed(2)} ms</span></div>
+                    <div>• Độ lệch pha Δφ: <span class="ma-val-manual">${res.deltaPhiRad.toFixed(2)} rad (${res.deltaPhiDeg.toFixed(1)}°)</span></div>
+                    <div>• Chu kỳ đo 2 điểm (T): <span class="ma-val-manual">${res.T_ms.toFixed(2)} ms</span></div>
+                    <div>• Tần số đo 2 điểm (f): <span class="ma-val-manual">${res.f_Hz.toFixed(2)} Hz</span></div>
+                    <div>• Chu kỳ tự động (T<sub>auto</sub>): <span class="ma-val-auto">${autoFreq > 0 ? autoT_ms.toFixed(2) + 'ms' : '--'}</span></div>
+                    <div>• Tần số tự động (f<sub>auto</sub>): <span class="ma-val-auto">${autoFreq > 0 ? autoFreq.toFixed(2) + 'Hz' : '--'}</span></div>
+                </div>
+                <div style="margin-top:6px; padding-top:5px; border-top:1px dashed rgba(255,255,255,0.18); font-size:11.5px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+                    <span>Công thức: <i>T = 2π·Δt / Δφ</i> &nbsp;|&nbsp; <i>f = 1 / T</i></span>
+                    <span>Sai số tương đối δ: <span class="ma-val-err">${relErrorPct !== null ? relErrorPct.toFixed(2) + '%' : 'Chưa xác định'}</span></span>
+                    <button type="button"onclick="syncFeatureToReport('osc')"style="background:#059669; color:#ffffff; border:none; border-radius:4px; padding:3px 9px; font-size:11px; font-weight:700; cursor:pointer;"title="Đồng bộ kết quả phân tích đồ thị này sang Phần I báo cáo"> Đồng bộ báo cáo</button>
+                </div>
+            `;
+            hud.style.display = 'block';
         }
     }
 
@@ -1830,7 +1808,7 @@ async function checkAppVersion() {
         if (resetPoints) {
             twoSourcePoints = { A: [], B: [] };
         }
-        updateTwoSourceGraphAnalysisDisplay(winA, winB, "Chế độ 2 nguồn: Chọn 4 điểm (2 điểm trên Kênh A và 2 điểm trên Kênh B). Bảng kết quả sẽ hiển thị sau khi chọn đủ 4 điểm.");
+        updateTwoSourceGraphAnalysisDisplay(winA, winB, "Chế độ 2 nguồn: Chọn 4 điểm (2 điểm trên Đồ thị 1 Kênh A và 2 điểm trên Đồ thị 2 Kênh B). Bảng kết quả hiển thị sau khi chọn xong 4 điểm.");
     }
 
     function updateTwoSourceGraphAnalysisDisplay(winA, winB, statusPrompt = null) {
@@ -1839,12 +1817,18 @@ async function checkAppVersion() {
         const autoTA_ms = autoFA > 0 ? (1000.0 / autoFA) : 0;
         const autoTB_ms = autoFB > 0 ? (1000.0 / autoFB) : 0;
 
-        const resA = (Array.isArray(twoSourcePoints.A) && twoSourcePoints.A.length === 2)
+        const countA = Array.isArray(twoSourcePoints.A) ? twoSourcePoints.A.length : 0;
+        const countB = Array.isArray(twoSourcePoints.B) ? twoSourcePoints.B.length : 0;
+        const totalPicked = Math.min(2, countA) + Math.min(2, countB);
+
+        const resA = (countA === 2)
             ? calculateFromGraphClicks(twoSourcePoints.A[0], twoSourcePoints.A[1], winA, 'A')
             : null;
-        const resB = (Array.isArray(twoSourcePoints.B) && twoSourcePoints.B.length === 2)
+        const resB = (countB === 2)
             ? calculateFromGraphClicks(twoSourcePoints.B[0], twoSourcePoints.B[1], winB, 'B')
             : null;
+
+        const hasAllFourPoints = (countA >= 2 && countB >= 2 && resA && resB);
 
         const dispFA = resA ? resA.f_Hz : autoFA;
         const dispFB = resB ? resB.f_Hz : autoFB;
@@ -1876,9 +1860,16 @@ async function checkAppVersion() {
         if (statusPrompt) {
             infoMessageText.innerHTML = statusPrompt;
             infoMessageText.style.color = "#7c3aed";
+        } else if (!hasAllFourPoints) {
+            const nextHint = countA < 2
+                ? `Chọn điểm thứ ${countA + 1}/2 trên Đồ thị 1 (Kênh A)`
+                : `Đã đủ 2 điểm Kênh A; chọn điểm thứ ${countB + 1}/2 trên Đồ thị 2 (Kênh B)`;
+            infoMessageText.innerHTML =
+                `Đã chọn <b>${totalPicked}/4 điểm</b> (Kênh A: ${Math.min(2, countA)}/2, Kênh B: ${Math.min(2, countB)}/2) — ${nextHint}. Bảng kết quả hiển thị sau khi chọn xong 4 điểm.`;
+            infoMessageText.style.color = "#7c3aed";
         } else {
             infoMessageText.innerHTML =
-                `4 điểm (2 điểm/đồ thị): ` +
+                `Đã chọn đủ 4/4 điểm: ` +
                 `<span class="channel-tag-a">Kênh A: T<sub>A</sub>=${dispTA_ms > 0 ? dispTA_ms.toFixed(2) + 'ms' : '--'} (${dispFA > 0 ? dispFA.toFixed(1) + 'Hz' : '--'})</span> | ` +
                 `<span class="channel-tag-b">Kênh B: T<sub>B</sub>=${dispTB_ms > 0 ? dispTB_ms.toFixed(2) + 'ms' : '--'} (${dispFB > 0 ? dispFB.toFixed(1) + 'Hz' : '--'})</span> | ` +
                 `<span class="info-badge">Δφ = ${autoPhaseRad.toFixed(2)} rad (${autoPhaseDeg.toFixed(1)}°)</span>`;
@@ -1888,26 +1879,30 @@ async function checkAppVersion() {
         const hud = document.getElementById('manualAnalysisHud');
         const hudBody = document.getElementById('manualAnalysisHudBody');
         if (hud && hudBody) {
-            const hudTitle = hud.querySelector('.ma-header span');
-            if (hudTitle) hudTitle.textContent = "KẾT QUẢ PHÂN TÍCH 4 ĐIỂM (2 ĐIỂM / ĐỒ THỊ)";
-            hudBody.innerHTML = `
-                <div class="ma-grid">
-                    <div>• Đồ thị 1 (P<sub>A1</sub>, P<sub>A2</sub>): Δt<sub>A</sub> = <span class="ma-val-manual">${resA ? resA.dt_ms.toFixed(2) + 'ms' : '--'}</span></div>
-                    <div>• Chu kỳ Đồ thị 1 (T<sub>A</sub>): <span class="ma-val-manual">${dispTA_ms > 0 ? dispTA_ms.toFixed(2) + 'ms' : '--'}</span> <span style="color:#94a3b8;">(f<sub>A</sub> = ${dispFA > 0 ? dispFA.toFixed(1) + 'Hz' : '--'})</span></div>
-                    <div>• Đồ thị 2 (P<sub>B1</sub>, P<sub>B2</sub>): Δt<sub>B</sub> = <span class="ma-val-auto">${resB ? resB.dt_ms.toFixed(2) + 'ms' : '--'}</span></div>
-                    <div>• Chu kỳ Đồ thị 2 (T<sub>B</sub>): <span class="ma-val-auto">${dispTB_ms > 0 ? dispTB_ms.toFixed(2) + 'ms' : '--'}</span> <span style="color:#94a3b8;">(f<sub>B</sub> = ${dispFB > 0 ? dispFB.toFixed(1) + 'Hz' : '--'})</span></div>
-                    <div>• Độ lệch pha 2 nguồn (Δφ): <span class="ma-val-manual">${autoPhaseRad.toFixed(2)} rad (${autoPhaseDeg.toFixed(1)}°)</span></div>
-                    <div>• Chu kỳ tự động (T<sub>A0</sub> / T<sub>B0</sub>): <span style="color:#cbd5e1; font-weight:600;">${autoTA_ms > 0 ? autoTA_ms.toFixed(2) : '--'} / ${autoTB_ms > 0 ? autoTB_ms.toFixed(2) : '--'} ms</span></div>
-                </div>
-                <div style="margin-top:6px; padding-top:5px; border-top:1px dashed rgba(255,255,255,0.18); font-size:11.5px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-                    <span>Trạng thái: <b style="color:#38bdf8;">${phaseStateText}</b></span>
-                    <div style="display:flex; gap:6px; align-items:center;">
-                        <button type="button"onclick="startTwoSourceGraphAnalysis(true)"style="background:#334155; color:#f8fafc; border:1px solid #475569; border-radius:4px; padding:2px 8px; font-size:11px; cursor:pointer;"> Đặt lại 4 mốc</button>
-                        <button type="button"onclick="syncFeatureToReport('twoSource')"style="background:#059669; color:#ffffff; border:none; border-radius:4px; padding:3px 9px; font-size:11px; font-weight:700; cursor:pointer;"title="Đồng bộ kết quả 2 nguồn sang báo cáo"> Đồng bộ báo cáo</button>
+            if (!hasAllFourPoints) {
+                hud.style.display = 'none';
+            } else {
+                const hudTitle = hud.querySelector('.ma-header span');
+                if (hudTitle) hudTitle.textContent = "KẾT QUẢ PHÂN TÍCH 4 ĐIỂM (2 ĐIỂM / ĐỒ THỊ)";
+                hudBody.innerHTML = `
+                    <div class="ma-grid">
+                        <div>• Đồ thị 1 (P<sub>A1</sub>, P<sub>A2</sub>): Δt<sub>A</sub> = <span class="ma-val-manual">${resA ? resA.dt_ms.toFixed(2) + 'ms' : '--'}</span></div>
+                        <div>• Chu kỳ Đồ thị 1 (T<sub>A</sub>): <span class="ma-val-manual">${dispTA_ms > 0 ? dispTA_ms.toFixed(2) + 'ms' : '--'}</span> <span style="color:#94a3b8;">(f<sub>A</sub> = ${dispFA > 0 ? dispFA.toFixed(1) + 'Hz' : '--'})</span></div>
+                        <div>• Đồ thị 2 (P<sub>B1</sub>, P<sub>B2</sub>): Δt<sub>B</sub> = <span class="ma-val-auto">${resB ? resB.dt_ms.toFixed(2) + 'ms' : '--'}</span></div>
+                        <div>• Chu kỳ Đồ thị 2 (T<sub>B</sub>): <span class="ma-val-auto">${dispTB_ms > 0 ? dispTB_ms.toFixed(2) + 'ms' : '--'}</span> <span style="color:#94a3b8;">(f<sub>B</sub> = ${dispFB > 0 ? dispFB.toFixed(1) + 'Hz' : '--'})</span></div>
+                        <div>• Độ lệch pha 2 nguồn (Δφ): <span class="ma-val-manual">${autoPhaseRad.toFixed(2)} rad (${autoPhaseDeg.toFixed(1)}°)</span></div>
+                        <div>• Chu kỳ tự động (T<sub>A0</sub> / T<sub>B0</sub>): <span style="color:#cbd5e1; font-weight:600;">${autoTA_ms > 0 ? autoTA_ms.toFixed(2) : '--'} / ${autoTB_ms > 0 ? autoTB_ms.toFixed(2) : '--'} ms</span></div>
                     </div>
-                </div>
-            `;
-            hud.style.display = 'block';
+                    <div style="margin-top:6px; padding-top:5px; border-top:1px dashed rgba(255,255,255,0.18); font-size:11.5px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                        <span>Trạng thái: <b style="color:#38bdf8;">${phaseStateText}</b></span>
+                        <div style="display:flex; gap:6px; align-items:center;">
+                            <button type="button" onclick="startTwoSourceGraphAnalysis(true)" style="background:#334155; color:#f8fafc; border:1px solid #475569; border-radius:4px; padding:2px 8px; font-size:11px; cursor:pointer;">Đặt lại 4 mốc</button>
+                            <button type="button" onclick="syncFeatureToReport('twoSource')" style="background:#059669; color:#ffffff; border:none; border-radius:4px; padding:3px 9px; font-size:11px; font-weight:700; cursor:pointer;" title="Đồng bộ kết quả 2 nguồn sang báo cáo">Đồng bộ báo cáo</button>
+                        </div>
+                    </div>
+                `;
+                hud.style.display = 'block';
+            }
         }
     }
 
@@ -2188,42 +2183,47 @@ async function checkAppVersion() {
                 const width = canvas.clientWidth;
                 const subH = canvas.clientHeight / 2;
 
-                if (!Array.isArray(twoSourcePoints.A)) twoSourcePoints.A = [];
-                if (!Array.isArray(twoSourcePoints.B)) twoSourcePoints.B = [];
-
-                let targetCh = (clickY < subH) ? 'A' : 'B';
-                if (twoSourcePoints.A.length < 2 && twoSourcePoints.B.length < 2) {
-                    targetCh = (clickY < subH) ? 'A' : 'B';
-                } else if (twoSourcePoints.A.length < 2 && twoSourcePoints.B.length >= 2 && targetCh === 'B') {
-                    targetCh = 'A';
-                } else if (twoSourcePoints.B.length < 2 && twoSourcePoints.A.length >= 2 && targetCh === 'A') {
-                    targetCh = 'B';
-                }
-
+                const targetCh = (clickY < subH) ? 'A' : 'B';
                 const winTarget = (targetCh === 'A') ? winA : winB;
                 const localY = (targetCh === 'A') ? clickY : (clickY - subH);
-                const snapped = snapToWaveFeature(winTarget, clickX, localY, width, subH);
+                const halfT = (typeof winTarget.halfSamples === 'number') ? winTarget.halfSamples : Math.floor(winTarget.samplesNeeded / 2);
 
-                if (twoSourcePoints[targetCh].length < 2) {
-                    twoSourcePoints[targetCh].push(snapped);
-                    if (twoSourcePoints[targetCh].length === 2 && twoSourcePoints[targetCh][0].absIdx > twoSourcePoints[targetCh][1].absIdx) {
-                        const tmp = twoSourcePoints[targetCh][0];
-                        twoSourcePoints[targetCh][0] = twoSourcePoints[targetCh][1];
-                        twoSourcePoints[targetCh][1] = tmp;
-                    }
+                if (!Array.isArray(twoSourcePoints[targetCh])) twoSourcePoints[targetCh] = [];
+                for (let i = 0; i < twoSourcePoints[targetCh].length; i++) {
+                    const ptX = (width / 2) + (((twoSourcePoints[targetCh][i].absIdx - winTarget.startIdx) - halfT) / winTarget.samplesNeeded) * width;
+                    if (Math.abs(clickX - ptX) < 3) return;
+                }
+
+                const pickedPoint = snapToWaveFeature(winTarget, clickX, localY, width, subH);
+                const chLabel = (targetCh === 'A') ? 'Kênh A' : 'Kênh B';
+                const p1Name = (targetCh === 'A') ? 'P<sub>A1</sub>' : 'P<sub>B1</sub>';
+                const p2Name = (targetCh === 'A') ? 'P<sub>A2</sub>' : 'P<sub>B2</sub>';
+
+                if (twoSourcePoints[targetCh].length >= 2) {
+                    twoSourcePoints[targetCh] = [pickedPoint];
+                    updateTwoSourceGraphAnalysisDisplay(
+                        winA,
+                        winB,
+                        `Đã chọn lại <span class='info-badge'>${p1Name}</span> trên ${chLabel}. Hãy chọn tiếp <span class='info-badge'>${p2Name}</span> trên ${chLabel} (hoặc kéo thả điểm).`
+                    );
+                    return;
+                }
+
+                twoSourcePoints[targetCh].push(pickedPoint);
+                if (twoSourcePoints[targetCh].length === 1) {
+                    updateTwoSourceGraphAnalysisDisplay(
+                        winA,
+                        winB,
+                        `Đã chọn <span class='info-badge'>${p1Name}</span> trên ${chLabel} (${Math.min(2, twoSourcePoints.A.length) + Math.min(2, twoSourcePoints.B.length)}/4 điểm). Hãy chọn tiếp <span class='info-badge'>${p2Name}</span> trên ${chLabel}.`
+                    );
                 } else {
-                    const halfT = (typeof winTarget.halfSamples === 'number') ? winTarget.halfSamples : Math.floor(winTarget.samplesNeeded / 2);
-                    const x0 = (width / 2) + (((twoSourcePoints[targetCh][0].absIdx - winTarget.startIdx) - halfT) / winTarget.samplesNeeded) * width;
-                    const x1 = (width / 2) + (((twoSourcePoints[targetCh][1].absIdx - winTarget.startIdx) - halfT) / winTarget.samplesNeeded) * width;
-                    const replaceIdx = (Math.abs(clickX - x0) <= Math.abs(clickX - x1)) ? 0 : 1;
-                    twoSourcePoints[targetCh][replaceIdx] = snapped;
                     if (twoSourcePoints[targetCh][0].absIdx > twoSourcePoints[targetCh][1].absIdx) {
                         const tmp = twoSourcePoints[targetCh][0];
                         twoSourcePoints[targetCh][0] = twoSourcePoints[targetCh][1];
                         twoSourcePoints[targetCh][1] = tmp;
                     }
+                    updateTwoSourceGraphAnalysisDisplay(winA, winB);
                 }
-                updateTwoSourceGraphAnalysisDisplay(winA, winB);
                 return;
             }
 
@@ -3323,6 +3323,9 @@ async function checkAppVersion() {
     function setOscAmpGain(channel, val) {
         const parsed = parseFloat(val);
         if (!Number.isFinite(parsed) || parsed <= 0) return;
+        if (typeof oscAutoLiveEnabled !== 'undefined' && oscAutoLiveEnabled) {
+            setOscAutoLiveLoop(false);
+        }
         const clamped = Math.max(0.05, Math.min(50, parsed));
         if (channel === 'B') {
             oscAmpGainB = clamped;
@@ -3363,11 +3366,15 @@ async function checkAppVersion() {
     function updateOscAutoCalibStatusUI() {
         const statusEl = document.getElementById('oscAutoCalibStatus');
         const toggleBtn = document.getElementById('btnToggleOscAutoLive');
+        const btnOscCalib = document.getElementById('btnOscCalib');
         if (statusEl) {
             statusEl.textContent = oscAutoLiveEnabled ? 'Chế độ tự động: Đang bật' : 'Chế độ tự động: Tắt';
         }
         if (toggleBtn) {
             toggleBtn.textContent = oscAutoLiveEnabled ? 'Tắt tự động liên tục' : 'Bật tự động liên tục';
+        }
+        if (btnOscCalib) {
+            btnOscCalib.textContent = oscAutoLiveEnabled ? 'Hiệu chỉnh biên độ (Tự động)' : 'Hiệu chỉnh biên độ';
         }
     }
 
@@ -3427,12 +3434,19 @@ async function checkAppVersion() {
         if (oscAutoLiveEnabled) {
             applyAutoCalibrationStep(true);
             oscAutoLiveTimer = setInterval(() => {
-                if (getDisplayMode() === 'oscilloscope' && getLatestRawOscPeak('A') !== null) {
+                if (getDisplayMode() !== 'oscilloscope' || isPaused) return;
+                const hasSampleA = getLatestRawOscPeak('A') !== null;
+                const hasSampleB = (getActiveChannelMode() === '2' && getLatestRawOscPeak('B') !== null);
+                if (hasSampleA || hasSampleB) {
                     applyAutoCalibrationStep(true);
                 }
             }, 500);
         }
         updateOscAutoCalibStatusUI();
+    }
+
+    if (oscAutoLiveEnabled) {
+        setTimeout(() => setOscAutoLiveLoop(true), 200);
     }
 
     function toggleOscAutoLiveCalib() {
@@ -6784,21 +6798,33 @@ async function checkAppVersion() {
         }
     };
 
-    // Giữ nguyên nút "Xuất báo cáo"trên thanh công cụ, đồng thời hỗ trợ đồng bộ từng chức năng sang report.html
+    // Đổi nút trên thanh công cụ thành "Đồng bộ dữ liệu" và đồng bộ trực tiếp kết quả đo hiện tại sang report.html
+    window.syncActiveMeasurementToReport = function () {
+        const dispMode = (typeof getDisplayMode === "function") ? getDisplayMode() : "oscilloscope";
+        const chMode = (typeof getActiveChannelMode === "function") ? getActiveChannelMode() : "1";
+        if (dispMode === "dbMeter") {
+            window.syncFeatureToReport("db");
+        } else if (chMode === "2") {
+            window.syncFeatureToReport("twoSource");
+        } else {
+            window.syncFeatureToReport("osc");
+        }
+    };
+
     function upgradeExportReportButtonsToSync() {
         const btn = document.getElementById("btnExportReport");
         if (!btn) return;
-        if (btn.textContent.trim() !== "Xuất báo cáo") {
-            btn.textContent = "Xuất báo cáo";
+        if (btn.textContent.trim() !== "Đồng bộ dữ liệu") {
+            btn.textContent = "Đồng bộ dữ liệu";
         }
-        btn.title = "Mở trang phiếu báo cáo thí nghiệm A4 (report.html)";
+        btn.title = "Đồng bộ dữ liệu đo hiện tại sang phiếu báo cáo thí nghiệm";
         if (btn.dataset.exportBound !== "true") {
             btn.dataset.exportBound = "true";
             btn.removeAttribute("onclick");
             btn.addEventListener("click", (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                window.navigateToStandaloneReport();
+                window.syncActiveMeasurementToReport();
             });
         }
     }
@@ -7027,7 +7053,7 @@ async function checkAppVersion() {
             fft: "Phổ họa âm FFT",
             db: "Mức cường độ âm (dB)"
         };
-        showExpToast(` Đã đồng bộ [${labelMap[featureType] || featureType}] sang báo cáo!`);
+        showExpToast(`Đã đồng bộ [${labelMap[featureType] || featureType}] sang báo cáo!`);
     };
 
     window.syncReportToStandalone = function () {

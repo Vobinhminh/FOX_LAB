@@ -1,18 +1,27 @@
-const CACHE_NAME = 'app-cache-v1.0.16'; // Tăng số này mỗi khi cập nhật code
-const STATIC_ASSETS = [
+const CACHE_NAME = 'app-cache-v1.0.19';
+const CORE_ASSETS = [
   './',
   './index.html',
   './index.js',
   './style.css',
-  './report.html',
+  './report.html'
+];
+const OPTIONAL_ASSETS = [
   './manifest.json',
-  './icon-192.png'
+  './manifest.js',
+  './icon-192.png',
+  './icon.png'
 ];
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(STATIC_ASSETS))
+    caches.open(CACHE_NAME).then(async (cache) => {
+      await cache.addAll(CORE_ASSETS);
+      await Promise.all(
+        OPTIONAL_ASSETS.map((asset) => cache.add(asset).catch(() => {}))
+      );
+    })
   );
 });
 
@@ -30,12 +39,20 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
   if (url.origin !== location.origin) return;
 
-  if (event.request.mode === 'navigate' || url.pathname.endsWith('.html') || url.pathname.endsWith('version.json')) {
+  if (
+    event.request.mode === 'navigate' ||
+    url.pathname.endsWith('.html') ||
+    url.pathname.endsWith('.js') ||
+    url.pathname.endsWith('.css') ||
+    url.pathname.endsWith('version.json')
+  ) {
     event.respondWith(
       fetch(event.request)
         .then((response) => {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+          if (response && response.ok) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+          }
           return response;
         })
         .catch(() => caches.match(event.request))
