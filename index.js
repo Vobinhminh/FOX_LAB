@@ -3926,7 +3926,7 @@ async function checkAppVersion() {
                 <div class="dist-header-bar">
                     <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
                         <span style="font-size:16px;"></span>
-                        <span style="font-weight:700; color:#0f172a; font-size:14px; text-transform:uppercase;">KẾT QUẢ TÍNH KHOẢNG CÁCH NGUỒN ÂM ($r_A, r_B$)</span>
+                        <span style="font-weight:700; color:#0f172a; font-size:14px; text-transform:uppercase;">KẾT QUẢ TÍNH KHOẢNG CÁCH NGUỒN ÂM</span>
                         <button type="button"class="btn-slate"onclick="openCalibModal(true)"style="padding:2px 8px; font-size:11px;"> Đổi mốc (r₀=${r0}m; L₀=${L0.toFixed(1)}dB)</button>
                     </div>
                     <div class="dist-formula-badge">
