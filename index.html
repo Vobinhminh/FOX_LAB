@@ -153,24 +153,24 @@
 <!-- MODAL BẢN QUYỀN -->
 <div id="licenseModalOverlay" class="license-modal-overlay" style="display: none;">
     <div class="license-selection-box">
-        <h2>FOX_LAB - Phòng thí nghiệm Vật lý về sóng cơ</h2>
+        <h2>🦊 FOX_LAB - Phòng thí nghiệm Vật lý về sóng cơ</h2>
         <p>Phần mềm phòng thí nghiệm Vật lý chuyên đề sóng cơ dành cho Giáo viên & Học sinh.</p>
         <div class="license-btn-group">
-            <button class="license-btn btn-demo-mode" onclick="selectMode('demo')">Dùng thử Demo (Giới hạn tính năng)</button>
-            <button class="license-btn btn-full-mode" onclick="selectMode('full')">Kích hoạt Bản Full (Nhập Key)</button>
+            <button class="license-btn btn-demo-mode" onclick="selectMode('demo')">🧪 Dùng thử Demo (Giới hạn tính năng)</button>
+            <button class="license-btn btn-full-mode" onclick="selectMode('full')">🔑 Kích hoạt Bản Full (Nhập Key)</button>
         </div>
         <div id="keyInputContainer" style="display: none; margin-bottom: 15px;">
             <input type="text" id="licenseKeyInput" placeholder="Nhập mã Key bản quyền..." style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #cbd5e1; margin-bottom: 8px; box-sizing: border-box; text-align: center; font-weight: bold;">
             <div style="color: #dc2626; font-size: 11px; font-weight: bold; margin-bottom: 8px; text-align: center; background: #fee2e2; padding: 6px; border-radius: 4px; border: 1px dashed #f87171;">
-                LƯU Ý: KHÔNG DÙNG TAB ẨN DANH!<br>Key hỗ trợ tối đa 3 thiết bị / lượt đổi.
+                ⚠️ LƯU Ý: KHÔNG DÙNG TAB ẨN DANH!<br>Key hỗ trợ tối đa 3 thiết bị / lượt đổi.
             </div>
             <div style="display: flex; gap: 8px;">
-                <button class="btn-green" style="flex: 1; padding: 10px; font-size: 12.5px; font-weight: bold;" onclick="verifyEnteredKey('verify')">Xác thực & Mở khóa</button>
-                <button class="btn-orange" style="flex: 1; padding: 10px; font-size: 12.5px; font-weight: bold;" onclick="verifyEnteredKey('change')">Đổi sang máy này</button>
+                <button class="btn-green" style="flex: 1; padding: 10px; font-size: 12.5px; font-weight: bold;" onclick="verifyEnteredKey('verify')">✅ Xác thực & Mở khóa</button>
+                <button class="btn-orange" style="flex: 1; padding: 10px; font-size: 12.5px; font-weight: bold;" onclick="verifyEnteredKey('change')">🔄 Đổi sang máy này</button>
             </div>
         </div>
         <div class="contact-box">
-            <b>Cần nhận bản Full chính thức?</b><br>
+            📌 <b>Cần nhận bản Full chính thức?</b><br>
             Liên hệ tác giả / Giáo viên hướng dẫn: VÕ BÌNH MINH<br>
             • Điện thoại / Zalo: <b>0939323579</b><br>
         </div>
@@ -199,7 +199,7 @@
         <div class="toolbar-row">
             <div class="settings-dropdown" id="settingsDropdown">
                 <div class="settings-dropdown-toggle" id="settingsToggle">
-                    <span>Cài đặt</span><span class="dropdown-arrow"></span>
+                    <span>⚙️ Cài đặt</span><span class="dropdown-arrow">▼</span>
                 </div>
                 <div class="settings-dropdown-menu" id="settingsMenu">
                     <div class="settings-group" id="groupChannelMode">
@@ -233,12 +233,12 @@
 
                     <div class="settings-group" id="groupLicense">
                         <div class="settings-group-header" data-group="license" style="color: #38bdf8; border-top: 1px solid #1e293b;">
-                            <span>Quản lý Bản quyền</span><span class="group-arrow">›</span>
+                            <span>🔑 Quản lý Bản quyền</span><span class="group-arrow">›</span>
                         </div>
                         <div class="settings-group-items" style="flex-direction: column; gap: 6px; padding: 8px;">
-                            <div class="settings-action-btn" onclick="handleLicenseAction('change')">Đổi thiết bị (Đăng nhập máy khác)</div>
-                            <div class="settings-action-btn" onclick="handleLicenseAction('logout')">Đăng xuất (Tạm thời)</div>
-                            <div class="settings-action-btn btn-danger" onclick="handleLicenseAction('delete')">Xóa Key vĩnh viễn</div>
+                            <div class="settings-action-btn" onclick="handleLicenseAction('change')">🔄 Đổi thiết bị (Đăng nhập máy khác)</div>
+                            <div class="settings-action-btn" onclick="handleLicenseAction('logout')">🚪 Đăng xuất (Tạm thời)</div>
+                            <div class="settings-action-btn btn-danger" onclick="handleLicenseAction('delete')">🗑 Xóa Key vĩnh viễn</div>
                         </div>
                     </div>
                 </div>
@@ -246,17 +246,16 @@
 
             <button id="pauseButton" class="btn-green" disabled>Đo / Dừng</button>
             <div class="analysis-point-dropdown" id="analysisPointDropdown">
-                <button id="btnManualAnalysis" class="btn-purple" style="display: inline-block;" disabled title="Chọn chức năng phân tích đồ thị Kênh A (chế độ Tự dừng, 1 nguồn)">Phân tích đồ thị </button>
+                <button id="btnManualAnalysis" class="btn-purple" style="display: inline-block;" disabled title="Chọn chức năng phân tích đồ thị Kênh A (chế độ Tự dừng, 1 nguồn)">Phân tích đồ thị ▼</button>
                 <div class="analysis-point-menu" id="analysisPointMenu">
-                    <button type="button" class="ap-menu-item" id="optPickTwoPoints">1. Chọn 2 điểm đo T, f, Δφ</button>
-                    <button type="button" class="ap-menu-item" id="optKinematicsGraphs">2. Vẽ các đồ thị liên quan (u-t, v-t, a-t)</button>
+                    <button type="button" class="ap-menu-item" id="optPickTwoPoints">🎯 1. Chọn 2 điểm đo T, f, Δφ</button>
+                    <button type="button" class="ap-menu-item" id="optKinematicsGraphs">📈 2. Vẽ các đồ thị liên quan (u-t, v-t, a-t)</button>
                 </div>
             </div>
             <button id="resetButton" class="btn-orange">Làm mới</button>
-            <button id="btnCalib" class="btn-orange" style="display: none;">Hiệu chuẩn</button>
-                    <button id="btnOscCalib" class="btn-orange" style="display: inline-block;">Hiệu chuẩn biên độ</button>
+            <button id="btnCalib" class="btn-orange" style="display: none;">🎯 Hiệu chuẩn</button>
             <button id="btnAnalysis" class="btn-slate" disabled>Xử lý nguồn âm</button>
-            <button id="btnExportReport" class="btn-blue" onclick="navigateToStandaloneReport()" title="Mở trang phiếu báo cáo thí nghiệm A4 (report_4.html)">Xuất báo cáo</button>
+            <button id="btnExportReport" class="btn-blue" onclick="navigateToStandaloneReport()" title="Mở trang phiếu báo cáo thí nghiệm A4 (report_4.html)">📄 Xuất báo cáo</button>
             <button id="fullscreenButton" class="btn-slate" onclick="toggleFullScreen()">Mở rộng</button>
         </div>
 
@@ -277,7 +276,7 @@
 
         <div class="info-panel" id="infoText">
             <span id="infoMessageText">Đang tải hệ thống phân tích...</span>
-            <button class="license-gear-btn" onclick="openLicenseModal()" title="Kích hoạt bản Full">Nhập Key</button>
+            <button class="license-gear-btn" onclick="openLicenseModal()" title="Kích hoạt bản Full">⚙️ Nhập Key</button>
         </div>
     </div>
 
@@ -291,8 +290,8 @@
     <canvas id="oscilloscope"></canvas>
     <div id="manualAnalysisHud">
         <div class="ma-header">
-            <span>KẾT QUẢ PHÂN TÍCH 2 ĐIỂM &amp; ĐỐI CHIẾU TỰ ĐỘNG</span>
-            <button class="ma-close" onclick="closeManualHud()" title="Ẩn bảng kết quả"></button>
+            <span>📐 KẾT QUẢ PHÂN TÍCH 2 ĐIỂM &amp; ĐỐI CHIẾU TỰ ĐỘNG</span>
+            <button class="ma-close" onclick="closeManualHud()" title="Ẩn bảng kết quả">✕</button>
         </div>
         <div id="manualAnalysisHudBody"></div>
     </div>
@@ -306,15 +305,15 @@
         </div>
         <div class="modal-controls">
             <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
-                <button class="btn-dark" onclick="closeFFTModal()">Quay lại</button>
+                <button class="btn-dark" onclick="closeFFTModal()">⬅ Quay lại</button>
                 <label for="fftTargetFreq" style="font-weight: 600; font-size: 11.5px; margin-left:6px;">Tần số (f<sub>0</sub>):</label>
                 <input type="number" id="fftTargetFreq" value="" placeholder="Tự nhập f₀..." min="20" max="5000" style="width: 105px; padding: 4px 6px; border: 1px solid #cbd5e1; border-radius: 4px; font-weight: 700; text-align: center;" oninput="onFftFreqInput()" onkeydown="if(event.key==='Enter') startHarmonicSweep()">
                 <span style="font-weight: 600; font-size: 11.5px;">Hz</span>
                 <button id="btnScanHarmonics" class="btn-green" onclick="startHarmonicSweep()">Quét Họa âm</button>
             </div>
             <div style="display:flex; align-items:center; gap:6px;">
-                <button id="btnToggleFftTable" class="btn-blue" style="display:none;" onclick="toggleFftHarmonicTable()">Bảng tần số &amp; họa âm</button>
-                <button type="button" id="btnSyncFftReport" class="btn-green" onclick="syncFeatureToReport('fft')" title="Đồng bộ kết quả &amp; đồ thị phổ FFT sang Phần II báo cáo">Đồng bộ báo cáo</button>
+                <button id="btnToggleFftTable" class="btn-blue" style="display:none;" onclick="toggleFftHarmonicTable()">📊 Bảng tần số &amp; họa âm</button>
+                <button type="button" id="btnSyncFftReport" class="btn-green" onclick="syncFeatureToReport('fft')" title="Đồng bộ kết quả &amp; đồ thị phổ FFT sang Phần II báo cáo">🔄 Đồng bộ báo cáo</button>
             </div>
         </div>
         <div class="fft-canvas-container" id="fftCanvasContainer">
@@ -324,10 +323,10 @@
             <div id="fftHarmonicTablePanel" class="fft-harmonic-table-panel">
                 <div class="fft-ht-header">
                     <div class="fft-ht-title">
-                        <span></span>
+                        <span>📊</span>
                         <span>TẦN SỐ GÓP MẶT &amp; HỌA ÂM</span>
                     </div>
-                    <button type="button" class="fft-ht-close" onclick="closeFftHarmonicTable()" title="Đóng bảng"></button>
+                    <button type="button" class="fft-ht-close" onclick="closeFftHarmonicTable()" title="Đóng bảng">✕</button>
                 </div>
                 <div class="fft-ht-scroll">
                     <table class="fft-ht-table">
@@ -354,16 +353,16 @@
             <span>Phân tích & Xử lý 2 Nguồn âm</span>
         </div>
         <div class="modal-controls" style="justify-content: space-between; padding: 6px 12px; display: flex; align-items: center;">
-            <button class="btn-dark" onclick="closeTwoSourceModal()">Quay lại</button>
+            <button class="btn-dark" onclick="closeTwoSourceModal()">⬅ Quay lại</button>
             <div class="ts-mode-toggle">
                 <button id="btnModeOverlay" class="active-mode" onclick="setTsMode('overlay')">Ghép sóng</button>
                 <button id="btnModeSum" onclick="setTsMode('sum')">Tổng hợp (A+B)</button>
             </div>
             <div style="display: flex; align-items: center; gap: 4px;">
-                <button id="tsPlayBtn" onclick="toggleTsPlay()" class="btn-orange" style="margin-left: 4px;">Dừng</button>
-                <button id="tsResultBtn" onclick="showTsResultModal()" style="display: none !important; margin-left: 4px;" class="btn-blue">Kết quả</button>
-                <button id="tsEquationBtn" onclick="showTsEquationModal()" style="display: none !important; margin-left: 4px;" class="btn-slate">Phương trình</button>
-                <button type="button" id="btnSyncTwoSourceReport" onclick="syncFeatureToReport('twoSource')" class="btn-green" style="margin-left: 4px;" title="Đồng bộ kết quả 2 nguồn âm sang báo cáo">Đồng bộ báo cáo</button>
+                <button id="tsPlayBtn" onclick="toggleTsPlay()" class="btn-orange" style="margin-left: 4px;">⏸ Dừng</button>
+                <button id="tsResultBtn" onclick="showTsResultModal()" style="display: none !important; margin-left: 4px;" class="btn-blue">📊 Kết quả</button>
+                <button id="tsEquationBtn" onclick="showTsEquationModal()" style="display: none !important; margin-left: 4px;" class="btn-slate">📐 Phương trình</button>
+                <button type="button" id="btnSyncTwoSourceReport" onclick="syncFeatureToReport('twoSource')" class="btn-green" style="margin-left: 4px;" title="Đồng bộ kết quả 2 nguồn âm sang báo cáo">🔄 Đồng bộ báo cáo</button>
             </div>
         </div>
         <div class="fft-canvas-container" id="tsContainer">
@@ -385,7 +384,7 @@
                 <div class="hud-eq" id="eqSumLine" style="margin-top:4px;">Tổng hợp: <span class="math-symbol">u = u<sub>A</sub> + u<sub>B</sub></span></div>
             </div>
 
-            <div id="tsWarningText" class="beat-warning">Hai nguồn khác tần số (Tạo Sóng Phách)</div>
+            <div id="tsWarningText" class="beat-warning">⚠️ Hai nguồn khác tần số (Tạo Sóng Phách)</div>
         </div>
     </div>
 </div>
@@ -395,10 +394,10 @@
 <div id="kinematicsModalOverlay" class="modal-overlay">
     <div id="kinematicsModal" class="modal-content" onclick="event.stopPropagation()">
         <div class="modal-header">
-            <span>Đồ thị liên quan dao động điều hòa: Li độ u(t) — Vận tốc v(t) — Gia tốc a(t)</span>
+            <span>📈 Đồ thị liên quan dao động điều hòa: Li độ u(t) — Vận tốc v(t) — Gia tốc a(t)</span>
         </div>
         <div class="modal-controls" style="justify-content: space-between; padding: 6px 12px; display: flex; align-items: center;">
-            <button class="btn-dark" onclick="closeKinematicsModal()">Quay lại</button>
+            <button class="btn-dark" onclick="closeKinematicsModal()">⬅ Quay lại</button>
             <div class="kin-mode-group" id="kinModeGroup">
                 <button type="button" class="kin-mode-btn active" data-kin-mode="uv" onclick="setKinematicsDisplayMode('uv')">u-t &amp; v-t</button>
                 <button type="button" class="kin-mode-btn" data-kin-mode="ua" onclick="setKinematicsDisplayMode('ua')">u-t &amp; a-t</button>
@@ -410,8 +409,8 @@
                 <span class="kin-legend-item" id="kinLegA" style="display:none;"><span class="kin-dot" style="background:#dc2626;"></span> a-t: Đỏ</span>
             </div>
             <div style="display: flex; align-items: center; gap: 6px;">
-                <button id="kinResultBtn" onclick="toggleKinematicsResultHud()" class="btn-blue">Kết quả</button>
-                <button type="button" id="btnSyncKinematicsReport" onclick="syncFeatureToReport('kinematics')" class="btn-green" title="Đồng bộ đồ thị &amp; thông số dao động sang Phần I báo cáo">Đồng bộ báo cáo</button>
+                <button id="kinResultBtn" onclick="toggleKinematicsResultHud()" class="btn-blue">📊 Kết quả</button>
+                <button type="button" id="btnSyncKinematicsReport" onclick="syncFeatureToReport('kinematics')" class="btn-green" title="Đồng bộ đồ thị &amp; thông số dao động sang Phần I báo cáo">🔄 Đồng bộ báo cáo</button>
             </div>
         </div>
         <div class="fft-canvas-container" id="kinContainer">
@@ -419,8 +418,8 @@
 
             <div id="kinResultHud" class="hud-overlay" style="top: 14px; left: 14px; max-width: min(560px, calc(100% - 28px));">
                 <div class="hud-title" style="display:flex; justify-content:space-between; align-items:center;">
-                    <span>PHƯƠNG TRÌNH TƯƠNG ỨNG TỪNG ĐỒ THỊ</span>
-                    <button onclick="toggleKinematicsResultHud()" style="background:rgba(255,255,255,0.15); border:none; color:#fff; padding:1px 6px; border-radius:4px; font-size:11px; cursor:pointer;"></button>
+                    <span>📊 PHƯƠNG TRÌNH TƯƠNG ỨNG TỪNG ĐỒ THỊ</span>
+                    <button onclick="toggleKinematicsResultHud()" style="background:rgba(255,255,255,0.15); border:none; color:#fff; padding:1px 6px; border-radius:4px; font-size:11px; cursor:pointer;">✕</button>
                 </div>
                 <div id="kinMetaInfo" style="font-size: 11.5px; color: #cbd5e1; margin-bottom: 4px;"></div>
                 <div class="kin-eq-grid">
@@ -446,7 +445,7 @@
 <div id="mcdModalOverlay" class="modal-overlay">
     <div id="mcdModal" class="modal-content tex2jax_process" style="background: #ffffff; color: #0f172a;" onclick="event.stopPropagation()">
         <div class="modal-header" style="background: linear-gradient(90deg, #059669, #10b981);">
-            <span>Phân tích Mức Cường độ âm & Khoảng cách Nguồn âm</span>
+            <span>📊 Phân tích Mức Cường độ âm & Khoảng cách Nguồn âm</span>
         </div>
         
         <div class="modal-controls" style="background: #f8fafc; border-bottom: 1px solid #e2e8f0; display:flex; gap:8px; align-items:center; justify-content:space-between;">
@@ -457,9 +456,9 @@
             </div>
             <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
                 <button class="btn-blue" onclick="calculateAvgDistance()" style="display:inline-flex; align-items:center; gap:4px;">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v8M8 12h8"></path></svg> Tính khoảng cách nguồn âm
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v8M8 12h8"></path></svg> 📏 Tính khoảng cách nguồn âm
                 </button>
-                <button type="button" id="btnSyncDbReport" class="btn-green" onclick="syncFeatureToReport('db')" title="Đồng bộ số liệu &amp; biểu đồ mức cường độ âm sang Phần III báo cáo">Đồng bộ báo cáo</button>
+                <button type="button" id="btnSyncDbReport" class="btn-green" onclick="syncFeatureToReport('db')" title="Đồng bộ số liệu &amp; biểu đồ mức cường độ âm sang Phần III báo cáo">🔄 Đồng bộ báo cáo</button>
             </div>
         </div>
 
@@ -497,7 +496,7 @@
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
                 Hiệu chuẩn Micro &amp; Mốc chuẩn Nguồn âm (r₀, L₀)
             </span>
-            <button class="btn-slate" onclick="closeCalibModal()" style="padding: 2px 8px; font-size:12px;">Đóng</button>
+            <button class="btn-slate" onclick="closeCalibModal()" style="padding: 2px 8px; font-size:12px;">✕ Đóng</button>
         </div>
         <div style="padding: 16px 20px; overflow-y: auto; line-height: 1.5; font-size: 13px;">
             <!-- PHẦN 1: HIỆU CHUẨN ĐỘ NHẠY MICRO -->
@@ -511,7 +510,7 @@
                 
                 <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:8px; padding:12px; margin-bottom:10px;">
                     <h4 style="margin:0 0 8px 0; color:#0f172a; font-size:13.5px; display:flex; align-items:center; gap:6px;">
-                        <span style="color:#ef4444;"></span> Hiệu chuẩn Kênh A
+                        <span style="color:#ef4444;">🔴</span> Hiệu chuẩn Kênh A
                     </h4>
                     <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
                         <label style="flex:1; font-weight:600; color:#334155;">Giá trị đo thô hiện tại (Uncalibrated):</label>
@@ -524,13 +523,13 @@
                     <div style="display:flex; align-items:center; gap:8px;">
                         <label style="flex:1; font-weight:600; color:#334155;">Hằng số lệch bù (Offset ΔL):</label>
                         <span id="calibOffsetDisplayA" style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#059669; font-size:14px;">+0.0 dB</span>
-                        <button class="btn-green" onclick="applyCalibFromRef('A')" style="padding:4px 10px; font-size:12px;">Áp dụng A</button>
+                        <button class="btn-green" onclick="applyCalibFromRef('A')" style="padding:4px 10px; font-size:12px;">✅ Áp dụng A</button>
                     </div>
                 </div>
 
                 <div id="calibChannelBBox" style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:8px; padding:12px;">
                     <h4 style="margin:0 0 8px 0; color:#0f172a; font-size:13.5px; display:flex; align-items:center; gap:6px;">
-                        <span style="color:#2563eb;"></span> Hiệu chuẩn Kênh B
+                        <span style="color:#2563eb;">🔵</span> Hiệu chuẩn Kênh B
                     </h4>
                     <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
                         <label style="flex:1; font-weight:600; color:#334155;">Giá trị đo thô hiện tại (Uncalibrated):</label>
@@ -543,7 +542,7 @@
                     <div style="display:flex; align-items:center; gap:8px;">
                         <label style="flex:1; font-weight:600; color:#334155;">Hằng số lệch bù (Offset ΔL):</label>
                         <span id="calibOffsetDisplayB" style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#059669; font-size:14px;">+0.0 dB</span>
-                        <button class="btn-blue" onclick="applyCalibFromRef('B')" style="padding:4px 10px; font-size:12px;">Áp dụng B</button>
+                        <button class="btn-blue" onclick="applyCalibFromRef('B')" style="padding:4px 10px; font-size:12px;">✅ Áp dụng B</button>
                     </div>
                 </div>
             </div>
@@ -559,7 +558,7 @@
                     </span>
                 </div>
                 <p style="margin:0 0 10px 0; color:#334155; font-size:12.5px;">
-                    Đặt Micro cách nguồn âm một khoảng tự chọn <b>r₀</b> (VD: <code>0.5</code> m), nhập <b>r₀</b> rồi bấm <b>"Đo lấy mốc L₀ (1.5s)"</b> (hoặc nhập trực tiếp cặp số <b>r₀, L₀</b> từ đề bài).
+                    Đặt Micro cách nguồn âm một khoảng tự chọn <b>r₀</b> (VD: <code>0.5</code> m), nhập <b>r₀</b> rồi bấm <b>"🎙️ Đo lấy mốc L₀ (1.5s)"</b> (hoặc nhập trực tiếp cặp số <b>r₀, L₀</b> từ đề bài).
                 </p>
 
                 <div style="display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom:10px;">
@@ -575,77 +574,20 @@
 
                 <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
                     <button type="button" id="btnMeasureSourceL0" class="btn-blue" onclick="measureSourceRefL0()" style="flex:2; min-width:170px; padding:7px 10px; font-size:12.5px;">
-                        Đo lấy mốc L₀ (1.5s)
+                        🎙️ Đo lấy mốc L₀ (1.5s)
                     </button>
                     <button type="button" class="btn-slate" onclick="clearSourceRefCalibration()" style="flex:1; min-width:95px; padding:7px 10px; font-size:12px;">
                         Xóa mốc r₀, L₀
                     </button>
                 </div>
                 <div id="sourceRefStatusMsg" style="margin-top:8px; font-size:12px; font-weight:600; color:#475569;">
-                    Bắt buộc xác định <b>r₀, L₀</b> trước khi tính khoảng cách nguồn âm (<i>r = r₀ · 10<sup>(L₀ − L)/20</sup></i>).
+                    💡 Bắt buộc xác định <b>r₀, L₀</b> trước khi tính khoảng cách nguồn âm (<i>r = r₀ · 10<sup>(L₀ − L)/20</sup></i>).
                 </div>
             </div>
 
             <div style="display:flex; justify-content:space-between; gap:10px;">
-                <button class="btn-orange" onclick="resetCalibOffsets()" style="flex:1; padding:8px;">Đặt lại tất cả về Mặc định</button>
+                <button class="btn-orange" onclick="resetCalibOffsets()" style="flex:1; padding:8px;">🔄 Đặt lại tất cả về Mặc định</button>
                 <button class="btn-dark" onclick="closeCalibModal()" style="flex:1; padding:8px;">Lưu &amp; Hoàn tất</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-<!-- MODAL HIỆU CHUẨN BIÊN ĐỘ DAO ĐỘNG KÝ (ĐỘC LẬP VỚI HIỆU CHUẨN dB) -->
-<div id="oscCalibModalOverlay" class="modal-overlay" style="z-index: 150000;" onclick="closeOscCalibModal()">
-    <div id="oscCalibModal" class="modal-content" style="max-width: 520px; height: auto; max-height: 90dvh; background: #ffffff; color: #0f172a; border-radius: 12px; margin: auto; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);" onclick="event.stopPropagation()">
-        <div class="modal-header" style="background: linear-gradient(90deg, #1d4ed8, #2563eb); padding: 12px 16px;">
-            <span style="font-size:15px; font-weight:700; color:#ffffff;">
-                Hiệu chuẩn Biên độ Dao động ký
-            </span>
-            <button class="btn-slate" onclick="closeOscCalibModal()" style="padding: 2px 8px; font-size:12px;">Đóng</button>
-        </div>
-        <div style="padding: 16px 20px; overflow-y: auto; line-height: 1.5; font-size: 13px;">
-            <p style="margin: 0 0 12px 0; color:#475569; font-size: 12.5px;">
-                Hiệu chỉnh hệ số tỉ lệ biên độ trục tung (K) theo tín hiệu chuẩn hoặc giá trị quy ước bài thí nghiệm. Dữ liệu này tách biệt hoàn toàn với hiệu chuẩn mức cường độ âm (dB).
-            </p>
-
-            <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:8px; padding:12px; margin-bottom:10px;">
-                <h4 style="margin:0 0 8px 0; color:#dc2626; font-size:13.5px;">Hiệu chuẩn biên độ Kênh A</h4>
-                <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
-                    <label style="flex:1; font-weight:600; color:#334155;">Biên độ đỉnh thô hiện tại (A_thô):</label>
-                    <span id="oscCalibRawA" style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#dc2626; font-size:14px;">--</span>
-                </div>
-                <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
-                    <label style="flex:1; font-weight:600; color:#334155;">Nhập biên độ chuẩn (A_chuẩn):</label>
-                    <input type="number" id="oscCalibRefInputA" placeholder="VD: 1.00" step="0.01" min="0.001" style="width:110px; padding:4px 8px; border:1px solid #cbd5e1; border-radius:4px; font-weight:700; text-align:center;">
-                </div>
-                <div style="display:flex; align-items:center; gap:8px;">
-                    <label style="flex:1; font-weight:600; color:#334155;">Hệ số hiệu chuẩn hiện tại (K_A):</label>
-                    <span id="oscCalibFactorDisplayA" style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#1d4ed8; font-size:14px;">1.000x</span>
-                    <button class="btn-green" onclick="applyOscCalibFromRef('A')" style="padding:4px 10px; font-size:12px;">Áp dụng A</button>
-                </div>
-            </div>
-
-            <div id="oscCalibChannelBBox" style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:8px; padding:12px; margin-bottom:14px;">
-                <h4 style="margin:0 0 8px 0; color:#2563eb; font-size:13.5px;">Hiệu chuẩn biên độ Kênh B</h4>
-                <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
-                    <label style="flex:1; font-weight:600; color:#334155;">Biên độ đỉnh thô hiện tại (B_thô):</label>
-                    <span id="oscCalibRawB" style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#2563eb; font-size:14px;">--</span>
-                </div>
-                <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
-                    <label style="flex:1; font-weight:600; color:#334155;">Nhập biên độ chuẩn (B_chuẩn):</label>
-                    <input type="number" id="oscCalibRefInputB" placeholder="VD: 1.00" step="0.01" min="0.001" style="width:110px; padding:4px 8px; border:1px solid #cbd5e1; border-radius:4px; font-weight:700; text-align:center;">
-                </div>
-                <div style="display:flex; align-items:center; gap:8px;">
-                    <label style="flex:1; font-weight:600; color:#334155;">Hệ số hiệu chuẩn hiện tại (K_B):</label>
-                    <span id="oscCalibFactorDisplayB" style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#1d4ed8; font-size:14px;">1.000x</span>
-                    <button class="btn-blue" onclick="applyOscCalibFromRef('B')" style="padding:4px 10px; font-size:12px;">Áp dụng B</button>
-                </div>
-            </div>
-
-            <div style="display:flex; justify-content:space-between; gap:10px;">
-                <button class="btn-orange" onclick="resetOscCalibFactors()" style="flex:1; padding:8px;">Đặt lại mặc định (1.000x)</button>
-                <button class="btn-dark" onclick="closeOscCalibModal()" style="flex:1; padding:8px;">Lưu &amp; Hoàn tất</button>
             </div>
         </div>
     </div>
@@ -670,7 +612,7 @@
                 </div>
             </div>
             <div class="fox-header-actions">
-                <button class="fox-role-toggle" id="foxRoleToggleBtn" onclick="toggleFoxRole()" title="Chuyển đổi chế độ Học sinh / Giáo viên">HS</button>
+                <button class="fox-role-toggle" id="foxRoleToggleBtn" onclick="toggleFoxRole()" title="Chuyển đổi chế độ Học sinh / Giáo viên">👨‍🎓 HS</button>
                 <button class="fox-btn-icon" id="themeToggleBtn" onclick="toggleChatTheme()" title="Đổi giao diện Sáng / Tối">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
@@ -681,10 +623,10 @@
 
         <!-- QUICK PROMPT CHIPS -->
         <div class="fox-chips-container" id="foxChipsContainer">
-            <button class="fox-chip" onclick="sendQuickPrompt('Giải thích hiện tượng sóng phách')">Sóng phách</button>
-            <button class="fox-chip" onclick="sendQuickPrompt('Công thức tính mức cường độ âm')">Mức cường độ âm</button>
-            <button class="fox-chip" onclick="sendQuickPrompt('Các bước thực hành đo tần số sóng cơ')">Các bước thí nghiệm</button>
-            <button class="fox-chip" onclick="sendQuickPrompt('Hướng dẫn phân tích đồ thị FFT')">Phân tích FFT</button>
+            <button class="fox-chip" onclick="sendQuickPrompt('Giải thích hiện tượng sóng phách')">🌊 Sóng phách</button>
+            <button class="fox-chip" onclick="sendQuickPrompt('Công thức tính mức cường độ âm')">🔊 Mức cường độ âm</button>
+            <button class="fox-chip" onclick="sendQuickPrompt('Các bước thực hành đo tần số sóng cơ')">⚙️ Các bước thí nghiệm</button>
+            <button class="fox-chip" onclick="sendQuickPrompt('Hướng dẫn phân tích đồ thị FFT')">📊 Phân tích FFT</button>
         </div>
 
         <div id="fox-chat-content">
@@ -693,8 +635,8 @@
                 <div class="fox-msg-group">
                    <div class="fox-msg-bubble">Xin chào quý Thầy/Cô và các em Học sinh! Mình là <b>Fox-lab AI</b>, trợ lý ảo hướng dẫn thí nghiệm Vật lý. Quý Thầy/Cô và các em Học sinh cần mình hỗ trợ vấn đề gì?</div>
                     <div class="fox-msg-actions-bar">
-                        <button class="fox-speak-btn" onclick="speakFoxText(this)" title="Nghe AI đọc phản hồi">Nghe</button>
-                        <button class="fox-export-btn" onclick="exportChatReport(this)">Tải báo cáo</button>
+                        <button class="fox-speak-btn" onclick="speakFoxText(this)" title="Nghe AI đọc phản hồi">🔊 Nghe</button>
+                        <button class="fox-export-btn" onclick="exportChatReport(this)">📥 Tải báo cáo</button>
                     </div>
                 </div>
             </div>
@@ -704,7 +646,7 @@
         <div id="imagePreviewContainer">
             <img id="imagePreviewThumb" src="" alt="Preview">
             <span id="imagePreviewName">image.jpg</span>
-            <button class="fox-remove-img" onclick="clearImageUpload()"></button>
+            <button class="fox-remove-img" onclick="clearImageUpload()">✕</button>
         </div>
 
         <div class="fox-input-container">
@@ -746,17 +688,17 @@
   <div class="exp-rep-toolbar no-print">
     <div class="exp-rep-toolbar-compact">
       <div class="exp-rep-tb-left">
-        <button type="button" class="exp-rep-btn exp-rep-btn-danger" onclick="closeExpReportModal()" title="Quay lại màn hình đo chính FOX_LAB">Quay lại</button>
+        <button type="button" class="exp-rep-btn exp-rep-btn-danger" onclick="closeExpReportModal()" title="Quay lại màn hình đo chính FOX_LAB">⬅ Quay lại</button>
         <span class="exp-live-pill" title="Số liệu và đồ thị từ máy đo FOX_LAB được chuyển tự động sang báo cáo">
           <span class="exp-live-dot"></span> Tự động nhận dữ liệu đo
         </span>
-        <button type="button" class="exp-rep-btn exp-rep-btn-secondary" onclick="navigateToStandaloneReport()" title="Mở sang trang báo cáo riêng (report.html)">Trang riêng</button>
+        <button type="button" class="exp-rep-btn exp-rep-btn-secondary" onclick="navigateToStandaloneReport()" title="Mở sang trang báo cáo riêng (report.html)">↗ Trang riêng</button>
       </div>
 
       <div class="exp-rep-tb-right">
         <div class="exp-tb-dropdown" id="expDdCustomParts">
           <button type="button" class="exp-rep-btn exp-rep-btn-secondary exp-dd-toggle-btn" onclick="toggleExpTbDropdown('expDdCustomParts', event)">
-            Tùy chỉnh <span id="expSelectedCountBadge">(5)</span> 
+            ☑️ Tùy chỉnh <span id="expSelectedCountBadge">(5)</span> ▼
           </button>
           <div class="exp-tb-dropdown-menu" onclick="event.stopPropagation()">
             <div class="exp-tb-dd-header">Chọn phần hiển thị &amp; xuất file</div>
@@ -790,15 +732,15 @@
 
         <div class="exp-tb-dropdown" id="expDdExportFile">
           <button type="button" class="exp-rep-btn exp-rep-btn-success" onclick="toggleExpTbDropdown('expDdExportFile', event)">
-            Xuất file 
+            📥 Xuất file ▼
           </button>
           <div class="exp-tb-dropdown-menu align-right" onclick="event.stopPropagation()">
             <div class="exp-tb-dd-header">Xuất các phần đã tích chọn</div>
             <button type="button" class="exp-tb-action-item" onclick="exportSelectedExpToPDF()">
-              Xuất file PDF (.pdf)
+              📄 Xuất file PDF (.pdf)
             </button>
             <button type="button" class="exp-tb-action-item" onclick="exportSelectedExpToExcelCSV()">
-              Xuất file Excel (.csv)
+              📊 Xuất file Excel (.csv)
             </button>
           </div>
         </div>
@@ -845,9 +787,9 @@
       <div class="exp-part-title">
         <span>PHẦN I. KHẢO SÁT DẠNG SÓNG VÀ ĐO CHU KÌ, TẦN SỐ (DAO ĐỘNG KÍ)</span>
         <div class="exp-part-actions no-print">
-          <button type="button" class="exp-inline-btn exp-inline-btn-pdf" onclick="exportSingleExpPartToPDF('expPart1', 'Phan1_DaoDongKi')">PDF phần này</button>
-          <button type="button" class="exp-inline-btn exp-inline-btn-img" onclick="exportExpPartAsImage('expPart1', 'Phan1_DaoDongKi')">Xuất ảnh phần này</button>
-          <button type="button" class="exp-inline-btn exp-inline-btn-csv" onclick="exportSingleExpPartCSV('expPart1')">CSV</button>
+          <button type="button" class="exp-inline-btn exp-inline-btn-pdf" onclick="exportSingleExpPartToPDF('expPart1', 'Phan1_DaoDongKi')">📄 PDF phần này</button>
+          <button type="button" class="exp-inline-btn exp-inline-btn-img" onclick="exportExpPartAsImage('expPart1', 'Phan1_DaoDongKi')">🖼️ Xuất ảnh phần này</button>
+          <button type="button" class="exp-inline-btn exp-inline-btn-csv" onclick="exportSingleExpPartCSV('expPart1')">📊 CSV</button>
         </div>
       </div>
 
@@ -904,9 +846,9 @@
       <div class="exp-part-title">
         <span>PHẦN II. PHÂN TÍCH PHỔ TẦN SỐ VÀ ÂM SẮC (QUÉT PHỔ FFT)</span>
         <div class="exp-part-actions no-print">
-          <button type="button" class="exp-inline-btn exp-inline-btn-pdf" onclick="exportSingleExpPartToPDF('expPart2', 'Phan2_PhoFFT')">PDF phần này</button>
-          <button type="button" class="exp-inline-btn exp-inline-btn-img" onclick="exportExpPartAsImage('expPart2', 'Phan2_PhoFFT')">Xuất ảnh phần này</button>
-          <button type="button" class="exp-inline-btn exp-inline-btn-csv" onclick="exportSingleExpPartCSV('expPart2')">CSV</button>
+          <button type="button" class="exp-inline-btn exp-inline-btn-pdf" onclick="exportSingleExpPartToPDF('expPart2', 'Phan2_PhoFFT')">📄 PDF phần này</button>
+          <button type="button" class="exp-inline-btn exp-inline-btn-img" onclick="exportExpPartAsImage('expPart2', 'Phan2_PhoFFT')">🖼️ Xuất ảnh phần này</button>
+          <button type="button" class="exp-inline-btn exp-inline-btn-csv" onclick="exportSingleExpPartCSV('expPart2')">📊 CSV</button>
         </div>
       </div>
 
@@ -942,9 +884,9 @@
       <div class="exp-part-title">
         <span>PHẦN III. ĐO MỨC CƯỜNG ĐỘ ÂM VÀ SỰ TRUYỀN ÂM (MÁY ĐO dB)</span>
         <div class="exp-part-actions no-print">
-          <button type="button" class="exp-inline-btn exp-inline-btn-pdf" onclick="exportSingleExpPartToPDF('expPart3', 'Phan3_MucCuongDoAm')">PDF phần này</button>
-          <button type="button" class="exp-inline-btn exp-inline-btn-img" onclick="exportExpPartAsImage('expPart3', 'Phan3_MucCuongDoAm')">Xuất ảnh phần này</button>
-          <button type="button" class="exp-inline-btn exp-inline-btn-csv" onclick="exportSingleExpPartCSV('expPart3')">CSV</button>
+          <button type="button" class="exp-inline-btn exp-inline-btn-pdf" onclick="exportSingleExpPartToPDF('expPart3', 'Phan3_MucCuongDoAm')">📄 PDF phần này</button>
+          <button type="button" class="exp-inline-btn exp-inline-btn-img" onclick="exportExpPartAsImage('expPart3', 'Phan3_MucCuongDoAm')">🖼️ Xuất ảnh phần này</button>
+          <button type="button" class="exp-inline-btn exp-inline-btn-csv" onclick="exportSingleExpPartCSV('expPart3')">📊 CSV</button>
         </div>
       </div>
 
@@ -981,14 +923,14 @@
       <div class="exp-part-title">
         <span>PHẦN IV. KHẢO SÁT HIỆU QUẢ KHỬ NHIỄU CỦA BỘ LỌC SỐ</span>
         <div class="exp-part-actions no-print">
-          <button type="button" class="exp-inline-btn exp-inline-btn-pdf" onclick="exportSingleExpPartToPDF('expPart4', 'Phan4_BoLocSo')">PDF phần này</button>
-          <button type="button" class="exp-inline-btn exp-inline-btn-img" onclick="exportExpPartAsImage('expPart4', 'Phan4_BoLocSo')">Xuất ảnh phần này</button>
+          <button type="button" class="exp-inline-btn exp-inline-btn-pdf" onclick="exportSingleExpPartToPDF('expPart4', 'Phan4_BoLocSo')">📄 PDF phần này</button>
+          <button type="button" class="exp-inline-btn exp-inline-btn-img" onclick="exportExpPartAsImage('expPart4', 'Phan4_BoLocSo')">🖼️ Xuất ảnh phần này</button>
         </div>
       </div>
 
       <div class="exp-sub-heading">
         <span>4.1. So sánh dạng sóng trước và sau khi áp dụng bộ lọc số</span>
-        <button type="button" class="exp-inline-btn exp-inline-btn-img no-print" onclick="exportSingleExpCanvas('expCanvasFilter', 'Phan4_ChiDoThiLoc')">Xuất ảnh đồ thị</button>
+        <button type="button" class="exp-inline-btn exp-inline-btn-img no-print" onclick="exportSingleExpCanvas('expCanvasFilter', 'Phan4_ChiDoThiLoc')">📷 Xuất ảnh đồ thị</button>
       </div>
       <div class="exp-graph-box">
         <canvas id="expCanvasFilter" data-no-export="true" width="820" height="200"></canvas>

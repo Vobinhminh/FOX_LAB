@@ -821,22 +821,22 @@
   <div class="toolbar no-print">
     <div class="toolbar-compact-bar">
       <div class="toolbar-left">
-        <button type="button" class="btn btn-back" onclick="returnToMainPage()" title="Quay lại trang đo chính Fox-lab">Quay lại</button>
+        <button type="button" class="btn btn-back" onclick="returnToMainPage()" title="Quay lại trang đo chính Fox-lab">⬅ Quay lại</button>
         <span class="live-pill" id="liveSyncBadge" title="Tự động đồng bộ tức thì mỗi khi nhận tín hiệu từ màn hình đo Fox-lab">
           <span class="live-dot"></span> <span id="liveSyncText">Tự động nhận dữ liệu đo</span>
         </span>
         <button type="button" class="btn btn-sync-mode" id="btnSyncRowMode" onclick="toggleSyncRowMode()" title="Mặc định: mỗi tín hiệu đồng bộ thêm 1 dòng dữ liệu &amp; 1 hình ảnh. Bật chỉnh 1 dòng để ghi đè.">
-          Mỗi đồng bộ = +1 dòng
+          ➕ Mỗi đồng bộ = +1 dòng
         </button>
         <button type="button" class="btn btn-route-mode" id="btnTargetSourceMode" onclick="toggleSingleChannelRouteMode()" title="Mặc định 1 nguồn: dữ liệu 1 kênh luôn nạp vào mục 1 nguồn (I.1–I.2, II.1–II.2) và không hiển thị mục 2 nguồn (I.3–I.4, II.3–II.4). Bấm để bật chế độ 2 nguồn.">
-          Chế độ: 1 nguồn
+          🎯 Chế độ: 1 nguồn
         </button>
       </div>
 
       <div class="toolbar-right">
         <div class="tb-dropdown" id="ddCustomParts">
           <button type="button" class="btn btn-custom" onclick="toggleTbDropdown('ddCustomParts', event)">
-            Tùy chỉnh <span id="selectedCountBadge">(5)</span> 
+            ☑️ Tùy chỉnh <span id="selectedCountBadge">(5)</span> ▼
           </button>
           <div class="tb-dropdown-menu" onclick="event.stopPropagation()">
             <div class="tb-dd-header">Chọn phần hiển thị &amp; xuất file</div>
@@ -874,19 +874,19 @@
 
         <div class="tb-dropdown" id="ddExportFile">
           <button type="button" class="btn btn-export" onclick="toggleTbDropdown('ddExportFile', event)">
-            Xuất file 
+            📥 Xuất file ▼
           </button>
           <div class="tb-dropdown-menu align-right" onclick="event.stopPropagation()">
             <div class="tb-dd-header">Xuất các phần đã tích chọn (Mỗi phần 1 trang)</div>
             <button type="button" class="tb-action-item" onclick="exportSelectedToPDF()">
-              Xuất file PDF (.pdf)
+              📄 Xuất file PDF (.pdf)
             </button>
             <button type="button" class="tb-action-item" onclick="exportSelectedToExcelCSV()">
-              Xuất file Excel (.csv)
+              📊 Xuất file Excel (.csv)
             </button>
             <div class="tb-dd-divider"></div>
             <button type="button" class="tb-action-item" onclick="printSelectedReport()">
-              In trực tiếp (Khổ A4)
+              🖨️ In trực tiếp (Khổ A4)
             </button>
           </div>
         </div>
@@ -935,9 +935,9 @@
       <div class="part-title">
         <span>PHẦN I. ĐỒ THỊ DAO ĐỘNG – KHẢO SÁT DẠNG SÓNG VÀ ĐO CHU KÌ, TẦN SỐ</span>
         <div class="part-actions no-print">
-          <button type="button" class="inline-btn inline-btn-pdf" onclick="exportSinglePartToPDF('part1', 'Phan1_DoThiDaoDong')">PDF phần này</button>
-          <button type="button" class="inline-btn inline-btn-img" onclick="exportPartAsImage('part1', 'Phan1_DoThiDaoDong')">Xuất ảnh phần này</button>
-          <button type="button" class="inline-btn inline-btn-csv" onclick="exportSinglePartCSV('part1')">CSV</button>
+          <button type="button" class="inline-btn inline-btn-pdf" onclick="exportSinglePartToPDF('part1', 'Phan1_DoThiDaoDong')">📄 PDF phần này</button>
+          <button type="button" class="inline-btn inline-btn-img" onclick="exportPartAsImage('part1', 'Phan1_DoThiDaoDong')">🖼️ Xuất ảnh phần này</button>
+          <button type="button" class="inline-btn inline-btn-csv" onclick="exportSinglePartCSV('part1')">📊 CSV</button>
         </div>
       </div>
 
@@ -1058,9 +1058,9 @@
       <div class="part-title">
         <span>PHẦN II. PHÂN TÍCH FFT – PHỔ TẦN SỐ VÀ ÂM SẮC</span>
         <div class="part-actions no-print">
-          <button type="button" class="inline-btn inline-btn-pdf" onclick="exportSinglePartToPDF('part2', 'Phan2_PhanTichFFT')">PDF phần này</button>
-          <button type="button" class="inline-btn inline-btn-img" onclick="exportPartAsImage('part2', 'Phan2_PhanTichFFT')">Xuất ảnh phần này</button>
-          <button type="button" class="inline-btn inline-btn-csv" onclick="exportSinglePartCSV('part2')">CSV</button>
+          <button type="button" class="inline-btn inline-btn-pdf" onclick="exportSinglePartToPDF('part2', 'Phan2_PhanTichFFT')">📄 PDF phần này</button>
+          <button type="button" class="inline-btn inline-btn-img" onclick="exportPartAsImage('part2', 'Phan2_PhanTichFFT')">🖼️ Xuất ảnh phần này</button>
+          <button type="button" class="inline-btn inline-btn-csv" onclick="exportSinglePartCSV('part2')">📊 CSV</button>
         </div>
       </div>
 
@@ -1139,9 +1139,9 @@
       <div class="part-title">
         <span>PHẦN III. ĐO MỨC CƯỜNG ĐỘ ÂM VÀ SỰ TRUYỀN ÂM (MÁY ĐO dB)</span>
         <div class="part-actions no-print">
-          <button type="button" class="inline-btn inline-btn-pdf" onclick="exportSinglePartToPDF('part3', 'Phan3_MucCuongDoAm')">PDF phần này</button>
-          <button type="button" class="inline-btn inline-btn-img" onclick="exportPartAsImage('part3', 'Phan3_MucCuongDoAm')">Xuất ảnh phần này</button>
-          <button type="button" class="inline-btn inline-btn-csv" onclick="exportSinglePartCSV('part3')">CSV</button>
+          <button type="button" class="inline-btn inline-btn-pdf" onclick="exportSinglePartToPDF('part3', 'Phan3_MucCuongDoAm')">📄 PDF phần này</button>
+          <button type="button" class="inline-btn inline-btn-img" onclick="exportPartAsImage('part3', 'Phan3_MucCuongDoAm')">🖼️ Xuất ảnh phần này</button>
+          <button type="button" class="inline-btn inline-btn-csv" onclick="exportSinglePartCSV('part3')">📊 CSV</button>
         </div>
       </div>
 
@@ -1182,14 +1182,14 @@
       <div class="part-title">
         <span>PHẦN IV. KHẢO SÁT HIỆU QUẢ KHỬ NHIỄU CỦA BỘ LỌC SỐ</span>
         <div class="part-actions no-print">
-          <button type="button" class="inline-btn inline-btn-pdf" onclick="exportSinglePartToPDF('part4', 'Phan4_BoLocSo')">PDF phần này</button>
-          <button type="button" class="inline-btn inline-btn-img" onclick="exportPartAsImage('part4', 'Phan4_BoLocSo')">Xuất ảnh phần này</button>
+          <button type="button" class="inline-btn inline-btn-pdf" onclick="exportSinglePartToPDF('part4', 'Phan4_BoLocSo')">📄 PDF phần này</button>
+          <button type="button" class="inline-btn inline-btn-img" onclick="exportPartAsImage('part4', 'Phan4_BoLocSo')">🖼️ Xuất ảnh phần này</button>
         </div>
       </div>
 
       <div class="sub-heading">
         <span>4.1. So sánh dạng sóng trước và sau khi áp dụng bộ lọc số</span>
-        <button type="button" class="inline-btn inline-btn-img no-print" onclick="exportSingleCanvas('canvasFilter', 'Phan4_ChiDoThiLoc')">Xuất ảnh đồ thị</button>
+        <button type="button" class="inline-btn inline-btn-img no-print" onclick="exportSingleCanvas('canvasFilter', 'Phan4_ChiDoThiLoc')">📷 Xuất ảnh đồ thị</button>
       </div>
       <div class="graph-box">
         <canvas id="canvasFilter" width="820" height="200"></canvas>
@@ -1322,11 +1322,11 @@
       if (btn) {
         if (singleRowOverwriteMode) {
           btn.classList.add("overwrite-active");
-          btn.textContent = "Chỉnh 1 dòng (Đang ghi đè)";
+          btn.textContent = "🔄 Chỉnh 1 dòng (Đang ghi đè)";
           btn.title = "Đang ở chế độ chỉnh 1 dòng: tín hiệu đồng bộ tiếp theo sẽ ghi đè dòng/cặp hiện tại. Bấm để chuyển về nhận thêm dòng.";
         } else {
           btn.classList.remove("overwrite-active");
-          btn.textContent = "Mỗi đồng bộ = +1 dòng";
+          btn.textContent = "➕ Mỗi đồng bộ = +1 dòng";
           btn.title = "Mỗi tín hiệu đồng bộ thêm 1 dòng/cặp dữ liệu & hình ảnh mới. Bấm để chuyển sang chỉnh 1 dòng (ghi đè).";
         }
       }
@@ -1335,11 +1335,11 @@
       if (routeBtn) {
         if (dualSourceMode) {
           routeBtn.classList.add("dual-route-active");
-          routeBtn.textContent = "Chế độ: 2 nguồn";
+          routeBtn.textContent = "🎯 Chế độ: 2 nguồn";
           routeBtn.title = "Đang bật chế độ 2 nguồn: hiển thị đầy đủ mục I.3–I.4 và II.3–II.4. Bấm để chuyển về 1 nguồn (ẩn I.3–I.4 và II.3–II.4).";
         } else {
           routeBtn.classList.remove("dual-route-active");
-          routeBtn.textContent = "Chế độ: 1 nguồn";
+          routeBtn.textContent = "🎯 Chế độ: 1 nguồn";
           routeBtn.title = "Đang ở chế độ 1 nguồn: ẩn mục I.3–I.4 và II.3–II.4, dữ liệu 1 nguồn nạp trực tiếp vào mục 1 nguồn. Bấm để chuyển sang 2 nguồn.";
         }
       }
@@ -1363,8 +1363,8 @@
       if (notifyUser) {
         showToast(
           singleRowOverwriteMode
-            ? "Đã bật chế độ chỉnh 1 dòng: tín hiệu đồng bộ tiếp theo sẽ ghi đè dòng/cặp hiện tại."
-            : "Đã chuyển sang chế độ nhận thêm dòng: mỗi tín hiệu đồng bộ = +1 dòng/cặp."
+            ? "🔄 Đã bật chế độ chỉnh 1 dòng: tín hiệu đồng bộ tiếp theo sẽ ghi đè dòng/cặp hiện tại."
+            : "➕ Đã chuyển sang chế độ nhận thêm dòng: mỗi tín hiệu đồng bộ = +1 dòng/cặp."
         );
       }
     }
@@ -1380,8 +1380,8 @@
       persistReportEdits();
       showToast(
         dualSourceMode
-          ? "Đã chuyển sang chế độ 2 nguồn: chỉ hiện I.3–I.4 và II.3–II.4 (ẩn I.1–I.2 và II.1–II.2)."
-          : "Đã chuyển sang chế độ 1 nguồn: chỉ hiện I.1–I.2 và II.1–II.2 (ẩn I.3–I.4 và II.3–II.4)."
+          ? "🎯 Đã chuyển sang chế độ 2 nguồn: chỉ hiện I.3–I.4 và II.3–II.4 (ẩn I.1–I.2 và II.1–II.2)."
+          : "🎯 Đã chuyển sang chế độ 1 nguồn: chỉ hiện I.1–I.2 và II.1–II.2 (ẩn I.3–I.4 và II.3–II.4)."
       );
     }
 
@@ -2376,17 +2376,17 @@
           pulseSyncBadge(data._updatedAt || now);
           if (singleRowOverwriteMode) {
             showToast(routedToDual
-              ? "Đã ghi đè dữ liệu 2 nguồn (Kênh A & B) từ Fox-lab!"
-              : "Đã ghi đè dữ liệu 1 nguồn mới từ Fox-lab!");
+              ? "🔄 Đã ghi đè dữ liệu 2 nguồn (Kênh A & B) từ Fox-lab!"
+              : "🔄 Đã ghi đè dữ liệu 1 nguồn mới từ Fox-lab!");
           } else {
             showToast(routedToDual
-              ? "Đã nhận dữ liệu vào mục 2 nguồn (Kênh A & B)!"
-              : "Đã nhận dữ liệu vào mục 1 nguồn (+1 dòng)!");
+              ? "➕ Đã nhận dữ liệu vào mục 2 nguồn (Kênh A & B)!"
+              : "➕ Đã nhận dữ liệu vào mục 1 nguồn (+1 dòng)!");
           }
         } else if (anyOverflow) {
-          showToast(`Đã đạt tối đa ${MAX_ROWS} dòng/cặp! Bật "Chỉnh 1 dòng (Ghi đè)" hoặc xóa bớt dòng cũ.`);
+          showToast(`⚠️ Đã đạt tối đa ${MAX_ROWS} dòng/cặp! Bật "Chỉnh 1 dòng (Ghi đè)" hoặc xóa bớt dòng cũ.`);
         } else if (showNotify) {
-          showToast("Đã kiểm tra đồng bộ từ màn hình đo Fox-lab!");
+          showToast("⚡ Đã kiểm tra đồng bộ từ màn hình đo Fox-lab!");
         }
       } finally {
         isApplyingExternalData = false;
@@ -2646,11 +2646,11 @@
         card.innerHTML = `
           <div class="graph-card-header">
             <span>Hình I.1.${idx + 1}. Đồ thị 1 nguồn – Lần đo ${idx + 1}${chSuffix} (N = ${N})</span>
-            <button type="button" class="inline-btn inline-btn-img no-print" onclick="exportSingleCanvas('${canvasId}', 'Phan1_1Nguon_Lan${idx + 1}')">Tải hình</button>
+            <button type="button" class="inline-btn inline-btn-img no-print" onclick="exportSingleCanvas('${canvasId}', 'Phan1_1Nguon_Lan${idx + 1}')">📷 Tải hình</button>
           </div>
           <canvas id="${canvasId}" width="560" height="185"></canvas>
           <div class="graph-caption" contenteditable="true" oninput="schedulePersistReportEdits()">
-            ${dt > 0 ? `Δt = ${dt.toFixed(2)} ms T = ${T.toFixed(2)} ms; f = ${f.toFixed(1)} Hz` : `Dạng sóng 1 nguồn tương ứng Lần đo ${idx + 1}${chSuffix}`}
+            ${dt > 0 ? `Δt = ${dt.toFixed(2)} ms → T = ${T.toFixed(2)} ms; f = ${f.toFixed(1)} Hz` : `Dạng sóng 1 nguồn tương ứng Lần đo ${idx + 1}${chSuffix}`}
           </div>
         `;
         grid.appendChild(card);
@@ -2764,14 +2764,14 @@
               <div class="dual-canvas-sub">
                 <div class="dual-canvas-sub-label">
                   <span style="color:#b91c1c;">Nguồn 1 (Kênh A)</span>
-                  <button type="button" class="inline-btn inline-btn-img no-print" onclick="exportSingleCanvas('${cIdA}', 'Phan1_2Nguon_Lan${idx + 1}_KenhA')">Tải</button>
+                  <button type="button" class="inline-btn inline-btn-img no-print" onclick="exportSingleCanvas('${cIdA}', 'Phan1_2Nguon_Lan${idx + 1}_KenhA')">📷 Tải</button>
                 </div>
                 <canvas id="${cIdA}" width="360" height="165"></canvas>
               </div>
               <div class="dual-canvas-sub">
                 <div class="dual-canvas-sub-label">
                   <span style="color:#1d4ed8;">Nguồn 2 (Kênh B)</span>
-                  <button type="button" class="inline-btn inline-btn-img no-print" onclick="exportSingleCanvas('${cIdB}', 'Phan1_2Nguon_Lan${idx + 1}_KenhB')">Tải</button>
+                  <button type="button" class="inline-btn inline-btn-img no-print" onclick="exportSingleCanvas('${cIdB}', 'Phan1_2Nguon_Lan${idx + 1}_KenhB')">📷 Tải</button>
                 </div>
                 <canvas id="${cIdB}" width="360" height="165"></canvas>
               </div>
@@ -2788,7 +2788,7 @@
           card.innerHTML = `
             <div class="graph-card-header">
               <span>Hình I.3.${idx + 1}. Đồ thị 2 nguồn – Lần đo ${idx + 1} (So sánh Kênh A &amp; Kênh B)</span>
-              <button type="button" class="inline-btn inline-btn-img no-print" onclick="exportSingleCanvas('${canvasId}', 'Phan1_2Nguon_Lan${idx + 1}')">Tải hình</button>
+              <button type="button" class="inline-btn inline-btn-img no-print" onclick="exportSingleCanvas('${canvasId}', 'Phan1_2Nguon_Lan${idx + 1}')">📷 Tải hình</button>
             </div>
             <canvas id="${canvasId}" width="620" height="195"></canvas>
             <div class="graph-caption" contenteditable="true" oninput="schedulePersistReportEdits()">
@@ -2870,7 +2870,7 @@
         card.innerHTML = `
           <div class="graph-card-header">
             <span>Hình II.1.${idx + 1}. Phổ FFT 1 nguồn – ${row.nguon}</span>
-            <button type="button" class="inline-btn inline-btn-img no-print" onclick="exportSingleCanvas('${canvasId}', 'Phan2_1Nguon_STT${idx + 1}')">Tải hình</button>
+            <button type="button" class="inline-btn inline-btn-img no-print" onclick="exportSingleCanvas('${canvasId}', 'Phan2_1Nguon_STT${idx + 1}')">📷 Tải hình</button>
           </div>
           <canvas id="${canvasId}" width="560" height="185"></canvas>
           <div class="graph-caption" contenteditable="true" oninput="schedulePersistReportEdits()">
@@ -2974,14 +2974,14 @@
               <div class="dual-canvas-sub">
                 <div class="dual-canvas-sub-label">
                   <span style="color:#b91c1c;">${pair.a.nguon}</span>
-                  <button type="button" class="inline-btn inline-btn-img no-print" onclick="exportSingleCanvas('${cIdA}', 'Phan2_2Nguon_Cap${idx + 1}_A')">Tải</button>
+                  <button type="button" class="inline-btn inline-btn-img no-print" onclick="exportSingleCanvas('${cIdA}', 'Phan2_2Nguon_Cap${idx + 1}_A')">📷 Tải</button>
                 </div>
                 <canvas id="${cIdA}" width="360" height="160"></canvas>
               </div>
               <div class="dual-canvas-sub">
                 <div class="dual-canvas-sub-label">
                   <span style="color:#1d4ed8;">${pair.b.nguon}</span>
-                  <button type="button" class="inline-btn inline-btn-img no-print" onclick="exportSingleCanvas('${cIdB}', 'Phan2_2Nguon_Cap${idx + 1}_B')">Tải</button>
+                  <button type="button" class="inline-btn inline-btn-img no-print" onclick="exportSingleCanvas('${cIdB}', 'Phan2_2Nguon_Cap${idx + 1}_B')">📷 Tải</button>
                 </div>
                 <canvas id="${cIdB}" width="360" height="160"></canvas>
               </div>
@@ -2998,7 +2998,7 @@
           card.innerHTML = `
             <div class="graph-card-header">
               <span>Hình II.3.${idx + 1}. Phổ FFT 2 nguồn – Cặp ${idx + 1} (${pair.a.nguon} &amp; ${pair.b.nguon})</span>
-              <button type="button" class="inline-btn inline-btn-img no-print" onclick="exportSingleCanvas('${canvasId}', 'Phan2_2Nguon_Cap${idx + 1}')">Tải hình</button>
+              <button type="button" class="inline-btn inline-btn-img no-print" onclick="exportSingleCanvas('${canvasId}', 'Phan2_2Nguon_Cap${idx + 1}')">📷 Tải hình</button>
             </div>
             <canvas id="${canvasId}" width="620" height="190"></canvas>
             <div class="graph-caption" contenteditable="true" oninput="schedulePersistReportEdits()">
@@ -3083,7 +3083,7 @@
         card.innerHTML = `
           <div class="graph-card-header">
             <span>Hình 3.${idx + 1}. Mức cường độ âm – ${row.viTri} (r = ${Number(row.r).toFixed(1)} m)</span>
-            <button type="button" class="inline-btn inline-btn-img no-print" onclick="exportSingleCanvas('${canvasId}', 'Phan3_Diem${idx + 1}')">Tải hình</button>
+            <button type="button" class="inline-btn inline-btn-img no-print" onclick="exportSingleCanvas('${canvasId}', 'Phan3_Diem${idx + 1}')">📷 Tải hình</button>
           </div>
           <canvas id="${canvasId}" width="560" height="175"></canvas>
           <div class="graph-caption" contenteditable="true" oninput="schedulePersistReportEdits()">
@@ -3161,7 +3161,7 @@
         a.click();
         document.body.removeChild(a);
         setTimeout(() => URL.revokeObjectURL(url), 1000);
-        showToast(`Đã xuất ảnh đồ thị: ${fileName}`);
+        showToast(`✅ Đã xuất ảnh đồ thị: ${fileName}`);
       }, "image/png");
     }
 
@@ -3193,7 +3193,7 @@
           <td contenteditable="true" onblur="updateOsc1(${idx}, 'deltaT_ms', this.textContent, this)">${dt.toFixed(2)}</td>
           <td>${T > 0 ? T.toFixed(2) : "—"}</td>
           <td>${f > 0 ? f.toFixed(1) : "—"}</td>
-          <td class="no-print col-delete"><button type="button" class="row-del-btn" onclick="delOsc1(${idx})" title="Xóa lần đo này"></button></td>
+          <td class="no-print col-delete"><button type="button" class="row-del-btn" onclick="delOsc1(${idx})" title="Xóa lần đo này">✕</button></td>
         `;
         tbody.appendChild(tr);
       });
@@ -3236,7 +3236,7 @@
         if (cellEl && prevVal !== undefined) {
           cellEl.textContent = k === "soChuKi" ? String(prevVal) : Number(prevVal).toFixed(2);
         }
-        showToast("Vui lòng nhập giá trị số hợp lệ (≥ 0)!");
+        showToast("⚠️ Vui lòng nhập giá trị số hợp lệ (≥ 0)!");
       }
       renderOscTable1();
       renderOscGraphs1();
@@ -3245,7 +3245,7 @@
 
     function addOscRow1() {
       if (oscRows1.length >= MAX_ROWS) {
-        showToast(`Đã đạt tối đa ${MAX_ROWS} dòng dữ liệu!`);
+        showToast(`⚠️ Đã đạt tối đa ${MAX_ROWS} dòng dữ liệu!`);
         return;
       }
       const prevCycles = oscRows1.length > 0 ? oscRows1[oscRows1.length - 1].soChuKi : 1;
@@ -3257,7 +3257,7 @@
 
     function delOsc1(i) {
       if (oscRows1.length <= 1) {
-        showToast("Cần giữ lại ít nhất 1 dòng dữ liệu ở bảng I.2!");
+        showToast("⚠️ Cần giữ lại ít nhất 1 dòng dữ liệu ở bảng I.2!");
         return;
       }
       oscRows1.splice(i, 1);
@@ -3301,7 +3301,7 @@
           <td>${tA > 0 ? tA.toFixed(2) : "—"}</td>
           <td>${fA > 0 ? fA.toFixed(1) : "—"}</td>
           <td rowspan="2">${diffF !== null ? diffF.toFixed(1) : "—"}</td>
-          <td rowspan="2" class="no-print col-delete"><button type="button" class="row-del-btn" onclick="delOsc2(${idx})" title="Xóa lần đo này"></button></td>
+          <td rowspan="2" class="no-print col-delete"><button type="button" class="row-del-btn" onclick="delOsc2(${idx})" title="Xóa lần đo này">✕</button></td>
         `;
         tbody.appendChild(trA);
 
@@ -3350,7 +3350,7 @@
         if (cellEl && prevVal !== undefined) {
           cellEl.textContent = field === "soChuKi" ? String(prevVal) : Number(prevVal).toFixed(2);
         }
-        showToast("Vui lòng nhập giá trị số hợp lệ (≥ 0)!");
+        showToast("⚠️ Vui lòng nhập giá trị số hợp lệ (≥ 0)!");
       }
       renderOscTable2();
       renderOscGraphs2();
@@ -3359,7 +3359,7 @@
 
     function addOscRow2() {
       if (oscRows2.length >= MAX_ROWS) {
-        showToast(`Đã đạt tối đa ${MAX_ROWS} cặp đo 2 nguồn!`);
+        showToast(`⚠️ Đã đạt tối đa ${MAX_ROWS} cặp đo 2 nguồn!`);
         return;
       }
       oscRows2.push(makeBlankOscPair());
@@ -3370,7 +3370,7 @@
 
     function delOsc2(i) {
       if (oscRows2.length <= 1) {
-        showToast("Cần giữ lại ít nhất 1 cặp đo ở bảng I.4!");
+        showToast("⚠️ Cần giữ lại ít nhất 1 cặp đo ở bảng I.4!");
         return;
       }
       oscRows2.splice(i, 1);
@@ -3391,7 +3391,7 @@
           <td contenteditable="true" onblur="updateFft1(${i}, 'f0', this.textContent)">${r.f0}</td>
           <td contenteditable="true" onblur="updateFft1(${i}, 'hoaAm', this.textContent)">${r.hoaAm}</td>
           <td contenteditable="true" onblur="updateFft1(${i}, 'dacDiem', this.textContent)">${r.dacDiem}</td>
-          <td class="no-print col-delete"><button type="button" class="row-del-btn" onclick="delFft1(${i})" title="Xóa dòng này"></button></td>
+          <td class="no-print col-delete"><button type="button" class="row-del-btn" onclick="delFft1(${i})" title="Xóa dòng này">✕</button></td>
         `;
         tbody.appendChild(tr);
       });
@@ -3412,7 +3412,7 @@
 
     function addFftRow1() {
       if (fftRows1.length >= MAX_ROWS) {
-        showToast(`Đã đạt tối đa ${MAX_ROWS} dòng dữ liệu!`);
+        showToast(`⚠️ Đã đạt tối đa ${MAX_ROWS} dòng dữ liệu!`);
         return;
       }
       fftRows1.push(makeBlankFftSingle(fftRows1.length));
@@ -3423,7 +3423,7 @@
 
     function delFft1(i) {
       if (fftRows1.length <= 1) {
-        showToast("Cần giữ lại ít nhất 1 dòng dữ liệu ở bảng II.2!");
+        showToast("⚠️ Cần giữ lại ít nhất 1 dòng dữ liệu ở bảng II.2!");
         return;
       }
       fftRows1.splice(i, 1);
@@ -3451,7 +3451,7 @@
           <td contenteditable="true" onblur="updateFft2(${i}, 'a', 'hoaAm', this.textContent)">${pair.a.hoaAm}</td>
           <td contenteditable="true" onblur="updateFft2(${i}, 'a', 'dacDiem', this.textContent)">${pair.a.dacDiem}</td>
           <td rowspan="2">${diffStr}</td>
-          <td rowspan="2" class="no-print col-delete"><button type="button" class="row-del-btn" onclick="delFft2(${i})" title="Xóa cặp này"></button></td>
+          <td rowspan="2" class="no-print col-delete"><button type="button" class="row-del-btn" onclick="delFft2(${i})" title="Xóa cặp này">✕</button></td>
         `;
         tbody.appendChild(trA);
 
@@ -3481,7 +3481,7 @@
 
     function addFftRow2() {
       if (fftRows2.length >= MAX_ROWS) {
-        showToast(`Đã đạt tối đa ${MAX_ROWS} cặp nguồn FFT!`);
+        showToast(`⚠️ Đã đạt tối đa ${MAX_ROWS} cặp nguồn FFT!`);
         return;
       }
       fftRows2.push(makeBlankFftPair());
@@ -3492,7 +3492,7 @@
 
     function delFft2(i) {
       if (fftRows2.length <= 1) {
-        showToast("Cần giữ lại ít nhất 1 cặp nguồn ở bảng II.4!");
+        showToast("⚠️ Cần giữ lại ít nhất 1 cặp nguồn ở bảng II.4!");
         return;
       }
       fftRows2.splice(i, 1);
@@ -3520,7 +3520,7 @@
           <td contenteditable="true" onblur="updateDb(${i}, 'lMax', this.textContent, this)">${Number(r.lMax).toFixed(1)}</td>
           <td contenteditable="true" onblur="updateDb(${i}, 'lAvg', this.textContent, this)">${currentAvg.toFixed(1)}</td>
           <td>${diff}</td>
-          <td class="no-print col-delete"><button type="button" class="row-del-btn" onclick="delDb(${i})" title="Xóa dòng này"></button></td>
+          <td class="no-print col-delete"><button type="button" class="row-del-btn" onclick="delDb(${i})" title="Xóa dòng này">✕</button></td>
         `;
         tbody.appendChild(tr);
       });
@@ -3543,7 +3543,7 @@
           dbRows[i][k] = n;
         } else {
           if (cellEl && prevVal !== undefined) cellEl.textContent = Number(prevVal).toFixed(1);
-          showToast("Vui lòng nhập giá trị số hợp lệ!");
+          showToast("⚠️ Vui lòng nhập giá trị số hợp lệ!");
         }
       }
       renderDbTable();
@@ -3553,7 +3553,7 @@
 
     function addDbRow() {
       if (dbRows.length >= MAX_ROWS) {
-        showToast(`Đã đạt tối đa ${MAX_ROWS} dòng dữ liệu!`);
+        showToast(`⚠️ Đã đạt tối đa ${MAX_ROWS} dòng dữ liệu!`);
         return;
       }
       const nextR = dbRows.length > 0 ? Number(dbRows[dbRows.length - 1].r) + 0.5 : 0.5;
@@ -3565,7 +3565,7 @@
 
     function delDb(i) {
       if (dbRows.length <= 1) {
-        showToast("Cần giữ lại ít nhất 1 dòng dữ liệu ở bảng Phần III!");
+        showToast("⚠️ Cần giữ lại ít nhất 1 dòng dữ liệu ở bảng Phần III!");
         return;
       }
       const removedFirst = (i === 0);
@@ -3574,7 +3574,7 @@
       renderDbGraphs();
       persistReportEdits();
       if (removedFirst) {
-        showToast("ℹĐã xóa dòng mốc đầu tiên; dòng 1 hiện tại trở thành mốc ΔL = 0,0 dB.");
+        showToast("ℹ️ Đã xóa dòng mốc đầu tiên; dòng 1 hiện tại trở thành mốc ΔL = 0,0 dB.");
       }
     }
 
@@ -3587,12 +3587,12 @@
       const fileName = `Fox-lab_BaoCao_${groupSlug}.pdf`;
 
       if (typeof html2pdf === "undefined") {
-        showToast("Chưa tải được thư viện xuất PDF, vui lòng kiểm tra kết nối mạng!");
+        showToast("⚠️ Chưa tải được thư viện xuất PDF, vui lòng kiểm tra kết nối mạng!");
         return;
       }
 
       syncCheckboxes();
-      showToast("Đang tạo file PDF (mỗi phần 1 trang riêng)...");
+      showToast("⏳ Đang tạo file PDF (mỗi phần 1 trang riêng)...");
       sheet.classList.add("exporting-pdf");
 
       const opt = {
@@ -3606,11 +3606,11 @@
 
       html2pdf().set(opt).from(sheet).save().then(() => {
         sheet.classList.remove("exporting-pdf");
-        showToast(`Đã tải xuống file PDF: ${fileName}`);
+        showToast(`✅ Đã tải xuống file PDF: ${fileName}`);
       }).catch((err) => {
         sheet.classList.remove("exporting-pdf");
         console.error(err);
-        showToast("Có lỗi xảy ra khi xuất PDF!");
+        showToast("❌ Có lỗi xảy ra khi xuất PDF!");
       });
     }
 
@@ -3649,7 +3649,7 @@
       const sheet = byId("reportSheet");
       sheet.classList.add("exporting-pdf");
       const safeFile = sanitizeFileName(`Fox-lab_${fileTag}`) + ".pdf";
-      showToast(`Đang tạo ${safeFile}...`);
+      showToast(`⏳ Đang tạo ${safeFile}...`);
 
       const opt = {
         margin: [8, 8, 8, 8],
@@ -3675,10 +3675,10 @@
 
       html2pdf().set(opt).from(sheet).save().then(() => {
         restoreState();
-        showToast(`Đã tải PDF: ${safeFile}`);
+        showToast(`✅ Đã tải PDF: ${safeFile}`);
       }).catch(() => {
         restoreState();
-        showToast("Có lỗi xảy ra khi xuất PDF!");
+        showToast("❌ Có lỗi xảy ra khi xuất PDF!");
       });
     }
 
@@ -3692,7 +3692,7 @@
       }
 
       const safeFile = sanitizeFileName(`Fox-lab_${fileTag}`) + ".png";
-      showToast(`Đang chụp ảnh ${safeFile}...`);
+      showToast(`⏳ Đang chụp ảnh ${safeFile}...`);
 
       const groupName = byId("groupName")?.textContent.trim() || "Nhóm 01";
       const className = byId("className")?.textContent.trim() || "11A1";
@@ -3769,7 +3769,7 @@
           a.click();
           document.body.removeChild(a);
           setTimeout(() => URL.revokeObjectURL(pngUrl), 1000);
-          showToast(`Đã xuất ảnh: ${safeFile}`);
+          showToast(`✅ Đã xuất ảnh: ${safeFile}`);
         }, "image/png");
       }).catch((err) => {
         if (wrapper.parentNode) document.body.removeChild(wrapper);
@@ -3925,7 +3925,7 @@
       a.click();
       document.body.removeChild(a);
       setTimeout(() => URL.revokeObjectURL(url), 1000);
-      showToast(`Đã xuất file Excel: ${safeFile}`);
+      showToast(`✅ Đã xuất file Excel: ${safeFile}`);
     }
 
     document.addEventListener("focusin", (e) => {
