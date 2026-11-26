@@ -1304,14 +1304,24 @@
  function updateDualSourceVisibility() {
  const p1Single = byId("part1SingleBlock");
  const p1Dual = byId("part1DualBlock");
+ const part2Sec = byId("part2");
+ const chkPart2Item = byId("chk-part2")?.closest(".tb-check-item");
  const p2Single = byId("part2SingleBlock");
  const p2Dual = byId("part2DualBlock");
  const p3Single = byId("part3SingleBlock");
  const p3Dual = byId("part3DualBlock");
  if (p1Single) p1Single.style.display = dualSourceMode ? "none" : "";
  if (p1Dual) p1Dual.style.display = dualSourceMode ? "" : "none";
+
+ // Chế độ 2 nguồn không áp dụng Phần II (Đồ thị liên quan u-t, v-t, a-t)
+ if (part2Sec) {
+ part2Sec.style.display = dualSourceMode ? "none" : "";
+ part2Sec.classList.toggle("temp-export-hide", dualSourceMode);
+ }
+ if (chkPart2Item) chkPart2Item.style.display = dualSourceMode ? "none" : "";
  if (p2Single) p2Single.style.display = dualSourceMode ? "none" : "";
- if (p2Dual) p2Dual.style.display = dualSourceMode ? "" : "none";
+ if (p2Dual) p2Dual.style.display = "none";
+
  if (p3Single) p3Single.style.display = dualSourceMode ? "none" : "";
  if (p3Dual) p3Dual.style.display = dualSourceMode ? "" : "none";
  }
@@ -1337,7 +1347,7 @@
  if (dualSourceMode) {
  routeBtn.classList.add("dual-route-active");
  routeBtn.textContent = "Chế độ: 2 nguồn";
- routeBtn.title = "Đang bật chế độ 2 nguồn: hiển thị đầy đủ mục I.3–I.4, II.1–II.2 và III.3–III.4. Bấm để chuyển về 1 nguồn.";
+ routeBtn.title = "Đang bật chế độ 2 nguồn: hiển thị mục I.3–I.4, III.3–III.4 và IV (không áp dụng Phần II). Bấm để chuyển về 1 nguồn.";
  } else {
  routeBtn.classList.remove("dual-route-active");
  routeBtn.textContent = "Chế độ: 1 nguồn";
@@ -1380,10 +1390,11 @@
  dualSourceMode = !dualSourceMode;
  renderAllSections();
  updateSyncRowModeUI();
+ syncCheckboxes(false);
  persistReportEdits();
  showToast(
  dualSourceMode
- ? "Đã chuyển sang chế độ 2 nguồn: hiển thị I.3–I.4, II.1–II.2 và III.3–III.4."
+ ? "Đã chuyển sang chế độ 2 nguồn: hiển thị I.3–I.4, III.3–III.4 và IV (không áp dụng Phần II)."
  : "Đã chuyển sang chế độ 1 nguồn: hiển thị I.1–I.2, II.1–II.2 và III.1–III.2."
  );
  }
@@ -1600,7 +1611,10 @@
  }
 
  function getSelectedPartIds() {
- return ["part1", "part2", "part3", "part4", "part5"].filter(id => Boolean(byId(`chk-${id}`)?.checked));
+ return ["part1", "part2", "part3", "part4", "part5"].filter(id => {
+ if (dualSourceMode && id === "part2") return false;
+ return Boolean(byId(`chk-${id}`)?.checked);
+ });
  }
 
  function applySelectedPartIds(partIds) {
@@ -1621,6 +1635,12 @@
  const chk = byId(`chk-${id}`);
  const el = byId(id);
  if (chk && el) {
+ if (dualSourceMode && id === "part2") {
+ el.classList.add("hidden-part", "temp-export-hide");
+ el.classList.remove("page-break-part");
+ return;
+ }
+ el.classList.remove("temp-export-hide");
  el.classList.toggle("hidden-part", !chk.checked);
  if (chk.checked) {
  checkedCount++;
@@ -2431,6 +2451,7 @@
  lastIncomingSignalAt = now;
  updateSyncRowModeUI();
  renderAllSections();
+ syncCheckboxes(false);
  } finally {
  isApplyingExternalData = false;
  }
@@ -2443,6 +2464,7 @@
  dualSourceMode = incomingDualMode;
  updateSyncRowModeUI();
  renderAllSections();
+ syncCheckboxes(false);
  }
  if (syncToken) lastIncomingSyncToken = syncToken;
  lastIncomingSignalSig = sig;
@@ -2478,19 +2500,11 @@
  }
  }
 
- if (kinEntries.length > 0) {
- if (dualSourceMode) {
- const resKin2 = applyDualEntries(kinRows2, kinEntries, isBlankKinRow, isBlankKinPair, makeBlankKinPair);
- kinRows2 = resKin2.rows;
- anyChanged = anyChanged || resKin2.changed;
- anyOverflow = anyOverflow || resKin2.overflow;
- if (resKin2.changed) routedToDual = true;
- } else {
+ if (kinEntries.length > 0 && !dualSourceMode) {
  const resKin1 = applySingleEntries(kinRows1, [kinEntries[0]], isBlankKinRow);
  kinRows1 = resKin1.rows;
  anyChanged = anyChanged || resKin1.changed;
  anyOverflow = anyOverflow || resKin1.overflow;
- }
  }
 
  if (fftEntries.length > 0) {
@@ -4173,7 +4187,11 @@
  }
 
  function exportSinglePartToPDF(partId, fileTag) {
- const allParts = ["part1", "part2", "part3", "part4"];
+ if (dualSourceMode && partId === "part2") {
+ showToast("Chế độ 2 nguồn không áp dụng Phần II (Đồ thị liên quan)!");
+ return;
+ }
+ const allParts = dualSourceMode ? ["part1", "part3", "part4"] : ["part1", "part2", "part3", "part4"];
  const prevStates = {};
  const titleEl = byId("expTitle");
  const prevTitle = titleEl ? titleEl.textContent : DEFAULT_TITLE;
@@ -4430,6 +4448,10 @@
  fileName = "Fox-lab_Phan1_DoChuKiTanSo.csv";
  appendOscCsvRows(rows);
  } else if (partId === "part2") {
+ if (dualSourceMode) {
+ showToast("Chế độ 2 nguồn không áp dụng Phần II (Đồ thị liên quan)!");
+ return;
+ }
  fileName = "Fox-lab_Phan2_DoThiLienQuan.csv";
  appendKinCsvRows(rows);
  } else if (partId === "part3") {
@@ -4462,7 +4484,7 @@
  rows.push([]);
  }
 
- if (byId("chk-part2")?.checked) {
+ if (!dualSourceMode && byId("chk-part2")?.checked) {
  appendKinCsvRows(rows);
  rows.push([]);
  }

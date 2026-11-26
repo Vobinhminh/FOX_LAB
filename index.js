@@ -6910,6 +6910,10 @@ async function checkAppVersion() {
         delete payload.anhDbBase64;
 
         if (featureType === "kinematics") {
+            if (isDual) {
+                showExpToast("Đồ thị liên quan (u-t, v-t, a-t) chỉ áp dụng cho chế độ 1 nguồn!");
+                return;
+            }
             const kinCanvas = document.getElementById("kinematicsCanvas");
             let snapImg = null;
             if (kinCanvas && kinCanvas.width > 0) {
