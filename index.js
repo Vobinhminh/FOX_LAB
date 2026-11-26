@@ -121,6 +121,10 @@ async function checkAppVersion() {
 
     let micCalibOffsetA = parseFloat(localStorage.getItem('fox_mic_calib_offset_a') || '0.0');
     let micCalibOffsetB = parseFloat(localStorage.getItem('fox_mic_calib_offset_b') || '0.0');
+    let oscAmpGainA = parseFloat(localStorage.getItem('fox_osc_amp_gain_a') || '1.0');
+    let oscAmpGainB = parseFloat(localStorage.getItem('fox_osc_amp_gain_b') || '1.0');
+    if (!Number.isFinite(oscAmpGainA) || oscAmpGainA <= 0) oscAmpGainA = 1.0;
+    if (!Number.isFinite(oscAmpGainB) || oscAmpGainB <= 0) oscAmpGainB = 1.0;
 
     let audioCtx, sampleRate = 48000, isPaused = true, isContinuousMode = false, stopTimer;
     let isDemoMode = true; let demoChatCount = 0; const MAX_DEMO_CHAT = 5;
@@ -897,7 +901,7 @@ async function checkAppVersion() {
             isManualAnalysisMode = true;
             manualPoints = [];
             closeManualHud();
-            btnManualAnalysis.textContent = "🎯 Đang chọn điểm (Thoát)";
+            btnManualAnalysis.textContent = "Đang chọn điểm (Thoát)";
             btnManualAnalysis.className = "btn-orange";
             infoMessageText.innerHTML = "Chức năng 1 (Chọn 2 điểm): Click/chạm chọn <span class='info-badge'>Điểm 1 (P₁)</span> trên đồ thị sóng Kênh A.";
             infoMessageText.style.color = "#7c3aed";
@@ -1119,7 +1123,7 @@ async function checkAppVersion() {
             hudEl.style.left = '14px';
         }
         const resBtn = document.getElementById('kinResultBtn');
-        if (resBtn) { resBtn.textContent = "📊 Kết quả"; resBtn.className = "btn-blue"; }
+        if (resBtn) { resBtn.textContent = "Kết quả"; resBtn.className = "btn-blue"; }
 
         const overlay = document.getElementById('kinematicsModalOverlay');
         overlay.style.display = 'flex';
@@ -1144,7 +1148,7 @@ async function checkAppVersion() {
         const btn = document.getElementById('kinResultBtn');
         if (hud) hud.style.display = showKinematicsResult ? 'block' : 'none';
         if (btn) {
-            btn.textContent = showKinematicsResult ? "📊 Ẩn kết quả" : "📊 Kết quả";
+            btn.textContent = showKinematicsResult ? "Ẩn kết quả" : "Kết quả";
             btn.className = showKinematicsResult ? "btn-orange" : "btn-blue";
         }
     }
@@ -1256,10 +1260,9 @@ async function checkAppVersion() {
     }
 
     function updateToolbarButtonsVisibility() {
-        if (getDisplayMode() === 'dbMeter') {
-            if (btnCalib) btnCalib.style.display = 'inline-block';
-        } else {
-            if (btnCalib) btnCalib.style.display = 'none';
+        if (btnCalib) {
+            btnCalib.style.display = 'inline-block';
+            btnCalib.textContent = (getDisplayMode() === 'oscilloscope') ? 'Hiệu chỉnh biên độ' : 'Hiệu chuẩn';
         }
         updateManualAnalysisButtonState();
         if (typeof updateAnalysisButtonState === 'function') updateAnalysisButtonState();
@@ -1363,9 +1366,10 @@ async function checkAppVersion() {
         const offset = cfg.index - centerIdx;
         const startIdx = centerIdx - halfSamples;
         const len = cfg.data.length;
+        const ampGain = (channelKey === 'B') ? oscAmpGainB : oscAmpGainA;
         const slice = new Float32Array(samplesNeeded);
         for (let i = 0; i < samplesNeeded; i++) {
-            slice[i] = cfg.data[((startIdx + i) % len + len) % len];
+            slice[i] = cfg.data[((startIdx + i) % len + len) % len] * ampGain;
         }
         return { slice, startIdx, centerIdx, halfSamples, offset, samplesNeeded };
     }
@@ -1790,7 +1794,7 @@ async function checkAppVersion() {
         isManualAnalysisMode = false;
         manualPoints = [];
         draggingTwoSourcePoint = null;
-        btnManualAnalysis.textContent = "📐 Đang phân tích 4 điểm (Thoát)";
+        btnManualAnalysis.textContent = "Đang phân tích 4 điểm (Thoát)";
         btnManualAnalysis.className = "btn-orange";
 
         if (resetPoints || !Array.isArray(twoSourcePoints.A) || twoSourcePoints.A.length < 2) {
@@ -2941,7 +2945,7 @@ async function checkAppVersion() {
         if (channelConfig.A.active && channelConfig.A.data && channelConfig.A.index > samplesNeeded) {
             let centerIdxA = resolveChannelCenterIdx(channelConfig.A, 'A', samplesNeeded);
             let offsetA = channelConfig.A.index - centerIdxA;
-            drawWaveform(canvasCtx, channelConfig.A.data, channelConfig.A.index, offsetA, samplesNeeded, 0, boxA_Y, width, boxA_H, '#ef4444');
+            drawWaveform(canvasCtx, channelConfig.A.data, channelConfig.A.index, offsetA, samplesNeeded, 0, boxA_Y, width, boxA_H, '#ef4444', oscAmpGainA);
             if (mode === '1') {
                 drawManualAnalysisOverlay(canvasCtx, width, height);
             }
@@ -2952,13 +2956,13 @@ async function checkAppVersion() {
             if (channelConfig.B.active && channelConfig.B.data && channelConfig.B.index > samplesNeeded) {
                 let centerIdxB = resolveChannelCenterIdx(channelConfig.B, 'B', samplesNeeded);
                 let offsetB = channelConfig.B.index - centerIdxB;
-                drawWaveform(canvasCtx, channelConfig.B.data, channelConfig.B.index, offsetB, samplesNeeded, 0, boxB_Y, width, boxB_H, '#3b82f6');
+                drawWaveform(canvasCtx, channelConfig.B.data, channelConfig.B.index, offsetB, samplesNeeded, 0, boxB_Y, width, boxB_H, '#3b82f6', oscAmpGainB);
             }
             drawTwoSourceAnalysisOverlay(canvasCtx, width, height);
         }
     }
 
-    function drawWaveform(ctx, dataArray, currentIndex, offset, samplesNeeded, boxX, boxY, boxW, boxH, color) {
+    function drawWaveform(ctx, dataArray, currentIndex, offset, samplesNeeded, boxX, boxY, boxW, boxH, color, ampGain = 1.0) {
         ctx.beginPath(); ctx.lineWidth = 2.5; ctx.strokeStyle = color; ctx.lineJoin = 'round';
         const len = dataArray.length;
         const halfSamples = Math.floor(samplesNeeded / 2);
@@ -2967,7 +2971,7 @@ async function checkAppVersion() {
         const step = Math.max(1, Math.floor(samplesNeeded / (boxW * 2)));
         for (let i = 0; i < samplesNeeded; i += step) {
             let idx = ((startIdx + i) % len + len) % len;
-            let val = dataArray[idx];
+            let val = dataArray[idx] * ampGain;
             let x = boxX + boxW / 2 + ((i - halfSamples) / samplesNeeded) * boxW;
             let y = boxY + boxH / 2 - (val * currentZoomY * boxH / 2);
             y = Math.max(boxY, Math.min(boxY + boxH, y));
@@ -3263,14 +3267,86 @@ async function checkAppVersion() {
         }
     }
 
+    function getLatestRawOscPeak(channel) {
+        const cfg = channelConfig[channel];
+        if (!cfg || !cfg.active || !cfg.data || cfg.index < 64) return null;
+        const len = cfg.data.length, idx = cfg.index;
+        const win = Math.min(4096, idx);
+        let maxPeak = 0;
+        for (let i = 0; i < win; i++) {
+            const v = Math.abs(cfg.data[((idx - win + i) % len + len) % len]);
+            if (v > maxPeak) maxPeak = v;
+        }
+        return maxPeak > 1e-5 ? maxPeak : null;
+    }
+
+    function updateOscAmpCalibUI() {
+        const rawA = getLatestRawOscPeak('A');
+        const rawB = getLatestRawOscPeak('B');
+        const elRawA = document.getElementById('oscRawAmpA');
+        const elRawB = document.getElementById('oscRawAmpB');
+        if (elRawA) elRawA.textContent = rawA !== null ? rawA.toFixed(3) : '-- (Chưa có mẫu)';
+        if (elRawB) elRawB.textContent = rawB !== null ? rawB.toFixed(3) : '-- (Chưa có mẫu)';
+
+        const sA = document.getElementById('oscAmpGainSliderA');
+        const iA = document.getElementById('oscAmpGainInputA');
+        const sB = document.getElementById('oscAmpGainSliderB');
+        const iB = document.getElementById('oscAmpGainInputB');
+        if (sA) sA.value = Math.min(10, Math.max(0.1, oscAmpGainA)).toFixed(2);
+        if (iA) iA.value = oscAmpGainA.toFixed(2);
+        if (sB) sB.value = Math.min(10, Math.max(0.1, oscAmpGainB)).toFixed(2);
+        if (iB) iB.value = oscAmpGainB.toFixed(2);
+    }
+
+    function setOscAmpGain(channel, val) {
+        const parsed = parseFloat(val);
+        if (!Number.isFinite(parsed) || parsed <= 0) return;
+        const clamped = Math.max(0.05, Math.min(50, parsed));
+        if (channel === 'B') {
+            oscAmpGainB = clamped;
+            localStorage.setItem('fox_osc_amp_gain_b', clamped.toString());
+        } else {
+            oscAmpGainA = clamped;
+            localStorage.setItem('fox_osc_amp_gain_a', clamped.toString());
+        }
+        updateOscAmpCalibUI();
+        if (getDisplayMode() === 'oscilloscope' && typeof drawFrame === 'function') drawFrame();
+    }
+
+    function applyOscAmpFromRef(channel) {
+        const inputEl = document.getElementById(channel === 'B' ? 'oscRefAmpInputB' : 'oscRefAmpInputA');
+        const targetAmp = parseFloat(inputEl ? inputEl.value : '');
+        if (!Number.isFinite(targetAmp) || targetAmp <= 0) {
+            alert('Vui lòng nhập giá trị biên độ chuẩn hợp lệ (> 0).');
+            return;
+        }
+        const rawPeak = getLatestRawOscPeak(channel);
+        if (rawPeak === null) {
+            alert(`Chưa có dữ liệu sóng trên Kênh ${channel}. Hãy bật Micro và bấm "Đo / Dừng" trước khi hiệu chỉnh.`);
+            return;
+        }
+        setOscAmpGain(channel, targetAmp / rawPeak);
+    }
+
     function openCalibModal(focusSourceRef = false) {
         const overlay = document.getElementById('calibModalOverlay');
         if (overlay) overlay.style.display = 'flex';
+        const isOsc = (getDisplayMode() === 'oscilloscope' && !focusSourceRef);
+        const oscSec = document.getElementById('calibOscAmpSection');
+        const dbSec = document.getElementById('calibDbSection');
+        if (oscSec) oscSec.style.display = isOsc ? 'block' : 'none';
+        if (dbSec) dbSec.style.display = isOsc ? 'none' : 'block';
+
         const chBBox = document.getElementById('calibChannelBBox');
         if (chBBox) {
             chBBox.style.display = (getActiveChannelMode() === '2') ? 'block' : 'none';
         }
+        const oscBBox = document.getElementById('calibOscChannelBBox');
+        if (oscBBox) {
+            oscBBox.style.display = (getActiveChannelMode() === '2') ? 'block' : 'none';
+        }
         updateCalibDisplay();
+        updateOscAmpCalibUI();
         updateSourceRefUI();
         if (focusSourceRef) {
             setTimeout(() => {
@@ -3374,6 +3450,10 @@ async function checkAppVersion() {
         micCalibOffsetB = 0.0;
         localStorage.removeItem('fox_mic_calib_offset_a');
         localStorage.removeItem('fox_mic_calib_offset_b');
+        oscAmpGainA = 1.0;
+        oscAmpGainB = 1.0;
+        localStorage.removeItem('fox_osc_amp_gain_a');
+        localStorage.removeItem('fox_osc_amp_gain_b');
         document.getElementById('calibRefInputA').value = '';
         document.getElementById('calibRefInputB').value = '';
         clearSourceRefCalibration(true);
@@ -3668,7 +3748,7 @@ async function checkAppVersion() {
         if (panel) panel.style.display = 'flex';
         if (toggleBtn) {
             toggleBtn.style.display = 'inline-block';
-            toggleBtn.textContent = '📊 Ẩn bảng tần số';
+            toggleBtn.textContent = 'Ẩn bảng tần số';
             toggleBtn.className = 'btn-orange';
         }
         requestAnimationFrame(() => processAndDrawFFT(1));
@@ -3683,7 +3763,7 @@ async function checkAppVersion() {
                 toggleBtn.style.display = 'none';
             } else {
                 toggleBtn.style.display = 'inline-block';
-                toggleBtn.textContent = '📊 Bảng tần số & họa âm';
+                toggleBtn.textContent = 'Bảng tần số & họa âm';
                 toggleBtn.className = 'btn-blue';
             }
         }
@@ -4358,7 +4438,7 @@ async function checkAppVersion() {
         if (idxA > 2048) {
             let recA = new Float32Array(2048);
             for (let i = 0; i < 2048; i++) {
-                let v = dataA[((idxA - 2048 + i) % len + len) % len];
+                let v = dataA[((idxA - 2048 + i) % len + len) % len] * oscAmpGainA;
                 recA[i] = v; sqA += v * v;
             }
             let fA = autoCorrelate(recA, sampleRate);
@@ -4370,7 +4450,7 @@ async function checkAppVersion() {
         if (idxB > 2048) {
             let recB = new Float32Array(2048);
             for (let i = 0; i < 2048; i++) {
-                let v = dataB[((idxB - 2048 + i) % len + len) % len];
+                let v = dataB[((idxB - 2048 + i) % len + len) % len] * oscAmpGainB;
                 recB[i] = v; sqB += v * v;
             }
             let fB = autoCorrelate(recB, sampleRate);
@@ -4410,7 +4490,7 @@ async function checkAppVersion() {
                 btn.style.setProperty('display', 'none', 'important');
             } else {
                 btn.style.setProperty('display', 'inline-flex', 'important');
-                btn.innerHTML = '▶ Tiếp tục';
+                btn.innerHTML = 'Tiếp tục';
                 btn.className = "btn-green";
             }
         }
@@ -4475,7 +4555,7 @@ async function checkAppVersion() {
                 btn.style.setProperty('display', 'none', 'important');
             } else {
                 btn.style.setProperty('display', 'inline-flex', 'important');
-                btn.innerHTML = '⏸ Dừng';
+                btn.innerHTML = 'Dừng';
                 btn.className = "btn-orange";
             }
         }
@@ -4525,7 +4605,7 @@ async function checkAppVersion() {
             }
             if (btn) {
                 if (!isContinuousMode) btn.style.setProperty('display', 'none', 'important');
-                else { btn.innerHTML = '⏸ Dừng'; btn.className = "btn-orange"; }
+                else { btn.innerHTML = 'Dừng'; btn.className = "btn-orange"; }
             }
             if (resBtn) resBtn.style.setProperty('display', 'none', 'important');
             if (eqBtn) eqBtn.style.setProperty('display', 'none', 'important');
@@ -4588,7 +4668,7 @@ async function checkAppVersion() {
                 ctx.strokeStyle = '#ef4444'; ctx.beginPath();
                 for (let i = 0; i < samplesDraw; i += step) {
                     let idxA = ((startIdxA + i) % len + len) % len;
-                    let val = refDataA[idxA];
+                    let val = refDataA[idxA] * oscAmpGainA;
                     let x = cw / 2 + ((i - halfDraw) / samplesDraw) * cw, y = ch / 2 - (val * currentZoomY * ch / 2);
                     if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
                 }
@@ -4597,7 +4677,7 @@ async function checkAppVersion() {
                 ctx.strokeStyle = '#3b82f6'; ctx.beginPath();
                 for (let i = 0; i < samplesDraw; i += step) {
                     let idxB = ((startIdxB + i) % len + len) % len;
-                    let val = refDataB[idxB];
+                    let val = refDataB[idxB] * oscAmpGainB;
                     let x = cw / 2 + ((i - halfDraw) / samplesDraw) * cw, y = ch / 2 - (val * currentZoomY * ch / 2);
                     if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
                 }
@@ -4622,7 +4702,7 @@ async function checkAppVersion() {
                 for (let i = 0; i < samplesDraw; i += step) {
                     let idxA = ((startIdxA + i) % len + len) % len;
                     let idxB = ((startIdxB + i) % len + len) % len;
-                    let val = refDataA[idxA] + refDataB[idxB];
+                    let val = (refDataA[idxA] * oscAmpGainA) + (refDataB[idxB] * oscAmpGainB);
 
                     let x = cw / 2 + ((i - halfDraw) / samplesDraw) * cw, y = ch / 2 - (val * currentZoomY * ch / 2);
                     if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
@@ -4747,13 +4827,13 @@ async function checkAppVersion() {
         const btn = document.getElementById('foxRoleToggleBtn');
         if (currentFoxRole === 'student') {
             currentFoxRole = 'teacher';
-            btn.innerHTML = "👨‍🏫 GV";
+            btn.innerHTML = "GV";
             btn.style.borderColor = "#f97316";
             btn.style.color = "#ff7849";
             addChatMessage('bot', "Đã chuyển sang <b>Chế độ Giáo viên</b>: AI sẽ cung cấp gợi ý sư phạm chuyên sâu, chuẩn kiến thức SGK vật lý và lưu ý an toàn phòng thí nghiệm.");
         } else {
             currentFoxRole = 'student';
-            btn.innerHTML = "👨‍🎓 HS";
+            btn.innerHTML = "HS";
             btn.style.borderColor = "#475569";
             btn.style.color = "#38bdf8";
             addChatMessage('bot', "Đã chuyển sang <b>Chế độ Học sinh</b>: AI sẽ đóng vai trò gia sư gợi ý, hướng dẫn tư duy từng bước.");
@@ -5524,7 +5604,7 @@ async function checkAppVersion() {
             return new Promise((resolve, reject) => {
                 if (isStoppedByUser) return resolve();
                 currentAudio = new Audio(audioSrc);
-                currentAudio.onplay = () => updateBtnUI(btn, '⏹️ Dừng đọc', true);
+                currentAudio.onplay = () => updateBtnUI(btn, 'Dừng đọc', true);
                 currentAudio.onended = () => {
                     currentAudio = null;
                     resolve();
@@ -5580,7 +5660,7 @@ async function checkAppVersion() {
                 if (preferredVoice) utterance.voice = preferredVoice;
                 activeUtterance = utterance;
 
-                utterance.onstart = () => updateBtnUI(btn, '⏹️ Dừng đọc', true);
+                utterance.onstart = () => updateBtnUI(btn, 'Dừng đọc', true);
                 utterance.onend = () => {
                     if (isStoppedByUser) return;
                     idx++;
@@ -5695,7 +5775,7 @@ async function checkAppVersion() {
         }
 
         function resetState() {
-            updateBtnUI(currentBtn, '🔊 Nghe', false);
+            updateBtnUI(currentBtn, 'Nghe', false);
             currentBtn = null;
         }
 
@@ -6122,7 +6202,7 @@ async function checkAppVersion() {
         const safeText = sanitizeChatHtml(text);
         const formattedText = sender === 'bot' ? formatMathText(safeText) : safeText;
         let actionBtns = sender === 'bot'
-            ? `<button class="fox-speak-btn" onclick="speakFoxText(this)" title="Nghe AI đọc phản hồi">🔊 Nghe</button><button class="fox-copy-btn" onclick="copyFoxText(this)">Copy</button><button class="fox-export-btn" onclick="exportChatReport(this)">📥 Tải báo cáo</button>`
+            ? `<button class="fox-speak-btn" onclick="speakFoxText(this)" title="Nghe AI đọc phản hồi">Nghe</button><button class="fox-copy-btn" onclick="copyFoxText(this)">Copy</button><button class="fox-export-btn" onclick="exportChatReport(this)">Tải báo cáo</button>`
             : '';
         let actionsBar = sender === 'bot' ? `<div class="fox-msg-actions-bar">${actionBtns}</div>` : '';
         html += `<div class="fox-msg-group"><div class="fox-msg-bubble">${formattedText}</div>${actionsBar}</div>`;
@@ -6169,7 +6249,7 @@ async function checkAppVersion() {
   "use strict";
 
   const DEFAULT_CONFIG = {
-    buttonText: "📷 Xuất ảnh đồ thị",
+    buttonText: "Xuất ảnh đồ thị",
     filePrefix: "DoThi_DoAm",
     addTimestampWatermark: true, // Ghi nhỏ ngày giờ chụp ở góc dưới phải ảnh xuất
     minWidth: 140,               // Bỏ qua các canvas icon nhỏ
@@ -6577,8 +6657,8 @@ async function checkAppVersion() {
     function upgradeExportReportButtonsToSync() {
         const btn = document.getElementById("btnExportReport");
         if (!btn) return;
-        if (btn.textContent.trim() !== "📄 Xuất báo cáo") {
-            btn.textContent = "📄 Xuất báo cáo";
+        if (btn.textContent.trim() !== "Xuất báo cáo") {
+            btn.textContent = "Xuất báo cáo";
         }
         btn.title = "Mở trang phiếu báo cáo thí nghiệm A4 (report.html)";
         if (btn.dataset.exportBound !== "true") {
