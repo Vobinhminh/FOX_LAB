@@ -256,7 +256,7 @@
  <button id="btnOscCalib" class="btn-orange" style="display: none;" onclick="openOscCalibModal()">Hiệu chỉnh biên độ</button>
             <button id="btnCalib" class="btn-orange" style="display: none;">Hiệu chuẩn</button>
  <button id="btnAnalysis" class="btn-slate" disabled>Xử lý nguồn âm</button>
- <button id="btnExportReport" class="btn-blue" onclick="syncActiveMeasurementToReport()" title="Đồng bộ dữ liệu đo hiện tại sang phiếu báo cáo thí nghiệm">Đồng bộ dữ liệu</button>
+ <button id="btnExportReport" class="btn-blue" onclick="navigateToStandaloneReport()" title="Mở trang phiếu báo cáo thí nghiệm A4 (report.html)">Xuất báo cáo</button>
  <button id="fullscreenButton" class="btn-slate" onclick="toggleFullScreen()">Mở rộng</button>
  </div>
 
@@ -411,7 +411,7 @@
  </div>
  <div style="display: flex; align-items: center; gap: 6px;">
  <button id="kinResultBtn" onclick="toggleKinematicsResultHud()" class="btn-blue">Kết quả</button>
- <button type="button" id="btnSyncKinematicsReport" onclick="syncFeatureToReport('kinematics')" class="btn-green" title="Đồng bộ đồ thị &amp; thông số dao động sang Phần I báo cáo">Đồng bộ báo cáo</button>
+ <button type="button" id="btnSyncKinematicsReport" onclick="syncFeatureToReport('kinematics')" class="btn-green" title="Đồng bộ đồ thị &amp; thông số dao động sang Phần II báo cáo">Đồng bộ báo cáo</button>
  </div>
  </div>
  <div class="fft-canvas-container" id="kinContainer">
@@ -745,23 +745,19 @@
  <div class="exp-tb-dd-header">Chọn phần hiển thị &amp; xuất file</div>
  <label class="exp-rep-chip">
  <input type="checkbox" id="expChk-part1" checked onchange="syncExpCheckboxes()" />
- <span>Phần I: Dao động kí</span>
+ <span>Phần I: Đo chu kì &amp; tần số</span>
  </label>
  <label class="exp-rep-chip">
  <input type="checkbox" id="expChk-part2" checked onchange="syncExpCheckboxes()" />
- <span>Phần II: Phổ FFT</span>
+ <span>Phần II: Đồ thị liên quan</span>
  </label>
  <label class="exp-rep-chip">
  <input type="checkbox" id="expChk-part3" checked onchange="syncExpCheckboxes()" />
- <span>Phần III: Mức dB</span>
+ <span>Phần III: Phân tích FFT</span>
  </label>
  <label class="exp-rep-chip">
  <input type="checkbox" id="expChk-part4" checked onchange="syncExpCheckboxes()" />
- <span>Phần IV: Bộ lọc số</span>
- </label>
- <label class="exp-rep-chip">
- <input type="checkbox" id="expChk-part5" checked onchange="syncExpCheckboxes()" />
- <span>Phần V: Nhận xét &amp; Chữ ký</span>
+ <span>Phần IV: Mức cường độ âm (dB)</span>
  </label>
  <div class="exp-tb-dd-divider"></div>
  <label class="exp-rep-chip" title="Tự động chuyển đồ thị nền tối sang nền trắng để xuất rõ nét">
@@ -1001,30 +997,6 @@
  </tr>
  </tbody>
  </table>
- </section>
-
- <!-- PHẦN V: KẾT LUẬN CHUNG & XÁC NHẬN -->
- <section class="exp-report-part" id="expPart5">
- <div class="exp-part-title">
- <span>PHẦN V. NHẬN XÉT CHUNG VÀ ĐÁNH GIÁ KẾT QUẢ THÍ NGHIỆM</span>
- </div>
- <div class="exp-notes-box" contenteditable="true" id="expStudentNotes" oninput="saveExpReportToStorage(true)">
- 1. Kết luận về các đại lượng đặc trưng của sóng âm khảo sát (tần số, chu kì, mức cường độ âm, âm sắc): ........................................................................................................................................<br>
- 2. Phân tích nguyên nhân gây ra sai số trong quá trình thu âm bằng micro và hướng khắc phục (sử dụng bộ lọc số, chọn số chu kì <i>N</i> phù hợp...): ........................................................................................................................................
- </div>
-
- <div class="exp-footer-sign">
- <div>
- <strong>ĐẠI DIỆN NHÓM HỌC SINH</strong><br>
- <em>(Ký và ghi rõ họ tên)</em>
- <div class="exp-sign-space"></div>
- </div>
- <div>
- <strong>XÁC NHẬN CỦA GIÁO VIÊN HƯỚNG DẪN</strong><br>
- <em>(Nhận xét / Điểm đánh giá)</em>
- <div class="exp-sign-space"></div>
- </div>
- </div>
  </section>
  </div>
 

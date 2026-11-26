@@ -174,7 +174,7 @@
  position: absolute;
  top: calc(100% + 6px);
  left: 0;
- min-width: 255px;
+ min-width: 265px;
  background: #1e293b;
  border: 1px solid #475569;
  border-radius: 8px;
@@ -192,9 +192,9 @@
  display: block;
  }
 
- @media (min-width: 1080px) {
+ @media (min-width: 1180px) {
  .toolbar-compact-bar {
- max-width: 1280px;
+ max-width: 1380px;
  }
  #ddCustomParts > .btn-custom,
  #ddCustomParts .tb-dd-header,
@@ -216,10 +216,10 @@
  #ddCustomParts .tb-check-item {
  background: #1e293b;
  border: 1px solid #475569;
- padding: 5px 9px;
- font-size: 12px;
+ padding: 5px 8px;
+ font-size: 11.5px;
  border-radius: 6px;
- gap: 6px;
+ gap: 5px;
  }
  #ddCustomParts .tb-check-item:has(input:checked) {
  background: #0f172a;
@@ -380,7 +380,7 @@
  margin-bottom: 12px;
  }
 
- /* Phân cấp Phần (I, II, III...) - MỖI PHẦN 1 TRANG RIÊNG KHI XUẤT BÁO CÁO / IN */
+ /* Phân cấp Phần (I, II, III, IV, V) - MỖI PHẦN 1 TRANG RIÊNG KHI XUẤT BÁO CÁO / IN */
  .report-part {
  margin-top: 14px;
  padding-top: 4px;
@@ -554,26 +554,6 @@
  color: #1e293b;
  }
 
- /* Khung đồ thị đơn (Phần IV) */
- .graph-box {
- border: 1px solid var(--border-dark);
- padding: 7px;
- text-align: center;
- background: #ffffff;
- margin-bottom: 10px;
- position: relative;
- break-inside: avoid;
- page-break-inside: avoid;
- }
-
- .graph-box canvas {
- max-width: 100%;
- max-height: 58mm;
- height: auto;
- display: block;
- margin: 0 auto;
- }
-
  /* Bảng số liệu khoa học */
  .table-scroll-wrap {
  width: 100%;
@@ -586,7 +566,7 @@
  min-width: 540px;
  border-collapse: collapse;
  margin-bottom: 0;
- font-size: 10.8pt;
+ font-size: 10.6pt;
  table-layout: fixed;
  }
 
@@ -598,7 +578,7 @@
  table.data-table th,
  table.data-table td {
  border: 1px solid #0f172a;
- padding: 5px 6px;
+ padding: 5px 5px;
  text-align: center;
  vertical-align: middle;
  word-break: break-word;
@@ -617,9 +597,9 @@
 
  th.col-delete,
  td.col-delete {
- width: 54px !important;
- min-width: 54px !important;
- max-width: 54px !important;
+ width: 48px !important;
+ min-width: 48px !important;
+ max-width: 48px !important;
  box-sizing: border-box !important;
  text-align: center !important;
  vertical-align: middle !important;
@@ -675,8 +655,8 @@
  color: #fff;
  border: none;
  border-radius: 4px;
- width: 24px;
- height: 24px;
+ width: 22px;
+ height: 22px;
  padding: 0;
  line-height: 1;
  cursor: pointer;
@@ -707,7 +687,7 @@
 
  .notes-box {
  border: 1px solid var(--border-dark);
- min-height: 22mm;
+ min-height: 24mm;
  padding: 7px 9px;
  font-size: 11.5pt;
  line-height: 1.5;
@@ -721,7 +701,7 @@
  .footer-sign {
  display: grid;
  grid-template-columns: 1fr 1fr;
- margin-top: 14px;
+ margin-top: 16px;
  text-align: center;
  font-size: 11.5pt;
  break-inside: avoid;
@@ -729,7 +709,7 @@
  }
 
  .sign-space {
- height: 17mm;
+ height: 18mm;
  }
 
  .toast-msg {
@@ -826,29 +806,29 @@
  <span class="live-dot"></span> <span id="liveSyncText">Tự động nhận dữ liệu đo</span>
  </span>
  <button type="button" class="btn btn-sync-mode" id="btnSyncRowMode" onclick="toggleSyncRowMode()" title="Mặc định: mỗi tín hiệu đồng bộ thêm 1 dòng dữ liệu &amp; 1 hình ảnh. Bật chỉnh 1 dòng để ghi đè.">Mỗi đồng bộ = +1 dòng</button>
- <button type="button" class="btn btn-route-mode" id="btnTargetSourceMode" onclick="toggleSingleChannelRouteMode()" title="Mặc định 1 nguồn: dữ liệu 1 kênh luôn nạp vào mục 1 nguồn (I.1–I.2, II.1–II.2) và không hiển thị mục 2 nguồn (I.3–I.4, II.3–II.4). Bấm để bật chế độ 2 nguồn.">Chế độ: 1 nguồn</button>
+ <button type="button" class="btn btn-route-mode" id="btnTargetSourceMode" onclick="toggleSingleChannelRouteMode()" title="Mặc định 1 nguồn: dữ liệu 1 kênh nạp vào mục 1 nguồn (I.1–I.2, II.1–II.2, III.1–III.2). Bấm để bật chế độ 2 nguồn.">Chế độ: 1 nguồn</button>
  </div>
 
  <div class="toolbar-right">
  <div class="tb-dropdown" id="ddCustomParts">
- <button type="button" class="btn btn-custom" onclick="toggleTbDropdown('ddCustomParts', event)">Tùy chỉnh<span id="selectedCountBadge">(5)</span></button>
+ <button type="button" class="btn btn-custom" onclick="toggleTbDropdown('ddCustomParts', event)">Tùy chỉnh <span id="selectedCountBadge">(5)</span></button>
  <div class="tb-dropdown-menu" onclick="event.stopPropagation()">
  <div class="tb-dd-header">Chọn phần hiển thị &amp; xuất file</div>
  <label class="tb-check-item">
  <input type="checkbox" id="chk-part1" checked onchange="syncCheckboxes()" />
- <span>Phần I: Đồ thị dao động (T, f)</span>
+ <span>Phần I: Đo chu kì &amp; tần số</span>
  </label>
  <label class="tb-check-item">
  <input type="checkbox" id="chk-part2" checked onchange="syncCheckboxes()" />
- <span>Phần II: Phân tích FFT</span>
+ <span>Phần II: Đồ thị liên quan</span>
  </label>
  <label class="tb-check-item">
  <input type="checkbox" id="chk-part3" checked onchange="syncCheckboxes()" />
- <span>Phần III: Mức cường độ âm (dB)</span>
+ <span>Phần III: Phân tích FFT</span>
  </label>
  <label class="tb-check-item">
  <input type="checkbox" id="chk-part4" checked onchange="syncCheckboxes()" />
- <span>Phần IV: Bộ lọc số</span>
+ <span>Phần IV: Mức cường độ âm (dB)</span>
  </label>
  <label class="tb-check-item">
  <input type="checkbox" id="chk-part5" checked onchange="syncCheckboxes()" />
@@ -911,31 +891,29 @@
  <span><strong>Trục thời gian:</strong> <span contenteditable="true" id="scaleX" oninput="schedulePersistReportEdits()">2,00 ms/ô</span></span>
  <span><strong>Trục biên độ:</strong> <span contenteditable="true" id="scaleY" oninput="schedulePersistReportEdits()">0,20 V/ô</span></span>
  <span><strong>Lấy mẫu:</strong> <span contenteditable="true" id="sampleRate" oninput="schedulePersistReportEdits()">48000 Hz</span></span>
- <span><strong>Chế độ bộ lọc số:</strong> <span contenteditable="true" id="filterStatus" oninput="schedulePersistReportEdits()">Thông dải (45 – 3000 Hz)</span></span>
+ <span><strong>Bộ lọc thông dải:</strong> <span contenteditable="true" id="filterStatus" oninput="schedulePersistReportEdits()">45 – 3000 Hz</span></span>
  </div>
 
  <!-- ===================================================================== -->
- <!-- PHẦN I: ĐỒ THỊ DAO ĐỘNG (I.1 Đồ thị 1 nguồn, I.2 Bảng, I.3 Đồ thị 2 nguồn, I.4 Bảng) -->
+ <!-- PHẦN I: ĐO CHU KÌ VÀ TẦN SỐ (1 NGUỒN & 2 NGUỒN) -->
  <!-- ===================================================================== -->
- <section class="report-part" id="part1" data-title="BÁO CÁO THỰC HÀNH: ĐỒ THỊ DAO ĐỘNG VÀ ĐO CHU KÌ, TẦN SỐ">
+ <section class="report-part" id="part1" data-title="BÁO CÁO THỰC HÀNH: ĐO CHU KÌ VÀ TẦN SỐ">
  <div class="part-title">
- <span>PHẦN I. ĐỒ THỊ DAO ĐỘNG – KHẢO SÁT DẠNG SÓNG VÀ ĐO CHU KÌ, TẦN SỐ</span>
+ <span>PHẦN I. ĐO CHU KÌ VÀ TẦN SỐ</span>
  <div class="part-actions no-print">
- <button type="button" class="inline-btn inline-btn-pdf" onclick="exportSinglePartToPDF('part1', 'Phan1_DoThiDaoDong')">PDF phần này</button>
- <button type="button" class="inline-btn inline-btn-img" onclick="exportPartAsImage('part1', 'Phan1_DoThiDaoDong')">Xuất ảnh phần này</button>
+ <button type="button" class="inline-btn inline-btn-pdf" onclick="exportSinglePartToPDF('part1', 'Phan1_DoChuKiTanSo')">PDF phần này</button>
+ <button type="button" class="inline-btn inline-btn-img" onclick="exportPartAsImage('part1', 'Phan1_DoChuKiTanSo')">Xuất ảnh phần này</button>
  <button type="button" class="inline-btn inline-btn-csv" onclick="exportSinglePartCSV('part1')">CSV</button>
  </div>
  </div>
 
- <!-- Khối 1 nguồn Phần I (chỉ hiển thị khi đang ở chế độ 1 nguồn) -->
+ <!-- Khối 1 nguồn Phần I -->
  <div id="part1SingleBlock">
- <!-- I.1. Vẽ đồ thị 1 nguồn -->
  <div class="sub-heading">
  <span>I.1. Đồ thị dao động 1 nguồn (<i>t</i><sub>1</sub>, <i>t</i><sub>2</sub>)</span>
  </div>
  <div class="per-row-graphs-grid single-item" id="oscGraphsGrid1"></div>
 
- <!-- I.2. Bảng số liệu 1 nguồn -->
  <div class="sub-heading">
  <span>
  I.2. Bảng số liệu đo chu kì (<i>T</i>), tần số (<i>f</i>) và tính toán sai số – 1 nguồn
@@ -981,15 +959,13 @@
  </div>
  </div>
 
- <!-- Khối 2 nguồn Phần I (chỉ hiển thị khi đang ở chế độ 2 nguồn) -->
+ <!-- Khối 2 nguồn Phần I -->
  <div id="part1DualBlock">
- <!-- I.3. Vẽ đồ thị 2 nguồn -->
  <div class="sub-heading">
  <span>I.3. Đồ thị dao động 2 nguồn (So sánh Kênh A &amp; Kênh B)</span>
  </div>
  <div class="per-row-graphs-grid single-item" id="oscGraphsGrid2"></div>
 
- <!-- I.4. Bảng số liệu 2 nguồn -->
  <div class="sub-heading">
  <span>
  I.4. Bảng số liệu đo chu kì (<i>T</i>), tần số (<i>f</i>) và độ lệch tần số – 2 nguồn
@@ -1038,30 +1014,120 @@
  </section>
 
  <!-- ===================================================================== -->
- <!-- PHẦN II: PHÂN TÍCH FFT (II.1 Đồ thị 1 nguồn, II.2 Bảng, II.3 Đồ thị 2 nguồn, II.4 Bảng) -->
+ <!-- PHẦN II: KHẢO SÁT ĐỒ THỊ LIÊN QUAN (1 NGUỒN & 2 NGUỒN) -->
  <!-- ===================================================================== -->
- <section class="report-part" id="part2" data-title="BÁO CÁO THỰC HÀNH: PHÂN TÍCH PHỔ TẦN SỐ FFT VÀ ÂM SẮC">
+ <section class="report-part" id="part2" data-title="BÁO CÁO THỰC HÀNH: KHẢO SÁT ĐỒ THỊ LIÊN QUAN">
  <div class="part-title">
- <span>PHẦN II. PHÂN TÍCH FFT – PHỔ TẦN SỐ VÀ ÂM SẮC</span>
+ <span>PHẦN II. KHẢO SÁT ĐỒ THỊ LIÊN QUAN</span>
  <div class="part-actions no-print">
- <button type="button" class="inline-btn inline-btn-pdf" onclick="exportSinglePartToPDF('part2', 'Phan2_PhanTichFFT')">PDF phần này</button>
- <button type="button" class="inline-btn inline-btn-img" onclick="exportPartAsImage('part2', 'Phan2_PhanTichFFT')">Xuất ảnh phần này</button>
+ <button type="button" class="inline-btn inline-btn-pdf" onclick="exportSinglePartToPDF('part2', 'Phan2_DoThiLienQuan')">PDF phần này</button>
+ <button type="button" class="inline-btn inline-btn-img" onclick="exportPartAsImage('part2', 'Phan2_DoThiLienQuan')">Xuất ảnh phần này</button>
  <button type="button" class="inline-btn inline-btn-csv" onclick="exportSinglePartCSV('part2')">CSV</button>
  </div>
  </div>
 
- <!-- Khối 1 nguồn Phần II (chỉ hiển thị khi đang ở chế độ 1 nguồn) -->
+ <!-- Khối 1 nguồn Phần II -->
  <div id="part2SingleBlock">
- <!-- II.1. Vẽ đồ thị 1 nguồn -->
  <div class="sub-heading">
- <span>II.1. Biểu đồ phổ biên độ – tần số (FFT) – 1 nguồn</span>
+ <span>II.1. Đồ thị liên quan dao động điều hòa <i>u</i>(<i>t</i>) – <i>v</i>(<i>t</i>) – <i>a</i>(<i>t</i>) – 1 nguồn</span>
+ </div>
+ <div class="per-row-graphs-grid single-item" id="kinGraphsGrid1"></div>
+
+ <div class="sub-heading">
+ <span>
+ II.2. Bảng thông số và phương trình các đại lượng <i>u</i>(<i>t</i>), <i>v</i>(<i>t</i>), <i>a</i>(<i>t</i>) – 1 nguồn
+ <span class="row-counter-badge no-print" id="kinCountBadge1">1 / 10 dòng</span>
+ </span>
+ <button type="button" class="inline-btn no-print" id="btnAddKin1" onclick="addKinRow1()">+ Thêm lần khảo sát 1 nguồn (Tối đa 10)</button>
+ </div>
+ <div class="table-scroll-wrap">
+ <table class="data-table">
+ <thead>
+ <tr>
+ <th style="width: 9%;">Lần</th>
+ <th style="width: 11%;">Tần số <i>f</i> (Hz)</th>
+ <th style="width: 10%;">Biên độ <i>A</i></th>
+ <th style="width: 21%;">Phương trình li độ <i>u</i>(<i>t</i>)</th>
+ <th style="width: 21%;">Phương trình vận tốc <i>v</i>(<i>t</i>)</th>
+ <th style="width: 21%;">Phương trình gia tốc <i>a</i>(<i>t</i>)</th>
+ <th class="no-print col-delete" style="width: 7%;">Xóa</th>
+ </tr>
+ </thead>
+ <tbody id="kinBody1"></tbody>
+ </table>
+ </div>
+
+ <div class="result-box">
+ <p><strong>Mối liên hệ pha và biên độ (1 nguồn):</strong> &nbsp;
+ Vận tốc <i>v</i>(<i>t</i>) = <i>u</i>'(<i>t</i>) biến thiên điều hòa cùng tần số góc <i>ω</i> = 2<i>πf</i>, <strong>sớm pha <i>π</i>/2</strong> so với li độ <i>u</i>(<i>t</i>) (<i>v</i><sub>max</sub> = <i>ωA</i>);
+ gia tốc <i>a</i>(<i>t</i>) = <i>v</i>'(<i>t</i>) = −<i>ω</i><sup>2</sup><i>u</i>(<i>t</i>) <strong>ngược pha (lệch pha <i>π</i>)</strong> với li độ <i>u</i>(<i>t</i>) (<i>a</i><sub>max</sub> = <i>ω</i><sup>2</sup><i>A</i>).
+ </p>
+ </div>
+ </div>
+
+ <!-- Khối 2 nguồn Phần II -->
+ <div id="part2DualBlock">
+ <div class="sub-heading">
+ <span>II.3. Đồ thị liên quan dao động điều hòa <i>u</i>(<i>t</i>) – <i>v</i>(<i>t</i>) – <i>a</i>(<i>t</i>) – 2 nguồn (So sánh Kênh A &amp; Kênh B)</span>
+ </div>
+ <div class="per-row-graphs-grid single-item" id="kinGraphsGrid2"></div>
+
+ <div class="sub-heading">
+ <span>
+ II.4. Bảng thông số và phương trình các đại lượng <i>u</i>(<i>t</i>), <i>v</i>(<i>t</i>), <i>a</i>(<i>t</i>) – 2 nguồn
+ <span class="row-counter-badge no-print" id="kinCountBadge2">1 / 10 cặp</span>
+ </span>
+ <button type="button" class="inline-btn no-print" id="btnAddKin2" onclick="addKinRow2()">+ Thêm cặp khảo sát 2 nguồn (Tối đa 10)</button>
+ </div>
+ <div class="table-scroll-wrap">
+ <table class="data-table">
+ <thead>
+ <tr>
+ <th style="width: 7%;">Lần</th>
+ <th style="width: 13%;">Nguồn / Kênh</th>
+ <th style="width: 10%;">Tần số <i>f</i> (Hz)</th>
+ <th style="width: 9%;">Biên độ <i>A</i></th>
+ <th style="width: 18%;">Phương trình li độ <i>u</i>(<i>t</i>)</th>
+ <th style="width: 18%;">Phương trình vận tốc <i>v</i>(<i>t</i>)</th>
+ <th style="width: 18%;">Phương trình gia tốc <i>a</i>(<i>t</i>)</th>
+ <th class="no-print col-delete" style="width: 7%;">Xóa</th>
+ </tr>
+ </thead>
+ <tbody id="kinBody2"></tbody>
+ </table>
+ </div>
+
+ <div class="result-box">
+ <p id="resDualKin"><strong>Kết quả so sánh đồ thị liên quan 2 nguồn:</strong> &nbsp;
+ Kênh A: <i>f</i><sub>1</sub> = — Hz (<i>ω</i><sub>1</sub> = — rad/s) &nbsp;|&nbsp; Kênh B: <i>f</i><sub>2</sub> = — Hz (<i>ω</i><sub>2</sub> = — rad/s) &nbsp;|&nbsp; Độ lệch tần số |<i>f</i><sub>1</sub> − <i>f</i><sub>2</sub>| = — Hz
+ </p>
+ </div>
+ </div>
+ </section>
+
+ <!-- ===================================================================== -->
+ <!-- PHẦN III: PHÂN TÍCH FFT (1 NGUỒN & 2 NGUỒN) -->
+ <!-- ===================================================================== -->
+ <section class="report-part" id="part3" data-title="BÁO CÁO THỰC HÀNH: PHÂN TÍCH PHỔ TẦN SỐ FFT VÀ ÂM SẮC">
+ <div class="part-title">
+ <span>PHẦN III. PHÂN TÍCH FFT – PHỔ TẦN SỐ VÀ ÂM SẮC</span>
+ <div class="part-actions no-print">
+ <button type="button" class="inline-btn inline-btn-pdf" onclick="exportSinglePartToPDF('part3', 'Phan3_PhanTichFFT')">PDF phần này</button>
+ <button type="button" class="inline-btn inline-btn-img" onclick="exportPartAsImage('part3', 'Phan3_PhanTichFFT')">Xuất ảnh phần này</button>
+ <button type="button" class="inline-btn inline-btn-csv" onclick="exportSinglePartCSV('part3')">CSV</button>
+ </div>
+ </div>
+
+ <!-- Khối 1 nguồn Phần III -->
+ <div id="part3SingleBlock">
+ <div class="sub-heading">
+ <span>III.1. Biểu đồ phổ biên độ – tần số (FFT) – 1 nguồn</span>
  </div>
  <div class="per-row-graphs-grid single-item" id="fftGraphsGrid1"></div>
 
- <!-- II.2. Bảng số liệu 1 nguồn -->
  <div class="sub-heading">
  <span>
- II.2. Bảng số liệu phân tích tần số cơ bản và đặc trưng họa âm – 1 nguồn
+ III.2. Bảng số liệu phân tích tần số cơ bản và đặc trưng họa âm – 1 nguồn
  <span class="row-counter-badge no-print" id="fftCountBadge1">1 / 10 dòng</span>
  </span>
  <button type="button" class="inline-btn no-print" id="btnAddFft1" onclick="addFftRow1()">+ Thêm nguồn âm 1 nguồn (Tối đa 10)</button>
@@ -1083,18 +1149,16 @@
  </div>
  </div>
 
- <!-- Khối 2 nguồn Phần II (chỉ hiển thị khi đang ở chế độ 2 nguồn) -->
- <div id="part2DualBlock">
- <!-- II.3. Vẽ đồ thị 2 nguồn -->
+ <!-- Khối 2 nguồn Phần III -->
+ <div id="part3DualBlock">
  <div class="sub-heading">
- <span>II.3. Biểu đồ phổ biên độ – tần số (FFT) – 2 nguồn (So sánh Kênh A &amp; Kênh B)</span>
+ <span>III.3. Biểu đồ phổ biên độ – tần số (FFT) – 2 nguồn (So sánh Kênh A &amp; Kênh B)</span>
  </div>
  <div class="per-row-graphs-grid single-item" id="fftGraphsGrid2"></div>
 
- <!-- II.4. Bảng số liệu 2 nguồn -->
  <div class="sub-heading">
  <span>
- II.4. Bảng số liệu phân tích tần số cơ bản và họa âm – 2 nguồn
+ III.4. Bảng số liệu phân tích tần số cơ bản và họa âm – 2 nguồn
  <span class="row-counter-badge no-print" id="fftCountBadge2">1 / 10 cặp</span>
  </span>
  <button type="button" class="inline-btn no-print" id="btnAddFft2" onclick="addFftRow2()">+ Thêm cặp nguồn FFT (Tối đa 10)</button>
@@ -1119,21 +1183,21 @@
  </section>
 
  <!-- ===================================================================== -->
- <!-- PHẦN III: CHỨC NĂNG ĐO MỨC CƯỜNG ĐỘ ÂM (dB) -->
+ <!-- PHẦN IV: ĐO MỨC CƯỜNG ĐỘ ÂM (dB) -->
  <!-- ===================================================================== -->
- <section class="report-part" id="part3" data-title="BÁO CÁO THỰC HÀNH: ĐO MỨC CƯỜNG ĐỘ ÂM VÀ SỰ TRUYỀN ÂM (dB)">
+ <section class="report-part" id="part4" data-title="BÁO CÁO THỰC HÀNH: ĐO MỨC CƯỜNG ĐỘ ÂM VÀ SỰ TRUYỀN ÂM (dB)">
  <div class="part-title">
- <span>PHẦN III. ĐO MỨC CƯỜNG ĐỘ ÂM VÀ SỰ TRUYỀN ÂM (MÁY ĐO dB)</span>
+ <span>PHẦN IV. ĐO MỨC CƯỜNG ĐỘ ÂM VÀ SỰ TRUYỀN ÂM (MÁY ĐO dB)</span>
  <div class="part-actions no-print">
- <button type="button" class="inline-btn inline-btn-pdf" onclick="exportSinglePartToPDF('part3', 'Phan3_MucCuongDoAm')">PDF phần này</button>
- <button type="button" class="inline-btn inline-btn-img" onclick="exportPartAsImage('part3', 'Phan3_MucCuongDoAm')">Xuất ảnh phần này</button>
- <button type="button" class="inline-btn inline-btn-csv" onclick="exportSinglePartCSV('part3')">CSV</button>
+ <button type="button" class="inline-btn inline-btn-pdf" onclick="exportSinglePartToPDF('part4', 'Phan4_MucCuongDoAm')">PDF phần này</button>
+ <button type="button" class="inline-btn inline-btn-img" onclick="exportPartAsImage('part4', 'Phan4_MucCuongDoAm')">Xuất ảnh phần này</button>
+ <button type="button" class="inline-btn inline-btn-csv" onclick="exportSinglePartCSV('part4')">CSV</button>
  </div>
  </div>
 
  <div class="sub-heading">
  <span>
- 3.1. Bảng số liệu mức cường độ âm theo vị trí / khoảng cách
+ IV.1. Bảng số liệu mức cường độ âm theo vị trí / khoảng cách
  <span class="row-counter-badge no-print" id="dbCountBadge">1 / 10 dòng</span>
  </span>
  <button type="button" class="inline-btn no-print" id="btnAddDb" onclick="addDbRow()">+ Thêm vị trí đo (Tối đa 10)</button>
@@ -1156,63 +1220,9 @@
  </div>
 
  <div class="sub-heading">
- <span>3.2. Đồ thị biến thiên mức cường độ âm <i>L</i>(<i>t</i>) theo từng vị trí đo</span>
+ <span>IV.2. Đồ thị biến thiên mức cường độ âm <i>L</i>(<i>t</i>) theo từng vị trí đo</span>
  </div>
  <div class="per-row-graphs-grid single-item" id="dbGraphsGrid"></div>
- </section>
-
- <!-- ===================================================================== -->
- <!-- PHẦN IV: CHỨC NĂNG BỘ LỌC SỐ VÀ XỬ LÝ TÍN HIỆU -->
- <!-- ===================================================================== -->
- <section class="report-part" id="part4" data-title="BÁO CÁO THỰC HÀNH: KHẢO SÁT HIỆU QUẢ BỘ LỌC SỐ VÀ KHỬ NHIỄU">
- <div class="part-title">
- <span>PHẦN IV. KHẢO SÁT HIỆU QUẢ KHỬ NHIỄU CỦA BỘ LỌC SỐ</span>
- <div class="part-actions no-print">
- <button type="button" class="inline-btn inline-btn-pdf" onclick="exportSinglePartToPDF('part4', 'Phan4_BoLocSo')">PDF phần này</button>
- <button type="button" class="inline-btn inline-btn-img" onclick="exportPartAsImage('part4', 'Phan4_BoLocSo')">Xuất ảnh phần này</button>
- </div>
- </div>
-
- <div class="sub-heading">
- <span>4.1. So sánh dạng sóng trước và sau khi áp dụng bộ lọc số</span>
- <button type="button" class="inline-btn inline-btn-img no-print" onclick="exportSingleCanvas('canvasFilter', 'Phan4_ChiDoThiLoc')">Xuất ảnh đồ thị</button>
- </div>
- <div class="graph-box">
- <canvas id="canvasFilter" width="820" height="200"></canvas>
- <div class="graph-caption" contenteditable="true">
- Hình 4.1. Tín hiệu thu trực tiếp lẫn tạp âm môi trường (trái) và tín hiệu hình sin sạch sau khi qua bộ lọc thông dải (phải).
- </div>
- </div>
-
- <div class="sub-heading">
- <span>4.2. Đánh giá thông số bộ lọc và độ ổn định kết quả đo</span>
- </div>
- <div class="table-scroll-wrap">
- <table class="data-table">
- <thead>
- <tr>
- <th style="width: 26%;">Trạng thái bộ lọc</th>
- <th style="width: 24%;">Dải tần số cho qua</th>
- <th style="width: 24%;">Độ ổn định dạng sóng</th>
- <th style="width: 26%;">Tần số đọc được (Hz)</th>
- </tr>
- </thead>
- <tbody>
- <tr>
- <td contenteditable="true">Tắt bộ lọc (Tín hiệu thô)</td>
- <td contenteditable="true">Toàn dải (20 – 20000 Hz)</td>
- <td contenteditable="true">Có gợn nhiễu tần số cao/thấp</td>
- <td contenteditable="true" id="filterRawFreqCell" oninput="this.dataset.edited='1'; schedulePersistReportEdits();">Dao động theo nhiễu nền</td>
- </tr>
- <tr>
- <td contenteditable="true">Bật lọc thông dải (Band-pass)</td>
- <td contenteditable="true" id="filterBandCell" oninput="schedulePersistReportEdits()">45 – 3000 Hz</td>
- <td contenteditable="true">Đường sin mượt, đỉnh rõ nét</td>
- <td contenteditable="true" id="filterFreqCell" oninput="this.dataset.edited='1'; schedulePersistReportEdits();">Ổn định tại tần số cơ bản</td>
- </tr>
- </tbody>
- </table>
- </div>
  </section>
 
  <!-- ===================================================================== -->
@@ -1223,8 +1233,8 @@
  <span>PHẦN V. NHẬN XÉT CHUNG VÀ ĐÁNH GIÁ KẾT QUẢ THÍ NGHIỆM</span>
  </div>
  <div class="notes-box" contenteditable="true" id="studentNotes" oninput="schedulePersistReportEdits()">
- 1. Kết luận về các đại lượng đặc trưng của sóng âm khảo sát (tần số, chu kì, mức cường độ âm, âm sắc và so sánh 2 nguồn âm): ........................................................................................................................................<br>
- 2. Phân tích nguyên nhân gây ra sai số trong quá trình thu âm bằng micro và hướng khắc phục (sử dụng bộ lọc số, chọn số chu kì <i>N</i> phù hợp...): ........................................................................................................................................
+ 1. Kết luận về các đại lượng đặc trưng của sóng âm khảo sát (chu kì, tần số, đồ thị liên quan u–v–a, phổ họa âm, mức cường độ âm và so sánh 2 nguồn âm): ........................................................................................................................................<br>
+ 2. Phân tích nguyên nhân gây ra sai số trong quá trình thu âm bằng micro và hướng khắc phục (sử dụng bộ lọc thông dải, chọn số chu kì <i>N</i> phù hợp...): ........................................................................................................................................
  </div>
 
  <div class="footer-sign">
@@ -1252,10 +1262,11 @@
 
  let oscRows1 = [];
  let oscRows2 = [];
+ let kinRows1 = [];
+ let kinRows2 = [];
  let fftRows1 = [];
  let fftRows2 = [];
  let dbRows = [];
- let liveImages = { filter: null };
 
  let singleRowOverwriteMode = false;
  let dualSourceMode = false;
@@ -1295,10 +1306,14 @@
  const p1Dual = byId("part1DualBlock");
  const p2Single = byId("part2SingleBlock");
  const p2Dual = byId("part2DualBlock");
+ const p3Single = byId("part3SingleBlock");
+ const p3Dual = byId("part3DualBlock");
  if (p1Single) p1Single.style.display = dualSourceMode ? "none" : "";
  if (p1Dual) p1Dual.style.display = dualSourceMode ? "" : "none";
  if (p2Single) p2Single.style.display = dualSourceMode ? "none" : "";
  if (p2Dual) p2Dual.style.display = dualSourceMode ? "" : "none";
+ if (p3Single) p3Single.style.display = dualSourceMode ? "none" : "";
+ if (p3Dual) p3Dual.style.display = dualSourceMode ? "" : "none";
  }
 
  function updateSyncRowModeUI() {
@@ -1308,11 +1323,11 @@
  if (btn) {
  if (singleRowOverwriteMode) {
  btn.classList.add("overwrite-active");
- btn.textContent = " Chỉnh 1 dòng (Đang ghi đè)";
+ btn.textContent = "Chỉnh 1 dòng (Đang ghi đè)";
  btn.title = "Đang ở chế độ chỉnh 1 dòng: tín hiệu đồng bộ tiếp theo sẽ ghi đè dòng/cặp hiện tại. Bấm để chuyển về nhận thêm dòng.";
  } else {
  btn.classList.remove("overwrite-active");
- btn.textContent = " Mỗi đồng bộ = +1 dòng";
+ btn.textContent = "Mỗi đồng bộ = +1 dòng";
  btn.title = "Mỗi tín hiệu đồng bộ thêm 1 dòng/cặp dữ liệu & hình ảnh mới. Bấm để chuyển sang chỉnh 1 dòng (ghi đè).";
  }
  }
@@ -1321,12 +1336,12 @@
  if (routeBtn) {
  if (dualSourceMode) {
  routeBtn.classList.add("dual-route-active");
- routeBtn.textContent = " Chế độ: 2 nguồn";
- routeBtn.title = "Đang bật chế độ 2 nguồn: hiển thị đầy đủ mục I.3–I.4 và II.3–II.4. Bấm để chuyển về 1 nguồn (ẩn I.3–I.4 và II.3–II.4).";
+ routeBtn.textContent = "Chế độ: 2 nguồn";
+ routeBtn.title = "Đang bật chế độ 2 nguồn: hiển thị đầy đủ mục I.3–I.4, II.3–II.4 và III.3–III.4. Bấm để chuyển về 1 nguồn.";
  } else {
  routeBtn.classList.remove("dual-route-active");
- routeBtn.textContent = " Chế độ: 1 nguồn";
- routeBtn.title = "Đang ở chế độ 1 nguồn: ẩn mục I.3–I.4 và II.3–II.4, dữ liệu 1 nguồn nạp trực tiếp vào mục 1 nguồn. Bấm để chuyển sang 2 nguồn.";
+ routeBtn.textContent = "Chế độ: 1 nguồn";
+ routeBtn.title = "Đang ở chế độ 1 nguồn: hiển thị mục 1 nguồn (I.1–I.2, II.1–II.2, III.1–III.2). Bấm để chuyển sang 2 nguồn.";
  }
  }
 
@@ -1339,6 +1354,8 @@
  let trimmed = false;
  if (oscRows1.length > 1) { oscRows1 = [oscRows1[0]]; trimmed = true; }
  if (oscRows2.length > 1) { oscRows2 = [oscRows2[0]]; trimmed = true; }
+ if (kinRows1.length > 1) { kinRows1 = [kinRows1[0]]; trimmed = true; }
+ if (kinRows2.length > 1) { kinRows2 = [kinRows2[0]]; trimmed = true; }
  if (fftRows1.length > 1) { fftRows1 = [fftRows1[0]]; trimmed = true; }
  if (fftRows2.length > 1) { fftRows2 = [fftRows2[0]]; trimmed = true; }
  if (dbRows.length > 1) { dbRows = [dbRows[0]]; trimmed = true; }
@@ -1349,8 +1366,8 @@
  if (notifyUser) {
  showToast(
  singleRowOverwriteMode
- ? " Đã bật chế độ chỉnh 1 dòng: tín hiệu đồng bộ tiếp theo sẽ ghi đè dòng/cặp hiện tại."
- : " Đã chuyển sang chế độ nhận thêm dòng: mỗi tín hiệu đồng bộ = +1 dòng/cặp."
+ ? "Đã bật chế độ chỉnh 1 dòng: tín hiệu đồng bộ tiếp theo sẽ ghi đè dòng/cặp hiện tại."
+ : "Đã chuyển sang chế độ nhận thêm dòng: mỗi tín hiệu đồng bộ = +1 dòng/cặp."
  );
  }
  }
@@ -1366,8 +1383,8 @@
  persistReportEdits();
  showToast(
  dualSourceMode
- ? " Đã chuyển sang chế độ 2 nguồn: chỉ hiện I.3–I.4 và II.3–II.4 (ẩn I.1–I.2 và II.1–II.2)."
- : " Đã chuyển sang chế độ 1 nguồn: chỉ hiện I.1–I.2 và II.1–II.2 (ẩn I.3–I.4 và II.3–II.4)."
+ ? "Đã chuyển sang chế độ 2 nguồn: hiển thị I.3–I.4, II.3–II.4 và III.3–III.4."
+ : "Đã chuyển sang chế độ 1 nguồn: hiển thị I.1–I.2, II.1–II.2 và III.1–III.2."
  );
  }
 
@@ -1502,14 +1519,13 @@
  scaleY: byId("scaleY")?.textContent.trim() || "",
  sampleRate: byId("sampleRate")?.textContent.trim() || "",
  filterStatus: byId("filterStatus")?.textContent.trim() || "",
- filterBand: byId("filterBandCell")?.textContent.trim() || "45 – 3000 Hz",
- filterFreq: byId("filterFreqCell")?.textContent.trim() || "",
- filterRawFreq: byId("filterRawFreqCell")?.textContent.trim() || "",
- anhLocBase64: getPersistableImage(liveImages.filter),
  nhanXet: byId("studentNotes")?.innerHTML || "",
  cacLanDo: sanitizeSingleRows(oscRows1),
  cacLanDo1: sanitizeSingleRows(oscRows1),
  cacLanDo2: sanitizeDualRows(oscRows2),
+ doThiLienQuan: sanitizeSingleRows(kinRows1),
+ doThiLienQuan1: sanitizeSingleRows(kinRows1),
+ doThiLienQuan2: sanitizeDualRows(kinRows2),
  phoTanSo: sanitizeSingleRows(fftRows1),
  phoTanSo1: sanitizeSingleRows(fftRows1),
  phoTanSo2: sanitizeDualRows(fftRows2),
@@ -1552,6 +1568,12 @@
  cacLanDo: stripOldImgs(oscRows1),
  cacLanDo1: stripOldImgs(oscRows1),
  cacLanDo2: oscRows2.map(({ a, b }) => ({
+ a: { ...a, imageBase64: null },
+ b: { ...b, imageBase64: null }
+ })),
+ doThiLienQuan: stripOldImgs(kinRows1),
+ doThiLienQuan1: stripOldImgs(kinRows1),
+ doThiLienQuan2: kinRows2.map(({ a, b }) => ({
  a: { ...a, imageBase64: null },
  b: { ...b, imageBase64: null }
  })),
@@ -1672,17 +1694,16 @@
  dualMode: Boolean(data._dualSourceMode || data._singleChannelToDual),
  osc1: (data.cacLanDo1 || data.cacLanDo || []).map(r => [r.kenh || "", r.soChuKi, r.deltaT_ms, hashImgQuick(r.imageBase64 || r.anhBase64)]),
  osc2: (data.cacLanDo2 || []).map(p => [p.a?.soChuKi, p.a?.deltaT_ms, p.b?.soChuKi, p.b?.deltaT_ms, hashImgQuick(p.a?.imageBase64), hashImgQuick(p.b?.imageBase64)]),
+ kin1: (data.doThiLienQuan1 || data.doThiLienQuan || []).map(r => [r.kenh || "", r.f_Hz, r.ampU, r.eqU, r.eqV, r.eqA, hashImgQuick(r.imageBase64 || r.anhBase64)]),
+ kin2: (data.doThiLienQuan2 || []).map(p => [p.a?.f_Hz, p.a?.ampU, p.a?.eqU, p.b?.f_Hz, p.b?.ampU, p.b?.eqU, hashImgQuick(p.a?.imageBase64), hashImgQuick(p.b?.imageBase64)]),
  fft1: (data.phoTanSo1 || data.phoTanSo || []).map(r => [r.kenh || "", r.nguon, r.f0, r.hoaAm, r.dacDiem, hashImgQuick(r.imageBase64 || r.anhBase64)]),
  fft2: (data.phoTanSo2 || []).map(p => [p.a?.nguon, p.a?.f0, p.b?.nguon, p.b?.f0, hashImgQuick(p.a?.imageBase64), hashImgQuick(p.b?.imageBase64)]),
  db: (data.mucCuongDoAm || []).map(r => [r.kenh || "", r.viTri, r.r, r.lMin, r.lMax, r.lAvg, hashImgQuick(r.imageBase64 || r.anhBase64)]),
  img1: hashImgQuick(data.anhDoThiBase64),
+ imgKin: hashImgQuick(data.anhDoThiLienQuanBase64),
  img2: hashImgQuick(data.anhPhoBase64),
  img3: hashImgQuick(data.anhDbBase64),
- img4: hashImgQuick(data.anhLocBase64),
- fStatus: data.filterStatus,
- fBand: data.filterBand,
- fFreq: data.filterFreq,
- fRawFreq: data.filterRawFreq
+ fStatus: data.filterStatus
  });
  }
 
@@ -1691,22 +1712,68 @@
  return JSON.stringify({
  live: Boolean(data.isLiveMeasurement),
  dual: Boolean(data.isDualChannel || data.dualSource),
+ feat: data.syncFeature || "",
  na: data.nguonAm || "",
  sx: data.scaleX || "",
  sy: data.scaleY || "",
  sr: data.sampleRate || "",
  osc: (data.cacLanDo || []).slice(0, 2).map(r => [r.kenh || r.channel || "", r.soChuKi, r.deltaT_ms, hashImgQuick(r.imageBase64 || r.anhBase64)]),
+ kin: (data.doThiLienQuan || []).slice(0, 2).map(r => [r.kenh || r.channel || "", r.f_Hz, r.ampU, r.eqU, r.eqV, r.eqA, hashImgQuick(r.imageBase64 || r.anhBase64)]),
  chB: data.channelB || data.kenhB ? [data.channelB?.deltaT_ms || data.kenhB?.deltaT_ms] : [],
  fft: (data.phoTanSo || []).slice(0, 2).map(r => [r.kenh || r.channel || "", r.nguon, r.f0, r.hoaAm, r.dacDiem, hashImgQuick(r.imageBase64 || r.anhBase64)]),
  db: (data.mucCuongDoAm || []).slice(0, 2).map(r => [r.kenh || r.channel || "", r.viTri, r.r, r.lMin, r.lMax, r.lAvg, hashImgQuick(r.imageBase64 || r.anhBase64)]),
  img1: hashImgQuick(data.anhDoThiBase64),
+ imgKin: hashImgQuick(data.anhDoThiLienQuanBase64),
  img2: hashImgQuick(data.anhPhoBase64),
  img3: hashImgQuick(data.anhDbBase64),
- img4: hashImgQuick(data.anhLocBase64),
- fStatus: data.filterStatus || "",
- fBand: data.filterBand || "",
- fFreq: data.filterFreq || ""
+ fStatus: data.filterStatus || ""
  });
+ }
+
+ function formatSciPlain(val, decimals = 2) {
+ const num = Number(val) || 0;
+ const absV = Math.abs(num);
+ if (absV === 0) return (0).toFixed(decimals);
+ if (absV >= 10000 || absV < 0.01) {
+ const exp = Math.floor(Math.log10(absV));
+ const mantissa = (num / Math.pow(10, exp)).toFixed(decimals);
+ return `${mantissa}×10^${exp}`;
+ }
+ if (absV >= 100) return num.toFixed(1);
+ return num.toFixed(decimals);
+ }
+
+ function formatPhaseSuffix(phiRad) {
+ let p = Number(phiRad) || 0;
+ while (p > Math.PI) p -= 2 * Math.PI;
+ while (p <= -Math.PI) p += 2 * Math.PI;
+ if (Math.abs(p) < 0.02) return "";
+ const sign = p >= 0 ? " + " : " - ";
+ return sign + Math.abs(p).toFixed(2);
+ }
+
+ function buildKinEquationsFromParams(fHz, ampU, phi0 = 0) {
+ const f = Math.max(0, Number(fHz) || 0);
+ const A = Math.max(0, Number(ampU) || 0);
+ if (f <= 0 || A <= 0) {
+ return {
+ eqU: "u(t) = —",
+ eqV: "v(t) = —",
+ eqA: "a(t) = —"
+ };
+ }
+ const omega = 2 * Math.PI * f;
+ const wStr = omega.toFixed(1);
+ const vMax = omega * A;
+ const aMax = omega * omega * A;
+ const pU = formatPhaseSuffix(phi0);
+ const pV = formatPhaseSuffix(phi0 + Math.PI / 2);
+ const pA = formatPhaseSuffix(phi0 + Math.PI);
+ return {
+ eqU: `u(t) = ${formatSciPlain(A, 2)}·cos(${wStr}·t${pU})`,
+ eqV: `v(t) = ${formatSciPlain(vMax, 2)}·cos(${wStr}·t${pV})`,
+ eqA: `a(t) = ${formatSciPlain(aMax, 2)}·cos(${wStr}·t${pA})`
+ };
  }
 
  function makeBlankOscSingle() {
@@ -1717,6 +1784,27 @@
  return {
  a: { kenh: "Kênh A", soChuKi: 1, deltaT_ms: 0, imageBase64: null },
  b: { kenh: "Kênh B", soChuKi: 1, deltaT_ms: 0, imageBase64: null }
+ };
+ }
+
+ function makeBlankKinSingle() {
+ return {
+ kenh: "",
+ f_Hz: 0,
+ ampU: 0,
+ phi0: 0,
+ eqU: "u(t) = —",
+ eqV: "v(t) = —",
+ eqA: "a(t) = —",
+ displayMode: "uv",
+ imageBase64: null
+ };
+ }
+
+ function makeBlankKinPair() {
+ return {
+ a: Object.assign(makeBlankKinSingle(), { kenh: "Kênh A" }),
+ b: Object.assign(makeBlankKinSingle(), { kenh: "Kênh B" })
  };
  }
 
@@ -1743,6 +1831,14 @@
  return !p || (isBlankOscRow(p.a) && isBlankOscRow(p.b));
  }
 
+ function isBlankKinRow(r) {
+ return !r || ((Number(r.f_Hz) || 0) <= 0 && (Number(r.ampU) || 0) <= 0 && (!r.eqU || r.eqU === "u(t) = —") && !r.imageBase64);
+ }
+
+ function isBlankKinPair(p) {
+ return !p || (isBlankKinRow(p.a) && isBlankKinRow(p.b));
+ }
+
  function isBlankFftRow(r) {
  return !r || ((!r.f0 || r.f0 === "—" || normalizeNumber(r.f0, 0) <= 0) && (!r.hoaAm || r.hoaAm === "—") && !r.imageBase64);
  }
@@ -1759,6 +1855,8 @@
  return (
  oscRows1.every(isBlankOscRow) &&
  oscRows2.every(isBlankOscPair) &&
+ kinRows1.every(isBlankKinRow) &&
+ kinRows2.every(isBlankKinPair) &&
  fftRows1.every(isBlankFftRow) &&
  fftRows2.every(isBlankFftPair) &&
  dbRows.every(isBlankDbRow)
@@ -1776,10 +1874,13 @@
 
  function extractSyncEntries(data, allowDualEntries = false) {
  const oscEntries = [];
+ const kinEntries = [];
  const fftEntries = [];
  const dbEntries = [];
 
  const maxItems = allowDualEntries ? 2 : 1;
+
+ // 1. Phần I: Đo chu kì & tần số
  const rawOscList = Array.isArray(data.cacLanDo) ? data.cacLanDo.slice(0, maxItems) : [];
  if (rawOscList.length === 0 && data.anhDoThiBase64) {
  oscEntries.push({
@@ -1830,6 +1931,51 @@
  }
  }
 
+ // 2. Phần II: Khảo sát đồ thị liên quan (u-t, v-t, a-t)
+ const rawKinList = Array.isArray(data.doThiLienQuan) ? data.doThiLienQuan.slice(0, maxItems) : [];
+ if (rawKinList.length === 0 && data.anhDoThiLienQuanBase64) {
+ kinEntries.push({
+ kenh: "",
+ f_Hz: 0,
+ ampU: 0,
+ phi0: 0,
+ eqU: "u(t) = —",
+ eqV: "v(t) = —",
+ eqA: "a(t) = —",
+ displayMode: "uv",
+ imageBase64: data.anhDoThiLienQuanBase64
+ });
+ } else {
+ rawKinList.forEach((rawKin, idx) => {
+ if (!rawKin || typeof rawKin !== "object") return;
+ const kinImg = rawKin.imageBase64 || rawKin.anhBase64 || (idx === 0 ? data.anhDoThiLienQuanBase64 : null) || null;
+ const fVal = normalizeNumber(rawKin.f_Hz ?? rawKin.f, 0);
+ const ampVal = normalizeNumber(rawKin.ampU ?? rawKin.A, 0);
+ const phiVal = normalizeNumber(rawKin.phi0, 0);
+ const hasRealKin = Boolean(kinImg) || fVal > 0 || ampVal > 0 || (rawKin.eqU && rawKin.eqU !== "u(t) = —");
+
+ if (hasRealKin) {
+ let kenhLabel = allowDualEntries ? normalizeChannelTag(rawKin) : "";
+ if (!kenhLabel && allowDualEntries && rawKinList.length > 1) {
+ kenhLabel = idx === 0 ? "Kênh A" : "Kênh B";
+ }
+ const built = buildKinEquationsFromParams(fVal, ampVal, phiVal);
+ kinEntries.push({
+ kenh: kenhLabel,
+ f_Hz: Math.max(0, fVal),
+ ampU: Math.max(0, ampVal),
+ phi0: phiVal,
+ eqU: (rawKin.eqU && rawKin.eqU !== "u(t) = —") ? String(rawKin.eqU) : built.eqU,
+ eqV: (rawKin.eqV && rawKin.eqV !== "v(t) = —") ? String(rawKin.eqV) : built.eqV,
+ eqA: (rawKin.eqA && rawKin.eqA !== "a(t) = —") ? String(rawKin.eqA) : built.eqA,
+ displayMode: rawKin.displayMode || rawKin.mode || "uv",
+ imageBase64: kinImg
+ });
+ }
+ });
+ }
+
+ // 3. Phần III: Phân tích FFT
  const rawFftList = Array.isArray(data.phoTanSo) ? data.phoTanSo.slice(0, maxItems) : [];
  if (rawFftList.length === 0 && data.anhPhoBase64) {
  fftEntries.push({
@@ -1868,6 +2014,7 @@
  });
  }
 
+ // 4. Phần IV: Đo mức cường độ âm (dB)
  const rawDbList = Array.isArray(data.mucCuongDoAm) ? data.mucCuongDoAm.slice(0, maxItems) : [];
  if (rawDbList.length === 0 && data.anhDbBase64) {
  dbEntries.push({
@@ -1916,7 +2063,7 @@
  });
  }
 
- return { oscEntries, fftEntries, dbEntries };
+ return { oscEntries, kinEntries, fftEntries, dbEntries };
  }
 
  function applySingleEntries(currentRows, newEntries, isBlankFn, labelEnhanceFn) {
@@ -2079,15 +2226,16 @@
  }
  } catch (e) {}
 
- if (oscRows1.length === 0 && oscRows2.length === 0 && fftRows1.length === 0 && fftRows2.length === 0 && dbRows.length === 0) {
+ if (oscRows1.length === 0 && oscRows2.length === 0 && kinRows1.length === 0 && kinRows2.length === 0 && fftRows1.length === 0 && fftRows2.length === 0 && dbRows.length === 0) {
  initDefaultTables();
  }
  }
 
  function initDefaultTables() {
- liveImages = { filter: null };
  oscRows1 = [makeBlankOscSingle()];
  oscRows2 = [makeBlankOscPair()];
+ kinRows1 = [makeBlankKinSingle()];
+ kinRows2 = [makeBlankKinPair()];
  fftRows1 = [makeBlankFftSingle(0)];
  fftRows2 = [makeBlankFftPair()];
  dbRows = [makeBlankDbRow(0)];
@@ -2119,25 +2267,6 @@
  if (data.scaleY && byId("scaleY")) byId("scaleY").textContent = data.scaleY;
  if (data.sampleRate && byId("sampleRate")) byId("sampleRate").textContent = data.sampleRate;
  if (data.filterStatus && byId("filterStatus")) byId("filterStatus").textContent = data.filterStatus;
-
- if (data.filterBand) {
- const fb = byId("filterBandCell");
- if (fb) fb.textContent = data.filterBand;
- }
- if (data.filterFreq) {
- const ff = byId("filterFreqCell");
- if (ff) {
- ff.textContent = data.filterFreq;
- ff.dataset.edited = "1";
- }
- }
- if (data.filterRawFreq) {
- const fr = byId("filterRawFreqCell");
- if (fr) {
- fr.textContent = data.filterRawFreq;
- fr.dataset.edited = "1";
- }
- }
  if (data.nhanXet && byId("studentNotes")) byId("studentNotes").innerHTML = data.nhanXet;
  }
 
@@ -2146,6 +2275,24 @@
  kenh: allowChannelTag ? normalizeChannelTag(r) : "",
  soChuKi: Math.max(1, Math.round(normalizeNumber(r?.soChuKi, 1))),
  deltaT_ms: Math.max(0, normalizeNumber(r?.deltaT_ms, 0)),
+ imageBase64: r?.imageBase64 || r?.anhBase64 || null
+ };
+ }
+
+ function normalizeSavedKinSingle(r, allowChannelTag = false) {
+ const fVal = Math.max(0, normalizeNumber(r?.f_Hz ?? r?.f, 0));
+ const ampVal = Math.max(0, normalizeNumber(r?.ampU ?? r?.A, 0));
+ const phiVal = normalizeNumber(r?.phi0, 0);
+ const built = buildKinEquationsFromParams(fVal, ampVal, phiVal);
+ return {
+ kenh: allowChannelTag ? normalizeChannelTag(r) : "",
+ f_Hz: fVal,
+ ampU: ampVal,
+ phi0: phiVal,
+ eqU: (r?.eqU && r.eqU !== "u(t) = —") ? String(r.eqU) : built.eqU,
+ eqV: (r?.eqV && r.eqV !== "v(t) = —") ? String(r.eqV) : built.eqV,
+ eqA: (r?.eqA && r.eqA !== "a(t) = —") ? String(r.eqA) : built.eqA,
+ displayMode: r?.displayMode || r?.mode || "uv",
  imageBase64: r?.imageBase64 || r?.anhBase64 || null
  };
  }
@@ -2206,6 +2353,19 @@
  }))
  : [makeBlankOscPair()];
 
+ const rawKin1 = Array.isArray(data.doThiLienQuan1) ? data.doThiLienQuan1 : (Array.isArray(data.doThiLienQuan) ? data.doThiLienQuan : []);
+ kinRows1 = rawKin1.length > 0
+ ? rawKin1.slice(0, MAX_ROWS).map(r => normalizeSavedKinSingle(r, dualSourceMode))
+ : [makeBlankKinSingle()];
+
+ const rawKin2 = Array.isArray(data.doThiLienQuan2) ? data.doThiLienQuan2 : [];
+ kinRows2 = rawKin2.length > 0
+ ? rawKin2.slice(0, MAX_ROWS).map(p => ({
+ a: Object.assign({ kenh: "Kênh A" }, normalizeSavedKinSingle(p?.a || {}, true)),
+ b: Object.assign({ kenh: "Kênh B" }, normalizeSavedKinSingle(p?.b || {}, true))
+ }))
+ : [makeBlankKinPair()];
+
  const rawFft1 = Array.isArray(data.phoTanSo1) ? data.phoTanSo1 : (Array.isArray(data.phoTanSo) ? data.phoTanSo : []);
  fftRows1 = rawFft1.length > 0
  ? rawFft1.slice(0, MAX_ROWS).map((r, idx) => normalizeSavedFftSingle(r, idx, dualSourceMode))
@@ -2231,7 +2391,6 @@
  }))
  : [makeBlankDbRow(0)];
 
- liveImages.filter = data.anhLocBase64 || null;
  lastAppliedPayloadHash = fp;
  updateSyncRowModeUI();
  renderAllSections();
@@ -2244,6 +2403,8 @@
 
  if (oscRows1.length === 0) oscRows1 = [makeBlankOscSingle()];
  if (oscRows2.length === 0) oscRows2 = [makeBlankOscPair()];
+ if (kinRows1.length === 0) kinRows1 = [makeBlankKinSingle()];
+ if (kinRows2.length === 0) kinRows2 = [makeBlankKinPair()];
  if (fftRows1.length === 0) fftRows1 = [makeBlankFftSingle(0)];
  if (fftRows2.length === 0) fftRows2 = [makeBlankFftPair()];
  if (dbRows.length === 0) dbRows = [makeBlankDbRow(0)];
@@ -2298,13 +2459,9 @@
  dualSourceMode = incomingDualMode;
  }
  applyHeaderAndMetaFields(data);
- if (data.anhLocBase64) {
- liveImages.filter = data.anhLocBase64;
- anyChanged = true;
- }
 
  const allowDual = dualSourceMode;
- const { oscEntries, fftEntries, dbEntries } = extractSyncEntries(data, allowDual);
+ const { oscEntries, kinEntries, fftEntries, dbEntries } = extractSyncEntries(data, allowDual);
 
  if (oscEntries.length > 0) {
  if (dualSourceMode) {
@@ -2318,6 +2475,21 @@
  oscRows1 = resOsc1.rows;
  anyChanged = anyChanged || resOsc1.changed;
  anyOverflow = anyOverflow || resOsc1.overflow;
+ }
+ }
+
+ if (kinEntries.length > 0) {
+ if (dualSourceMode) {
+ const resKin2 = applyDualEntries(kinRows2, kinEntries, isBlankKinRow, isBlankKinPair, makeBlankKinPair);
+ kinRows2 = resKin2.rows;
+ anyChanged = anyChanged || resKin2.changed;
+ anyOverflow = anyOverflow || resKin2.overflow;
+ if (resKin2.changed) routedToDual = true;
+ } else {
+ const resKin1 = applySingleEntries(kinRows1, [kinEntries[0]], isBlankKinRow);
+ kinRows1 = resKin1.rows;
+ anyChanged = anyChanged || resKin1.changed;
+ anyOverflow = anyOverflow || resKin1.overflow;
  }
  }
 
@@ -2362,17 +2534,17 @@
  pulseSyncBadge(data._updatedAt || now);
  if (singleRowOverwriteMode) {
  showToast(routedToDual
- ? " Đã ghi đè dữ liệu 2 nguồn (Kênh A & B) từ Fox-lab!"
- : " Đã ghi đè dữ liệu 1 nguồn mới từ Fox-lab!");
+ ? "Đã ghi đè dữ liệu 2 nguồn (Kênh A & B) từ Fox-lab!"
+ : "Đã ghi đè dữ liệu 1 nguồn mới từ Fox-lab!");
  } else {
  showToast(routedToDual
- ? " Đã nhận dữ liệu vào mục 2 nguồn (Kênh A & B)!"
- : " Đã nhận dữ liệu vào mục 1 nguồn (+1 dòng)!");
+ ? "Đã nhận dữ liệu vào mục 2 nguồn (Kênh A & B)!"
+ : "Đã nhận dữ liệu vào mục 1 nguồn (+1 dòng)!");
  }
  } else if (anyOverflow) {
- showToast(` Đã đạt tối đa ${MAX_ROWS} dòng/cặp! Bật "Chỉnh 1 dòng (Ghi đè)" hoặc xóa bớt dòng cũ.`);
+ showToast(`Đã đạt tối đa ${MAX_ROWS} dòng/cặp! Bật "Chỉnh 1 dòng (Ghi đè)" hoặc xóa bớt dòng cũ.`);
  } else if (showNotify) {
- showToast(" Đã kiểm tra đồng bộ từ màn hình đo Fox-lab!");
+ showToast("Đã kiểm tra đồng bộ từ màn hình đo Fox-lab!");
  }
  } finally {
  isApplyingExternalData = false;
@@ -2385,30 +2557,34 @@
  if (!dualSourceMode) {
  renderOscTable1();
  renderOscGraphs1();
+ renderKinTable1();
+ renderKinGraphs1();
  renderFftTable1();
  renderFftGraphs1();
  } else {
  renderOscTable2();
  renderOscGraphs2();
+ renderKinTable2();
+ renderKinGraphs2();
  renderFftTable2();
  renderFftGraphs2();
  }
  renderDbTable();
  renderDbGraphs();
- drawFilterSectionCanvas();
  updateDualSourceVisibility();
  }
 
  function redrawAllCanvases() {
  if (!dualSourceMode) {
  renderOscGraphs1();
+ renderKinGraphs1();
  renderFftGraphs1();
  } else {
  renderOscGraphs2();
+ renderKinGraphs2();
  renderFftGraphs2();
  }
  renderDbGraphs();
- drawFilterSectionCanvas();
  }
 
  window.addEventListener("storage", (e) => {
@@ -2437,7 +2613,7 @@
  } catch (e) {}
 
  window.addEventListener("message", (ev) => {
- if (ev && ev.data && (ev.data.type === "SYNC_REPORT_DATA" || ev.data.cacLanDo || ev.data.phoTanSo || ev.data.mucCuongDoAm)) {
+ if (ev && ev.data && (ev.data.type === "SYNC_REPORT_DATA" || ev.data.cacLanDo || ev.data.doThiLienQuan || ev.data.phoTanSo || ev.data.mucCuongDoAm)) {
  const payload = ev.data.payload || ev.data;
  if (payload && typeof payload === "object" && payload._source !== "report_editor") {
  applyIncomingData(payload, false, "message");
@@ -2542,6 +2718,9 @@
  });
  }
 
+ // -------------------------------------------------------------------------
+ // PHẦN I: ĐO CHU KÌ VÀ TẦN SỐ (ĐỒ THỊ & BẢNG)
+ // -------------------------------------------------------------------------
  function drawOscRowCanvas(canvasId, row, idx) {
  if (row.imageBase64) {
  return drawBase64ToCanvas(canvasId, row.imageBase64, () => drawGeneratedOscWave(canvasId, row, idx));
@@ -2791,6 +2970,457 @@
  });
  }
 
+ // -------------------------------------------------------------------------
+ // PHẦN II: KHẢO SÁT ĐỒ THỊ LIÊN QUAN u(t) - v(t) - a(t) (1 NGUỒN & 2 NGUỒN)
+ // -------------------------------------------------------------------------
+ function drawKinRowCanvas(canvasId, row, idx) {
+ if (row.imageBase64) {
+ return drawBase64ToCanvas(canvasId, row.imageBase64, () => drawGeneratedKinGraph(canvasId, row, idx));
+ }
+ drawGeneratedKinGraph(canvasId, row, idx);
+ return Promise.resolve();
+ }
+
+ function drawGeneratedKinGraph(canvasId, row, idx) {
+ const c = byId(canvasId);
+ if (!c) return;
+ const ctx = c.getContext("2d");
+ const w = c.width, h = c.height;
+ drawGrid(ctx, w, h, 14, 6);
+
+ ctx.strokeStyle = "#94a3b8";
+ ctx.lineWidth = 1.2;
+ ctx.beginPath();
+ ctx.moveTo(0, h / 2);
+ ctx.lineTo(w, h / 2);
+ ctx.stroke();
+
+ const f = Number(row.f_Hz) || 0;
+ const A = Number(row.ampU) || 0;
+ const phi0 = Number(row.phi0) || 0;
+ const mode = row.displayMode || "uv";
+ const showV = (mode === "uv" || mode === "all");
+ const showA = (mode === "ua" || mode === "all");
+
+ const leftM = 28;
+ const rightM = w - 28;
+ const spanPx = rightM - leftM;
+ const ampPx = h * 0.33;
+ const cycles = 2.5;
+
+ // 1. u(t) = A cos(wt + phi0) - Xanh dương
+ ctx.strokeStyle = "#2563eb";
+ ctx.lineWidth = 2.2;
+ ctx.beginPath();
+ for (let x = leftM; x <= rightM; x++) {
+ const wt = ((x - leftM) / spanPx) * cycles * 2 * Math.PI;
+ const y = h / 2 - ampPx * Math.cos(wt + phi0);
+ x === leftM ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+ }
+ ctx.stroke();
+
+ // 2. v(t) = -wA sin(wt + phi0) = wA cos(wt + phi0 + pi/2) - Xanh lá
+ if (showV) {
+ ctx.strokeStyle = "#16a34a";
+ ctx.lineWidth = 2.0;
+ ctx.beginPath();
+ for (let x = leftM; x <= rightM; x++) {
+ const wt = ((x - leftM) / spanPx) * cycles * 2 * Math.PI;
+ const y = h / 2 - ampPx * Math.cos(wt + phi0 + Math.PI / 2);
+ x === leftM ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+ }
+ ctx.stroke();
+ }
+
+ // 3. a(t) = -w^2 A cos(wt + phi0) = w^2 A cos(wt + phi0 + pi) - Đỏ
+ if (showA) {
+ ctx.strokeStyle = "#dc2626";
+ ctx.lineWidth = 1.9;
+ ctx.setLineDash([5, 3]);
+ ctx.beginPath();
+ for (let x = leftM; x <= rightM; x++) {
+ const wt = ((x - leftM) / spanPx) * cycles * 2 * Math.PI;
+ const y = h / 2 - ampPx * Math.cos(wt + phi0 + Math.PI);
+ x === leftM ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+ }
+ ctx.stroke();
+ ctx.setLineDash([]);
+ }
+
+ // Chú thích màu trên góc phải
+ ctx.font = "bold 10.5px Times New Roman";
+ ctx.fillStyle = "#1d4ed8";
+ ctx.fillText("— u(t): Li độ", w - 210, 15);
+ if (showV) {
+ ctx.fillStyle = "#15803d";
+ ctx.fillText("— v(t): Vận tốc", w - 125, 15);
+ }
+ if (showA) {
+ ctx.fillStyle = "#dc2626";
+ ctx.fillText("--- a(t): Gia tốc", w - 125, showV ? 28 : 15);
+ }
+
+ ctx.fillStyle = "#0f172a";
+ ctx.font = "bold 11px Times New Roman";
+ const chTag = (dualSourceMode && row.kenh) ? ` [${row.kenh}]` : "";
+ const infoTxt = (f > 0 && A > 0)
+ ? `Lần ${idx + 1}${chTag}: f = ${f.toFixed(1)} Hz (ω = ${(2 * Math.PI * f).toFixed(1)} rad/s) | A = ${A.toFixed(2)}`
+ : `Lần ${idx + 1}${chTag}: Nhập f và A ở bảng II.2 hoặc đồng bộ từ cửa sổ Đồ thị liên quan`;
+ ctx.fillText(infoTxt, 14, h - 8);
+ }
+
+ function renderKinGraphs1() {
+ const grid = byId("kinGraphsGrid1");
+ if (!grid) return;
+ grid.className = "per-row-graphs-grid" + (kinRows1.length <= 1 ? " single-item" : "");
+ grid.innerHTML = "";
+
+ kinRows1.forEach((row, idx) => {
+ const canvasId = `canvasKin1_${idx}`;
+ const f = Number(row.f_Hz) || 0;
+ const A = Number(row.ampU) || 0;
+ const chSuffix = (dualSourceMode && row.kenh) ? ` – ${row.kenh}` : "";
+
+ const card = document.createElement("div");
+ card.className = "graph-card";
+ card.innerHTML = `
+ <div class="graph-card-header">
+ <span>Hình II.1.${idx + 1}. Đồ thị liên quan 1 nguồn – Lần ${idx + 1}${chSuffix}</span>
+ <button type="button" class="inline-btn inline-btn-img no-print" onclick="exportSingleCanvas('${canvasId}', 'Phan2_DoThiLienQuan_1Nguon_Lan${idx + 1}')">Tải hình</button>
+ </div>
+ <canvas id="${canvasId}" width="580" height="190"></canvas>
+ <div class="graph-caption" contenteditable="true" oninput="schedulePersistReportEdits()">
+ ${(f > 0 && A > 0) ? `${row.eqU} | ${row.eqV}` : `Đồ thị u(t) – v(t) – a(t) tương ứng Lần khảo sát ${idx + 1}${chSuffix}`}
+ </div>
+ `;
+ grid.appendChild(card);
+ drawKinRowCanvas(canvasId, row, idx);
+ });
+ }
+
+ function drawGeneratedDualKinGraph(canvasId, pair, idx) {
+ const c = byId(canvasId);
+ if (!c) return;
+ const ctx = c.getContext("2d");
+ const w = c.width, h = c.height;
+ drawGrid(ctx, w, h, 14, 6);
+
+ ctx.strokeStyle = "#94a3b8";
+ ctx.lineWidth = 1.2;
+ ctx.beginPath();
+ ctx.moveTo(0, h / 2);
+ ctx.lineTo(w, h / 2);
+ ctx.stroke();
+
+ const fA = Number(pair.a.f_Hz) || 0;
+ const fB = Number(pair.b.f_Hz) || 0;
+ const ampPx = h * 0.30;
+ const leftM = 28;
+ const rightM = w - 28;
+ const spanPx = rightM - leftM;
+ const baseCycles = 2.5;
+ const ratioBA = (fA > 0 && fB > 0) ? Math.min(3.0, Math.max(0.4, fB / fA)) : 1.2;
+
+ // Kênh A: u1(t) xanh dương đậm, v1(t) xanh lá
+ ctx.strokeStyle = "#1d4ed8";
+ ctx.lineWidth = 2.1;
+ ctx.beginPath();
+ for (let x = leftM; x <= rightM; x++) {
+ const wt = ((x - leftM) / spanPx) * baseCycles * 2 * Math.PI;
+ const y = h / 2 - ampPx * Math.cos(wt + (Number(pair.a.phi0) || 0));
+ x === leftM ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+ }
+ ctx.stroke();
+
+ ctx.strokeStyle = "#16a34a";
+ ctx.lineWidth = 1.7;
+ ctx.beginPath();
+ for (let x = leftM; x <= rightM; x++) {
+ const wt = ((x - leftM) / spanPx) * baseCycles * 2 * Math.PI;
+ const y = h / 2 - ampPx * Math.cos(wt + (Number(pair.a.phi0) || 0) + Math.PI / 2);
+ x === leftM ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+ }
+ ctx.stroke();
+
+ // Kênh B: u2(t) đỏ nét đứt
+ ctx.strokeStyle = "#dc2626";
+ ctx.lineWidth = 2.0;
+ ctx.setLineDash([6, 3]);
+ ctx.beginPath();
+ for (let x = leftM; x <= rightM; x++) {
+ const wt = ((x - leftM) / spanPx) * (baseCycles * ratioBA) * 2 * Math.PI;
+ const y = h / 2 - (ampPx * 0.85) * Math.cos(wt + (Number(pair.b.phi0) || 0));
+ x === leftM ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+ }
+ ctx.stroke();
+ ctx.setLineDash([]);
+
+ ctx.font = "bold 10.5px Times New Roman";
+ ctx.fillStyle = "#1d4ed8";
+ ctx.fillText(`— Kênh A: u₁(t) (${fA > 0 ? fA.toFixed(1) + " Hz" : "—"})`, 14, 15);
+ ctx.fillStyle = "#16a34a";
+ ctx.fillText("— v₁(t)", 205, 15);
+ ctx.fillStyle = "#dc2626";
+ ctx.fillText(`--- Kênh B: u₂(t) (${fB > 0 ? fB.toFixed(1) + " Hz" : "—"})`, Math.max(270, w * 0.50), 15);
+
+ ctx.fillStyle = "#0f172a";
+ ctx.font = "bold 11px Times New Roman";
+ ctx.fillText(`Lần ${idx + 1}: So sánh dao động điều hòa u(t) – v(t) – a(t) giữa Kênh A và Kênh B`, 14, h - 8);
+ }
+
+ function renderKinGraphs2() {
+ const grid = byId("kinGraphsGrid2");
+ if (!grid) return;
+ grid.className = "per-row-graphs-grid" + (kinRows2.length <= 1 ? " single-item" : "");
+ grid.innerHTML = "";
+
+ kinRows2.forEach((pair, idx) => {
+ const fA = Number(pair.a.f_Hz) || 0;
+ const fB = Number(pair.b.f_Hz) || 0;
+ const hasDistinctImgs = Boolean(pair.a.imageBase64 && pair.b.imageBase64 && pair.a.imageBase64 !== pair.b.imageBase64);
+ const sharedImg = pair.a.imageBase64 || pair.b.imageBase64 || null;
+
+ const card = document.createElement("div");
+ card.className = "graph-card";
+
+ if (hasDistinctImgs) {
+ const cIdA = `canvasKin2A_${idx}`;
+ const cIdB = `canvasKin2B_${idx}`;
+ card.innerHTML = `
+ <div class="graph-card-header">
+ <span>Hình II.3.${idx + 1}. Đồ thị liên quan 2 nguồn – Lần ${idx + 1} (Kênh A &amp; Kênh B)</span>
+ </div>
+ <div class="dual-canvas-pair">
+ <div class="dual-canvas-sub">
+ <div class="dual-canvas-sub-label">
+ <span style="color:#b91c1c;">Nguồn 1 (Kênh A)</span>
+ <button type="button" class="inline-btn inline-btn-img no-print" onclick="exportSingleCanvas('${cIdA}', 'Phan2_DoThiLienQuan_2Nguon_Lan${idx + 1}_KenhA')">Tải</button>
+ </div>
+ <canvas id="${cIdA}" width="360" height="165"></canvas>
+ </div>
+ <div class="dual-canvas-sub">
+ <div class="dual-canvas-sub-label">
+ <span style="color:#1d4ed8;">Nguồn 2 (Kênh B)</span>
+ <button type="button" class="inline-btn inline-btn-img no-print" onclick="exportSingleCanvas('${cIdB}', 'Phan2_DoThiLienQuan_2Nguon_Lan${idx + 1}_KenhB')">Tải</button>
+ </div>
+ <canvas id="${cIdB}" width="360" height="165"></canvas>
+ </div>
+ </div>
+ <div class="graph-caption" contenteditable="true" oninput="schedulePersistReportEdits()">
+ Nguồn 1: f₁ = ${fA > 0 ? fA.toFixed(1) : "—"} Hz | Nguồn 2: f₂ = ${fB > 0 ? fB.toFixed(1) : "—"} Hz
+ </div>
+ `;
+ grid.appendChild(card);
+ drawKinRowCanvas(cIdA, pair.a, idx);
+ drawKinRowCanvas(cIdB, pair.b, idx);
+ } else {
+ const canvasId = `canvasKin2_${idx}`;
+ card.innerHTML = `
+ <div class="graph-card-header">
+ <span>Hình II.3.${idx + 1}. Đồ thị liên quan 2 nguồn – Lần ${idx + 1} (So sánh Kênh A &amp; Kênh B)</span>
+ <button type="button" class="inline-btn inline-btn-img no-print" onclick="exportSingleCanvas('${canvasId}', 'Phan2_DoThiLienQuan_2Nguon_Lan${idx + 1}')">Tải hình</button>
+ </div>
+ <canvas id="${canvasId}" width="620" height="195"></canvas>
+ <div class="graph-caption" contenteditable="true" oninput="schedulePersistReportEdits()">
+ Nguồn 1 (Kênh A): ${pair.a.eqU} | Nguồn 2 (Kênh B): ${pair.b.eqU}
+ </div>
+ `;
+ grid.appendChild(card);
+ if (sharedImg) {
+ drawBase64ToCanvas(canvasId, sharedImg, () => drawGeneratedDualKinGraph(canvasId, pair, idx));
+ } else {
+ drawGeneratedDualKinGraph(canvasId, pair, idx);
+ }
+ }
+ });
+ }
+
+ function renderKinTable1() {
+ const tbody = byId("kinBody1");
+ if (!tbody) return;
+ tbody.innerHTML = "";
+
+ kinRows1.forEach((row, idx) => {
+ const f = Number(row.f_Hz) || 0;
+ const A = Number(row.ampU) || 0;
+ const tr = document.createElement("tr");
+ tr.innerHTML = `
+ <td><strong>Lần ${idx + 1}</strong>${renderChannelBadgeHtml(row.kenh)}</td>
+ <td contenteditable="true" onblur="updateKin1Num(${idx}, 'f_Hz', this.textContent, this)">${f > 0 ? f.toFixed(1) : "0,0"}</td>
+ <td contenteditable="true" onblur="updateKin1Num(${idx}, 'ampU', this.textContent, this)">${A > 0 ? A.toFixed(2) : "0,00"}</td>
+ <td contenteditable="true" onblur="updateKin1Text(${idx}, 'eqU', this.textContent)">${row.eqU || "u(t) = —"}</td>
+ <td contenteditable="true" onblur="updateKin1Text(${idx}, 'eqV', this.textContent)">${row.eqV || "v(t) = —"}</td>
+ <td contenteditable="true" onblur="updateKin1Text(${idx}, 'eqA', this.textContent)">${row.eqA || "a(t) = —"}</td>
+ <td class="no-print col-delete"><button type="button" class="row-del-btn" onclick="delKin1(${idx})" title="Xóa lần khảo sát này"></button></td>
+ `;
+ tbody.appendChild(tr);
+ });
+
+ const badge = byId("kinCountBadge1");
+ if (badge) badge.textContent = `${kinRows1.length} / ${MAX_ROWS} dòng`;
+ const btnAdd = byId("btnAddKin1");
+ if (btnAdd) btnAdd.disabled = kinRows1.length >= MAX_ROWS;
+ }
+
+ function updateKin1Num(i, field, val, cellEl) {
+ const prevVal = kinRows1[i]?.[field];
+ const n = parseFloat(String(val || "").replace(",", ".").trim());
+ if (!isNaN(n) && n >= 0) {
+ kinRows1[i][field] = n;
+ const built = buildKinEquationsFromParams(kinRows1[i].f_Hz, kinRows1[i].ampU, kinRows1[i].phi0 || 0);
+ kinRows1[i].eqU = built.eqU;
+ kinRows1[i].eqV = built.eqV;
+ kinRows1[i].eqA = built.eqA;
+ } else {
+ if (cellEl && prevVal !== undefined) {
+ cellEl.textContent = field === "f_Hz" ? Number(prevVal).toFixed(1) : Number(prevVal).toFixed(2);
+ }
+ showToast("Vui lòng nhập giá trị số hợp lệ (≥ 0)!");
+ }
+ renderKinTable1();
+ renderKinGraphs1();
+ persistReportEdits();
+ }
+
+ function updateKin1Text(i, field, val) {
+ const clean = String(val || "").trim();
+ if (clean) kinRows1[i][field] = clean;
+ renderKinTable1();
+ renderKinGraphs1();
+ persistReportEdits();
+ }
+
+ function addKinRow1() {
+ if (kinRows1.length >= MAX_ROWS) {
+ showToast(`Đã đạt tối đa ${MAX_ROWS} dòng dữ liệu!`);
+ return;
+ }
+ kinRows1.push(makeBlankKinSingle());
+ renderKinTable1();
+ renderKinGraphs1();
+ persistReportEdits();
+ }
+
+ function delKin1(i) {
+ if (kinRows1.length <= 1) {
+ showToast("Cần giữ lại ít nhất 1 dòng dữ liệu ở bảng II.2!");
+ return;
+ }
+ kinRows1.splice(i, 1);
+ renderKinTable1();
+ renderKinGraphs1();
+ persistReportEdits();
+ }
+
+ function renderKinTable2() {
+ const tbody = byId("kinBody2");
+ if (!tbody) return;
+ tbody.innerHTML = "";
+ const listFA = [], listFB = [];
+
+ kinRows2.forEach((pair, idx) => {
+ const fA = Number(pair.a.f_Hz) || 0;
+ const ampA = Number(pair.a.ampU) || 0;
+ const fB = Number(pair.b.f_Hz) || 0;
+ const ampB = Number(pair.b.ampU) || 0;
+ if (fA > 0) listFA.push(fA);
+ if (fB > 0) listFB.push(fB);
+
+ const trA = document.createElement("tr");
+ trA.innerHTML = `
+ <td rowspan="2"><strong>Lần ${idx + 1}</strong></td>
+ <td><span class="ch-badge ch-badge-a">Nguồn 1 (Kênh A)</span></td>
+ <td contenteditable="true" onblur="updateKin2Num(${idx}, 'a', 'f_Hz', this.textContent, this)">${fA > 0 ? fA.toFixed(1) : "0,0"}</td>
+ <td contenteditable="true" onblur="updateKin2Num(${idx}, 'a', 'ampU', this.textContent, this)">${ampA > 0 ? ampA.toFixed(2) : "0,00"}</td>
+ <td contenteditable="true" onblur="updateKin2Text(${idx}, 'a', 'eqU', this.textContent)">${pair.a.eqU || "u(t) = —"}</td>
+ <td contenteditable="true" onblur="updateKin2Text(${idx}, 'a', 'eqV', this.textContent)">${pair.a.eqV || "v(t) = —"}</td>
+ <td contenteditable="true" onblur="updateKin2Text(${idx}, 'a', 'eqA', this.textContent)">${pair.a.eqA || "a(t) = —"}</td>
+ <td rowspan="2" class="no-print col-delete"><button type="button" class="row-del-btn" onclick="delKin2(${idx})" title="Xóa cặp khảo sát này"></button></td>
+ `;
+ tbody.appendChild(trA);
+
+ const trB = document.createElement("tr");
+ trB.innerHTML = `
+ <td><span class="ch-badge ch-badge-b">Nguồn 2 (Kênh B)</span></td>
+ <td contenteditable="true" onblur="updateKin2Num(${idx}, 'b', 'f_Hz', this.textContent, this)">${fB > 0 ? fB.toFixed(1) : "0,0"}</td>
+ <td contenteditable="true" onblur="updateKin2Num(${idx}, 'b', 'ampU', this.textContent, this)">${ampB > 0 ? ampB.toFixed(2) : "0,00"}</td>
+ <td contenteditable="true" onblur="updateKin2Text(${idx}, 'b', 'eqU', this.textContent)">${pair.b.eqU || "u(t) = —"}</td>
+ <td contenteditable="true" onblur="updateKin2Text(${idx}, 'b', 'eqV', this.textContent)">${pair.b.eqV || "v(t) = —"}</td>
+ <td contenteditable="true" onblur="updateKin2Text(${idx}, 'b', 'eqA', this.textContent)">${pair.b.eqA || "a(t) = —"}</td>
+ `;
+ tbody.appendChild(trB);
+ });
+
+ const badge = byId("kinCountBadge2");
+ if (badge) badge.textContent = `${kinRows2.length} / ${MAX_ROWS} cặp`;
+ const btnAdd = byId("btnAddKin2");
+ if (btnAdd) btnAdd.disabled = kinRows2.length >= MAX_ROWS;
+
+ const stFA = calcStats(listFA);
+ const stFB = calcStats(listFB);
+ const f1Str = stFA ? `${stFA.mean.toFixed(1)} Hz (ω₁ = ${(2 * Math.PI * stFA.mean).toFixed(1)} rad/s)` : "— Hz (ω₁ = — rad/s)";
+ const f2Str = stFB ? `${stFB.mean.toFixed(1)} Hz (ω₂ = ${(2 * Math.PI * stFB.mean).toFixed(1)} rad/s)` : "— Hz (ω₂ = — rad/s)";
+ const dfStr = (stFA && stFB) ? `${Math.abs(stFA.mean - stFB.mean).toFixed(1)} Hz` : "— Hz";
+
+ const resEl = byId("resDualKin");
+ if (resEl) {
+ resEl.innerHTML = `<strong>Kết quả so sánh đồ thị liên quan 2 nguồn:</strong> &nbsp; Kênh A: <i>f</i><sub>1</sub> = ${f1Str} &nbsp;|&nbsp; Kênh B: <i>f</i><sub>2</sub> = ${f2Str} &nbsp;|&nbsp; Độ lệch tần số |<i>f</i><sub>1</sub> − <i>f</i><sub>2</sub>| = ${dfStr}`;
+ }
+ }
+
+ function updateKin2Num(i, chKey, field, val, cellEl) {
+ const prevVal = kinRows2[i]?.[chKey]?.[field];
+ const n = parseFloat(String(val || "").replace(",", ".").trim());
+ if (!isNaN(n) && n >= 0) {
+ kinRows2[i][chKey][field] = n;
+ const built = buildKinEquationsFromParams(kinRows2[i][chKey].f_Hz, kinRows2[i][chKey].ampU, kinRows2[i][chKey].phi0 || 0);
+ kinRows2[i][chKey].eqU = built.eqU;
+ kinRows2[i][chKey].eqV = built.eqV;
+ kinRows2[i][chKey].eqA = built.eqA;
+ } else {
+ if (cellEl && prevVal !== undefined) {
+ cellEl.textContent = field === "f_Hz" ? Number(prevVal).toFixed(1) : Number(prevVal).toFixed(2);
+ }
+ showToast("Vui lòng nhập giá trị số hợp lệ (≥ 0)!");
+ }
+ renderKinTable2();
+ renderKinGraphs2();
+ persistReportEdits();
+ }
+
+ function updateKin2Text(i, chKey, field, val) {
+ const clean = String(val || "").trim();
+ if (clean) kinRows2[i][chKey][field] = clean;
+ renderKinTable2();
+ renderKinGraphs2();
+ persistReportEdits();
+ }
+
+ function addKinRow2() {
+ if (kinRows2.length >= MAX_ROWS) {
+ showToast(`Đã đạt tối đa ${MAX_ROWS} cặp khảo sát 2 nguồn!`);
+ return;
+ }
+ kinRows2.push(makeBlankKinPair());
+ renderKinTable2();
+ renderKinGraphs2();
+ persistReportEdits();
+ }
+
+ function delKin2(i) {
+ if (kinRows2.length <= 1) {
+ showToast("Cần giữ lại ít nhất 1 cặp khảo sát ở bảng II.4!");
+ return;
+ }
+ kinRows2.splice(i, 1);
+ renderKinTable2();
+ renderKinGraphs2();
+ persistReportEdits();
+ }
+
+ // -------------------------------------------------------------------------
+ // PHẦN III: PHÂN TÍCH FFT – PHỔ TẦN SỐ VÀ ÂM SẮC
+ // -------------------------------------------------------------------------
  function drawFftRowCanvas(canvasId, row, idx) {
  if (row.imageBase64) {
  return drawBase64ToCanvas(canvasId, row.imageBase64, () => drawGeneratedFftChart(canvasId, row, idx));
@@ -2855,8 +3485,8 @@
  card.className = "graph-card";
  card.innerHTML = `
  <div class="graph-card-header">
- <span>Hình II.1.${idx + 1}. Phổ FFT 1 nguồn – ${row.nguon}</span>
- <button type="button" class="inline-btn inline-btn-img no-print" onclick="exportSingleCanvas('${canvasId}', 'Phan2_1Nguon_STT${idx + 1}')">Tải hình</button>
+ <span>Hình III.1.${idx + 1}. Phổ FFT 1 nguồn – ${row.nguon}</span>
+ <button type="button" class="inline-btn inline-btn-img no-print" onclick="exportSingleCanvas('${canvasId}', 'Phan3_1Nguon_STT${idx + 1}')">Tải hình</button>
  </div>
  <canvas id="${canvasId}" width="560" height="185"></canvas>
  <div class="graph-caption" contenteditable="true" oninput="schedulePersistReportEdits()">
@@ -2954,20 +3584,20 @@
  const cIdB = `canvasFFT2B_${idx}`;
  card.innerHTML = `
  <div class="graph-card-header">
- <span>Hình II.3.${idx + 1}. Phổ FFT 2 nguồn – Cặp ${idx + 1} (${pair.a.nguon} &amp; ${pair.b.nguon})</span>
+ <span>Hình III.3.${idx + 1}. Phổ FFT 2 nguồn – Cặp ${idx + 1} (${pair.a.nguon} &amp; ${pair.b.nguon})</span>
  </div>
  <div class="dual-canvas-pair">
  <div class="dual-canvas-sub">
  <div class="dual-canvas-sub-label">
  <span style="color:#b91c1c;">${pair.a.nguon}</span>
- <button type="button" class="inline-btn inline-btn-img no-print" onclick="exportSingleCanvas('${cIdA}', 'Phan2_2Nguon_Cap${idx + 1}_A')">Tải</button>
+ <button type="button" class="inline-btn inline-btn-img no-print" onclick="exportSingleCanvas('${cIdA}', 'Phan3_2Nguon_Cap${idx + 1}_A')">Tải</button>
  </div>
  <canvas id="${cIdA}" width="360" height="160"></canvas>
  </div>
  <div class="dual-canvas-sub">
  <div class="dual-canvas-sub-label">
  <span style="color:#1d4ed8;">${pair.b.nguon}</span>
- <button type="button" class="inline-btn inline-btn-img no-print" onclick="exportSingleCanvas('${cIdB}', 'Phan2_2Nguon_Cap${idx + 1}_B')">Tải</button>
+ <button type="button" class="inline-btn inline-btn-img no-print" onclick="exportSingleCanvas('${cIdB}', 'Phan3_2Nguon_Cap${idx + 1}_B')">Tải</button>
  </div>
  <canvas id="${cIdB}" width="360" height="160"></canvas>
  </div>
@@ -2983,8 +3613,8 @@
  const canvasId = `canvasFFT2_${idx}`;
  card.innerHTML = `
  <div class="graph-card-header">
- <span>Hình II.3.${idx + 1}. Phổ FFT 2 nguồn – Cặp ${idx + 1} (${pair.a.nguon} &amp; ${pair.b.nguon})</span>
- <button type="button" class="inline-btn inline-btn-img no-print" onclick="exportSingleCanvas('${canvasId}', 'Phan2_2Nguon_Cap${idx + 1}')">Tải hình</button>
+ <span>Hình III.3.${idx + 1}. Phổ FFT 2 nguồn – Cặp ${idx + 1} (${pair.a.nguon} &amp; ${pair.b.nguon})</span>
+ <button type="button" class="inline-btn inline-btn-img no-print" onclick="exportSingleCanvas('${canvasId}', 'Phan3_2Nguon_Cap${idx + 1}')">Tải hình</button>
  </div>
  <canvas id="${canvasId}" width="620" height="190"></canvas>
  <div class="graph-caption" contenteditable="true" oninput="schedulePersistReportEdits()">
@@ -3001,6 +3631,9 @@
  });
  }
 
+ // -------------------------------------------------------------------------
+ // PHẦN IV: ĐO MỨC CƯỜNG ĐỘ ÂM (dB)
+ // -------------------------------------------------------------------------
  function drawDbRowCanvas(canvasId, row, idx) {
  if (row.imageBase64) {
  return drawBase64ToCanvas(canvasId, row.imageBase64, () => drawGeneratedDbChart(canvasId, row, idx));
@@ -3068,8 +3701,8 @@
  card.className = "graph-card";
  card.innerHTML = `
  <div class="graph-card-header">
- <span>Hình 3.${idx + 1}. Mức cường độ âm – ${row.viTri} (r = ${Number(row.r).toFixed(1)} m)</span>
- <button type="button" class="inline-btn inline-btn-img no-print" onclick="exportSingleCanvas('${canvasId}', 'Phan3_Diem${idx + 1}')">Tải hình</button>
+ <span>Hình IV.2.${idx + 1}. Mức cường độ âm – ${row.viTri} (r = ${Number(row.r).toFixed(1)} m)</span>
+ <button type="button" class="inline-btn inline-btn-img no-print" onclick="exportSingleCanvas('${canvasId}', 'Phan4_Diem${idx + 1}')">Tải hình</button>
  </div>
  <canvas id="${canvasId}" width="560" height="175"></canvas>
  <div class="graph-caption" contenteditable="true" oninput="schedulePersistReportEdits()">
@@ -3079,54 +3712,6 @@
  grid.appendChild(card);
  drawDbRowCanvas(canvasId, row, idx);
  });
- }
-
- function drawFilterSectionCanvas() {
- if (liveImages.filter) {
- return drawBase64ToCanvas("canvasFilter", liveImages.filter, drawSampleFilter);
- }
- drawSampleFilter();
- return Promise.resolve();
- }
-
- function drawSampleFilter() {
- const c = byId("canvasFilter");
- if (!c) return;
- const ctx = c.getContext("2d");
- const w = c.width, h = c.height;
- drawGrid(ctx, w, h, 14, 4);
-
- const midX = w / 2;
- ctx.strokeStyle = "#64748b";
- ctx.setLineDash([4, 4]);
- ctx.beginPath();
- ctx.moveTo(midX, 0);
- ctx.lineTo(midX, h);
- ctx.stroke();
- ctx.setLineDash([]);
-
- ctx.strokeStyle = "#dc2626";
- ctx.lineWidth = 1.6;
- ctx.beginPath();
- for (let x = 10; x < midX - 10; x++) {
- const y = h / 2 - 48 * Math.sin(x * 0.14) - 14 * Math.sin(x * 1.15) - 8 * Math.cos(x * 2.3);
- x === 10 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
- }
- ctx.stroke();
-
- ctx.strokeStyle = "#0f172a";
- ctx.lineWidth = 2;
- ctx.beginPath();
- for (let x = midX + 10; x < w - 10; x++) {
- const y = h / 2 - 48 * Math.sin(x * 0.14);
- x === midX + 10 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
- }
- ctx.stroke();
-
- ctx.fillStyle = "#0f172a";
- ctx.font = "bold 12px Times New Roman";
- ctx.fillText("Tắt lọc: Sóng bị gợn nhiễu", 18, 20);
- ctx.fillText("Bật lọc thông dải: Sóng sin mượt", midX + 18, 20);
  }
 
  function exportSingleCanvas(canvasId, tag) {
@@ -3147,7 +3732,7 @@
  a.click();
  document.body.removeChild(a);
  setTimeout(() => URL.revokeObjectURL(url), 1000);
- showToast(` Đã xuất ảnh đồ thị: ${fileName}`);
+ showToast(`Đã xuất ảnh đồ thị: ${fileName}`);
  }, "image/png");
  }
 
@@ -3198,19 +3783,6 @@
  byId("resT1").innerHTML = stT ? `<i>T</i> = (${stT.mean.toFixed(2)} ± ${stT.err.toFixed(2)}) ms` : "<i>T</i> = (— ± —) ms";
  byId("resF1").innerHTML = stF ? `<i>f</i> = (${stF.mean.toFixed(1)} ± ${stF.err.toFixed(1)}) Hz` : "<i>f</i> = (— ± —) Hz";
  byId("relF1").textContent = stF && stF.mean > 0 ? ((stF.err / stF.mean) * 100).toFixed(2) + "%" : "—";
-
- window._latestOsc1Freq = stF ? stF.mean : null;
- updateFilterAutoFreq();
- }
-
- function updateFilterAutoFreq() {
- const filterFreqCell = byId("filterFreqCell");
- if (filterFreqCell && !filterFreqCell.dataset.edited) {
- const refF = window._latestOsc1Freq || (dualSourceMode ? window._latestOsc2FreqA : null) || null;
- filterFreqCell.textContent = refF
- ? `Ổn định tại f = ${refF.toFixed(1)} Hz`
- : "Ổn định tại tần số cơ bản";
- }
  }
 
  function updateOsc1(i, k, val, cellEl) {
@@ -3222,7 +3794,7 @@
  if (cellEl && prevVal !== undefined) {
  cellEl.textContent = k === "soChuKi" ? String(prevVal) : Number(prevVal).toFixed(2);
  }
- showToast(" Vui lòng nhập giá trị số hợp lệ (≥ 0)!");
+ showToast("Vui lòng nhập giá trị số hợp lệ (≥ 0)!");
  }
  renderOscTable1();
  renderOscGraphs1();
@@ -3231,7 +3803,7 @@
 
  function addOscRow1() {
  if (oscRows1.length >= MAX_ROWS) {
- showToast(` Đã đạt tối đa ${MAX_ROWS} dòng dữ liệu!`);
+ showToast(`Đã đạt tối đa ${MAX_ROWS} dòng dữ liệu!`);
  return;
  }
  const prevCycles = oscRows1.length > 0 ? oscRows1[oscRows1.length - 1].soChuKi : 1;
@@ -3243,7 +3815,7 @@
 
  function delOsc1(i) {
  if (oscRows1.length <= 1) {
- showToast(" Cần giữ lại ít nhất 1 dòng dữ liệu ở bảng I.2!");
+ showToast("Cần giữ lại ít nhất 1 dòng dữ liệu ở bảng I.2!");
  return;
  }
  oscRows1.splice(i, 1);
@@ -3322,9 +3894,6 @@
  const dfStr = stDiff ? `${stDiff.mean.toFixed(1)} Hz` : "— Hz";
  byId("resDualOsc").innerHTML =
  `<strong>Kết quả so sánh 2 nguồn:</strong> &nbsp; <i>f</i><sub>1</sub> = ${f1Str} &nbsp;|&nbsp; <i>f</i><sub>2</sub> = ${f2Str} &nbsp;|&nbsp; Độ lệch |<i>f</i><sub>1</sub> − <i>f</i><sub>2</sub>| = ${dfStr}`;
-
- window._latestOsc2FreqA = stFA ? stFA.mean : null;
- updateFilterAutoFreq();
  }
 
  function updateOsc2(i, chKey, field, val, cellEl) {
@@ -3336,7 +3905,7 @@
  if (cellEl && prevVal !== undefined) {
  cellEl.textContent = field === "soChuKi" ? String(prevVal) : Number(prevVal).toFixed(2);
  }
- showToast(" Vui lòng nhập giá trị số hợp lệ (≥ 0)!");
+ showToast("Vui lòng nhập giá trị số hợp lệ (≥ 0)!");
  }
  renderOscTable2();
  renderOscGraphs2();
@@ -3345,7 +3914,7 @@
 
  function addOscRow2() {
  if (oscRows2.length >= MAX_ROWS) {
- showToast(` Đã đạt tối đa ${MAX_ROWS} cặp đo 2 nguồn!`);
+ showToast(`Đã đạt tối đa ${MAX_ROWS} cặp đo 2 nguồn!`);
  return;
  }
  oscRows2.push(makeBlankOscPair());
@@ -3356,7 +3925,7 @@
 
  function delOsc2(i) {
  if (oscRows2.length <= 1) {
- showToast(" Cần giữ lại ít nhất 1 cặp đo ở bảng I.4!");
+ showToast("Cần giữ lại ít nhất 1 cặp đo ở bảng I.4!");
  return;
  }
  oscRows2.splice(i, 1);
@@ -3398,7 +3967,7 @@
 
  function addFftRow1() {
  if (fftRows1.length >= MAX_ROWS) {
- showToast(` Đã đạt tối đa ${MAX_ROWS} dòng dữ liệu!`);
+ showToast(`Đã đạt tối đa ${MAX_ROWS} dòng dữ liệu!`);
  return;
  }
  fftRows1.push(makeBlankFftSingle(fftRows1.length));
@@ -3409,7 +3978,7 @@
 
  function delFft1(i) {
  if (fftRows1.length <= 1) {
- showToast(" Cần giữ lại ít nhất 1 dòng dữ liệu ở bảng II.2!");
+ showToast("Cần giữ lại ít nhất 1 dòng dữ liệu ở bảng III.2!");
  return;
  }
  fftRows1.splice(i, 1);
@@ -3467,7 +4036,7 @@
 
  function addFftRow2() {
  if (fftRows2.length >= MAX_ROWS) {
- showToast(` Đã đạt tối đa ${MAX_ROWS} cặp nguồn FFT!`);
+ showToast(`Đã đạt tối đa ${MAX_ROWS} cặp nguồn FFT!`);
  return;
  }
  fftRows2.push(makeBlankFftPair());
@@ -3478,7 +4047,7 @@
 
  function delFft2(i) {
  if (fftRows2.length <= 1) {
- showToast(" Cần giữ lại ít nhất 1 cặp nguồn ở bảng II.4!");
+ showToast("Cần giữ lại ít nhất 1 cặp nguồn ở bảng III.4!");
  return;
  }
  fftRows2.splice(i, 1);
@@ -3529,7 +4098,7 @@
  dbRows[i][k] = n;
  } else {
  if (cellEl && prevVal !== undefined) cellEl.textContent = Number(prevVal).toFixed(1);
- showToast(" Vui lòng nhập giá trị số hợp lệ!");
+ showToast("Vui lòng nhập giá trị số hợp lệ!");
  }
  }
  renderDbTable();
@@ -3539,7 +4108,7 @@
 
  function addDbRow() {
  if (dbRows.length >= MAX_ROWS) {
- showToast(` Đã đạt tối đa ${MAX_ROWS} dòng dữ liệu!`);
+ showToast(`Đã đạt tối đa ${MAX_ROWS} dòng dữ liệu!`);
  return;
  }
  const nextR = dbRows.length > 0 ? Number(dbRows[dbRows.length - 1].r) + 0.5 : 0.5;
@@ -3551,7 +4120,7 @@
 
  function delDb(i) {
  if (dbRows.length <= 1) {
- showToast(" Cần giữ lại ít nhất 1 dòng dữ liệu ở bảng Phần III!");
+ showToast("Cần giữ lại ít nhất 1 dòng dữ liệu ở bảng Phần IV!");
  return;
  }
  const removedFirst = (i === 0);
@@ -3560,10 +4129,13 @@
  renderDbGraphs();
  persistReportEdits();
  if (removedFirst) {
- showToast(" Đã xóa dòng mốc đầu tiên; dòng 1 hiện tại trở thành mốc ΔL = 0,0 dB.");
+ showToast("Đã xóa dòng mốc đầu tiên; dòng 1 hiện tại trở thành mốc ΔL = 0,0 dB.");
  }
  }
 
+ // -------------------------------------------------------------------------
+ // XUẤT PDF / ẢNH / EXCEL CSV / IN A4
+ // -------------------------------------------------------------------------
  function exportSelectedToPDF() {
  document.querySelectorAll(".tb-dropdown").forEach(el => el.classList.remove("open"));
  const sheet = byId("reportSheet");
@@ -3573,12 +4145,12 @@
  const fileName = `Fox-lab_BaoCao_${groupSlug}.pdf`;
 
  if (typeof html2pdf === "undefined") {
- showToast(" Chưa tải được thư viện xuất PDF, vui lòng kiểm tra kết nối mạng!");
+ showToast("Chưa tải được thư viện xuất PDF, vui lòng kiểm tra kết nối mạng!");
  return;
  }
 
  syncCheckboxes();
- showToast("⏳ Đang tạo file PDF (mỗi phần 1 trang riêng)...");
+ showToast("Đang tạo file PDF (mỗi phần 1 trang riêng)...");
  sheet.classList.add("exporting-pdf");
 
  const opt = {
@@ -3592,11 +4164,11 @@
 
  html2pdf().set(opt).from(sheet).save().then(() => {
  sheet.classList.remove("exporting-pdf");
- showToast(` Đã tải xuống file PDF: ${fileName}`);
+ showToast(`Đã tải xuống file PDF: ${fileName}`);
  }).catch((err) => {
  sheet.classList.remove("exporting-pdf");
  console.error(err);
- showToast(" Có lỗi xảy ra khi xuất PDF!");
+ showToast("Có lỗi xảy ra khi xuất PDF!");
  });
  }
 
@@ -3635,7 +4207,7 @@
  const sheet = byId("reportSheet");
  sheet.classList.add("exporting-pdf");
  const safeFile = sanitizeFileName(`Fox-lab_${fileTag}`) + ".pdf";
- showToast(`⏳ Đang tạo ${safeFile}...`);
+ showToast(`Đang tạo ${safeFile}...`);
 
  const opt = {
  margin: [8, 8, 8, 8],
@@ -3661,10 +4233,10 @@
 
  html2pdf().set(opt).from(sheet).save().then(() => {
  restoreState();
- showToast(` Đã tải PDF: ${safeFile}`);
+ showToast(`Đã tải PDF: ${safeFile}`);
  }).catch(() => {
  restoreState();
- showToast(" Có lỗi xảy ra khi xuất PDF!");
+ showToast("Có lỗi xảy ra khi xuất PDF!");
  });
  }
 
@@ -3678,7 +4250,7 @@
  }
 
  const safeFile = sanitizeFileName(`Fox-lab_${fileTag}`) + ".png";
- showToast(`⏳ Đang chụp ảnh ${safeFile}...`);
+ showToast(`Đang chụp ảnh ${safeFile}...`);
 
  const groupName = byId("groupName")?.textContent.trim() || "Nhóm 01";
  const className = byId("className")?.textContent.trim() || "11A1";
@@ -3755,7 +4327,7 @@
  a.click();
  document.body.removeChild(a);
  setTimeout(() => URL.revokeObjectURL(pngUrl), 1000);
- showToast(` Đã xuất ảnh: ${safeFile}`);
+ showToast(`Đã xuất ảnh: ${safeFile}`);
  }, "image/png");
  }).catch((err) => {
  if (wrapper.parentNode) document.body.removeChild(wrapper);
@@ -3799,12 +4371,33 @@
  }
  }
 
+ function appendKinCsvRows(targetRows) {
+ if (!dualSourceMode) {
+ targetRows.push(["PHẦN II (II.2): KHẢO SÁT ĐỒ THỊ LIÊN QUAN - 1 NGUỒN"], ["Lần", "Tần số f (Hz)", "Biên độ A", "Phương trình li độ u(t)", "Phương trình vận tốc v(t)", "Phương trình gia tốc a(t)"]);
+ kinRows1.forEach((r, i) => {
+ const f = Number(r.f_Hz) || 0;
+ const A = Number(r.ampU) || 0;
+ targetRows.push([`Lần ${i + 1}`, f > 0 ? f.toFixed(1) : "—", A > 0 ? A.toFixed(2) : "—", r.eqU || "—", r.eqV || "—", r.eqA || "—"]);
+ });
+ } else {
+ targetRows.push(["PHẦN II (II.4): KHẢO SÁT ĐỒ THỊ LIÊN QUAN - 2 NGUỒN"], ["Lần", "Nguồn / Kênh", "Tần số f (Hz)", "Biên độ A", "Phương trình li độ u(t)", "Phương trình vận tốc v(t)", "Phương trình gia tốc a(t)"]);
+ kinRows2.forEach((p, i) => {
+ const fA = Number(p.a.f_Hz) || 0;
+ const ampA = Number(p.a.ampU) || 0;
+ const fB = Number(p.b.f_Hz) || 0;
+ const ampB = Number(p.b.ampU) || 0;
+ targetRows.push([`Lần ${i + 1}`, "Nguồn 1 (Kênh A)", fA > 0 ? fA.toFixed(1) : "—", ampA > 0 ? ampA.toFixed(2) : "—", p.a.eqU || "—", p.a.eqV || "—", p.a.eqA || "—"]);
+ targetRows.push([`Lần ${i + 1}`, "Nguồn 2 (Kênh B)", fB > 0 ? fB.toFixed(1) : "—", ampB > 0 ? ampB.toFixed(2) : "—", p.b.eqU || "—", p.b.eqV || "—", p.b.eqA || "—"]);
+ });
+ }
+ }
+
  function appendFftCsvRows(targetRows) {
  if (!dualSourceMode) {
- targetRows.push(["PHẦN II (II.2): PHÂN TÍCH PHỔ TẦN SỐ (FFT) - 1 NGUỒN"], ["STT", "Nguồn âm", "Tần số cơ bản f0 (Hz)", "Các họa âm", "Đặc điểm & Âm sắc"]);
+ targetRows.push(["PHẦN III (III.2): PHÂN TÍCH PHỔ TẦN SỐ (FFT) - 1 NGUỒN"], ["STT", "Nguồn âm", "Tần số cơ bản f0 (Hz)", "Các họa âm", "Đặc điểm & Âm sắc"]);
  fftRows1.forEach((r, i) => targetRows.push([i + 1, r.nguon, r.f0, r.hoaAm, r.dacDiem]));
  } else {
- targetRows.push(["PHẦN II (II.4): PHÂN TÍCH PHỔ TẦN SỐ (FFT) - 2 NGUỒN"], ["Cặp", "Nguồn âm", "Tần số cơ bản f0 (Hz)", "Các họa âm", "Đặc điểm & Âm sắc", "Độ lệch Δf0 (Hz)"]);
+ targetRows.push(["PHẦN III (III.4): PHÂN TÍCH PHỔ TẦN SỐ (FFT) - 2 NGUỒN"], ["Cặp", "Nguồn âm", "Tần số cơ bản f0 (Hz)", "Các họa âm", "Đặc điểm & Âm sắc", "Độ lệch Δf0 (Hz)"]);
  fftRows2.forEach((p, i) => {
  const fA = normalizeNumber(p.a.f0, NaN);
  const fB = normalizeNumber(p.b.f0, NaN);
@@ -3816,7 +4409,7 @@
  }
 
  function appendDbCsvRows(targetRows) {
- targetRows.push(["PHẦN III: ĐO MỨC CƯỜNG ĐỘ ÂM (dB)"], ["Vị trí đo", "Khoảng cách r (m)", "L_min (dB)", "L_max (dB)", "L_TB (dB)", "Độ giảm ΔL (dB)"]);
+ targetRows.push(["PHẦN IV: ĐO MỨC CƯỜNG ĐỘ ÂM (dB)"], ["Vị trí đo", "Khoảng cách r (m)", "L_min (dB)", "L_max (dB)", "L_TB (dB)", "Độ giảm ΔL (dB)"]);
  const baseL = dbRows.length ? Number(dbRows[0].lAvg) || 0 : 0;
  dbRows.forEach((r, i) => {
  const dL = (Number(r.lAvg) || 0) - baseL;
@@ -3834,23 +4427,17 @@
  let fileName = "Fox-lab_SoLieu.csv";
 
  if (partId === "part1") {
- fileName = "Fox-lab_Phan1_DoThiDaoDong.csv";
+ fileName = "Fox-lab_Phan1_DoChuKiTanSo.csv";
  appendOscCsvRows(rows);
  } else if (partId === "part2") {
- fileName = "Fox-lab_Phan2_PhanTichFFT.csv";
- appendFftCsvRows(rows);
+ fileName = "Fox-lab_Phan2_DoThiLienQuan.csv";
+ appendKinCsvRows(rows);
  } else if (partId === "part3") {
- fileName = "Fox-lab_Phan3_MucCuongDoAm.csv";
- appendDbCsvRows(rows);
+ fileName = "Fox-lab_Phan3_PhanTichFFT.csv";
+ appendFftCsvRows(rows);
  } else if (partId === "part4") {
- fileName = "Fox-lab_Phan4_BoLocSo.csv";
- rows.push(
- ["PHẦN IV: BỘ LỌC SỐ"],
- ["Trạng thái bộ lọc", byId("filterStatus")?.textContent.trim() || ""],
- ["Dải tần số", byId("filterBandCell")?.textContent.trim() || ""],
- ["Tần số tín hiệu thô", byId("filterRawFreqCell")?.textContent.trim() || ""],
- ["Tần số sau lọc", byId("filterFreqCell")?.textContent.trim() || ""]
- );
+ fileName = "Fox-lab_Phan4_MucCuongDoAm.csv";
+ appendDbCsvRows(rows);
  }
 
  downloadCSV(rows, fileName);
@@ -3876,23 +4463,17 @@
  }
 
  if (byId("chk-part2")?.checked) {
- appendFftCsvRows(rows);
+ appendKinCsvRows(rows);
  rows.push([]);
  }
 
  if (byId("chk-part3")?.checked) {
- appendDbCsvRows(rows);
+ appendFftCsvRows(rows);
  rows.push([]);
  }
 
  if (byId("chk-part4")?.checked) {
- rows.push(
- ["PHẦN IV: BỘ LỌC SỐ"],
- ["Trạng thái bộ lọc", byId("filterStatus")?.textContent.trim() || ""],
- ["Dải tần số", byId("filterBandCell")?.textContent.trim() || ""],
- ["Tần số tín hiệu thô", byId("filterRawFreqCell")?.textContent.trim() || ""],
- ["Tần số sau lọc", byId("filterFreqCell")?.textContent.trim() || ""]
- );
+ appendDbCsvRows(rows);
  rows.push([]);
  }
 
@@ -3911,7 +4492,7 @@
  a.click();
  document.body.removeChild(a);
  setTimeout(() => URL.revokeObjectURL(url), 1000);
- showToast(` Đã xuất file Excel: ${safeFile}`);
+ showToast(`Đã xuất file Excel: ${safeFile}`);
  }
 
  document.addEventListener("focusin", (e) => {
@@ -3962,7 +4543,7 @@
  const partParam = params.get("parts") || params.get("part");
  if (partParam) {
  const selected = String(partParam).split(",");
- ["1", "2", "3", "4"].forEach(p => {
+ ["1", "2", "3", "4", "5"].forEach(p => {
  const chk = byId(`chk-part${p}`);
  if (chk) chk.checked = selected.includes(p);
  });

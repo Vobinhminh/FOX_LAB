@@ -1091,12 +1091,44 @@ async function checkAppVersion() {
         const vMaxTheo = maxU * omega;
         const aMaxTheo = maxU * omega * omega;
 
+        let kinB = null;
+        if (typeof getActiveChannelMode === 'function' && getActiveChannelMode() === '2' && typeof getVisibleChannelWindow === 'function') {
+            const winInfoB = getVisibleChannelWindow('B');
+            if (winInfoB && winInfoB.slice && winInfoB.slice.length >= 8) {
+                const rawB = winInfoB.slice;
+                const Nb = rawB.length;
+                let fHzB = (typeof computeFrozenChannelFrequency === 'function') ? computeFrozenChannelFrequency('B') : 0;
+                if (!fHzB || fHzB <= 0) fHzB = fHz;
+                const omegaB = 2 * Math.PI * fHzB;
+                const uArrB = zeroPhaseSmoothSignal(rawB, fHzB, sampleRate);
+                const vArrB = computeCentralDerivative4th(uArrB, dt);
+                const aArrB = computeCentralDerivative4th(vArrB, dt);
+                const marginB = Math.min(Math.floor(Nb * 0.03), Math.max(2, Math.floor(sampleRate / (4 * fHzB))));
+                const iStartB = Math.min(marginB, Math.floor(Nb / 4));
+                const iEndB = Math.max(Nb - marginB, Math.ceil((3 * Nb) / 4));
+                let maxUB = 0;
+                for (let i = iStartB; i < iEndB; i++) {
+                    if (Math.abs(uArrB[i]) > maxUB) maxUB = Math.abs(uArrB[i]);
+                }
+                if (maxUB < 1e-5) maxUB = 0.01;
+                const phi0B = estimateInitialPhaseAtCenter(uArrB, omegaB, dt);
+                kinB = {
+                    uArr: uArrB, vArr: vArrB, aArr: aArrB,
+                    maxU: maxUB,
+                    fHz: fHzB, omega: omegaB, phi0: phi0B,
+                    vMaxTheo: maxUB * omegaB,
+                    aMaxTheo: maxUB * omegaB * omegaB
+                };
+            }
+        }
+
         kinSnapshotData = {
             uArr, vArr, aArr,
             maxU, maxV, maxA,
             fHz, omega, phi0,
             vMaxTheo, aMaxTheo,
-            totalTime: totalTimeOnScreen
+            totalTime: totalTimeOnScreen,
+            channelB: kinB
         };
 
         // Cập nhật nội dung phương trình cho nút Kết quả (định dạng lũy thừa 10 chuẩn vật lý)
@@ -6798,33 +6830,21 @@ async function checkAppVersion() {
         }
     };
 
-    // Đổi nút trên thanh công cụ thành "Đồng bộ dữ liệu" và đồng bộ trực tiếp kết quả đo hiện tại sang report.html
-    window.syncActiveMeasurementToReport = function () {
-        const dispMode = (typeof getDisplayMode === "function") ? getDisplayMode() : "oscilloscope";
-        const chMode = (typeof getActiveChannelMode === "function") ? getActiveChannelMode() : "1";
-        if (dispMode === "dbMeter") {
-            window.syncFeatureToReport("db");
-        } else if (chMode === "2") {
-            window.syncFeatureToReport("twoSource");
-        } else {
-            window.syncFeatureToReport("osc");
-        }
-    };
-
+    // Giữ nguyên nút "Xuất báo cáo" trên thanh công cụ, đồng thời hỗ trợ đồng bộ từng chức năng sang report.html
     function upgradeExportReportButtonsToSync() {
         const btn = document.getElementById("btnExportReport");
         if (!btn) return;
-        if (btn.textContent.trim() !== "Đồng bộ dữ liệu") {
-            btn.textContent = "Đồng bộ dữ liệu";
+        if (btn.textContent.trim() !== "Xuất báo cáo") {
+            btn.textContent = "Xuất báo cáo";
         }
-        btn.title = "Đồng bộ dữ liệu đo hiện tại sang phiếu báo cáo thí nghiệm";
+        btn.title = "Mở trang phiếu báo cáo thí nghiệm A4 (report.html)";
         if (btn.dataset.exportBound !== "true") {
             btn.dataset.exportBound = "true";
             btn.removeAttribute("onclick");
             btn.addEventListener("click", (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                window.syncActiveMeasurementToReport();
+                window.navigateToStandaloneReport();
             });
         }
     }
@@ -6881,16 +6901,85 @@ async function checkAppVersion() {
 
         // Xóa dữ liệu của các chức năng khác trong gói đồng bộ tức thời để chỉ đồng bộ đúng chức năng được chọn
         delete payload.cacLanDo;
+        delete payload.doThiLienQuan;
         delete payload.phoTanSo;
         delete payload.mucCuongDoAm;
         delete payload.anhDoThiBase64;
+        delete payload.anhDoThiLienQuanBase64;
         delete payload.anhPhoBase64;
         delete payload.anhDbBase64;
 
-        if (featureType === "osc" || featureType === "kinematics") {
-            const targetCanvas = (featureType === "kinematics")
-                ? document.getElementById("kinematicsCanvas")
-                : document.getElementById("oscilloscope");
+        if (featureType === "kinematics") {
+            const kinCanvas = document.getElementById("kinematicsCanvas");
+            let snapImg = null;
+            if (kinCanvas && kinCanvas.width > 0) {
+                try { snapImg = kinCanvas.toDataURL("image/png"); } catch (e) {}
+            }
+
+            const fmtSci = (val, dec = 2) => {
+                const num = Number(val) || 0;
+                const absV = Math.abs(num);
+                if (absV === 0) return (0).toFixed(dec);
+                if (absV >= 10000 || absV < 0.01) {
+                    const exp = Math.floor(Math.log10(absV));
+                    return `${(num / Math.pow(10, exp)).toFixed(dec)}×10^${exp}`;
+                }
+                return absV >= 100 ? num.toFixed(1) : num.toFixed(dec);
+            };
+            const fmtPhi = (phiRad) => {
+                let p = Number(phiRad) || 0;
+                while (p > Math.PI) p -= 2 * Math.PI;
+                while (p <= -Math.PI) p += 2 * Math.PI;
+                if (Math.abs(p) < 0.02) return "";
+                return (p >= 0 ? " + " : " - ") + Math.abs(p).toFixed(2);
+            };
+            const buildKinEntry = (snapObj, chLabel, imgData) => {
+                const fVal = Number(snapObj?.fHz) || 0;
+                const ampVal = Number(snapObj?.maxU) || 0;
+                const phiVal = Number(snapObj?.phi0) || 0;
+                const wVal = 2 * Math.PI * fVal;
+                const wStr = wVal.toFixed(1);
+                return {
+                    kenh: chLabel,
+                    f_Hz: Number(fVal.toFixed(1)),
+                    ampU: Number(ampVal.toFixed(3)),
+                    phi0: Number(phiVal.toFixed(3)),
+                    eqU: `u(t) = ${fmtSci(ampVal, 2)}·cos(${wStr}·t${fmtPhi(phiVal)})`,
+                    eqV: `v(t) = ${fmtSci(wVal * ampVal, 2)}·cos(${wStr}·t${fmtPhi(phiVal + Math.PI / 2)})`,
+                    eqA: `a(t) = ${fmtSci(wVal * wVal * ampVal, 2)}·cos(${wStr}·t${fmtPhi(phiVal + Math.PI)})`,
+                    displayMode: (typeof kinDisplayMode === "string") ? kinDisplayMode : "uv",
+                    imageBase64: imgData
+                };
+            };
+
+            let snapA = (typeof kinSnapshotData !== "undefined" && kinSnapshotData) ? kinSnapshotData : null;
+            if (!snapA) {
+                let fHz = (typeof computeFrozenAutoFrequency === "function") ? computeFrozenAutoFrequency() : 0;
+                if ((!fHz || fHz <= 0) && typeof detectedFrequency === "number" && detectedFrequency > 0) fHz = detectedFrequency;
+                if (fHz > 0) {
+                    snapA = { fHz, maxU: 1.0, phi0: 0 };
+                }
+            }
+            if (!snapA || !(snapA.fHz > 0)) {
+                showExpToast("Chưa có dữ liệu đồ thị liên quan hợp lệ để đồng bộ!");
+                return;
+            }
+
+            if (isDual) {
+                const entryA = buildKinEntry(snapA, "Kênh A", snapImg);
+                let snapB = snapA.channelB || null;
+                if (!snapB) {
+                    const fB = (typeof currentCalcFreqB === "number" && currentCalcFreqB > 0) ? currentCalcFreqB : snapA.fHz;
+                    snapB = { fHz: fB, maxU: snapA.maxU, phi0: 0 };
+                }
+                const entryB = buildKinEntry(snapB, "Kênh B", null);
+                payload.doThiLienQuan = [entryA, entryB];
+            } else {
+                payload.doThiLienQuan = [buildKinEntry(snapA, "", snapImg)];
+            }
+            payload.anhDoThiLienQuanBase64 = snapImg;
+        } else if (featureType === "osc") {
+            const targetCanvas = document.getElementById("oscilloscope");
             let snapImg = null;
             if (targetCanvas && targetCanvas.width > 0) {
                 try { snapImg = targetCanvas.toDataURL("image/png"); } catch (e) {}
@@ -7430,7 +7519,6 @@ async function checkAppVersion() {
         const titleEl = document.getElementById("expReportTitle");
         if (mode === "all") {
             parts.forEach(p => { const c = document.getElementById(`expChk-part${p}`); if (c) c.checked = true; });
-            const c5 = document.getElementById("expChk-part5"); if (c5) c5.checked = true;
             if (titleEl) titleEl.textContent = EXP_DEFAULT_TITLE;
         } else {
             const selected = String(mode).split(",");
@@ -7438,7 +7526,6 @@ async function checkAppVersion() {
                 const c = document.getElementById(`expChk-part${p}`);
                 if (c) c.checked = selected.includes(p);
             });
-            const c5 = document.getElementById("expChk-part5"); if (c5) c5.checked = true;
             if (selected.length === 1 && titleEl) {
                 const sec = document.getElementById(`expPart${selected[0]}`);
                 if (sec && sec.dataset.title) titleEl.textContent = sec.dataset.title;
@@ -7463,14 +7550,14 @@ async function checkAppVersion() {
     window.syncExpCheckboxes = function () {
         let count = 0;
         const checkedParts = [];
-        ["1", "2", "3", "4", "5"].forEach(num => {
+        ["1", "2", "3", "4"].forEach(num => {
             const chk = document.getElementById(`expChk-part${num}`);
             const el = document.getElementById(`expPart${num}`);
             if (chk && el) {
                 el.classList.toggle("hidden-part", !chk.checked);
                 if (chk.checked) {
                     count++;
-                    if (num !== "5") checkedParts.push(`expPart${num}`);
+                    checkedParts.push(`expPart${num}`);
                 }
             }
         });
@@ -7536,10 +7623,6 @@ async function checkAppVersion() {
                 el.classList.add("temp-print-hide");
             }
         });
-        const part5 = document.getElementById("expPart5");
-        const prevPart5 = part5 ? part5.classList.contains("hidden-part") : false;
-        if (part5) part5.classList.remove("hidden-part", "temp-print-hide");
-
         const sheet = document.getElementById("expReportSheet");
         if (!sheet) return;
         sheet.classList.add("exp-exporting-pdf");
@@ -7560,7 +7643,6 @@ async function checkAppVersion() {
                 el.classList.remove("temp-print-hide");
                 el.classList.toggle("hidden-part", prevStates[id]);
             });
-            if (part5) part5.classList.toggle("hidden-part", prevPart5);
             if (titleEl) titleEl.textContent = prevTitle;
             showExpToast(` Đã tải PDF: FoxLab_${fileTag}.pdf`);
         }).catch(() => {
@@ -7642,10 +7724,6 @@ async function checkAppVersion() {
             }
         });
 
-        const part5 = document.getElementById("expPart5");
-        const prevPart5 = part5 ? part5.classList.contains("hidden-part") : false;
-        if (part5) part5.classList.remove("hidden-part", "temp-print-hide");
-
         triggerCleanA4Print(() => {
             allParts.forEach(id => {
                 const el = document.getElementById(id);
@@ -7653,7 +7731,6 @@ async function checkAppVersion() {
                 el.classList.remove("temp-print-hide");
                 el.classList.toggle("hidden-part", prevStates[id]);
             });
-            if (part5) part5.classList.toggle("hidden-part", prevPart5);
             if (titleEl) titleEl.textContent = prevTitle;
         });
     };
