@@ -939,42 +939,39 @@ async function checkAppVersion() {
         return val.toFixed(decimals);
     }
 
-    // Bộ lọc thông thấp pha không (Zero-Phase Multi-Pass Low-Pass Filter)
-    // Triệt tiêu nhiễu cao tần & họa âm bậc cao (3f0, 5f0...) trước khi lấy đạo hàm bậc 1, bậc 2 mà không gây lệch pha
+    // Bộ lọc làm mượt pha không giữ nguyên hình dạng thực (Zero-Phase Fidelity Filter)
+    // Giữ trọn hình dạng sóng & độ lệch nền thực tế trên màn hình chính, chỉ khử nhiễu răng cưa siêu cao tần
     function zeroPhaseSmoothSignal(rawArr, fHz, fs) {
         const N = rawArr.length;
         const clean = new Float32Array(N);
         if (N === 0) return clean;
-
-        // 1. Khử thành phần một chiều (DC offset)
-        let mean = 0;
-        for (let i = 0; i < N; i++) mean += rawArr[i];
-        mean /= N;
-        for (let i = 0; i < N; i++) clean[i] = rawArr[i] - mean;
-
+        for (let i = 0; i < N; i++) clean[i] = rawArr[i];
         if (N < 12) return clean;
 
-        // 2. Chọn bán kính cửa sổ thích nghi theo tần số cơ bản f0 (~ T0 / 5.2)
-        const periodSamples = fs / Math.max(40, fHz);
-        const radius = Math.max(2, Math.min(Math.floor(N / 8), Math.round(periodSamples / 5.2)));
-        const winLen = 2 * radius + 1;
+        // Dùng bán kính nhỏ đồng bộ với màn hình dao động ký chính để u(t) bám sát 100% đường sóng thực
+        const radius = Math.max(2, Math.min(4, Math.round(N / 180)));
 
-        // Lọc trung bình trượt đối xứng 3 lượt (tương đương bộ lọc Gaussian pha không)
+        // Lọc trung bình trượt đối xứng 2 lượt với ngoại suy tuyến tính tại biên (không làm méo 2 đầu khung hình)
         let bufA = new Float32Array(clean);
         let bufB = new Float32Array(N);
-        for (let pass = 0; pass < 3; pass++) {
+        for (let pass = 0; pass < 2; pass++) {
             for (let i = 0; i < N; i++) {
                 let sum = 0;
                 let cnt = 0;
                 const jStart = i - radius;
                 const jEnd = i + radius;
                 for (let j = jStart; j <= jEnd; j++) {
-                    // Phản xạ đối xứng tại biên để tránh méo/xung biên
-                    let idx = j;
-                    if (idx < 0) idx = -idx;
-                    if (idx >= N) idx = 2 * N - 2 - idx;
-                    idx = Math.max(0, Math.min(N - 1, idx));
-                    sum += bufA[idx];
+                    let val;
+                    if (j < 0) {
+                        const mirror = Math.min(N - 1, -j);
+                        val = 2.0 * bufA[0] - bufA[mirror];
+                    } else if (j >= N) {
+                        const mirror = Math.max(0, 2 * N - 2 - j);
+                        val = 2.0 * bufA[N - 1] - bufA[mirror];
+                    } else {
+                        val = bufA[j];
+                    }
+                    sum += val;
                     cnt++;
                 }
                 bufB[i] = sum / cnt;
@@ -984,13 +981,8 @@ async function checkAppVersion() {
             bufB = tmp;
         }
 
-        // 3. Bù suy giảm biên độ đã biết của bộ lọc tại tần số cơ bản f0 để giữ nguyên biên độ thực A
-        const theta = Math.PI * winLen * (fHz / fs);
-        const sincGain = Math.abs(theta) < 1e-6 ? 1.0 : Math.abs(Math.sin(theta) / theta);
-        const passGain = Math.max(0.25, Math.pow(sincGain, 3));
-        const invGain = 1.0 / passGain;
         for (let i = 0; i < N; i++) {
-            clean[i] = bufA[i] * invGain;
+            clean[i] = bufA[i];
         }
         return clean;
     }
@@ -1247,20 +1239,42 @@ async function checkAppVersion() {
         const { uArr, vArr, aArr, maxU, maxV, maxA } = kinSnapshotData;
         const N = uArr.length;
         const step = Math.max(1, Math.floor(N / (cw * 2)));
-        const scaleFactor = 0.36 * ch; // Tỷ lệ chuẩn hóa biên độ 3 đồ thị nằm gọn trong lưới tọa độ
+        const zoomY = (typeof currentZoomY === 'number' && currentZoomY > 0) ? currentZoomY : 1.0;
+        const uVisualScale = Math.min(0.46 * ch, Math.max(0.18 * ch, maxU * zoomY * (ch / 2)));
 
+        // Vẽ đường u(t) bám sát đúng biên độ thực & vị trí trục tung trên màn hình dao động ký
+        function plotTrueDisplacementCurve(arr, color, lineWidth, dashPattern = []) {
+            ctx.save();
+            ctx.beginPath();
+            ctx.strokeStyle = color;
+            ctx.lineWidth = lineWidth;
+            ctx.lineJoin = 'round';
+            ctx.lineCap = 'round';
+            ctx.setLineDash(dashPattern);
+            for (let i = 0; i < N; i += step) {
+                const x = (i / (N - 1)) * cw;
+                let y = ch / 2 - (arr[i] * zoomY * ch / 2);
+                y = Math.max(2, Math.min(ch - 2, y));
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        // Vẽ đường v(t) và a(t) đồng tỷ lệ với biên độ hiển thị của u(t) để quan sát rõ độ lệch pha π/2 và π
         function plotNormalizedCurve(arr, maxVal, color, lineWidth, dashPattern = []) {
             ctx.save();
             ctx.beginPath();
             ctx.strokeStyle = color;
             ctx.lineWidth = lineWidth;
             ctx.lineJoin = 'round';
+            ctx.lineCap = 'round';
             ctx.setLineDash(dashPattern);
             for (let i = 0; i < N; i += step) {
                 const x = (i / (N - 1)) * cw;
-                // Giới hạn biên độ hiển thị an toàn trong [-1.08, 1.08] để không tràn vượt khung canvas
-                const normVal = Math.max(-1.08, Math.min(1.08, arr[i] / maxVal));
-                const y = ch / 2 - normVal * scaleFactor;
+                const normVal = Math.max(-1.15, Math.min(1.15, arr[i] / maxVal));
+                const y = ch / 2 - normVal * uVisualScale;
                 if (i === 0) ctx.moveTo(x, y);
                 else ctx.lineTo(x, y);
             }
@@ -1271,12 +1285,12 @@ async function checkAppVersion() {
         const showV = (kinDisplayMode === 'uv' || kinDisplayMode === 'all');
         const showA = (kinDisplayMode === 'ua' || kinDisplayMode === 'all');
 
-        // 1. Đồ thị u-t (Màu Xanh dương)
-        plotNormalizedCurve(uArr, maxU, '#2563eb', 2.8);
+        // 1. Đồ thị u-t (Màu Xanh dương — bám sát hình dạng & biên độ thực)
+        plotTrueDisplacementCurve(uArr, '#2563eb', 2.8);
         // 2. Đồ thị v-t (Màu Xanh lá)
-        if (showV) plotNormalizedCurve(vArr, maxV, '#16a34a', 2.6);
+        if (showV) plotNormalizedCurve(vArr, maxV, '#16a34a', 2.4);
         // 3. Đồ thị a-t (Màu Đỏ)
-        if (showA) plotNormalizedCurve(aArr, maxA, '#dc2626', 2.5);
+        if (showA) plotNormalizedCurve(aArr, maxA, '#dc2626', 2.3);
 
         // Chú thích trực tiếp trên góc phải đồ thị
         let labelY = 12;
