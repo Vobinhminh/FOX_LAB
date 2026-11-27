@@ -818,11 +818,11 @@
  <input type="checkbox" id="chk-part1" checked onchange="syncCheckboxes()" />
  <span>Phần I: Đo chu kì &amp; tần số</span>
  </label>
- <label class="tb-check-item">
+ <label class="tb-check-item" id="chkPart2Item">
  <input type="checkbox" id="chk-part2" checked onchange="syncCheckboxes()" />
- <span>Phần II: Đồ thị liên quan</span>
+ <span id="chkPart2Label">Phần II: Đồ thị liên quan</span>
  </label>
- <label class="tb-check-item">
+ <label class="tb-check-item" id="chkPart3Item">
  <input type="checkbox" id="chk-part3" checked onchange="syncCheckboxes()" />
  <span>Phần III: Phân tích FFT</span>
  </label>
@@ -1014,14 +1014,14 @@
  </section>
 
  <!-- ===================================================================== -->
- <!-- PHẦN II: KHẢO SÁT ĐỒ THỊ LIÊN QUAN (1 NGUỒN & 2 NGUỒN) -->
+ <!-- PHẦN II: KHẢO SÁT ĐỒ THỊ LIÊN QUAN (1 NGUỒN) / KHẢO SÁT 2 NGUỒN ÂM -->
  <!-- ===================================================================== -->
  <section class="report-part" id="part2" data-title="BÁO CÁO THỰC HÀNH: KHẢO SÁT ĐỒ THỊ LIÊN QUAN">
  <div class="part-title">
- <span>PHẦN II. KHẢO SÁT ĐỒ THỊ LIÊN QUAN</span>
+ <span id="part2TitleText">PHẦN II. KHẢO SÁT ĐỒ THỊ LIÊN QUAN</span>
  <div class="part-actions no-print">
- <button type="button" class="inline-btn inline-btn-pdf" onclick="exportSinglePartToPDF('part2', 'Phan2_DoThiLienQuan')">PDF phần này</button>
- <button type="button" class="inline-btn inline-btn-img" onclick="exportPartAsImage('part2', 'Phan2_DoThiLienQuan')">Xuất ảnh phần này</button>
+ <button type="button" class="inline-btn inline-btn-pdf" onclick="exportSinglePartToPDF('part2', dualSourceMode ? 'Phan2_KhaoSat2NguonAm' : 'Phan2_DoThiLienQuan')">PDF phần này</button>
+ <button type="button" class="inline-btn inline-btn-img" onclick="exportPartAsImage('part2', dualSourceMode ? 'Phan2_KhaoSat2NguonAm' : 'Phan2_DoThiLienQuan')">Xuất ảnh phần này</button>
  <button type="button" class="inline-btn inline-btn-csv" onclick="exportSinglePartCSV('part2')">CSV</button>
  </div>
  </div>
@@ -1065,41 +1065,115 @@
  </div>
  </div>
 
- <!-- Khối 2 nguồn Phần II (Chế độ dừng 2 nguồn) -->
+ <!-- Khối 2 nguồn Phần II: II.1 Đo chu kì & tần số | II.2 Ghép sóng tính độ lệch pha | II.3 Tổng sóng -->
  <div id="part2DualBlock">
- <div class="sub-heading">
- <span>II.1. Đồ thị dừng 2 nguồn (So sánh Kênh A &amp; Kênh B)</span>
- </div>
- <div class="per-row-graphs-grid single-item" id="kinGraphsGrid2"></div>
-
+ <!-- II.1. ĐO CHU KÌ VÀ TẦN SỐ (2 NGUỒN) -->
  <div class="sub-heading">
  <span>
- II.2. Bảng số liệu khảo sát dừng 2 nguồn
+ II.1. Đo chu kì và tần số (2 nguồn – Kênh A &amp; Kênh B)
+ <span class="row-counter-badge no-print" id="oscCountBadge2_II">1 / 10 cặp</span>
+ </span>
+ <button type="button" class="inline-btn no-print" id="btnAddOsc2_II" onclick="addOscRow2()">+ Thêm cặp đo 2 nguồn (Tối đa 10)</button>
+ </div>
+ <div class="per-row-graphs-grid single-item" id="dualOscGraphsGridII"></div>
+ <div class="table-scroll-wrap">
+ <table class="data-table">
+ <thead>
+ <tr>
+ <th style="width: 10%;">Lần đo</th>
+ <th style="width: 18%;">Nguồn / Kênh</th>
+ <th style="width: 11%;">Số chu kì (<i>N</i>)</th>
+ <th style="width: 17%;">Δ<i>t</i> = <i>t</i><sub>2</sub> − <i>t</i><sub>1</sub> (ms)</th>
+ <th style="width: 13%;">Chu kì <i>T</i> (ms)</th>
+ <th style="width: 13%;">Tần số <i>f</i> (Hz)</th>
+ <th style="width: 10%;">Độ lệch Δ<i>f</i> (Hz)</th>
+ <th class="no-print col-delete" style="width: 8%;">Xóa</th>
+ </tr>
+ </thead>
+ <tbody id="dualOscBodyII"></tbody>
+ <tfoot>
+ <tr class="summary-row">
+ <td colspan="4">Trung bình Nguồn 1 (Kênh A) (<span class="overline"><i>x</i></span> ± <span class="overline">Δ<i>x</i></span>)</td>
+ <td id="avgT2A_II">—</td>
+ <td id="avgF2A_II">—</td>
+ <td rowspan="2" id="avgDiffF2_II">—</td>
+ <td rowspan="2" class="no-print col-delete"></td>
+ </tr>
+ <tr class="summary-row">
+ <td colspan="4">Trung bình Nguồn 2 (Kênh B) (<span class="overline"><i>x</i></span> ± <span class="overline">Δ<i>x</i></span>)</td>
+ <td id="avgT2B_II">—</td>
+ <td id="avgF2B_II">—</td>
+ </tr>
+ </tfoot>
+ </table>
+ </div>
+ <div class="result-box">
+ <p id="resDualII1"><strong>Kết quả II.1 (Đo chu kì &amp; tần số 2 nguồn):</strong> &nbsp;
+ <i>f</i><sub>1</sub> = — Hz &nbsp;|&nbsp; <i>f</i><sub>2</sub> = — Hz &nbsp;|&nbsp; Độ lệch |<i>f</i><sub>1</sub> − <i>f</i><sub>2</sub>| = — Hz
+ </p>
+ </div>
+
+ <!-- II.2. GHÉP SÓNG – TÍNH ĐỘ LỆCH PHA -->
+ <div class="sub-heading" style="margin-top: 14px;">
+ <span>
+ II.2. Ghép sóng – Tính độ lệch pha (Δ<i>φ</i>)
  <span class="row-counter-badge no-print" id="kinCountBadge2">1 / 10 cặp</span>
  </span>
- <button type="button" class="inline-btn no-print" id="btnAddKin2" onclick="addKinRow2()">+ Thêm cặp khảo sát dừng 2 nguồn (Tối đa 10)</button>
+ <button type="button" class="inline-btn no-print" id="btnAddKin2" onclick="addKinRow2()">+ Thêm lần ghép sóng (Tối đa 10)</button>
  </div>
+ <div class="per-row-graphs-grid single-item" id="dualPhaseGraphsGrid"></div>
  <div class="table-scroll-wrap">
  <table class="data-table">
  <thead>
  <tr>
  <th style="width: 8%;">Lần</th>
- <th style="width: 15%;">Nguồn / Kênh</th>
- <th style="width: 12%;">Tần số <i>f</i> (Hz)</th>
- <th style="width: 11%;">Biên độ <i>A</i></th>
- <th style="width: 16%;">Phương trình <i>u</i>(<i>t</i>)</th>
- <th style="width: 15%;">Độ lệch pha Δ<i>φ</i> (rad)</th>
- <th style="width: 15%;">Trạng thái pha / Phách</th>
+ <th style="width: 16%;">Nguồn / Kênh</th>
+ <th style="width: 11%;">Tần số <i>f</i> (Hz)</th>
+ <th style="width: 11%;">Chu kì <i>T</i> (ms)</th>
+ <th style="width: 10%;">Biên độ <i>A</i></th>
+ <th style="width: 13%;">Độ lệch pha Δ<i>φ</i> (rad)</th>
+ <th style="width: 11%;">Độ lệch pha Δ<i>φ</i> (độ)</th>
+ <th style="width: 13%;">Trạng thái pha</th>
  <th class="no-print col-delete" style="width: 7%;">Xóa</th>
  </tr>
  </thead>
- <tbody id="kinBody2"></tbody>
+ <tbody id="dualPhaseBody"></tbody>
  </table>
  </div>
-
  <div class="result-box">
- <p id="resDualKin"><strong>Kết quả khảo sát dừng 2 nguồn:</strong> &nbsp;
- Kênh A: <i>f</i><sub>1</sub> = — Hz (<i>ω</i><sub>1</sub> = — rad/s) &nbsp;|&nbsp; Kênh B: <i>f</i><sub>2</sub> = — Hz (<i>ω</i><sub>2</sub> = — rad/s) &nbsp;|&nbsp; Độ lệch tần số |<i>f</i><sub>1</sub> − <i>f</i><sub>2</sub>| = — Hz
+ <p id="resDualII2"><strong>Kết quả II.2 (Ghép sóng &amp; Độ lệch pha):</strong> &nbsp;
+ Độ lệch pha Δ<i>φ</i> = — rad (—°) &nbsp;|&nbsp; Trạng thái pha: —
+ </p>
+ </div>
+
+ <!-- II.3. TỔNG SÓNG – TỔNG HỢP DAO ĐỘNG (u = uA + uB) -->
+ <div class="sub-heading" style="margin-top: 14px;">
+ <span>
+ II.3. Tổng sóng – Tổng hợp dao động (<i>u</i> = <i>u</i><sub>A</sub> + <i>u</i><sub>B</sub>)
+ <span class="row-counter-badge no-print" id="sumCountBadge2">1 / 10 cặp</span>
+ </span>
+ <button type="button" class="inline-btn no-print" id="btnAddSum2" onclick="addKinRow2()">+ Thêm lần tổng sóng (Tối đa 10)</button>
+ </div>
+ <div class="per-row-graphs-grid single-item" id="dualSumGraphsGrid"></div>
+ <div class="table-scroll-wrap">
+ <table class="data-table">
+ <thead>
+ <tr>
+ <th style="width: 7%;">Lần</th>
+ <th style="width: 20%;">Phương trình <i>u</i><sub>1</sub>(<i>t</i>) (Kênh A)</th>
+ <th style="width: 21%;">Phương trình <i>u</i><sub>2</sub>(<i>t</i>) (Kênh B)</th>
+ <th style="width: 23%;">Phương trình sóng tổng hợp <i>u</i>(<i>t</i>) = <i>u</i><sub>1</sub> + <i>u</i><sub>2</sub></th>
+ <th style="width: 10%;">Biên độ <i>A</i><sub>th</sub></th>
+ <th style="width: 12%;">Nhận xét hiện tượng</th>
+ <th class="no-print col-delete" style="width: 7%;">Xóa</th>
+ </tr>
+ </thead>
+ <tbody id="dualSumBody"></tbody>
+ </table>
+ </div>
+ <div class="result-box">
+ <p id="resDualII3"><strong>Kết quả II.3 (Tổng sóng <i>u</i> = <i>u</i><sub>A</sub> + <i>u</i><sub>B</sub>):</strong> &nbsp;
+ Phương trình tổng hợp: — &nbsp;|&nbsp; Biên độ tổng hợp <i>A</i><sub>th</sub> = —
  </p>
  </div>
  </div>
@@ -1305,25 +1379,57 @@
  const p1Single = byId("part1SingleBlock");
  const p1Dual = byId("part1DualBlock");
  const part2Sec = byId("part2");
- const chkPart2Item = byId("chk-part2")?.closest(".tb-check-item");
+ const part2TitleText = byId("part2TitleText");
+ const chkPart2Item = byId("chkPart2Item") || byId("chk-part2")?.closest(".tb-check-item");
+ const chkPart2Label = byId("chkPart2Label");
  const p2Single = byId("part2SingleBlock");
  const p2Dual = byId("part2DualBlock");
+ const part3Sec = byId("part3");
+ const chkPart3Item = byId("chkPart3Item") || byId("chk-part3")?.closest(".tb-check-item");
  const p3Single = byId("part3SingleBlock");
  const p3Dual = byId("part3DualBlock");
+
  if (p1Single) p1Single.style.display = dualSourceMode ? "none" : "";
  if (p1Dual) p1Dual.style.display = dualSourceMode ? "" : "none";
 
- // Chế độ 2 nguồn (dừng 2 nguồn): Hiển thị Phần II khối 2 nguồn
  if (part2Sec) {
  part2Sec.style.display = "";
  part2Sec.classList.remove("temp-export-hide");
+ part2Sec.dataset.title = dualSourceMode
+ ? "BÁO CÁO THỰC HÀNH: KHẢO SÁT 2 NGUỒN ÂM"
+ : "BÁO CÁO THỰC HÀNH: KHẢO SÁT ĐỒ THỊ LIÊN QUAN";
+ }
+ if (part2TitleText) {
+ part2TitleText.textContent = dualSourceMode
+ ? "PHẦN II. KHẢO SÁT 2 NGUỒN ÂM"
+ : "PHẦN II. KHẢO SÁT ĐỒ THỊ LIÊN QUAN";
  }
  if (chkPart2Item) chkPart2Item.style.display = "";
+ if (chkPart2Label) {
+ chkPart2Label.textContent = dualSourceMode
+ ? "Phần II: Khảo sát 2 nguồn âm"
+ : "Phần II: Đồ thị liên quan";
+ }
  if (p2Single) p2Single.style.display = dualSourceMode ? "none" : "";
  if (p2Dual) p2Dual.style.display = dualSourceMode ? "" : "none";
 
+ // Chế độ 2 nguồn: bỏ Phần III phân tích nguồn âm (FFT)
+ if (part3Sec) {
+ if (dualSourceMode) {
+ part3Sec.style.display = "none";
+ part3Sec.classList.add("hidden-part");
+ part3Sec.classList.remove("page-break-part");
+ } else {
+ part3Sec.style.display = "";
+ const chk3 = byId("chk-part3");
+ part3Sec.classList.toggle("hidden-part", chk3 ? !chk3.checked : false);
+ }
+ }
+ if (chkPart3Item) {
+ chkPart3Item.style.display = dualSourceMode ? "none" : "";
+ }
  if (p3Single) p3Single.style.display = dualSourceMode ? "none" : "";
- if (p3Dual) p3Dual.style.display = dualSourceMode ? "" : "none";
+ if (p3Dual) p3Dual.style.display = "none";
  }
 
  function updateSyncRowModeUI() {
@@ -1347,11 +1453,11 @@
  if (dualSourceMode) {
  routeBtn.classList.add("dual-route-active");
  routeBtn.textContent = "Chế độ: 2 nguồn";
- routeBtn.title = "Đang bật chế độ 2 nguồn: hiển thị mục I.3–I.4, II.1–II.2 (dừng 2 nguồn), III.3–III.4 và IV. Bấm để chuyển về 1 nguồn.";
+ routeBtn.title = "Đang bật chế độ 2 nguồn: hiển thị Phần II (II.1 Chu kì & tần số, II.2 Ghép sóng tính Δφ, II.3 Tổng sóng) và bỏ Phần III phân tích nguồn âm. Bấm để chuyển về 1 nguồn.";
  } else {
  routeBtn.classList.remove("dual-route-active");
  routeBtn.textContent = "Chế độ: 1 nguồn";
- routeBtn.title = "Đang ở chế độ 1 nguồn: hiển thị mục 1 nguồn (I.1–I.2, II.1–II.2, III.1–III.2). Bấm để chuyển sang 2 nguồn.";
+ routeBtn.title = "Đang ở chế độ 1 nguồn: hiển thị đầy đủ Phần I – Phần V. Bấm để chuyển sang 2 nguồn.";
  }
  }
 
@@ -1394,8 +1500,8 @@
  persistReportEdits();
  showToast(
  dualSourceMode
- ? "Đã chuyển sang chế độ 2 nguồn: hiển thị các mục 2 nguồn ở Phần I, Phần II (dừng 2 nguồn), Phần III và Phần IV."
- : "Đã chuyển sang chế độ 1 nguồn: hiển thị các mục 1 nguồn (I.1–I.2, II.1–II.2 và III.1–III.2)."
+ ? "Đã chuyển sang chế độ 2 nguồn: mục II gồm II.1 Đo chu kì & tần số, II.2 Ghép sóng tính Δφ, II.3 Tổng sóng (bỏ Phần III)."
+ : "Đã chuyển sang chế độ 1 nguồn: hiển thị đầy đủ Phần I – Phần V."
  );
  }
 
@@ -1512,10 +1618,15 @@
  return copy;
  });
 
- const sanitizeDualRows = (pairs) => pairs.slice(0, MAX_ROWS).map((p) => ({
- a: Object.assign({}, p.a, { imageBase64: getPersistableImage(p.a.imageBase64) }),
- b: Object.assign({}, p.b, { imageBase64: getPersistableImage(p.b.imageBase64) })
- }));
+ const sanitizeDualRows = (pairs) => pairs.slice(0, MAX_ROWS).map((p) => {
+ const nextA = Object.assign({}, p.a, { imageBase64: getPersistableImage(p.a.imageBase64) });
+ const nextB = Object.assign({}, p.b, { imageBase64: getPersistableImage(p.b.imageBase64) });
+ if (nextA.overlayImageBase64) nextA.overlayImageBase64 = getPersistableImage(nextA.overlayImageBase64);
+ if (nextB.overlayImageBase64) nextB.overlayImageBase64 = getPersistableImage(nextB.overlayImageBase64);
+ if (nextA.sumImageBase64) nextA.sumImageBase64 = getPersistableImage(nextA.sumImageBase64);
+ if (nextB.sumImageBase64) nextB.sumImageBase64 = getPersistableImage(nextB.sumImageBase64);
+ return { a: nextA, b: nextB };
+ });
 
  const updated = Object.assign({}, existing, {
  truong: byId("schoolName")?.textContent.trim() || "",
@@ -1585,8 +1696,8 @@
  doThiLienQuan: stripOldImgs(kinRows1),
  doThiLienQuan1: stripOldImgs(kinRows1),
  doThiLienQuan2: kinRows2.map(({ a, b }) => ({
- a: { ...a, imageBase64: null },
- b: { ...b, imageBase64: null }
+ a: { ...a, imageBase64: null, overlayImageBase64: null, sumImageBase64: null },
+ b: { ...b, imageBase64: null, overlayImageBase64: null, sumImageBase64: null }
  })),
  phoTanSo: stripOldImgs(fftRows1),
  phoTanSo1: stripOldImgs(fftRows1),
@@ -1611,7 +1722,8 @@
  }
 
  function getSelectedPartIds() {
- return ["part1", "part2", "part3", "part4", "part5"].filter(id => {
+ const activeList = dualSourceMode ? ["part1", "part2", "part4", "part5"] : ["part1", "part2", "part3", "part4", "part5"];
+ return activeList.filter(id => {
  return Boolean(byId(`chk-${id}`)?.checked);
  });
  }
@@ -1634,8 +1746,14 @@
  const chk = byId(`chk-${id}`);
  const el = byId(id);
  if (chk && el) {
- if (id === "part2") {
- el.classList.remove("temp-export-hide");
+ if (dualSourceMode && id === "part3") {
+ el.style.display = "none";
+ el.classList.add("hidden-part");
+ el.classList.remove("page-break-part", "temp-export-hide");
+ return;
+ }
+ if (id === "part3") {
+ el.style.display = "";
  }
  el.classList.remove("temp-export-hide");
  el.classList.toggle("hidden-part", !chk.checked);
@@ -1977,6 +2095,8 @@
  kenhLabel = idx === 0 ? "Kênh A" : "Kênh B";
  }
  const built = buildKinEquationsFromParams(fVal, ampVal, phiVal);
+ const ovImg = rawKin.overlayImageBase64 || (rawKin.tsViewMode === "overlay" ? kinImg : null);
+ const smImg = rawKin.sumImageBase64 || (rawKin.tsViewMode === "sum" ? kinImg : null);
  kinEntries.push({
  kenh: kenhLabel,
  f_Hz: Math.max(0, fVal),
@@ -1986,6 +2106,8 @@
  eqV: (rawKin.eqV && rawKin.eqV !== "v(t) = —") ? String(rawKin.eqV) : built.eqV,
  eqA: (rawKin.eqA && rawKin.eqA !== "a(t) = —") ? String(rawKin.eqA) : built.eqA,
  displayMode: rawKin.displayMode || rawKin.mode || "uv",
+ overlayImageBase64: ovImg,
+ sumImageBase64: smImg,
  imageBase64: kinImg
  });
  }
@@ -2147,10 +2269,14 @@
  const entryB = Object.assign({}, newEntries[1], { kenh: newEntries[1].kenh || "Kênh B" });
 
  if (singleRowOverwriteMode) {
- const prevA = currentPairs[0]?.a?.imageBase64 || null;
- const prevB = currentPairs[0]?.b?.imageBase64 || null;
- if (!entryA.imageBase64) entryA.imageBase64 = prevA;
- if (!entryB.imageBase64) entryB.imageBase64 = prevB;
+ const prevA = currentPairs[0]?.a || {};
+ const prevB = currentPairs[0]?.b || {};
+ if (!entryA.imageBase64) entryA.imageBase64 = prevA.imageBase64 || null;
+ if (!entryB.imageBase64) entryB.imageBase64 = prevB.imageBase64 || null;
+ if (!entryA.overlayImageBase64 && prevA.overlayImageBase64) entryA.overlayImageBase64 = prevA.overlayImageBase64;
+ if (!entryB.overlayImageBase64 && prevB.overlayImageBase64) entryB.overlayImageBase64 = prevB.overlayImageBase64;
+ if (!entryA.sumImageBase64 && prevA.sumImageBase64) entryA.sumImageBase64 = prevA.sumImageBase64;
+ if (!entryB.sumImageBase64 && prevB.sumImageBase64) entryB.sumImageBase64 = prevB.sumImageBase64;
  return { rows: [{ a: entryA, b: entryB }], changed: true, overflow: false, addedCount: 1 };
  }
 
@@ -2310,6 +2436,8 @@
  eqV: (r?.eqV && r.eqV !== "v(t) = —") ? String(r.eqV) : built.eqV,
  eqA: (r?.eqA && r.eqA !== "a(t) = —") ? String(r.eqA) : built.eqA,
  displayMode: r?.displayMode || r?.mode || "uv",
+ overlayImageBase64: r?.overlayImageBase64 || null,
+ sumImageBase64: r?.sumImageBase64 || null,
  imageBase64: r?.imageBase64 || r?.anhBase64 || null
  };
  }
@@ -2512,19 +2640,11 @@
  }
  }
 
- if (fftEntries.length > 0) {
- if (dualSourceMode) {
- const resFft2 = applyDualEntries(fftRows2, fftEntries, isBlankFftRow, isBlankFftPair, makeBlankFftPair);
- fftRows2 = resFft2.rows;
- anyChanged = anyChanged || resFft2.changed;
- anyOverflow = anyOverflow || resFft2.overflow;
- if (resFft2.changed) routedToDual = true;
- } else {
+ if (fftEntries.length > 0 && !dualSourceMode) {
  const resFft1 = applySingleEntries(fftRows1, [fftEntries[0]], isBlankFftRow);
  fftRows1 = resFft1.rows;
  anyChanged = anyChanged || resFft1.changed;
  anyOverflow = anyOverflow || resFft1.overflow;
- }
  }
 
  if (dbEntries.length > 0) {
@@ -2583,10 +2703,10 @@
  } else {
  renderOscTable2();
  renderOscGraphs2();
+ renderDualOscTableII();
+ renderDualOscGraphsII();
  renderKinTable2();
  renderKinGraphs2();
- renderFftTable2();
- renderFftGraphs2();
  }
  renderDbTable();
  renderDbGraphs();
@@ -2600,8 +2720,8 @@
  renderFftGraphs1();
  } else {
  renderOscGraphs2();
+ renderDualOscGraphsII();
  renderKinGraphs2();
- renderFftGraphs2();
  }
  renderDbGraphs();
  }
@@ -3117,7 +3237,7 @@
  });
  }
 
- function drawGeneratedDualKinGraph(canvasId, pair, idx) {
+ function drawGeneratedDualOverlayGraph(canvasId, pair, idx) {
  const c = byId(canvasId);
  if (!c) return;
  const ctx = c.getContext("2d");
@@ -3133,125 +3253,313 @@
 
  const fA = Number(pair.a.f_Hz) || 0;
  const fB = Number(pair.b.f_Hz) || 0;
- const ampPx = h * 0.30;
+ const ampA = Number(pair.a.ampU) || 0;
+ const ampB = Number(pair.b.ampU) || 0;
+ const maxAmp = Math.max(ampA, ampB, 0.01);
+ const scaleA = (ampA > 0) ? Math.max(0.35, ampA / maxAmp) : 0.95;
+ const scaleB = (ampB > 0) ? Math.max(0.35, ampB / maxAmp) : 0.85;
+ const ampPx = h * 0.32;
  const leftM = 28;
  const rightM = w - 28;
  const spanPx = rightM - leftM;
- const baseCycles = 2.5;
- const ratioBA = (fA > 0 && fB > 0) ? Math.min(3.0, Math.max(0.4, fB / fA)) : 1.2;
+ const baseCycles = 3.0;
+ const ratioBA = (fA > 0 && fB > 0) ? Math.min(2.6, Math.max(0.45, fB / fA)) : 1.0;
+ const phiA = Number(pair.a.phi0) || 0;
+ const phiB = Number(pair.b.phi0) || 0;
+ const phaseInfo = computeDualPhaseInfo(fA, fB, phiA, phiB);
 
- // Kênh A: u1(t) xanh dương đậm, v1(t) xanh lá
+ // Kênh A: u1(t) nét liền đỏ
+ ctx.strokeStyle = "#dc2626";
+ ctx.lineWidth = 2.2;
+ ctx.beginPath();
+ for (let x = leftM; x <= rightM; x++) {
+ const wt = ((x - leftM) / spanPx) * baseCycles * 2 * Math.PI;
+ const y = h / 2 - (ampPx * scaleA) * Math.cos(wt + phiA);
+ x === leftM ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+ }
+ ctx.stroke();
+
+ // Kênh B: u2(t) nét đứt xanh dương
  ctx.strokeStyle = "#1d4ed8";
  ctx.lineWidth = 2.1;
- ctx.beginPath();
- for (let x = leftM; x <= rightM; x++) {
- const wt = ((x - leftM) / spanPx) * baseCycles * 2 * Math.PI;
- const y = h / 2 - ampPx * Math.cos(wt + (Number(pair.a.phi0) || 0));
- x === leftM ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
- }
- ctx.stroke();
-
- ctx.strokeStyle = "#16a34a";
- ctx.lineWidth = 1.7;
- ctx.beginPath();
- for (let x = leftM; x <= rightM; x++) {
- const wt = ((x - leftM) / spanPx) * baseCycles * 2 * Math.PI;
- const y = h / 2 - ampPx * Math.cos(wt + (Number(pair.a.phi0) || 0) + Math.PI / 2);
- x === leftM ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
- }
- ctx.stroke();
-
- // Kênh B: u2(t) đỏ nét đứt
- ctx.strokeStyle = "#dc2626";
- ctx.lineWidth = 2.0;
  ctx.setLineDash([6, 3]);
  ctx.beginPath();
  for (let x = leftM; x <= rightM; x++) {
  const wt = ((x - leftM) / spanPx) * (baseCycles * ratioBA) * 2 * Math.PI;
- const y = h / 2 - (ampPx * 0.85) * Math.cos(wt + (Number(pair.b.phi0) || 0));
+ const y = h / 2 - (ampPx * scaleB) * Math.cos(wt + phiB);
  x === leftM ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
  }
  ctx.stroke();
  ctx.setLineDash([]);
 
  ctx.font = "bold 10.5px Times New Roman";
- ctx.fillStyle = "#1d4ed8";
- ctx.fillText(`— Kênh A: u₁(t) (${fA > 0 ? fA.toFixed(1) + " Hz" : "—"})`, 14, 15);
- ctx.fillStyle = "#16a34a";
- ctx.fillText("— v₁(t)", 205, 15);
  ctx.fillStyle = "#dc2626";
- ctx.fillText(`--- Kênh B: u₂(t) (${fB > 0 ? fB.toFixed(1) + " Hz" : "—"})`, Math.max(270, w * 0.50), 15);
+ ctx.fillText(`— Nguồn 1 (Kênh A): ${fA > 0 ? fA.toFixed(1) + " Hz" : "—"}`, 14, 15);
+ ctx.fillStyle = "#1d4ed8";
+ ctx.fillText(`--- Nguồn 2 (Kênh B): ${fB > 0 ? fB.toFixed(1) + " Hz" : "—"}`, Math.max(210, w * 0.43), 15);
 
  ctx.fillStyle = "#0f172a";
  ctx.font = "bold 11px Times New Roman";
- ctx.fillText(`Lần ${idx + 1}: So sánh dao động điều hòa u(t) – v(t) – a(t) giữa Kênh A và Kênh B`, 14, h - 8);
+ ctx.fillText(`Lần ${idx + 1}: Độ lệch pha Δφ = ${phaseInfo.dPhiStr} (${phaseInfo.dPhiDegStr}) — ${phaseInfo.stateText}`, 14, h - 8);
  }
 
- function renderKinGraphs2() {
- const grid = byId("kinGraphsGrid2");
- if (!grid) return;
- grid.className = "per-row-graphs-grid" + (kinRows2.length <= 1 ? " single-item" : "");
- grid.innerHTML = "";
+ function drawGeneratedDualSumGraph(canvasId, pair, idx) {
+ const c = byId(canvasId);
+ if (!c) return;
+ const ctx = c.getContext("2d");
+ const w = c.width, h = c.height;
+ drawGrid(ctx, w, h, 14, 6);
 
- kinRows2.forEach((pair, idx) => {
+ ctx.strokeStyle = "#94a3b8";
+ ctx.lineWidth = 1.2;
+ ctx.beginPath();
+ ctx.moveTo(0, h / 2);
+ ctx.lineTo(w, h / 2);
+ ctx.stroke();
+
  const fA = Number(pair.a.f_Hz) || 0;
  const fB = Number(pair.b.f_Hz) || 0;
- const hasDistinctImgs = Boolean(pair.a.imageBase64 && pair.b.imageBase64 && pair.a.imageBase64 !== pair.b.imageBase64);
- const sharedImg = pair.a.imageBase64 || pair.b.imageBase64 || null;
+ const ampA = Number(pair.a.ampU) > 0 ? Number(pair.a.ampU) : 1.0;
+ const ampB = Number(pair.b.ampU) > 0 ? Number(pair.b.ampU) : 1.0;
+ const phiA = Number(pair.a.phi0) || 0;
+ const phiB = Number(pair.b.phi0) || 0;
+ const sumInfo = computeWaveSuperpositionInfo(pair);
 
+ const leftM = 28;
+ const rightM = w - 28;
+ const spanPx = rightM - leftM;
+ const isBeat = (fA > 10 && fB > 10 && Math.abs(fA - fB) > 3.0);
+ const baseCycles = isBeat ? Math.min(18, Math.max(8, Math.round(Math.max(fA, fB) / Math.max(1, Math.abs(fA - fB))))) : 3.0;
+ const ratioBA = (fA > 0 && fB > 0) ? Math.min(2.5, Math.max(0.4, fB / fA)) : 1.0;
+ const normMax = Math.max(ampA + ampB, 0.01);
+ const ampPx = h * 0.35;
+
+ // Đường thành phần u1(t) mờ
+ ctx.strokeStyle = "rgba(220, 38, 38, 0.32)";
+ ctx.lineWidth = 1.2;
+ ctx.beginPath();
+ for (let x = leftM; x <= rightM; x++) {
+ const wt = ((x - leftM) / spanPx) * baseCycles * 2 * Math.PI;
+ const u1 = ampA * Math.cos(wt + phiA);
+ const y = h / 2 - (u1 / normMax) * ampPx;
+ x === leftM ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+ }
+ ctx.stroke();
+
+ // Đường thành phần u2(t) mờ
+ ctx.strokeStyle = "rgba(29, 78, 216, 0.32)";
+ ctx.lineWidth = 1.2;
+ ctx.beginPath();
+ for (let x = leftM; x <= rightM; x++) {
+ const wt = ((x - leftM) / spanPx) * (baseCycles * ratioBA) * 2 * Math.PI;
+ const u2 = ampB * Math.cos(wt + phiB);
+ const y = h / 2 - (u2 / normMax) * ampPx;
+ x === leftM ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+ }
+ ctx.stroke();
+
+ // Đường sóng tổng hợp u(t) = u1(t) + u2(t) màu tím đậm
+ ctx.strokeStyle = "#7c3aed";
+ ctx.lineWidth = 2.4;
+ ctx.beginPath();
+ for (let x = leftM; x <= rightM; x++) {
+ const wt1 = ((x - leftM) / spanPx) * baseCycles * 2 * Math.PI;
+ const wt2 = ((x - leftM) / spanPx) * (baseCycles * ratioBA) * 2 * Math.PI;
+ const uSum = ampA * Math.cos(wt1 + phiA) + ampB * Math.cos(wt2 + phiB);
+ const y = h / 2 - (uSum / normMax) * ampPx;
+ x === leftM ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+ }
+ ctx.stroke();
+
+ ctx.font = "bold 10.5px Times New Roman";
+ ctx.fillStyle = "#7c3aed";
+ ctx.fillText("— Sóng tổng hợp u(t) = u₁(t) + u₂(t)", 14, 15);
+ ctx.fillStyle = "#64748b";
+ ctx.fillText("Sóng thành phần: u₁ (đỏ nhạt), u₂ (xanh nhạt)", Math.max(245, w * 0.50), 15);
+
+ ctx.fillStyle = "#0f172a";
+ ctx.font = "bold 11px Times New Roman";
+ ctx.fillText(`Lần ${idx + 1}: ${sumInfo.eqSumPlain} | ${sumInfo.phenomenon}`, 14, h - 8);
+ }
+
+ function renderDualOscGraphsII() {
+ const grid = byId("dualOscGraphsGridII");
+ if (!grid) return;
+ grid.className = "per-row-graphs-grid" + (oscRows2.length <= 1 ? " single-item" : "");
+ grid.innerHTML = "";
+
+ oscRows2.forEach((pair, idx) => {
+ const nA = Math.max(1, pair.a.soChuKi || 1);
+ const dtA = Number(pair.a.deltaT_ms) || 0;
+ const tA = dtA > 0 ? dtA / nA : 0;
+ const fA = tA > 0 ? 1000 / tA : 0;
+
+ const nB = Math.max(1, pair.b.soChuKi || 1);
+ const dtB = Number(pair.b.deltaT_ms) || 0;
+ const tB = dtB > 0 ? dtB / nB : 0;
+ const fB = tB > 0 ? 1000 / tB : 0;
+
+ const sharedImg = pair.a.imageBase64 || pair.b.imageBase64 || null;
+ const canvasId = `canvasDualOscII_${idx}`;
  const card = document.createElement("div");
  card.className = "graph-card";
-
- if (hasDistinctImgs) {
- const cIdA = `canvasKin2A_${idx}`;
- const cIdB = `canvasKin2B_${idx}`;
  card.innerHTML = `
  <div class="graph-card-header">
- <span>Hình II.1.${idx + 1}. Đồ thị khảo sát 2 nguồn – Lần ${idx + 1} (Kênh A &amp; Kênh B)</span>
+ <span>Hình II.1.${idx + 1}. Đồ thị đo chu kì &amp; tần số 2 nguồn – Lần ${idx + 1}</span>
+ <button type="button" class="inline-btn inline-btn-img no-print" onclick="exportSingleCanvas('${canvasId}', 'Phan2_II1_ChuKiTanSo_Lan${idx + 1}')">Tải hình</button>
  </div>
- <div class="dual-canvas-pair">
- <div class="dual-canvas-sub">
- <div class="dual-canvas-sub-label">
- <span style="color:#b91c1c;">Nguồn 1 (Kênh A)</span>
- <button type="button" class="inline-btn inline-btn-img no-print" onclick="exportSingleCanvas('${cIdA}', 'Phan2_DoThiLienQuan_2Nguon_Lan${idx + 1}_KenhA')">Tải</button>
- </div>
- <canvas id="${cIdA}" width="360" height="165"></canvas>
- </div>
- <div class="dual-canvas-sub">
- <div class="dual-canvas-sub-label">
- <span style="color:#1d4ed8;">Nguồn 2 (Kênh B)</span>
- <button type="button" class="inline-btn inline-btn-img no-print" onclick="exportSingleCanvas('${cIdB}', 'Phan2_DoThiLienQuan_2Nguon_Lan${idx + 1}_KenhB')">Tải</button>
- </div>
- <canvas id="${cIdB}" width="360" height="165"></canvas>
- </div>
- </div>
+ <canvas id="${canvasId}" width="620" height="190"></canvas>
  <div class="graph-caption" contenteditable="true" oninput="schedulePersistReportEdits()">
- Nguồn 1: f₁ = ${fA > 0 ? fA.toFixed(1) : "—"} Hz | Nguồn 2: f₂ = ${fB > 0 ? fB.toFixed(1) : "—"} Hz
- </div>
- `;
- grid.appendChild(card);
- drawKinRowCanvas(cIdA, pair.a, idx);
- drawKinRowCanvas(cIdB, pair.b, idx);
- } else {
- const canvasId = `canvasKin2_${idx}`;
- card.innerHTML = `
- <div class="graph-card-header">
- <span>Hình II.1.${idx + 1}. Đồ thị khảo sát 2 nguồn – Lần ${idx + 1} (So sánh Kênh A &amp; Kênh B)</span>
- <button type="button" class="inline-btn inline-btn-img no-print" onclick="exportSingleCanvas('${canvasId}', 'Phan2_DoThiLienQuan_2Nguon_Lan${idx + 1}')">Tải hình</button>
- </div>
- <canvas id="${canvasId}" width="620" height="195"></canvas>
- <div class="graph-caption" contenteditable="true" oninput="schedulePersistReportEdits()">
- Nguồn 1 (Kênh A): ${pair.a.eqU} | Nguồn 2 (Kênh B): ${pair.b.eqU}
+ Nguồn 1 (Kênh A): T₁ = ${tA > 0 ? tA.toFixed(2) : "—"} ms, f₁ = ${fA > 0 ? fA.toFixed(1) : "—"} Hz | Nguồn 2 (Kênh B): T₂ = ${tB > 0 ? tB.toFixed(2) : "—"} ms, f₂ = ${fB > 0 ? fB.toFixed(1) : "—"} Hz
  </div>
  `;
  grid.appendChild(card);
  if (sharedImg) {
- drawBase64ToCanvas(canvasId, sharedImg, () => drawGeneratedDualKinGraph(canvasId, pair, idx));
+ drawBase64ToCanvas(canvasId, sharedImg, () => drawGeneratedDualOscWave(canvasId, pair, idx));
  } else {
- drawGeneratedDualKinGraph(canvasId, pair, idx);
- }
+ drawGeneratedDualOscWave(canvasId, pair, idx);
  }
  });
+ }
+
+ function renderDualOscTableII() {
+ const tbody = byId("dualOscBodyII");
+ if (!tbody) return;
+ tbody.innerHTML = "";
+ const listTA = [], listFA = [], listTB = [], listFB = [], listDiff = [];
+
+ oscRows2.forEach((pair, idx) => {
+ const nA = pair.a.soChuKi >= 1 ? Math.round(pair.a.soChuKi) : 1;
+ const dtA = Number(pair.a.deltaT_ms) || 0;
+ const tA = dtA > 0 ? dtA / nA : 0;
+ const fA = tA > 0 ? 1000 / tA : 0;
+
+ const nB = pair.b.soChuKi >= 1 ? Math.round(pair.b.soChuKi) : 1;
+ const dtB = Number(pair.b.deltaT_ms) || 0;
+ const tB = dtB > 0 ? dtB / nB : 0;
+ const fB = tB > 0 ? 1000 / tB : 0;
+
+ if (tA > 0) listTA.push(tA);
+ if (fA > 0) listFA.push(fA);
+ if (tB > 0) listTB.push(tB);
+ if (fB > 0) listFB.push(fB);
+
+ const hasBothF = fA > 0 && fB > 0;
+ const diffF = hasBothF ? Math.abs(fA - fB) : null;
+ if (diffF !== null) listDiff.push(diffF);
+
+ const trA = document.createElement("tr");
+ trA.innerHTML = `
+ <td rowspan="2"><strong>Lần ${idx + 1}</strong></td>
+ <td><span class="ch-badge ch-badge-a">Nguồn 1 (Kênh A)</span></td>
+ <td contenteditable="true" onblur="updateOsc2(${idx}, 'a', 'soChuKi', this.textContent, this)">${nA}</td>
+ <td contenteditable="true" onblur="updateOsc2(${idx}, 'a', 'deltaT_ms', this.textContent, this)">${dtA.toFixed(2)}</td>
+ <td>${tA > 0 ? tA.toFixed(2) : "—"}</td>
+ <td>${fA > 0 ? fA.toFixed(1) : "—"}</td>
+ <td rowspan="2">${diffF !== null ? diffF.toFixed(1) : "—"}</td>
+ <td rowspan="2" class="no-print col-delete"><button type="button" class="row-del-btn" onclick="delOsc2(${idx})" title="Xóa lần đo này"></button></td>
+ `;
+ tbody.appendChild(trA);
+
+ const trB = document.createElement("tr");
+ trB.innerHTML = `
+ <td><span class="ch-badge ch-badge-b">Nguồn 2 (Kênh B)</span></td>
+ <td contenteditable="true" onblur="updateOsc2(${idx}, 'b', 'soChuKi', this.textContent, this)">${nB}</td>
+ <td contenteditable="true" onblur="updateOsc2(${idx}, 'b', 'deltaT_ms', this.textContent, this)">${dtB.toFixed(2)}</td>
+ <td>${tB > 0 ? tB.toFixed(2) : "—"}</td>
+ <td>${fB > 0 ? fB.toFixed(1) : "—"}</td>
+ `;
+ tbody.appendChild(trB);
+ });
+
+ const badge = byId("oscCountBadge2_II");
+ if (badge) badge.textContent = `${oscRows2.length} / ${MAX_ROWS} cặp`;
+ const btnAdd = byId("btnAddOsc2_II");
+ if (btnAdd) btnAdd.disabled = oscRows2.length >= MAX_ROWS;
+
+ const stTA = calcStats(listTA), stFA = calcStats(listFA);
+ const stTB = calcStats(listTB), stFB = calcStats(listFB);
+ const stDiff = calcStats(listDiff);
+
+ if (byId("avgT2A_II")) byId("avgT2A_II").textContent = stTA ? `${stTA.mean.toFixed(2)} ± ${stTA.err.toFixed(2)}` : "—";
+ if (byId("avgF2A_II")) byId("avgF2A_II").textContent = stFA ? `${stFA.mean.toFixed(1)} ± ${stFA.err.toFixed(1)}` : "—";
+ if (byId("avgT2B_II")) byId("avgT2B_II").textContent = stTB ? `${stTB.mean.toFixed(2)} ± ${stTB.err.toFixed(2)}` : "—";
+ if (byId("avgF2B_II")) byId("avgF2B_II").textContent = stFB ? `${stFB.mean.toFixed(1)} ± ${stFB.err.toFixed(1)}` : "—";
+ if (byId("avgDiffF2_II")) byId("avgDiffF2_II").textContent = stDiff ? `${stDiff.mean.toFixed(1)} Hz` : "—";
+
+ const f1Str = stFA ? `(${stFA.mean.toFixed(1)} ± ${stFA.err.toFixed(1)}) Hz` : "— Hz";
+ const f2Str = stFB ? `(${stFB.mean.toFixed(1)} ± ${stFB.err.toFixed(1)}) Hz` : "— Hz";
+ const dfStr = stDiff ? `${stDiff.mean.toFixed(1)} Hz` : "— Hz";
+ const resEl = byId("resDualII1");
+ if (resEl) {
+ resEl.innerHTML = `<strong>Kết quả II.1 (Đo chu kì &amp; tần số 2 nguồn):</strong> &nbsp; <i>f</i><sub>1</sub> = ${f1Str} &nbsp;|&nbsp; <i>f</i><sub>2</sub> = ${f2Str} &nbsp;|&nbsp; Độ lệch |<i>f</i><sub>1</sub> − <i>f</i><sub>2</sub>| = ${dfStr}`;
+ }
+ }
+
+ function renderKinGraphs2() {
+ const phaseGrid = byId("dualPhaseGraphsGrid");
+ if (phaseGrid) {
+ phaseGrid.className = "per-row-graphs-grid" + (kinRows2.length <= 1 ? " single-item" : "");
+ phaseGrid.innerHTML = "";
+
+ kinRows2.forEach((pair, idx) => {
+ const fA = Number(pair.a.f_Hz) || 0;
+ const fB = Number(pair.b.f_Hz) || 0;
+ const phaseInfo = computeDualPhaseInfo(fA, fB, pair.a.phi0, pair.b.phi0);
+ const ovImg = pair.a.overlayImageBase64 || pair.b.overlayImageBase64 || null;
+ const canvasId = `canvasDualPhase_${idx}`;
+
+ const card = document.createElement("div");
+ card.className = "graph-card";
+ card.innerHTML = `
+ <div class="graph-card-header">
+ <span>Hình II.2.${idx + 1}. Đồ thị ghép sóng &amp; độ lệch pha – Lần ${idx + 1}</span>
+ <button type="button" class="inline-btn inline-btn-img no-print" onclick="exportSingleCanvas('${canvasId}', 'Phan2_II2_GhepSong_Lan${idx + 1}')">Tải hình</button>
+ </div>
+ <canvas id="${canvasId}" width="620" height="190"></canvas>
+ <div class="graph-caption" contenteditable="true" oninput="schedulePersistReportEdits()">
+ Nguồn 1: f₁ = ${fA > 0 ? fA.toFixed(1) : "—"} Hz | Nguồn 2: f₂ = ${fB > 0 ? fB.toFixed(1) : "—"} Hz | Δφ = ${phaseInfo.dPhiStr} (${phaseInfo.dPhiDegStr})
+ </div>
+ `;
+ phaseGrid.appendChild(card);
+ if (ovImg) {
+ drawBase64ToCanvas(canvasId, ovImg, () => drawGeneratedDualOverlayGraph(canvasId, pair, idx));
+ } else {
+ drawGeneratedDualOverlayGraph(canvasId, pair, idx);
+ }
+ });
+ }
+
+ const sumGrid = byId("dualSumGraphsGrid");
+ if (sumGrid) {
+ sumGrid.className = "per-row-graphs-grid" + (kinRows2.length <= 1 ? " single-item" : "");
+ sumGrid.innerHTML = "";
+
+ kinRows2.forEach((pair, idx) => {
+ const sumInfo = computeWaveSuperpositionInfo(pair);
+ const smImg = pair.a.sumImageBase64 || pair.b.sumImageBase64 || null;
+ const canvasId = `canvasDualSum_${idx}`;
+
+ const card = document.createElement("div");
+ card.className = "graph-card";
+ card.innerHTML = `
+ <div class="graph-card-header">
+ <span>Hình II.3.${idx + 1}. Đồ thị tổng sóng u(t) = u₁(t) + u₂(t) – Lần ${idx + 1}</span>
+ <button type="button" class="inline-btn inline-btn-img no-print" onclick="exportSingleCanvas('${canvasId}', 'Phan2_II3_TongSong_Lan${idx + 1}')">Tải hình</button>
+ </div>
+ <canvas id="${canvasId}" width="620" height="190"></canvas>
+ <div class="graph-caption" contenteditable="true" oninput="schedulePersistReportEdits()">
+ ${sumInfo.eqSumPlain} | Biên độ tổng hợp A<sub>th</sub> = ${sumInfo.ampSumStr}
+ </div>
+ `;
+ sumGrid.appendChild(card);
+ if (smImg) {
+ drawBase64ToCanvas(canvasId, smImg, () => drawGeneratedDualSumGraph(canvasId, pair, idx));
+ } else {
+ drawGeneratedDualSumGraph(canvasId, pair, idx);
+ }
+ });
+ }
  }
 
  function renderKinTable1() {
@@ -3332,83 +3640,224 @@
  }
 
  function computeDualPhaseInfo(fA, fB, phiA, phiB) {
- if (fA > 10 && fB > 10 && Math.abs(fA - fB) > 3.0) {
- const fBeat = Math.abs(fA - fB).toFixed(1);
- return {
- dPhiStr: "—",
- stateText: `Khác tần số (Sóng phách f_phách = ${fBeat} Hz)`
- };
- }
  let dPhi = (Number(phiB) || 0) - (Number(phiA) || 0);
  while (dPhi > Math.PI) dPhi -= 2 * Math.PI;
  while (dPhi <= -Math.PI) dPhi += 2 * Math.PI;
+ const deg = Math.round((dPhi * 180) / Math.PI);
+
+ if (fA > 10 && fB > 10 && Math.abs(fA - fB) > 3.0) {
+ const fBeat = Math.abs(fA - fB).toFixed(1);
+ return {
+ dPhiRad: dPhi,
+ dPhiDeg: deg,
+ dPhiStr: "Biến thiên",
+ dPhiDegStr: "—",
+ stateText: `Khác tần số (Sóng phách f_phách = ${fBeat} Hz)`
+ };
+ }
  const absP = Math.abs(dPhi);
- let stateText = "Đang dừng khảo sát";
+ let stateText = "Chưa có tín hiệu";
  if (fA > 0 || fB > 0) {
- if (absP <= 0.15) stateText = "Hai nguồn cùng pha (Δφ ≈ 0)";
- else if (Math.abs(absP - Math.PI) <= 0.15) stateText = "Hai nguồn ngược pha (Δφ ≈ ±π)";
- else if (Math.abs(absP - Math.PI / 2) <= 0.15) stateText = "Hai nguồn vuông pha (Δφ ≈ ±π/2)";
+ if (absP <= 0.15) stateText = "Cùng pha (Δφ ≈ 0)";
+ else if (Math.abs(absP - Math.PI) <= 0.15) stateText = "Ngược pha (Δφ ≈ ±π)";
+ else if (Math.abs(absP - Math.PI / 2) <= 0.15) stateText = "Vuông pha (Δφ ≈ ±π/2)";
  else stateText = dPhi > 0 ? "Kênh B sớm pha hơn Kênh A" : "Kênh B trễ pha hơn Kênh A";
  }
  return {
+ dPhiRad: dPhi,
+ dPhiDeg: deg,
  dPhiStr: `${dPhi >= 0 ? "+" : ""}${dPhi.toFixed(2)} rad`,
+ dPhiDegStr: `${deg >= 0 ? "+" : ""}${deg}°`,
  stateText
  };
  }
 
+ function computeWaveSuperpositionInfo(pair) {
+ const fA = Number(pair?.a?.f_Hz) || 0;
+ const fB = Number(pair?.b?.f_Hz) || 0;
+ const ampA = Number(pair?.a?.ampU) || 0;
+ const ampB = Number(pair?.b?.ampU) || 0;
+ const phiA = Number(pair?.a?.phi0) || 0;
+ const phiB = Number(pair?.b?.phi0) || 0;
+
+ const wA = 2 * Math.PI * fA;
+ const wB = 2 * Math.PI * fB;
+ const eq1 = (fA > 0 && ampA > 0)
+ ? `u₁(t) = ${formatSciPlain(ampA, 2)}·cos(${wA.toFixed(1)}·t${formatPhaseSuffix(phiA)})`
+ : (pair?.a?.eqU && pair.a.eqU !== "u(t) = —" ? pair.a.eqU : "u₁(t) = —");
+ const eq2 = (fB > 0 && ampB > 0)
+ ? `u₂(t) = ${formatSciPlain(ampB, 2)}·cos(${wB.toFixed(1)}·t${formatPhaseSuffix(phiB)})`
+ : (pair?.b?.eqU && pair.b.eqU !== "u(t) = —" ? pair.b.eqU : "u₂(t) = —");
+
+ if (fA <= 0 && fB <= 0) {
+ return {
+ eq1,
+ eq2,
+ eqSumHtml: "u(t) = —",
+ eqSumPlain: "u(t) = —",
+ ampSumStr: "—",
+ phenomenon: "Chưa có dữ liệu"
+ };
+ }
+
+ const isBeat = (fA > 10 && fB > 10 && Math.abs(fA - fB) > 3.0);
+ if (isBeat) {
+ const fBeat = Math.abs(fA - fB).toFixed(1);
+ const aMin = Math.abs(ampA - ampB);
+ const aMax = ampA + ampB;
+ return {
+ eq1,
+ eq2,
+ eqSumHtml: `u(t) = u₁(t) + u₂(t) <span style="color:#6d28d9;">(f<sub>phách</sub> = ${fBeat} Hz)</span>`,
+ eqSumPlain: `u(t) = u₁(t) + u₂(t) (f_phách = ${fBeat} Hz)`,
+ ampSumStr: `${formatSciPlain(aMin, 2)} ÷ ${formatSciPlain(aMax, 2)}`,
+ phenomenon: `Sóng phách (f_phách = ${fBeat} Hz)`
+ };
+ }
+
+ const fAvg = (fA > 0 && fB > 0) ? ((fA + fB) / 2) : (fA || fB);
+ const wAvg = 2 * Math.PI * fAvg;
+ let dPhi = phiB - phiA;
+ while (dPhi > Math.PI) dPhi -= 2 * Math.PI;
+ while (dPhi <= -Math.PI) dPhi += 2 * Math.PI;
+
+ const sumX = ampA * Math.cos(phiA) + ampB * Math.cos(phiB);
+ const sumY = ampA * Math.sin(phiA) + ampB * Math.sin(phiB);
+ const ampSum = Math.sqrt(sumX * sumX + sumY * sumY);
+ const phiSum = Math.atan2(sumY, sumX);
+ const eqSumText = ampSum > 0
+ ? `u(t) = ${formatSciPlain(ampSum, 2)}·cos(${wAvg.toFixed(1)}·t${formatPhaseSuffix(phiSum)})`
+ : "u(t) = 0";
+
+ const absP = Math.abs(dPhi);
+ let phenomenon = "Tổng hợp 2 sóng cùng tần số";
+ if (absP <= 0.15) phenomenon = "Tăng cường cực đại (Cùng pha)";
+ else if (Math.abs(absP - Math.PI) <= 0.15) phenomenon = "Triệt tiêu / Cực tiểu (Ngược pha)";
+ else if (Math.abs(absP - Math.PI / 2) <= 0.15) phenomenon = "Tổng hợp vuông pha";
+
+ return {
+ eq1,
+ eq2,
+ eqSumHtml: eqSumText,
+ eqSumPlain: eqSumText,
+ ampSumStr: formatSciPlain(ampSum, 2),
+ phenomenon
+ };
+ }
+
  function renderKinTable2() {
- const tbody = byId("kinBody2");
- if (!tbody) return;
- tbody.innerHTML = "";
- const listFA = [], listFB = [];
+ // Render bảng II.2 (Ghép sóng - Tính độ lệch pha)
+ const phaseBody = byId("dualPhaseBody");
+ if (phaseBody) {
+ phaseBody.innerHTML = "";
+ let lastPhaseSummary = null;
 
  kinRows2.forEach((pair, idx) => {
  const fA = Number(pair.a.f_Hz) || 0;
  const ampA = Number(pair.a.ampU) || 0;
+ const tA = fA > 0 ? 1000 / fA : 0;
+
  const fB = Number(pair.b.f_Hz) || 0;
  const ampB = Number(pair.b.ampU) || 0;
- if (fA > 0) listFA.push(fA);
- if (fB > 0) listFB.push(fB);
+ const tB = fB > 0 ? 1000 / fB : 0;
+
  const phaseInfo = computeDualPhaseInfo(fA, fB, pair.a.phi0, pair.b.phi0);
+ if (fA > 0 || fB > 0) lastPhaseSummary = phaseInfo;
 
  const trA = document.createElement("tr");
  trA.innerHTML = `
- <td rowspan="2"><strong>Dừng ${idx + 1}</strong></td>
+ <td rowspan="2"><strong>Lần ${idx + 1}</strong></td>
  <td><span class="ch-badge ch-badge-a">Nguồn 1 (Kênh A)</span></td>
  <td contenteditable="true" onblur="updateKin2Num(${idx}, 'a', 'f_Hz', this.textContent, this)">${fA > 0 ? fA.toFixed(1) : "0,0"}</td>
+ <td>${tA > 0 ? tA.toFixed(2) : "—"}</td>
  <td contenteditable="true" onblur="updateKin2Num(${idx}, 'a', 'ampU', this.textContent, this)">${ampA > 0 ? ampA.toFixed(2) : "0,00"}</td>
- <td contenteditable="true" onblur="updateKin2Text(${idx}, 'a', 'eqU', this.textContent)">${pair.a.eqU || "u(t) = —"}</td>
- <td rowspan="2">${phaseInfo.dPhiStr}</td>
+ <td rowspan="2" contenteditable="true" onblur="updateKin2PhaseRad(${idx}, this.textContent, this)" title="Có thể nhập trực tiếp độ lệch pha Δφ (rad)">${phaseInfo.dPhiStr}</td>
+ <td rowspan="2">${phaseInfo.dPhiDegStr}</td>
  <td rowspan="2">${phaseInfo.stateText}</td>
- <td rowspan="2" class="no-print col-delete"><button type="button" class="row-del-btn" onclick="delKin2(${idx})" title="Xóa lần dừng 2 nguồn này"></button></td>
+ <td rowspan="2" class="no-print col-delete"><button type="button" class="row-del-btn" onclick="delKin2(${idx})" title="Xóa lần ghép sóng này"></button></td>
  `;
- tbody.appendChild(trA);
+ phaseBody.appendChild(trA);
 
  const trB = document.createElement("tr");
  trB.innerHTML = `
  <td><span class="ch-badge ch-badge-b">Nguồn 2 (Kênh B)</span></td>
  <td contenteditable="true" onblur="updateKin2Num(${idx}, 'b', 'f_Hz', this.textContent, this)">${fB > 0 ? fB.toFixed(1) : "0,0"}</td>
+ <td>${tB > 0 ? tB.toFixed(2) : "—"}</td>
  <td contenteditable="true" onblur="updateKin2Num(${idx}, 'b', 'ampU', this.textContent, this)">${ampB > 0 ? ampB.toFixed(2) : "0,00"}</td>
- <td contenteditable="true" onblur="updateKin2Text(${idx}, 'b', 'eqU', this.textContent)">${pair.b.eqU || "u(t) = —"}</td>
  `;
- tbody.appendChild(trB);
+ phaseBody.appendChild(trB);
  });
 
- const badge = byId("kinCountBadge2");
- if (badge) badge.textContent = `${kinRows2.length} / ${MAX_ROWS} cặp`;
- const btnAdd = byId("btnAddKin2");
- if (btnAdd) btnAdd.disabled = kinRows2.length >= MAX_ROWS;
+ const badge2 = byId("kinCountBadge2");
+ if (badge2) badge2.textContent = `${kinRows2.length} / ${MAX_ROWS} cặp`;
+ const btnAdd2 = byId("btnAddKin2");
+ if (btnAdd2) btnAdd2.disabled = kinRows2.length >= MAX_ROWS;
 
- const stFA = calcStats(listFA);
- const stFB = calcStats(listFB);
- const f1Str = stFA ? `${stFA.mean.toFixed(1)} Hz (ω₁ = ${(2 * Math.PI * stFA.mean).toFixed(1)} rad/s)` : "— Hz (ω₁ = — rad/s)";
- const f2Str = stFB ? `${stFB.mean.toFixed(1)} Hz (ω₂ = ${(2 * Math.PI * stFB.mean).toFixed(1)} rad/s)` : "— Hz (ω₂ = — rad/s)";
- const dfStr = (stFA && stFB) ? `${Math.abs(stFA.mean - stFB.mean).toFixed(1)} Hz` : "— Hz";
-
- const resEl = byId("resDualKin");
- if (resEl) {
- resEl.innerHTML = `<strong>Kết quả khảo sát dừng 2 nguồn:</strong> &nbsp; Kênh A: <i>f</i><sub>1</sub> = ${f1Str} &nbsp;|&nbsp; Kênh B: <i>f</i><sub>2</sub> = ${f2Str} &nbsp;|&nbsp; Độ lệch tần số |<i>f</i><sub>1</sub> − <i>f</i><sub>2</sub>| = ${dfStr}`;
+ const resII2 = byId("resDualII2");
+ if (resII2) {
+ resII2.innerHTML = lastPhaseSummary
+ ? `<strong>Kết quả II.2 (Ghép sóng &amp; Độ lệch pha):</strong> &nbsp; Độ lệch pha Δ<i>φ</i> = <strong>${lastPhaseSummary.dPhiStr}</strong> (${lastPhaseSummary.dPhiDegStr}) &nbsp;|&nbsp; Trạng thái pha: <strong>${lastPhaseSummary.stateText}</strong>`
+ : `<strong>Kết quả II.2 (Ghép sóng &amp; Độ lệch pha):</strong> &nbsp; Độ lệch pha Δ<i>φ</i> = — rad (—°) &nbsp;|&nbsp; Trạng thái pha: —`;
  }
+ }
+
+ // Render bảng II.3 (Tổng sóng u = uA + uB)
+ const sumBody = byId("dualSumBody");
+ if (sumBody) {
+ sumBody.innerHTML = "";
+ let lastSumSummary = null;
+
+ kinRows2.forEach((pair, idx) => {
+ const sumInfo = computeWaveSuperpositionInfo(pair);
+ if ((Number(pair.a.f_Hz) || 0) > 0 || (Number(pair.b.f_Hz) || 0) > 0) {
+ lastSumSummary = sumInfo;
+ }
+
+ const tr = document.createElement("tr");
+ tr.innerHTML = `
+ <td><strong>Lần ${idx + 1}</strong></td>
+ <td>${sumInfo.eq1}</td>
+ <td>${sumInfo.eq2}</td>
+ <td><strong>${sumInfo.eqSumHtml}</strong></td>
+ <td>${sumInfo.ampSumStr}</td>
+ <td>${sumInfo.phenomenon}</td>
+ <td class="no-print col-delete"><button type="button" class="row-del-btn" onclick="delKin2(${idx})" title="Xóa lần tổng sóng này"></button></td>
+ `;
+ sumBody.appendChild(tr);
+ });
+
+ const badge3 = byId("sumCountBadge2");
+ if (badge3) badge3.textContent = `${kinRows2.length} / ${MAX_ROWS} cặp`;
+ const btnAdd3 = byId("btnAddSum2");
+ if (btnAdd3) btnAdd3.disabled = kinRows2.length >= MAX_ROWS;
+
+ const resII3 = byId("resDualII3");
+ if (resII3) {
+ resII3.innerHTML = lastSumSummary
+ ? `<strong>Kết quả II.3 (Tổng sóng <i>u</i> = <i>u</i><sub>A</sub> + <i>u</i><sub>B</sub>):</strong> &nbsp; <strong>${lastSumSummary.eqSumHtml}</strong> &nbsp;|&nbsp; Biên độ tổng hợp <i>A</i><sub>th</sub> = <strong>${lastSumSummary.ampSumStr}</strong> &nbsp;(${lastSumSummary.phenomenon})`
+ : `<strong>Kết quả II.3 (Tổng sóng <i>u</i> = <i>u</i><sub>A</sub> + <i>u</i><sub>B</sub>):</strong> &nbsp; Phương trình tổng hợp: — &nbsp;|&nbsp; Biên độ tổng hợp <i>A</i><sub>th</sub> = —`;
+ }
+ }
+ }
+
+ function updateKin2PhaseRad(i, val, cellEl) {
+ const cleaned = String(val || "").replace(/rad/gi, "").replace(",", ".").trim();
+ const n = parseFloat(cleaned);
+ if (!isNaN(n) && isFinite(n)) {
+ const phiA = Number(kinRows2[i]?.a?.phi0) || 0;
+ kinRows2[i].b.phi0 = phiA + n;
+ kinRows2[i].a.overlayImageBase64 = null;
+ kinRows2[i].b.overlayImageBase64 = null;
+ kinRows2[i].a.sumImageBase64 = null;
+ kinRows2[i].b.sumImageBase64 = null;
+ const builtB = buildKinEquationsFromParams(kinRows2[i].b.f_Hz, kinRows2[i].b.ampU, kinRows2[i].b.phi0);
+ kinRows2[i].b.eqU = builtB.eqU;
+ } else {
+ showToast("Vui lòng nhập giá trị độ lệch pha Δφ (rad) hợp lệ!");
+ }
+ renderKinTable2();
+ renderKinGraphs2();
+ persistReportEdits();
  }
 
  function updateKin2Num(i, chKey, field, val, cellEl) {
@@ -3416,6 +3865,10 @@
  const n = parseFloat(String(val || "").replace(",", ".").trim());
  if (!isNaN(n) && n >= 0) {
  kinRows2[i][chKey][field] = n;
+ kinRows2[i].a.overlayImageBase64 = null;
+ kinRows2[i].b.overlayImageBase64 = null;
+ kinRows2[i].a.sumImageBase64 = null;
+ kinRows2[i].b.sumImageBase64 = null;
  const built = buildKinEquationsFromParams(kinRows2[i][chKey].f_Hz, kinRows2[i][chKey].ampU, kinRows2[i][chKey].phi0 || 0);
  kinRows2[i][chKey].eqU = built.eqU;
  kinRows2[i][chKey].eqV = built.eqV;
@@ -3452,7 +3905,7 @@
 
  function delKin2(i) {
  if (kinRows2.length <= 1) {
- showToast("Cần giữ lại ít nhất 1 cặp khảo sát ở bảng II.2!");
+ showToast("Cần giữ lại ít nhất 1 cặp khảo sát ở mục II.2 – II.3!");
  return;
  }
  kinRows2.splice(i, 1);
@@ -3952,6 +4405,8 @@
  }
  renderOscTable2();
  renderOscGraphs2();
+ renderDualOscTableII();
+ renderDualOscGraphsII();
  persistReportEdits();
  }
 
@@ -3963,17 +4418,21 @@
  oscRows2.push(makeBlankOscPair());
  renderOscTable2();
  renderOscGraphs2();
+ renderDualOscTableII();
+ renderDualOscGraphsII();
  persistReportEdits();
  }
 
  function delOsc2(i) {
  if (oscRows2.length <= 1) {
- showToast("Cần giữ lại ít nhất 1 cặp đo ở bảng I.4!");
+ showToast("Cần giữ lại ít nhất 1 cặp đo!");
  return;
  }
  oscRows2.splice(i, 1);
  renderOscTable2();
  renderOscGraphs2();
+ renderDualOscTableII();
+ renderDualOscGraphsII();
  persistReportEdits();
  }
 
@@ -4423,14 +4882,36 @@
  targetRows.push([`Lần ${i + 1}`, f > 0 ? f.toFixed(1) : "—", A > 0 ? A.toFixed(2) : "—", r.eqU || "—", r.eqV || "—", r.eqA || "—"]);
  });
  } else {
- targetRows.push(["PHẦN II (II.2): KHẢO SÁT ĐỒ THỊ LIÊN QUAN - 2 NGUỒN"], ["Lần", "Nguồn / Kênh", "Tần số f (Hz)", "Biên độ A", "Phương trình li độ u(t)", "Phương trình vận tốc v(t)", "Phương trình gia tốc a(t)"]);
+ targetRows.push(["PHẦN II (II.1): ĐO CHU KÌ VÀ TẦN SỐ - 2 NGUỒN"], ["Lần đo", "Nguồn / Kênh", "Số chu kì N", "Δt (ms)", "Chu kì T (ms)", "Tần số f (Hz)", "Độ lệch Δf (Hz)"]);
+ oscRows2.forEach((p, i) => {
+ const nA = p.a.soChuKi >= 1 ? Math.round(p.a.soChuKi) : 1;
+ const tA = p.a.deltaT_ms > 0 ? p.a.deltaT_ms / nA : 0;
+ const fA = tA > 0 ? 1000 / tA : 0;
+ const nB = p.b.soChuKi >= 1 ? Math.round(p.b.soChuKi) : 1;
+ const tB = p.b.deltaT_ms > 0 ? p.b.deltaT_ms / nB : 0;
+ const fB = tB > 0 ? 1000 / tB : 0;
+ const diffStr = (fA > 0 && fB > 0) ? Math.abs(fA - fB).toFixed(1) : "—";
+ targetRows.push([`Lần ${i + 1}`, "Nguồn 1 (Kênh A)", nA, Number(p.a.deltaT_ms).toFixed(2), tA > 0 ? tA.toFixed(2) : "—", fA > 0 ? fA.toFixed(1) : "—", diffStr]);
+ targetRows.push([`Lần ${i + 1}`, "Nguồn 2 (Kênh B)", nB, Number(p.b.deltaT_ms).toFixed(2), tB > 0 ? tB.toFixed(2) : "—", fB > 0 ? fB.toFixed(1) : "—", ""]);
+ });
+ targetRows.push([]);
+ targetRows.push(["PHẦN II (II.2): GHÉP SÓNG VÀ TÍNH ĐỘ LỆCH PHA - 2 NGUỒN"], ["Lần", "Nguồn / Kênh", "Tần số f (Hz)", "Chu kì T (ms)", "Biên độ A", "Độ lệch pha Δφ (rad)", "Độ lệch pha Δφ (độ)", "Trạng thái pha"]);
  kinRows2.forEach((p, i) => {
  const fA = Number(p.a.f_Hz) || 0;
+ const tA = fA > 0 ? 1000 / fA : 0;
  const ampA = Number(p.a.ampU) || 0;
  const fB = Number(p.b.f_Hz) || 0;
+ const tB = fB > 0 ? 1000 / fB : 0;
  const ampB = Number(p.b.ampU) || 0;
- targetRows.push([`Lần ${i + 1}`, "Nguồn 1 (Kênh A)", fA > 0 ? fA.toFixed(1) : "—", ampA > 0 ? ampA.toFixed(2) : "—", p.a.eqU || "—", p.a.eqV || "—", p.a.eqA || "—"]);
- targetRows.push([`Lần ${i + 1}`, "Nguồn 2 (Kênh B)", fB > 0 ? fB.toFixed(1) : "—", ampB > 0 ? ampB.toFixed(2) : "—", p.b.eqU || "—", p.b.eqV || "—", p.b.eqA || "—"]);
+ const phaseInfo = computeDualPhaseInfo(fA, fB, p.a.phi0, p.b.phi0);
+ targetRows.push([`Lần ${i + 1}`, "Nguồn 1 (Kênh A)", fA > 0 ? fA.toFixed(1) : "—", tA > 0 ? tA.toFixed(2) : "—", ampA > 0 ? ampA.toFixed(2) : "—", phaseInfo.dPhiStr, phaseInfo.dPhiDegStr, phaseInfo.stateText]);
+ targetRows.push([`Lần ${i + 1}`, "Nguồn 2 (Kênh B)", fB > 0 ? fB.toFixed(1) : "—", tB > 0 ? tB.toFixed(2) : "—", ampB > 0 ? ampB.toFixed(2) : "—", "", "", ""]);
+ });
+ targetRows.push([]);
+ targetRows.push(["PHẦN II (II.3): TỔNG SÓNG (u = uA + uB) - 2 NGUỒN"], ["Lần", "Phương trình u1(t) (Kênh A)", "Phương trình u2(t) (Kênh B)", "Phương trình sóng tổng hợp u(t)", "Biên độ tổng hợp A_th", "Nhận xét hiện tượng"]);
+ kinRows2.forEach((p, i) => {
+ const sumInfo = computeWaveSuperpositionInfo(p);
+ targetRows.push([`Lần ${i + 1}`, sumInfo.eq1, sumInfo.eq2, sumInfo.eqSumPlain, sumInfo.ampSumStr, sumInfo.phenomenon]);
  });
  }
  }
@@ -4473,7 +4954,7 @@
  fileName = "Fox-lab_Phan1_DoChuKiTanSo.csv";
  appendOscCsvRows(rows);
  } else if (partId === "part2") {
- fileName = "Fox-lab_Phan2_DoThiLienQuan.csv";
+ fileName = dualSourceMode ? "Fox-lab_Phan2_KhaoSat2NguonAm.csv" : "Fox-lab_Phan2_DoThiLienQuan.csv";
  appendKinCsvRows(rows);
  } else if (partId === "part3") {
  fileName = "Fox-lab_Phan3_PhanTichFFT.csv";
@@ -4510,7 +4991,7 @@
  rows.push([]);
  }
 
- if (byId("chk-part3")?.checked) {
+ if (!dualSourceMode && byId("chk-part3")?.checked) {
  appendFftCsvRows(rows);
  rows.push([]);
  }

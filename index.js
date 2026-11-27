@@ -7209,27 +7209,63 @@ async function checkAppVersion() {
                 const nB = Math.max(1, Math.round((totalTimeOnScreen || 0.02) * fB));
                 entryB = { kenh: "Kênh B", soChuKi: nB, deltaT_ms: Number(((nB * 1000) / fB).toFixed(2)), imageBase64: snapImg };
             }
-            payload.cacLanDo = [entryA, entryB];
-            payload.anhDoThiBase64 = snapImg;
-            if (typeof isContinuousMode === "undefined" || !isContinuousMode) {
-                const fA_val = (typeof currentCalcFreqA === "number" && currentCalcFreqA > 0)
-                    ? currentCalcFreqA
-                    : (entryA.deltaT_ms > 0 ? (entryA.soChuKi * 1000) / entryA.deltaT_ms : 440);
-                const fB_val = (typeof currentCalcFreqB === "number" && currentCalcFreqB > 0)
-                    ? currentCalcFreqB
-                    : (entryB.deltaT_ms > 0 ? (entryB.soChuKi * 1000) / entryB.deltaT_ms : 440);
-                const ampA_val = Number(currentAmpA) || 0.25;
-                const ampB_val = Number(currentAmpB) || 0.25;
-                const avgF = (fA_val > 0 && fB_val > 0) ? ((fA_val + fB_val) / 2) : (fA_val || fB_val || 440);
-                const phaseRad_val = (channelConfig?.A?.data && channelConfig?.B?.data && typeof calculatePhaseDifference === "function")
-                    ? calculatePhaseDifference(channelConfig.A.data, channelConfig.B.data, avgF, sampleRate, channelConfig.A.index, channelConfig.B.index)
-                    : 0;
-                payload.doThiLienQuan = [
-                    { kenh: "Kênh A", f_Hz: Number(fA_val.toFixed(1)), ampU: Number(ampA_val.toFixed(2)), phi0: 0, imageBase64: snapImg },
-                    { kenh: "Kênh B", f_Hz: Number(fB_val.toFixed(1)), ampU: Number(ampB_val.toFixed(2)), phi0: Number(phaseRad_val.toFixed(3)), imageBase64: snapImg }
-                ];
-                payload.anhDoThiLienQuanBase64 = snapImg;
+            const inTsModal = Boolean(typeof isTwoSourceModalOpen !== "undefined" && isTwoSourceModalOpen);
+            const activeTsTab = inTsModal ? ((typeof tsViewMode !== "undefined" && tsViewMode === "sum") ? "sum" : "overlay") : "points";
+            const oscDualSnap = !inTsModal ? snapImg : null;
+            if (oscDualSnap) {
+                entryA.imageBase64 = oscDualSnap;
+                entryB.imageBase64 = oscDualSnap;
+            } else {
+                entryA.imageBase64 = null;
+                entryB.imageBase64 = null;
             }
+            payload.cacLanDo = [entryA, entryB];
+            payload.anhDoThiBase64 = oscDualSnap;
+            payload.tsViewMode = activeTsTab;
+            payload.fromTwoSourceModal = inTsModal;
+
+            const fA_val = (typeof currentCalcFreqA === "number" && currentCalcFreqA > 0)
+                ? currentCalcFreqA
+                : (entryA.deltaT_ms > 0 ? (entryA.soChuKi * 1000) / entryA.deltaT_ms : 440);
+            const fB_val = (typeof currentCalcFreqB === "number" && currentCalcFreqB > 0)
+                ? currentCalcFreqB
+                : (entryB.deltaT_ms > 0 ? (entryB.soChuKi * 1000) / entryB.deltaT_ms : 440);
+            const ampA_val = Number(currentAmpA) || 0.25;
+            const ampB_val = Number(currentAmpB) || 0.25;
+            const avgF = (fA_val > 0 && fB_val > 0) ? ((fA_val + fB_val) / 2) : (fA_val || fB_val || 440);
+            let phaseRad_val = 0;
+            const hudPhaseEl = document.getElementById("hudPhaseRad");
+            const parsedHudPhase = hudPhaseEl ? parseFloat(String(hudPhaseEl.textContent || "").replace(",", ".")) : NaN;
+            if (inTsModal && !isNaN(parsedHudPhase)) {
+                phaseRad_val = parsedHudPhase;
+            } else if (channelConfig?.A?.data && channelConfig?.B?.data && typeof calculatePhaseDifference === "function") {
+                phaseRad_val = calculatePhaseDifference(channelConfig.A.data, channelConfig.B.data, avgF, sampleRate, channelConfig.A.index, channelConfig.B.index);
+            }
+            const overlaySnap = (inTsModal && activeTsTab === "overlay") ? snapImg : null;
+            const sumSnap = (inTsModal && activeTsTab === "sum") ? snapImg : null;
+            payload.doThiLienQuan = [
+                {
+                    kenh: "Kênh A",
+                    f_Hz: Number(fA_val.toFixed(1)),
+                    ampU: Number(ampA_val.toFixed(2)),
+                    phi0: 0,
+                    tsViewMode: activeTsTab,
+                    overlayImageBase64: overlaySnap,
+                    sumImageBase64: sumSnap,
+                    imageBase64: overlaySnap || sumSnap || null
+                },
+                {
+                    kenh: "Kênh B",
+                    f_Hz: Number(fB_val.toFixed(1)),
+                    ampU: Number(ampB_val.toFixed(2)),
+                    phi0: Number(phaseRad_val.toFixed(3)),
+                    tsViewMode: activeTsTab,
+                    overlayImageBase64: overlaySnap,
+                    sumImageBase64: sumSnap,
+                    imageBase64: overlaySnap || sumSnap || null
+                }
+            ];
+            payload.anhDoThiLienQuanBase64 = overlaySnap || sumSnap || null;
         } else if (featureType === "fft") {
             if (typeof cacheFftSnapshotForReport === "function") cacheFftSnapshotForReport();
             if (!cachedFftSnapshot || !(cachedFftSnapshot.f0 > 0)) {
