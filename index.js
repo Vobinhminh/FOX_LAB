@@ -729,14 +729,16 @@ async function checkAppVersion() {
     const optPickTwoPoints = document.getElementById('optPickTwoPoints');
     const optKinematicsGraphs = document.getElementById('optKinematicsGraphs');
     const optTwoSourcePoints = document.getElementById('optTwoSourcePoints');
-    const optTwoSourceGraphs = document.getElementById('optTwoSourceGraphs');
+    const optTwoSourceOverlay = document.getElementById('optTwoSourceOverlay');
+    const optTwoSourceSum = document.getElementById('optTwoSourceSum');
 
     function syncAnalysisPointMenuItems(mode) {
         const isTwo = (mode === '2');
         if (optPickTwoPoints) optPickTwoPoints.style.display = isTwo ? 'none' : 'flex';
         if (optKinematicsGraphs) optKinematicsGraphs.style.display = isTwo ? 'none' : 'flex';
         if (optTwoSourcePoints) optTwoSourcePoints.style.display = isTwo ? 'flex' : 'none';
-        if (optTwoSourceGraphs) optTwoSourceGraphs.style.display = isTwo ? 'flex' : 'none';
+        if (optTwoSourceOverlay) optTwoSourceOverlay.style.display = isTwo ? 'flex' : 'none';
+        if (optTwoSourceSum) optTwoSourceSum.style.display = isTwo ? 'flex' : 'none';
     }
     let isKinematicsModalOpen = false;
     let showKinematicsResult = false;
@@ -943,25 +945,36 @@ async function checkAppVersion() {
         });
     }
 
-    if (optTwoSourceGraphs) {
-        optTwoSourceGraphs.addEventListener('click', (e) => {
+    function openTwoSourceWithMode(targetMode) {
+        if (isDemoMode) {
+            alert("Chức năng Phân tích 2 nguồn chỉ dành cho bản Full.");
+            openLicenseModal();
+            return;
+        }
+        analysisPointDropdown.classList.remove('open');
+        if (isTwoSourceGraphAnalysisMode) {
+            resetManualAnalysisState();
+            drawFrame();
+        }
+        tsViewMode = (targetMode === 'sum') ? 'sum' : 'overlay';
+        const btnOverlay = document.getElementById('btnModeOverlay');
+        const btnSum = document.getElementById('btnModeSum');
+        if (btnOverlay) btnOverlay.classList.toggle('active-mode', tsViewMode === 'overlay');
+        if (btnSum) btnSum.classList.toggle('active-mode', tsViewMode === 'sum');
+        openTwoSourceModal();
+    }
+
+    if (optTwoSourceOverlay) {
+        optTwoSourceOverlay.addEventListener('click', (e) => {
             e.stopPropagation();
-            if (isDemoMode) {
-                alert("Chức năng Vẽ đồ thị 2 nguồn chỉ dành cho bản Full.");
-                openLicenseModal();
-                return;
-            }
-            analysisPointDropdown.classList.remove('open');
-            if (isTwoSourceGraphAnalysisMode) {
-                resetManualAnalysisState();
-                drawFrame();
-            }
-            tsViewMode = 'overlay';
-            const btnOverlay = document.getElementById('btnModeOverlay');
-            const btnSum = document.getElementById('btnModeSum');
-            if (btnOverlay) btnOverlay.classList.add('active-mode');
-            if (btnSum) btnSum.classList.remove('active-mode');
-            openTwoSourceModal();
+            openTwoSourceWithMode('overlay');
+        });
+    }
+
+    if (optTwoSourceSum) {
+        optTwoSourceSum.addEventListener('click', (e) => {
+            e.stopPropagation();
+            openTwoSourceWithMode('sum');
         });
     }
 
@@ -7063,12 +7076,26 @@ async function checkAppVersion() {
         delete payload.anhPhoBase64;
         delete payload.anhDbBase64;
 
+        const captureCompactCanvasBase64 = (canvasEl, maxW = 860) => {
+            if (!canvasEl || !(canvasEl.width > 0) || !(canvasEl.height > 0)) return null;
+            try {
+                const scale = canvasEl.width > maxW ? (maxW / canvasEl.width) : 1;
+                const off = document.createElement("canvas");
+                off.width = Math.max(1, Math.round(canvasEl.width * scale));
+                off.height = Math.max(1, Math.round(canvasEl.height * scale));
+                const octx = off.getContext("2d");
+                octx.fillStyle = "#ffffff";
+                octx.fillRect(0, 0, off.width, off.height);
+                octx.drawImage(canvasEl, 0, 0, off.width, off.height);
+                return off.toDataURL("image/jpeg", 0.86);
+            } catch (e) {
+                try { return canvasEl.toDataURL("image/png"); } catch (err) { return null; }
+            }
+        };
+
         if (featureType === "kinematics") {
             const kinCanvas = document.getElementById("kinematicsCanvas");
-            let snapImg = null;
-            if (kinCanvas && kinCanvas.width > 0) {
-                try { snapImg = kinCanvas.toDataURL("image/png"); } catch (e) {}
-            }
+            const snapImg = captureCompactCanvasBase64(kinCanvas);
 
             const fmtSci = (val, dec = 2) => {
                 const num = Number(val) || 0;
@@ -7134,10 +7161,7 @@ async function checkAppVersion() {
             payload.anhDoThiLienQuanBase64 = snapImg;
         } else if (featureType === "osc") {
             const targetCanvas = document.getElementById("oscilloscope");
-            let snapImg = null;
-            if (targetCanvas && targetCanvas.width > 0) {
-                try { snapImg = targetCanvas.toDataURL("image/png"); } catch (e) {}
-            }
+            const snapImg = captureCompactCanvasBase64(targetCanvas);
 
             let entry = null;
             if (typeof manualPoints !== "undefined" && Array.isArray(manualPoints) && manualPoints.length === 2 &&
@@ -7173,10 +7197,7 @@ async function checkAppVersion() {
             const tsCanvas = inTsModal
                 ? document.getElementById("twoSourceCanvas")
                 : document.getElementById("oscilloscope");
-            let snapImg = null;
-            if (tsCanvas && tsCanvas.width > 0) {
-                try { snapImg = tsCanvas.toDataURL("image/png"); } catch (e) {}
-            }
+            const snapImg = captureCompactCanvasBase64(tsCanvas);
 
             if (!inTsModal) {
                 // Đang ở màn hình đo 2 nguồn (chọn 4 mốc A1-A2, B1-B2) -> chỉ đồng bộ Phần I (Đo chu kì & tần số 2 nguồn)
@@ -7209,9 +7230,13 @@ async function checkAppVersion() {
                     const nB = Math.max(1, Math.round((totalTimeOnScreen || 0.02) * fB));
                     entryB = { kenh: "Kênh B", soChuKi: nB, deltaT_ms: Number(((nB * 1000) / fB).toFixed(2)), imageBase64: snapImg };
                 }
+                entryA.kenh = "Kênh A";
+                entryB.kenh = "Kênh B";
+                entryA.imageBase64 = snapImg || null;
+                entryB.imageBase64 = snapImg || null;
                 payload.syncFeature = "twoSource_points";
                 payload.cacLanDo = [entryA, entryB];
-                payload.anhDoThiBase64 = snapImg;
+                payload.anhDoThiBase64 = snapImg || null;
                 payload.tsViewMode = "points";
                 payload.fromTwoSourceModal = false;
             } else {

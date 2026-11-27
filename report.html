@@ -1543,11 +1543,11 @@
 
  function getPersistableImage(base64) {
  if (!base64 || typeof base64 !== "string") return null;
- if (base64.length <= 95000) return base64;
+ if (base64.length <= 160000) return base64;
  cacheCompressedThumb(base64);
  const cached = compressedThumbCache.get(base64);
  if (cached) return cached;
- return base64.length <= 220000 ? base64 : null;
+ return base64.length <= 750000 ? base64 : null;
  }
 
  function persistReportEdits() {
@@ -2227,10 +2227,18 @@
  const prevB = currentPairs[0]?.b || {};
  if (!entryA.imageBase64) entryA.imageBase64 = prevA.imageBase64 || null;
  if (!entryB.imageBase64) entryB.imageBase64 = prevB.imageBase64 || null;
- if (!entryA.overlayImageBase64 && prevA.overlayImageBase64) entryA.overlayImageBase64 = prevA.overlayImageBase64;
- if (!entryB.overlayImageBase64 && prevB.overlayImageBase64) entryB.overlayImageBase64 = prevB.overlayImageBase64;
- if (!entryA.sumImageBase64 && prevA.sumImageBase64) entryA.sumImageBase64 = prevA.sumImageBase64;
- if (!entryB.sumImageBase64 && prevB.sumImageBase64) entryB.sumImageBase64 = prevB.sumImageBase64;
+ if (entryA.overlayImageBase64 === undefined || entryA.overlayImageBase64 === null) {
+ entryA.overlayImageBase64 = prevA.overlayImageBase64 || null;
+ }
+ if (entryB.overlayImageBase64 === undefined || entryB.overlayImageBase64 === null) {
+ entryB.overlayImageBase64 = prevB.overlayImageBase64 || null;
+ }
+ if (entryA.sumImageBase64 === undefined || entryA.sumImageBase64 === null) {
+ entryA.sumImageBase64 = prevA.sumImageBase64 || null;
+ }
+ if (entryB.sumImageBase64 === undefined || entryB.sumImageBase64 === null) {
+ entryB.sumImageBase64 = prevB.sumImageBase64 || null;
+ }
  return { rows: [{ a: entryA, b: entryB }], changed: true, overflow: false, addedCount: 1 };
  }
 
