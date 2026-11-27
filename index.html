@@ -250,6 +250,8 @@
  <div class="analysis-point-menu" id="analysisPointMenu">
  <button type="button" class="ap-menu-item" id="optPickTwoPoints">1. Chọn 2 điểm đo T, f, Δφ</button>
  <button type="button" class="ap-menu-item" id="optKinematicsGraphs">2. Vẽ các đồ thị liên quan (u-t, v-t, a-t)</button>
+ <button type="button" class="ap-menu-item" id="optTwoSourcePoints" style="display: none;">1. Phân tích điểm (Xác định T, f)</button>
+ <button type="button" class="ap-menu-item" id="optTwoSourceGraphs" style="display: none;">2. Vẽ đồ thị (Ghép sóng &amp; Tổng hợp)</button>
  </div>
  </div>
  <button id="resetButton" class="btn-orange">Làm mới</button>
@@ -374,15 +376,15 @@
  <div>Tần số Kênh A: <span class="hud-highlight" id="hudFreqA">0.0</span> Hz &nbsp;|&nbsp; Chu kỳ T<sub>A</sub> = <span class="hud-highlight" id="hudPerA">0.00</span> ms &nbsp;|&nbsp; Biên độ A: <span class="hud-highlight" id="hudAmpA">0.00</span></div>
  <div>Tần số Kênh B: <span class="hud-highlight" id="hudFreqB">0.0</span> Hz &nbsp;|&nbsp; Chu kỳ T<sub>B</sub> = <span class="hud-highlight" id="hudPerB">0.00</span> ms &nbsp;|&nbsp; Biên độ B: <span class="hud-highlight" id="hudAmpB">0.00</span></div>
  <div style="margin-top:4px; padding-top:4px; border-top:1px dashed rgba(255,255,255,0.2);">
- Độ lệch pha Δφ: <span class="hud-highlight" id="hudPhaseRad">0.00</span> rad (<span class="hud-highlight" id="hudPhaseDeg">0</span>°)
+ Độ lệch pha Δφ: <span class="hud-highlight" id="hudPhaseRad">0.00</span> rad (<span class="hud-highlight" id="hudPhaseDeg">0</span>°) &nbsp;|&nbsp; <span style="color:#38bdf8; font-weight:600;" id="hudPhaseStatus">--</span>
  </div>
  </div>
 
  <div id="hudEquations" class="hud-overlay" style="top: auto; bottom: 16px; left: 16px;">
- <div class="hud-title">PHƯƠNG TRÌNH DAO ĐỘNG</div>
- <div class="hud-eq">Kênh A: <span class="math-symbol">u<sub>A</sub> = <span id="eqAmpA">A</span>·cos(2π·<span id="eqFreqA">0</span>·t)</span></div>
- <div class="hud-eq">Kênh B: <span class="math-symbol">u<sub>B</sub> = <span id="eqAmpB">A</span>·cos(2π·<span id="eqFreqB">0</span>·t <span id="eqPhase">+ 0.00</span>)</span></div>
- <div class="hud-eq" id="eqSumLine" style="margin-top:4px;">Tổng hợp: <span class="math-symbol">u = u<sub>A</sub> + u<sub>B</sub></span></div>
+ <div class="hud-title">PHƯƠNG TRÌNH CÁC ĐỒ THỊ &amp; TỔNG HỢP</div>
+ <div class="hud-eq">Đồ thị 1 (Kênh A): <span class="math-symbol">u<sub>A</sub> = <span id="eqAmpA">A</span>·cos(2π·<span id="eqFreqA">0</span>·t)</span></div>
+ <div class="hud-eq">Đồ thị 2 (Kênh B): <span class="math-symbol">u<sub>B</sub> = <span id="eqAmpB">A</span>·cos(2π·<span id="eqFreqB">0</span>·t <span id="eqPhase">+ 0.00</span>)</span></div>
+ <div class="hud-eq" id="eqSumLine" style="margin-top:4px; padding-top:4px; border-top:1px dashed rgba(255,255,255,0.2); color:#facc15;">Đồ thị tổng hợp: <span class="math-symbol">u = u<sub>A</sub> + u<sub>B</sub></span></div>
  </div>
 
  <div id="tsWarningText" class="beat-warning">Hai nguồn khác tần số (Tạo Sóng Phách)</div>

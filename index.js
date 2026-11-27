@@ -601,6 +601,13 @@ async function checkAppVersion() {
             return;
         }
 
+        // 2. Dao động ký 2 nguồn + Tự dừng (Chế độ dừng): Gom vào nút "Phân tích đồ thị", ẩn nút "Xử lý nguồn âm"
+        if (displayMode !== 'dbMeter' && mode === '2' && surveyMode === 'auto') {
+            btnAnalysis.style.display = 'none';
+            btnAnalysis.disabled = true;
+            return;
+        }
+
         btnAnalysis.style.display = 'inline-block';
         if (isDemoMode) {
             btnAnalysis.disabled = true;
@@ -721,6 +728,16 @@ async function checkAppVersion() {
     const analysisPointDropdown = document.getElementById('analysisPointDropdown');
     const optPickTwoPoints = document.getElementById('optPickTwoPoints');
     const optKinematicsGraphs = document.getElementById('optKinematicsGraphs');
+    const optTwoSourcePoints = document.getElementById('optTwoSourcePoints');
+    const optTwoSourceGraphs = document.getElementById('optTwoSourceGraphs');
+
+    function syncAnalysisPointMenuItems(mode) {
+        const isTwo = (mode === '2');
+        if (optPickTwoPoints) optPickTwoPoints.style.display = isTwo ? 'none' : 'flex';
+        if (optKinematicsGraphs) optKinematicsGraphs.style.display = isTwo ? 'none' : 'flex';
+        if (optTwoSourcePoints) optTwoSourcePoints.style.display = isTwo ? 'flex' : 'none';
+        if (optTwoSourceGraphs) optTwoSourceGraphs.style.display = isTwo ? 'flex' : 'none';
+    }
     let isKinematicsModalOpen = false;
     let showKinematicsResult = false;
     let kinSnapshotData = null;
@@ -776,6 +793,8 @@ async function checkAppVersion() {
         const samplesNeeded = Math.floor(sampleRate * totalTimeOnScreen);
         const minSamples = Math.max(64, Math.min(samplesNeeded, 512));
 
+        syncAnalysisPointMenuItems(mode);
+
         if (mode === '1') {
             if (isTwoSourceGraphAnalysisMode) resetManualAnalysisState();
             if (!isManualAnalysisMode) {
@@ -791,11 +810,10 @@ async function checkAppVersion() {
                 if (isManualAnalysisMode) resetManualAnalysisState();
             }
         } else {
-            // Dao động ký 2 nguồn + Tự dừng: Phân tích đồ thị tính chu kỳ, tần số và độ lệch pha
+            // Dao động ký 2 nguồn + Tự dừng: Gom chức năng (1. Phân tích điểm T, f; 2. Vẽ đồ thị Ghép sóng & Tổng hợp)
             if (isManualAnalysisMode) resetManualAnalysisState();
-            if (analysisPointDropdown) analysisPointDropdown.classList.remove('open');
             if (!isTwoSourceGraphAnalysisMode) {
-                btnManualAnalysis.textContent = "Phân tích đồ thị";
+                btnManualAnalysis.textContent = "Phân tích đồ thị ";
                 btnManualAnalysis.className = "btn-purple";
             }
             const hasEnoughDataA = channelConfig.A.active && channelConfig.A.data && channelConfig.A.index > minSamples;
@@ -804,6 +822,7 @@ async function checkAppVersion() {
                 btnManualAnalysis.disabled = false;
             } else {
                 btnManualAnalysis.disabled = true;
+                if (analysisPointDropdown) analysisPointDropdown.classList.remove('open');
                 if (isTwoSourceGraphAnalysisMode) resetManualAnalysisState();
             }
         }
@@ -817,7 +836,7 @@ async function checkAppVersion() {
         draggingTwoSourcePoint = null;
         if (analysisPointDropdown) analysisPointDropdown.classList.remove('open');
         if (btnManualAnalysis) {
-            btnManualAnalysis.textContent = (getActiveChannelMode() === '2') ? "Phân tích đồ thị" : "Phân tích đồ thị ";
+            btnManualAnalysis.textContent = "Phân tích đồ thị ";
             btnManualAnalysis.className = "btn-purple";
         }
         closeManualHud();
@@ -852,12 +871,13 @@ async function checkAppVersion() {
                 }
                 if (isTwoSourceGraphAnalysisMode) {
                     resetManualAnalysisState();
-                    infoMessageText.innerHTML = "Đã thoát chế độ phân tích đồ thị 2 nguồn.";
+                    infoMessageText.innerHTML = "Đã thoát chế độ phân tích điểm 2 nguồn.";
                     infoMessageText.style.color = "#0284c7";
                     drawFrame();
                     return;
                 }
-                startTwoSourceGraphAnalysis();
+                syncAnalysisPointMenuItems('2');
+                analysisPointDropdown.classList.toggle('open');
                 return;
             }
 
@@ -907,6 +927,41 @@ async function checkAppVersion() {
             e.stopPropagation();
             analysisPointDropdown.classList.remove('open');
             openKinematicsModal();
+        });
+    }
+
+    if (optTwoSourcePoints) {
+        optTwoSourcePoints.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (isDemoMode) {
+                alert("Chức năng Phân tích điểm 2 nguồn chỉ dành cho bản Full.");
+                openLicenseModal();
+                return;
+            }
+            analysisPointDropdown.classList.remove('open');
+            startTwoSourceGraphAnalysis();
+        });
+    }
+
+    if (optTwoSourceGraphs) {
+        optTwoSourceGraphs.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (isDemoMode) {
+                alert("Chức năng Vẽ đồ thị 2 nguồn chỉ dành cho bản Full.");
+                openLicenseModal();
+                return;
+            }
+            analysisPointDropdown.classList.remove('open');
+            if (isTwoSourceGraphAnalysisMode) {
+                resetManualAnalysisState();
+                drawFrame();
+            }
+            tsViewMode = 'overlay';
+            const btnOverlay = document.getElementById('btnModeOverlay');
+            const btnSum = document.getElementById('btnModeSum');
+            if (btnOverlay) btnOverlay.classList.add('active-mode');
+            if (btnSum) btnSum.classList.remove('active-mode');
+            openTwoSourceModal();
         });
     }
 
@@ -1355,7 +1410,7 @@ async function checkAppVersion() {
             await initAudioChannel('A', micSelectA.value);
         }
     });
-    btnStartB.addEventListener('click', async () => { if (channelConfig.B.active) { stopAudioChannel('B'); updateUIState(); drawFrame(); } else { await initAudioChannel('B', micSelectB.value); } });
+    btnStartB.addEventListener('click', async () => { if (channelConfig.B.active) { resetManualAnalysisState(); stopAudioChannel('B'); updateUIState(); drawFrame(); } else { await initAudioChannel('B', micSelectB.value); } });
     micSelectA.addEventListener('change', (e) => { if (channelConfig.A.active) initAudioChannel('A', e.target.value); saveAppState(); });
     micSelectB.addEventListener('change', (e) => { if (channelConfig.B.active) initAudioChannel('B', e.target.value); saveAppState(); });
     micSelectA.addEventListener('focus', () => { isSelectActive = true; });
@@ -1884,26 +1939,6 @@ async function checkAppVersion() {
         const dispTA_ms = resA ? resA.T_ms : autoTA_ms;
         const dispTB_ms = resB ? resB.T_ms : autoTB_ms;
 
-        const avgFreq = (autoFA > 0 && autoFB > 0)
-            ? ((autoFA + autoFB) / 2)
-            : (autoFA > 0 ? autoFA : (autoFB > 0 ? autoFB : ((dispFA > 0 && dispFB > 0) ? (dispFA + dispFB) / 2 : (dispFA || dispFB))));
-
-        const autoPhaseRad = (avgFreq > 0 && channelConfig.A.data && channelConfig.B.data)
-            ? calculatePhaseDifference(channelConfig.A.data, channelConfig.B.data, avgFreq, sampleRate, channelConfig.A.index, channelConfig.B.index)
-            : 0;
-        const autoPhaseDeg = (autoPhaseRad * 180.0) / Math.PI;
-
-        let phaseStateText = "Chưa xác định";
-        if (dispFA > 10 && dispFB > 10 && Math.abs(dispFA - dispFB) > 3.0) {
-            phaseStateText = `Khác tần số (Sóng phách f_phách = ${Math.abs(dispFA - dispFB).toFixed(1)} Hz)`;
-        } else if (avgFreq > 0) {
-            const absPhi = Math.abs(autoPhaseRad);
-            if (absPhi <= 0.15) phaseStateText = "Hai nguồn cùng pha (Δφ ≈ 0)";
-            else if (Math.abs(absPhi - Math.PI) <= 0.15) phaseStateText = "Hai nguồn ngược pha (Δφ ≈ ±π)";
-            else if (Math.abs(absPhi - Math.PI / 2) <= 0.15) phaseStateText = "Hai nguồn vuông pha (Δφ ≈ ±π/2)";
-            else phaseStateText = autoPhaseRad > 0 ? "Nguồn B sớm pha hơn nguồn A" : "Nguồn B trễ pha hơn nguồn A";
-        }
-
         drawFrame();
 
         if (statusPrompt) {
@@ -1920,8 +1955,7 @@ async function checkAppVersion() {
             infoMessageText.innerHTML =
                 `Đã chọn đủ 4/4 điểm: ` +
                 `<span class="channel-tag-a">Kênh A: T<sub>A</sub>=${dispTA_ms > 0 ? dispTA_ms.toFixed(2) + 'ms' : '--'} (${dispFA > 0 ? dispFA.toFixed(1) + 'Hz' : '--'})</span> | ` +
-                `<span class="channel-tag-b">Kênh B: T<sub>B</sub>=${dispTB_ms > 0 ? dispTB_ms.toFixed(2) + 'ms' : '--'} (${dispFB > 0 ? dispFB.toFixed(1) + 'Hz' : '--'})</span> | ` +
-                `<span class="info-badge">Δφ = ${autoPhaseRad.toFixed(2)} rad (${autoPhaseDeg.toFixed(1)}°)</span>`;
+                `<span class="channel-tag-b">Kênh B: T<sub>B</sub>=${dispTB_ms > 0 ? dispTB_ms.toFixed(2) + 'ms' : '--'} (${dispFB > 0 ? dispFB.toFixed(1) + 'Hz' : '--'})</span>`;
             infoMessageText.style.color = "#0f172a";
         }
 
@@ -1932,22 +1966,18 @@ async function checkAppVersion() {
                 hud.style.display = 'none';
             } else {
                 const hudTitle = hud.querySelector('.ma-header span');
-                if (hudTitle) hudTitle.textContent = "KẾT QUẢ PHÂN TÍCH 4 ĐIỂM (2 ĐIỂM / ĐỒ THỊ)";
+                if (hudTitle) hudTitle.textContent = "KẾT QUẢ PHÂN TÍCH ĐIỂM 2 NGUỒN (XÁC ĐỊNH T, f)";
                 hudBody.innerHTML = `
                     <div class="ma-grid">
                         <div>• Đồ thị 1 (P<sub>A1</sub>, P<sub>A2</sub>): Δt<sub>A</sub> = <span class="ma-val-manual">${resA ? resA.dt_ms.toFixed(2) + 'ms' : '--'}</span></div>
                         <div>• Chu kỳ Đồ thị 1 (T<sub>A</sub>): <span class="ma-val-manual">${dispTA_ms > 0 ? dispTA_ms.toFixed(2) + 'ms' : '--'}</span> <span style="color:#94a3b8;">(f<sub>A</sub> = ${dispFA > 0 ? dispFA.toFixed(1) + 'Hz' : '--'})</span></div>
                         <div>• Đồ thị 2 (P<sub>B1</sub>, P<sub>B2</sub>): Δt<sub>B</sub> = <span class="ma-val-auto">${resB ? resB.dt_ms.toFixed(2) + 'ms' : '--'}</span></div>
                         <div>• Chu kỳ Đồ thị 2 (T<sub>B</sub>): <span class="ma-val-auto">${dispTB_ms > 0 ? dispTB_ms.toFixed(2) + 'ms' : '--'}</span> <span style="color:#94a3b8;">(f<sub>B</sub> = ${dispFB > 0 ? dispFB.toFixed(1) + 'Hz' : '--'})</span></div>
-                        <div>• Độ lệch pha 2 nguồn (Δφ): <span class="ma-val-manual">${autoPhaseRad.toFixed(2)} rad (${autoPhaseDeg.toFixed(1)}°)</span></div>
                         <div>• Chu kỳ tự động (T<sub>A0</sub> / T<sub>B0</sub>): <span style="color:#cbd5e1; font-weight:600;">${autoTA_ms > 0 ? autoTA_ms.toFixed(2) : '--'} / ${autoTB_ms > 0 ? autoTB_ms.toFixed(2) : '--'} ms</span></div>
                     </div>
-                    <div style="margin-top:6px; padding-top:5px; border-top:1px dashed rgba(255,255,255,0.18); font-size:11.5px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-                        <span>Trạng thái: <b style="color:#38bdf8;">${phaseStateText}</b></span>
-                        <div style="display:flex; gap:6px; align-items:center;">
-                            <button type="button" onclick="startTwoSourceGraphAnalysis(true)" style="background:#334155; color:#f8fafc; border:1px solid #475569; border-radius:4px; padding:2px 8px; font-size:11px; cursor:pointer;">Đặt lại 4 mốc</button>
-                            <button type="button" onclick="syncFeatureToReport('twoSource')" style="background:#059669; color:#ffffff; border:none; border-radius:4px; padding:3px 9px; font-size:11px; font-weight:700; cursor:pointer;" title="Đồng bộ kết quả 2 nguồn sang báo cáo">Đồng bộ báo cáo</button>
-                        </div>
+                    <div style="margin-top:6px; padding-top:5px; border-top:1px dashed rgba(255,255,255,0.18); font-size:11.5px; display:flex; justify-content:flex-end; align-items:center; flex-wrap:wrap; gap:6px;">
+                        <button type="button" onclick="startTwoSourceGraphAnalysis(true)" style="background:#334155; color:#f8fafc; border:1px solid #475569; border-radius:4px; padding:2px 8px; font-size:11px; cursor:pointer;">Đặt lại 4 mốc</button>
+                        <button type="button" onclick="syncFeatureToReport('twoSource')" style="background:#059669; color:#ffffff; border:none; border-radius:4px; padding:3px 9px; font-size:11px; font-weight:700; cursor:pointer;" title="Đồng bộ kết quả 2 nguồn sang báo cáo">Đồng bộ báo cáo</button>
                     </div>
                 `;
                 hud.style.display = 'block';
@@ -2784,7 +2814,7 @@ async function checkAppVersion() {
             clearTimeout(stopTimer);
             pauseButton.textContent = "Đo / Dừng";
             pauseButton.className = "btn-green";
-            if (getDisplayMode() === "oscilloscope" && getActiveChannelMode() === "1" && !isContinuousMode) {
+            if (getDisplayMode() === "oscilloscope" && !isContinuousMode) {
                 infoMessageText.innerHTML = "Đã khóa sóng. Bấm <span class='info-badge'>Phân tích đồ thị</span> để chọn chức năng phân tích.";
             } else {
                 infoMessageText.innerHTML = isContinuousMode ? "Đã tạm dừng vẽ." : "Đã khóa sóng an toàn.";
@@ -4650,11 +4680,14 @@ async function checkAppVersion() {
         tsViewMode = mode;
         document.getElementById('btnModeOverlay').classList.toggle('active-mode', mode === 'overlay');
         document.getElementById('btnModeSum').classList.toggle('active-mode', mode === 'sum');
+        isContinuousMode = (modeSelect && modeSelect.value === 'continuous');
+        syncTwoSourceControlsVisibility(isContinuousMode);
         if (isTsPaused) calculatePhaseAndDrawLive();
     }
 
     function showTsResultModal() {
         const el = document.getElementById('hudResults');
+        if (!el) return;
         showTsResults = !showTsResults;
         el.style.display = showTsResults ? 'block' : 'none';
     }
@@ -4682,13 +4715,29 @@ async function checkAppVersion() {
         document.getElementById('hudPhaseRad').innerText = phaseRad.toFixed(2);
         document.getElementById('hudPhaseDeg').innerText = Math.round(phaseRad * 180 / Math.PI);
 
+        const phaseStatusEl = document.getElementById('hudPhaseStatus');
+        if (phaseStatusEl) {
+            let diffF = Math.abs(freqA - freqB);
+            if (freqA > 10 && freqB > 10 && diffF > 3.0) {
+                phaseStatusEl.innerText = `Khác tần số (Sóng phách f_phách = ${diffF.toFixed(1)} Hz)`;
+            } else if (freqA > 0 || freqB > 0) {
+                const absPhi = Math.abs(phaseRad);
+                if (absPhi <= 0.15) phaseStatusEl.innerText = "Cùng pha (Δφ ≈ 0)";
+                else if (Math.abs(absPhi - Math.PI) <= 0.15) phaseStatusEl.innerText = "Ngược pha (Δφ ≈ ±π)";
+                else if (Math.abs(absPhi - Math.PI / 2) <= 0.15) phaseStatusEl.innerText = "Vuông pha (Δφ ≈ ±π/2)";
+                else phaseStatusEl.innerText = phaseRad > 0 ? "Nguồn B sớm pha hơn A" : "Nguồn B trễ pha hơn A";
+            } else {
+                phaseStatusEl.innerText = "Chưa xác định";
+            }
+        }
+
         const sumLine = document.getElementById('eqSumLine');
         if (sumLine) {
             let diff = Math.abs(freqA - freqB);
             if (freqA > 10 && freqB > 10 && diff > 3.0) {
                 let f_beat = diff.toFixed(1);
                 let f_carrier = ((freqA + freqB) / 2).toFixed(1);
-                sumLine.innerHTML = `Tổng hợp (Sóng Phách): <span class="math-symbol"style="color:#a78bfa;">u = 2A·cos(2π·${(diff/2).toFixed(1)}·t)·cos(2π·${f_carrier}·t) &rarr; f<sub>phách</sub> = ${f_beat} Hz</span>`;
+                sumLine.innerHTML = `Đồ thị tổng hợp (Sóng Phách): <span class="math-symbol" style="color:#a78bfa;">u = 2A·cos(2π·${(diff/2).toFixed(1)}·t)·cos(2π·${f_carrier}·t) &rarr; f<sub>phách</sub> = ${f_beat} Hz</span>`;
             } else {
                 let a1 = parseFloat(ampA) || 0;
                 let a2 = parseFloat(ampB) || 0;
@@ -4696,8 +4745,8 @@ async function checkAppVersion() {
                 let sum_amp = Math.sqrt(Math.max(0, sum_amp_sq)).toFixed(2);
                 let phi_sum = Math.atan2(a2 * Math.sin(phaseRad), a1 + a2 * Math.cos(phaseRad));
                 let phi_sum_str = phi_sum >= 0 ? `+ ${phi_sum.toFixed(2)}` : `- ${Math.abs(phi_sum).toFixed(2)}`;
-                let f_val = freqA > 0 ? freqA.toFixed(1) : (freqB > 0 ? freqB.toFixed(1) : "0.0");
-                sumLine.innerHTML = `Tổng hợp: <span class="math-symbol">u = ${sum_amp}·cos(2π·${f_val}·t ${phi_sum_str})</span>`;
+                let f_val = (freqA > 0 && freqB > 0) ? ((freqA + freqB) / 2).toFixed(1) : (freqA > 0 ? freqA.toFixed(1) : (freqB > 0 ? freqB.toFixed(1) : "0.0"));
+                sumLine.innerHTML = `Đồ thị tổng hợp: <span class="math-symbol">u = ${sum_amp}·cos(2π·${f_val}·t ${phi_sum_str})</span>`;
             }
         }
     }
@@ -4752,12 +4801,25 @@ async function checkAppVersion() {
         const hudEq = document.getElementById('hudEquations');
 
         if (!continuousMode) {
-            // Chế độ tự dừng 2 nguồn: bỏ nút Dừng ở cả Ghép sóng và Tổng hợp
+            // Chế độ tự dừng 2 nguồn: bỏ nút Dừng; Ghép sóng hiển thị kết quả tính Δφ, Tổng hợp hiển thị phương trình mỗi đồ thị & tổng hợp
             if (btn) btn.style.setProperty('display', 'none', 'important');
-            if (resBtn) resBtn.style.setProperty('display', 'inline-flex', 'important');
-            if (eqBtn) eqBtn.style.setProperty('display', 'inline-flex', 'important');
+            if (tsViewMode === 'sum') {
+                if (resBtn) resBtn.style.setProperty('display', 'none', 'important');
+                if (eqBtn) eqBtn.style.setProperty('display', 'inline-flex', 'important');
+                showTsResults = false;
+                if (hudRes) hudRes.style.display = 'none';
+                showTsEquations = true;
+                if (hudEq) hudEq.style.display = 'block';
+            } else {
+                if (resBtn) resBtn.style.setProperty('display', 'inline-flex', 'important');
+                if (eqBtn) eqBtn.style.setProperty('display', 'none', 'important');
+                showTsEquations = false;
+                if (hudEq) hudEq.style.display = 'none';
+                showTsResults = true;
+                if (hudRes) hudRes.style.display = 'block';
+            }
         } else {
-            // Chế độ liên tục 2 nguồn: có nút Dừng/Tiếp tục, bỏ hiển thị Phương trình và Kết quả
+            // Chế độ liên tục 2 nguồn: giữ nguyên (có nút Dừng/Tiếp tục, bỏ hiển thị Phương trình và Kết quả)
             if (btn) {
                 btn.style.setProperty('display', 'inline-flex', 'important');
                 if (isTsPaused) {
@@ -4797,6 +4859,9 @@ async function checkAppVersion() {
         }
         computeAndUpdateTwoSourceMetrics(snapDataA, snapIdxA, snapDataB, snapIdxB, false);
         calculatePhaseAndDrawLive();
+        requestAnimationFrame(() => {
+            if (isTwoSourceModalOpen && isTsPaused) calculatePhaseAndDrawLive();
+        });
     }
 
     function openTwoSourceModal() {
