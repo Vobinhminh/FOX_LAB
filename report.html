@@ -1065,31 +1065,31 @@
  </div>
  </div>
 
- <!-- Khối 2 nguồn Phần II -->
+ <!-- Khối 2 nguồn Phần II (Chế độ dừng 2 nguồn) -->
  <div id="part2DualBlock">
  <div class="sub-heading">
- <span>II.1. Đồ thị khảo sát</span>
+ <span>II.1. Đồ thị dừng 2 nguồn (So sánh Kênh A &amp; Kênh B)</span>
  </div>
  <div class="per-row-graphs-grid single-item" id="kinGraphsGrid2"></div>
 
  <div class="sub-heading">
  <span>
- II.2. Bảng số liệu
+ II.2. Bảng số liệu khảo sát dừng 2 nguồn
  <span class="row-counter-badge no-print" id="kinCountBadge2">1 / 10 cặp</span>
  </span>
- <button type="button" class="inline-btn no-print" id="btnAddKin2" onclick="addKinRow2()">+ Thêm cặp khảo sát 2 nguồn (Tối đa 10)</button>
+ <button type="button" class="inline-btn no-print" id="btnAddKin2" onclick="addKinRow2()">+ Thêm cặp khảo sát dừng 2 nguồn (Tối đa 10)</button>
  </div>
  <div class="table-scroll-wrap">
  <table class="data-table">
  <thead>
  <tr>
- <th style="width: 7%;">Lần</th>
- <th style="width: 13%;">Nguồn / Kênh</th>
- <th style="width: 10%;">Tần số <i>f</i> (Hz)</th>
- <th style="width: 9%;">Biên độ <i>A</i></th>
- <th style="width: 18%;">Phương trình li độ <i>u</i>(<i>t</i>)</th>
- <th style="width: 18%;">Phương trình vận tốc <i>v</i>(<i>t</i>)</th>
- <th style="width: 18%;">Phương trình gia tốc <i>a</i>(<i>t</i>)</th>
+ <th style="width: 8%;">Lần</th>
+ <th style="width: 15%;">Nguồn / Kênh</th>
+ <th style="width: 12%;">Tần số <i>f</i> (Hz)</th>
+ <th style="width: 11%;">Biên độ <i>A</i></th>
+ <th style="width: 16%;">Phương trình <i>u</i>(<i>t</i>)</th>
+ <th style="width: 15%;">Độ lệch pha Δ<i>φ</i> (rad)</th>
+ <th style="width: 15%;">Trạng thái pha / Phách</th>
  <th class="no-print col-delete" style="width: 7%;">Xóa</th>
  </tr>
  </thead>
@@ -1098,7 +1098,7 @@
  </div>
 
  <div class="result-box">
- <p id="resDualKin"><strong>Kết quả so sánh đồ thị liên quan 2 nguồn:</strong> &nbsp;
+ <p id="resDualKin"><strong>Kết quả khảo sát dừng 2 nguồn:</strong> &nbsp;
  Kênh A: <i>f</i><sub>1</sub> = — Hz (<i>ω</i><sub>1</sub> = — rad/s) &nbsp;|&nbsp; Kênh B: <i>f</i><sub>2</sub> = — Hz (<i>ω</i><sub>2</sub> = — rad/s) &nbsp;|&nbsp; Độ lệch tần số |<i>f</i><sub>1</sub> − <i>f</i><sub>2</sub>| = — Hz
  </p>
  </div>
@@ -1313,14 +1313,14 @@
  if (p1Single) p1Single.style.display = dualSourceMode ? "none" : "";
  if (p1Dual) p1Dual.style.display = dualSourceMode ? "" : "none";
 
- // Chế độ 2 nguồn không áp dụng Phần II (Đồ thị liên quan u-t, v-t, a-t)
+ // Chế độ 2 nguồn (dừng 2 nguồn): Hiển thị Phần II khối 2 nguồn
  if (part2Sec) {
- part2Sec.style.display = dualSourceMode ? "none" : "";
- part2Sec.classList.toggle("temp-export-hide", dualSourceMode);
+ part2Sec.style.display = "";
+ part2Sec.classList.remove("temp-export-hide");
  }
- if (chkPart2Item) chkPart2Item.style.display = dualSourceMode ? "none" : "";
+ if (chkPart2Item) chkPart2Item.style.display = "";
  if (p2Single) p2Single.style.display = dualSourceMode ? "none" : "";
- if (p2Dual) p2Dual.style.display = "none";
+ if (p2Dual) p2Dual.style.display = dualSourceMode ? "" : "none";
 
  if (p3Single) p3Single.style.display = dualSourceMode ? "none" : "";
  if (p3Dual) p3Dual.style.display = dualSourceMode ? "" : "none";
@@ -1394,8 +1394,8 @@
  persistReportEdits();
  showToast(
  dualSourceMode
- ? "Đã chuyển sang chế độ 2 nguồn: hiển thị I.3–I.4, III.3–III.4 và IV (không áp dụng Phần II)."
- : "Đã chuyển sang chế độ 1 nguồn: hiển thị I.1–I.2, II.1–II.2 và III.1–III.2."
+ ? "Đã chuyển sang chế độ 2 nguồn: hiển thị các mục 2 nguồn ở Phần I, Phần II (dừng 2 nguồn), Phần III và Phần IV."
+ : "Đã chuyển sang chế độ 1 nguồn: hiển thị các mục 1 nguồn (I.1–I.2, II.1–II.2 và III.1–III.2)."
  );
  }
 
@@ -1635,10 +1635,8 @@
  const chk = byId(`chk-${id}`);
  const el = byId(id);
  if (chk && el) {
- if (dualSourceMode && id === "part2") {
- el.classList.add("hidden-part", "temp-export-hide");
- el.classList.remove("page-break-part");
- return;
+ if (id === "part2") {
+ el.classList.remove("temp-export-hide");
  }
  el.classList.remove("temp-export-hide");
  el.classList.toggle("hidden-part", !chk.checked);
@@ -2500,11 +2498,19 @@
  }
  }
 
- if (kinEntries.length > 0 && !dualSourceMode) {
+ if (kinEntries.length > 0) {
+ if (dualSourceMode) {
+ const resKin2 = applyDualEntries(kinRows2, kinEntries, isBlankKinRow, isBlankKinPair, makeBlankKinPair);
+ kinRows2 = resKin2.rows;
+ anyChanged = anyChanged || resKin2.changed;
+ anyOverflow = anyOverflow || resKin2.overflow;
+ if (resKin2.changed) routedToDual = true;
+ } else {
  const resKin1 = applySingleEntries(kinRows1, [kinEntries[0]], isBlankKinRow);
  kinRows1 = resKin1.rows;
  anyChanged = anyChanged || resKin1.changed;
  anyOverflow = anyOverflow || resKin1.overflow;
+ }
  }
 
  if (fftEntries.length > 0) {
@@ -3326,6 +3332,31 @@
  persistReportEdits();
  }
 
+ function computeDualPhaseInfo(fA, fB, phiA, phiB) {
+ if (fA > 10 && fB > 10 && Math.abs(fA - fB) > 3.0) {
+ const fBeat = Math.abs(fA - fB).toFixed(1);
+ return {
+ dPhiStr: "—",
+ stateText: `Khác tần số (Sóng phách f_phách = ${fBeat} Hz)`
+ };
+ }
+ let dPhi = (Number(phiB) || 0) - (Number(phiA) || 0);
+ while (dPhi > Math.PI) dPhi -= 2 * Math.PI;
+ while (dPhi <= -Math.PI) dPhi += 2 * Math.PI;
+ const absP = Math.abs(dPhi);
+ let stateText = "Đang dừng khảo sát";
+ if (fA > 0 || fB > 0) {
+ if (absP <= 0.15) stateText = "Hai nguồn cùng pha (Δφ ≈ 0)";
+ else if (Math.abs(absP - Math.PI) <= 0.15) stateText = "Hai nguồn ngược pha (Δφ ≈ ±π)";
+ else if (Math.abs(absP - Math.PI / 2) <= 0.15) stateText = "Hai nguồn vuông pha (Δφ ≈ ±π/2)";
+ else stateText = dPhi > 0 ? "Kênh B sớm pha hơn Kênh A" : "Kênh B trễ pha hơn Kênh A";
+ }
+ return {
+ dPhiStr: `${dPhi >= 0 ? "+" : ""}${dPhi.toFixed(2)} rad`,
+ stateText
+ };
+ }
+
  function renderKinTable2() {
  const tbody = byId("kinBody2");
  if (!tbody) return;
@@ -3339,17 +3370,18 @@
  const ampB = Number(pair.b.ampU) || 0;
  if (fA > 0) listFA.push(fA);
  if (fB > 0) listFB.push(fB);
+ const phaseInfo = computeDualPhaseInfo(fA, fB, pair.a.phi0, pair.b.phi0);
 
  const trA = document.createElement("tr");
  trA.innerHTML = `
- <td rowspan="2"><strong>Lần ${idx + 1}</strong></td>
+ <td rowspan="2"><strong>Dừng ${idx + 1}</strong></td>
  <td><span class="ch-badge ch-badge-a">Nguồn 1 (Kênh A)</span></td>
  <td contenteditable="true" onblur="updateKin2Num(${idx}, 'a', 'f_Hz', this.textContent, this)">${fA > 0 ? fA.toFixed(1) : "0,0"}</td>
  <td contenteditable="true" onblur="updateKin2Num(${idx}, 'a', 'ampU', this.textContent, this)">${ampA > 0 ? ampA.toFixed(2) : "0,00"}</td>
  <td contenteditable="true" onblur="updateKin2Text(${idx}, 'a', 'eqU', this.textContent)">${pair.a.eqU || "u(t) = —"}</td>
- <td contenteditable="true" onblur="updateKin2Text(${idx}, 'a', 'eqV', this.textContent)">${pair.a.eqV || "v(t) = —"}</td>
- <td contenteditable="true" onblur="updateKin2Text(${idx}, 'a', 'eqA', this.textContent)">${pair.a.eqA || "a(t) = —"}</td>
- <td rowspan="2" class="no-print col-delete"><button type="button" class="row-del-btn" onclick="delKin2(${idx})" title="Xóa cặp khảo sát này"></button></td>
+ <td rowspan="2">${phaseInfo.dPhiStr}</td>
+ <td rowspan="2">${phaseInfo.stateText}</td>
+ <td rowspan="2" class="no-print col-delete"><button type="button" class="row-del-btn" onclick="delKin2(${idx})" title="Xóa lần dừng 2 nguồn này"></button></td>
  `;
  tbody.appendChild(trA);
 
@@ -3359,8 +3391,6 @@
  <td contenteditable="true" onblur="updateKin2Num(${idx}, 'b', 'f_Hz', this.textContent, this)">${fB > 0 ? fB.toFixed(1) : "0,0"}</td>
  <td contenteditable="true" onblur="updateKin2Num(${idx}, 'b', 'ampU', this.textContent, this)">${ampB > 0 ? ampB.toFixed(2) : "0,00"}</td>
  <td contenteditable="true" onblur="updateKin2Text(${idx}, 'b', 'eqU', this.textContent)">${pair.b.eqU || "u(t) = —"}</td>
- <td contenteditable="true" onblur="updateKin2Text(${idx}, 'b', 'eqV', this.textContent)">${pair.b.eqV || "v(t) = —"}</td>
- <td contenteditable="true" onblur="updateKin2Text(${idx}, 'b', 'eqA', this.textContent)">${pair.b.eqA || "a(t) = —"}</td>
  `;
  tbody.appendChild(trB);
  });
@@ -3378,7 +3408,7 @@
 
  const resEl = byId("resDualKin");
  if (resEl) {
- resEl.innerHTML = `<strong>Kết quả so sánh đồ thị liên quan 2 nguồn:</strong> &nbsp; Kênh A: <i>f</i><sub>1</sub> = ${f1Str} &nbsp;|&nbsp; Kênh B: <i>f</i><sub>2</sub> = ${f2Str} &nbsp;|&nbsp; Độ lệch tần số |<i>f</i><sub>1</sub> − <i>f</i><sub>2</sub>| = ${dfStr}`;
+ resEl.innerHTML = `<strong>Kết quả khảo sát dừng 2 nguồn:</strong> &nbsp; Kênh A: <i>f</i><sub>1</sub> = ${f1Str} &nbsp;|&nbsp; Kênh B: <i>f</i><sub>2</sub> = ${f2Str} &nbsp;|&nbsp; Độ lệch tần số |<i>f</i><sub>1</sub> − <i>f</i><sub>2</sub>| = ${dfStr}`;
  }
  }
 

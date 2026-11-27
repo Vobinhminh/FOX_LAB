@@ -601,13 +601,6 @@ async function checkAppVersion() {
             return;
         }
 
-        // 2. Dao động ký 2 nguồn + Tự dừng: BỎ phần "Xử lý nguồn âm"
-        if (displayMode !== 'dbMeter' && mode === '2' && surveyMode === 'auto') {
-            btnAnalysis.style.display = 'none';
-            btnAnalysis.disabled = true;
-            return;
-        }
-
         btnAnalysis.style.display = 'inline-block';
         if (isDemoMode) {
             btnAnalysis.disabled = true;
@@ -630,7 +623,7 @@ async function checkAppVersion() {
                 btnAnalysis.className = 'btn-slate';
             }
         } else if (mode === '2') {
-            // Dao động ký 2 nguồn + Không dừng (Liên tục): Giữ nguyên "Xử lý nguồn âm"
+            // Dao động ký 2 nguồn (cả Tự dừng và Liên tục): Hiển thị "Xử lý nguồn âm"
             if (activeChannels === 2) {
                 btnAnalysis.disabled = false;
                 btnAnalysis.textContent = "Xử lý nguồn âm";
@@ -4751,6 +4744,39 @@ async function checkAppVersion() {
         updateEquationsHUD(currentCalcFreqA, currentCalcFreqB, calculatedPhase, currentAmpA, currentAmpB);
     }
 
+    function syncTwoSourceControlsVisibility(continuousMode) {
+        const btn = document.getElementById('tsPlayBtn');
+        const resBtn = document.getElementById('tsResultBtn');
+        const eqBtn = document.getElementById('tsEquationBtn');
+        const hudRes = document.getElementById('hudResults');
+        const hudEq = document.getElementById('hudEquations');
+
+        if (!continuousMode) {
+            // Chế độ tự dừng 2 nguồn: bỏ nút Dừng ở cả Ghép sóng và Tổng hợp
+            if (btn) btn.style.setProperty('display', 'none', 'important');
+            if (resBtn) resBtn.style.setProperty('display', 'inline-flex', 'important');
+            if (eqBtn) eqBtn.style.setProperty('display', 'inline-flex', 'important');
+        } else {
+            // Chế độ liên tục 2 nguồn: có nút Dừng/Tiếp tục, bỏ hiển thị Phương trình và Kết quả
+            if (btn) {
+                btn.style.setProperty('display', 'inline-flex', 'important');
+                if (isTsPaused) {
+                    btn.innerHTML = 'Tiếp tục';
+                    btn.className = "btn-green";
+                } else {
+                    btn.innerHTML = 'Dừng';
+                    btn.className = "btn-orange";
+                }
+            }
+            if (resBtn) resBtn.style.setProperty('display', 'none', 'important');
+            if (eqBtn) eqBtn.style.setProperty('display', 'none', 'important');
+            showTsResults = false;
+            showTsEquations = false;
+            if (hudRes) hudRes.style.display = 'none';
+            if (hudEq) hudEq.style.display = 'none';
+        }
+    }
+
     function freezeTwoSourceModal() {
         isPaused = true;
         isTsPaused = true;
@@ -4760,20 +4786,7 @@ async function checkAppVersion() {
             pauseButton.textContent = "Đo / Dừng";
             pauseButton.className = "btn-green";
         }
-        const btn = document.getElementById('tsPlayBtn');
-        const resBtn = document.getElementById('tsResultBtn');
-        const eqBtn = document.getElementById('tsEquationBtn');
-        if (btn) {
-            if (!isContinuousMode) {
-                btn.style.setProperty('display', 'none', 'important');
-            } else {
-                btn.style.setProperty('display', 'inline-flex', 'important');
-                btn.innerHTML = 'Tiếp tục';
-                btn.className = "btn-green";
-            }
-        }
-        if (resBtn) resBtn.style.setProperty('display', 'inline-flex', 'important');
-        if (eqBtn) eqBtn.style.setProperty('display', 'inline-flex', 'important');
+        syncTwoSourceControlsVisibility(isContinuousMode);
         if (channelConfig && channelConfig.A && channelConfig.A.data) {
             snapDataA = new Float32Array(channelConfig.A.data);
             snapIdxA = channelConfig.A.index;
@@ -4788,7 +4801,7 @@ async function checkAppVersion() {
 
     function openTwoSourceModal() {
         isContinuousMode = (modeSelect && modeSelect.value === 'continuous');
-        if (getDisplayMode() !== 'oscilloscope' || getActiveChannelMode() !== '2' || !isContinuousMode) {
+        if (getDisplayMode() !== 'oscilloscope' || getActiveChannelMode() !== '2') {
             return;
         }
         const hasCapturedData = (channelConfig.A.index > 0 || channelConfig.B.index > 0);
@@ -4823,21 +4836,7 @@ async function checkAppVersion() {
             else clearTimeout(stopTimer);
         }
 
-        const resBtn = document.getElementById('tsResultBtn'), eqBtn = document.getElementById('tsEquationBtn');
-        if (resBtn) resBtn.style.setProperty('display', 'none', 'important');
-        if (eqBtn) eqBtn.style.setProperty('display', 'none', 'important');
-
-        const btn = document.getElementById('tsPlayBtn');
-        if (btn) {
-            if (!isContinuousMode) {
-                btn.style.setProperty('display', 'none', 'important');
-            } else {
-                btn.style.setProperty('display', 'inline-flex', 'important');
-                btn.innerHTML = 'Dừng';
-                btn.className = "btn-orange";
-            }
-        }
-
+        syncTwoSourceControlsVisibility(isContinuousMode);
         requestAnimationFrame(calculatePhaseAndDrawLive);
     }
 
@@ -4866,8 +4865,11 @@ async function checkAppVersion() {
 
     function toggleTsPlay() {
         isContinuousMode = (modeSelect && modeSelect.value === 'continuous');
+        if (!isContinuousMode) {
+            syncTwoSourceControlsVisibility(false);
+            return;
+        }
         isTsPaused = !isTsPaused;
-        const btn = document.getElementById('tsPlayBtn'), resBtn = document.getElementById('tsResultBtn'), eqBtn = document.getElementById('tsEquationBtn');
         if (!isTsPaused) {
             if (audioCtx && audioCtx.state === 'suspended') {
                 audioCtx.resume().catch(() => {});
@@ -4878,18 +4880,9 @@ async function checkAppVersion() {
                     pauseButton.textContent = "Đang đo...";
                     pauseButton.className = "btn-red";
                 }
-                if (!isContinuousMode) triggerAutoStop();
-                else clearTimeout(stopTimer);
+                clearTimeout(stopTimer);
             }
-            if (btn) {
-                if (!isContinuousMode) btn.style.setProperty('display', 'none', 'important');
-                else { btn.innerHTML = 'Dừng'; btn.className = "btn-orange"; }
-            }
-            if (resBtn) resBtn.style.setProperty('display', 'none', 'important');
-            if (eqBtn) eqBtn.style.setProperty('display', 'none', 'important');
-            showTsResults = false; showTsEquations = false;
-            document.getElementById('hudResults').style.display = 'none';
-            document.getElementById('hudEquations').style.display = 'none';
+            syncTwoSourceControlsVisibility(true);
             requestAnimationFrame(calculatePhaseAndDrawLive);
         } else {
             freezeTwoSourceModal();
@@ -7156,6 +7149,25 @@ async function checkAppVersion() {
             }
             payload.cacLanDo = [entryA, entryB];
             payload.anhDoThiBase64 = snapImg;
+            if (typeof isContinuousMode === "undefined" || !isContinuousMode) {
+                const fA_val = (typeof currentCalcFreqA === "number" && currentCalcFreqA > 0)
+                    ? currentCalcFreqA
+                    : (entryA.deltaT_ms > 0 ? (entryA.soChuKi * 1000) / entryA.deltaT_ms : 440);
+                const fB_val = (typeof currentCalcFreqB === "number" && currentCalcFreqB > 0)
+                    ? currentCalcFreqB
+                    : (entryB.deltaT_ms > 0 ? (entryB.soChuKi * 1000) / entryB.deltaT_ms : 440);
+                const ampA_val = Number(currentAmpA) || 0.25;
+                const ampB_val = Number(currentAmpB) || 0.25;
+                const avgF = (fA_val > 0 && fB_val > 0) ? ((fA_val + fB_val) / 2) : (fA_val || fB_val || 440);
+                const phaseRad_val = (channelConfig?.A?.data && channelConfig?.B?.data && typeof calculatePhaseDifference === "function")
+                    ? calculatePhaseDifference(channelConfig.A.data, channelConfig.B.data, avgF, sampleRate, channelConfig.A.index, channelConfig.B.index)
+                    : 0;
+                payload.doThiLienQuan = [
+                    { kenh: "Kênh A", f_Hz: Number(fA_val.toFixed(1)), ampU: Number(ampA_val.toFixed(2)), phi0: 0, imageBase64: snapImg },
+                    { kenh: "Kênh B", f_Hz: Number(fB_val.toFixed(1)), ampU: Number(ampB_val.toFixed(2)), phi0: Number(phaseRad_val.toFixed(3)), imageBase64: snapImg }
+                ];
+                payload.anhDoThiLienQuanBase64 = snapImg;
+            }
         } else if (featureType === "fft") {
             if (typeof cacheFftSnapshotForReport === "function") cacheFftSnapshotForReport();
             if (!cachedFftSnapshot || !(cachedFftSnapshot.f0 > 0)) {
