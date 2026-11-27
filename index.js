@@ -7010,19 +7010,13 @@ async function checkAppVersion() {
 
     window.syncChannelModeToReport = function (isDual) {
         try {
-            const prev = readStoredReportData() || {};
-            const payload = Object.assign({}, prev, {
+            const payload = {
                 _source: "main_app",
                 _updatedAt: Date.now(),
                 syncFeature: "mode_only",
                 isDualChannel: Boolean(isDual),
                 dualSource: Boolean(isDual)
-            });
-            delete payload.cacLanDo;
-            delete payload.doThiLienQuan;
-            delete payload.phoTanSo;
-            delete payload.mucCuongDoAm;
-            localStorage.setItem(EXP_STORAGE_KEY, JSON.stringify(payload));
+            };
             const bc = new BroadcastChannel("foxlab_report_sync");
             bc.postMessage({ type: "SYNC_REPORT_DATA", payload });
             bc.close();
@@ -7172,7 +7166,11 @@ async function checkAppVersion() {
             payload.cacLanDo = [entry];
             payload.anhDoThiBase64 = snapImg;
         } else if (featureType === "twoSource") {
-            const tsCanvas = (typeof isTwoSourceModalOpen !== "undefined" && isTwoSourceModalOpen)
+            const inTsModal = Boolean(typeof isTwoSourceModalOpen !== "undefined" && isTwoSourceModalOpen);
+            const activeTsTab = inTsModal
+                ? ((typeof tsViewMode !== "undefined" && tsViewMode === "sum") ? "sum" : "overlay")
+                : "points";
+            const tsCanvas = inTsModal
                 ? document.getElementById("twoSourceCanvas")
                 : document.getElementById("oscilloscope");
             let snapImg = null;
@@ -7180,92 +7178,88 @@ async function checkAppVersion() {
                 try { snapImg = tsCanvas.toDataURL("image/png"); } catch (e) {}
             }
 
-            let entryA = null, entryB = null;
-            if (typeof twoSourcePoints !== "undefined" && Array.isArray(twoSourcePoints.A) && twoSourcePoints.A.length === 2 &&
-                typeof getVisibleChannelWindow === "function" && typeof calculateFromGraphClicks === "function") {
-                const winA = getVisibleChannelWindow("A");
-                const resA = winA ? calculateFromGraphClicks(twoSourcePoints.A[0], twoSourcePoints.A[1], winA, "A") : null;
-                if (resA && resA.dt_ms > 0 && resA.T_ms > 0) {
-                    const nA = Math.max(1, Math.round(resA.dt_ms / resA.T_ms));
-                    entryA = { kenh: "Kênh A", soChuKi: nA, deltaT_ms: Number(resA.dt_ms.toFixed(2)), imageBase64: snapImg };
+            if (!inTsModal) {
+                // Đang ở màn hình đo 2 nguồn (chọn 4 mốc A1-A2, B1-B2) -> chỉ đồng bộ Phần I (Đo chu kì & tần số 2 nguồn)
+                let entryA = null, entryB = null;
+                if (typeof twoSourcePoints !== "undefined" && Array.isArray(twoSourcePoints.A) && twoSourcePoints.A.length === 2 &&
+                    typeof getVisibleChannelWindow === "function" && typeof calculateFromGraphClicks === "function") {
+                    const winA = getVisibleChannelWindow("A");
+                    const resA = winA ? calculateFromGraphClicks(twoSourcePoints.A[0], twoSourcePoints.A[1], winA, "A") : null;
+                    if (resA && resA.dt_ms > 0 && resA.T_ms > 0) {
+                        const nA = Math.max(1, Math.round(resA.dt_ms / resA.T_ms));
+                        entryA = { kenh: "Kênh A", soChuKi: nA, deltaT_ms: Number(resA.dt_ms.toFixed(2)), imageBase64: snapImg };
+                    }
                 }
-            }
-            if (typeof twoSourcePoints !== "undefined" && Array.isArray(twoSourcePoints.B) && twoSourcePoints.B.length === 2 &&
-                typeof getVisibleChannelWindow === "function" && typeof calculateFromGraphClicks === "function") {
-                const winB = getVisibleChannelWindow("B");
-                const resB = winB ? calculateFromGraphClicks(twoSourcePoints.B[0], twoSourcePoints.B[1], winB, "B") : null;
-                if (resB && resB.dt_ms > 0 && resB.T_ms > 0) {
-                    const nB = Math.max(1, Math.round(resB.dt_ms / resB.T_ms));
-                    entryB = { kenh: "Kênh B", soChuKi: nB, deltaT_ms: Number(resB.dt_ms.toFixed(2)), imageBase64: snapImg };
+                if (typeof twoSourcePoints !== "undefined" && Array.isArray(twoSourcePoints.B) && twoSourcePoints.B.length === 2 &&
+                    typeof getVisibleChannelWindow === "function" && typeof calculateFromGraphClicks === "function") {
+                    const winB = getVisibleChannelWindow("B");
+                    const resB = winB ? calculateFromGraphClicks(twoSourcePoints.B[0], twoSourcePoints.B[1], winB, "B") : null;
+                    if (resB && resB.dt_ms > 0 && resB.T_ms > 0) {
+                        const nB = Math.max(1, Math.round(resB.dt_ms / resB.T_ms));
+                        entryB = { kenh: "Kênh B", soChuKi: nB, deltaT_ms: Number(resB.dt_ms.toFixed(2)), imageBase64: snapImg };
+                    }
                 }
-            }
-            if (!entryA) {
-                const fA = (typeof currentCalcFreqA === "number" && currentCalcFreqA > 0) ? currentCalcFreqA : 440;
-                const nA = Math.max(1, Math.round((totalTimeOnScreen || 0.02) * fA));
-                entryA = { kenh: "Kênh A", soChuKi: nA, deltaT_ms: Number(((nA * 1000) / fA).toFixed(2)), imageBase64: snapImg };
-            }
-            if (!entryB) {
-                const fB = (typeof currentCalcFreqB === "number" && currentCalcFreqB > 0) ? currentCalcFreqB : 440;
-                const nB = Math.max(1, Math.round((totalTimeOnScreen || 0.02) * fB));
-                entryB = { kenh: "Kênh B", soChuKi: nB, deltaT_ms: Number(((nB * 1000) / fB).toFixed(2)), imageBase64: snapImg };
-            }
-            const inTsModal = Boolean(typeof isTwoSourceModalOpen !== "undefined" && isTwoSourceModalOpen);
-            const activeTsTab = inTsModal ? ((typeof tsViewMode !== "undefined" && tsViewMode === "sum") ? "sum" : "overlay") : "points";
-            const oscDualSnap = !inTsModal ? snapImg : null;
-            if (oscDualSnap) {
-                entryA.imageBase64 = oscDualSnap;
-                entryB.imageBase64 = oscDualSnap;
+                if (!entryA) {
+                    const fA = (typeof currentCalcFreqA === "number" && currentCalcFreqA > 0) ? currentCalcFreqA : 440;
+                    const nA = Math.max(1, Math.round((totalTimeOnScreen || 0.02) * fA));
+                    entryA = { kenh: "Kênh A", soChuKi: nA, deltaT_ms: Number(((nA * 1000) / fA).toFixed(2)), imageBase64: snapImg };
+                }
+                if (!entryB) {
+                    const fB = (typeof currentCalcFreqB === "number" && currentCalcFreqB > 0) ? currentCalcFreqB : 440;
+                    const nB = Math.max(1, Math.round((totalTimeOnScreen || 0.02) * fB));
+                    entryB = { kenh: "Kênh B", soChuKi: nB, deltaT_ms: Number(((nB * 1000) / fB).toFixed(2)), imageBase64: snapImg };
+                }
+                payload.syncFeature = "twoSource_points";
+                payload.cacLanDo = [entryA, entryB];
+                payload.anhDoThiBase64 = snapImg;
+                payload.tsViewMode = "points";
+                payload.fromTwoSourceModal = false;
             } else {
-                entryA.imageBase64 = null;
-                entryB.imageBase64 = null;
-            }
-            payload.cacLanDo = [entryA, entryB];
-            payload.anhDoThiBase64 = oscDualSnap;
-            payload.tsViewMode = activeTsTab;
-            payload.fromTwoSourceModal = inTsModal;
-
-            const fA_val = (typeof currentCalcFreqA === "number" && currentCalcFreqA > 0)
-                ? currentCalcFreqA
-                : (entryA.deltaT_ms > 0 ? (entryA.soChuKi * 1000) / entryA.deltaT_ms : 440);
-            const fB_val = (typeof currentCalcFreqB === "number" && currentCalcFreqB > 0)
-                ? currentCalcFreqB
-                : (entryB.deltaT_ms > 0 ? (entryB.soChuKi * 1000) / entryB.deltaT_ms : 440);
-            const ampA_val = Number(currentAmpA) || 0.25;
-            const ampB_val = Number(currentAmpB) || 0.25;
-            const avgF = (fA_val > 0 && fB_val > 0) ? ((fA_val + fB_val) / 2) : (fA_val || fB_val || 440);
-            let phaseRad_val = 0;
-            const hudPhaseEl = document.getElementById("hudPhaseRad");
-            const parsedHudPhase = hudPhaseEl ? parseFloat(String(hudPhaseEl.textContent || "").replace(",", ".")) : NaN;
-            if (inTsModal && !isNaN(parsedHudPhase)) {
-                phaseRad_val = parsedHudPhase;
-            } else if (channelConfig?.A?.data && channelConfig?.B?.data && typeof calculatePhaseDifference === "function") {
-                phaseRad_val = calculatePhaseDifference(channelConfig.A.data, channelConfig.B.data, avgF, sampleRate, channelConfig.A.index, channelConfig.B.index);
-            }
-            const overlaySnap = (inTsModal && activeTsTab === "overlay") ? snapImg : null;
-            const sumSnap = (inTsModal && activeTsTab === "sum") ? snapImg : null;
-            payload.doThiLienQuan = [
-                {
-                    kenh: "Kênh A",
-                    f_Hz: Number(fA_val.toFixed(1)),
-                    ampU: Number(ampA_val.toFixed(2)),
-                    phi0: 0,
-                    tsViewMode: activeTsTab,
-                    overlayImageBase64: overlaySnap,
-                    sumImageBase64: sumSnap,
-                    imageBase64: overlaySnap || sumSnap || null
-                },
-                {
-                    kenh: "Kênh B",
-                    f_Hz: Number(fB_val.toFixed(1)),
-                    ampU: Number(ampB_val.toFixed(2)),
-                    phi0: Number(phaseRad_val.toFixed(3)),
-                    tsViewMode: activeTsTab,
-                    overlayImageBase64: overlaySnap,
-                    sumImageBase64: sumSnap,
-                    imageBase64: overlaySnap || sumSnap || null
+                // Đang mở modal "Xử lý 2 nguồn âm" -> chỉ đồng bộ đúng tab đang mở:
+                // - Tab "Ghép sóng & Độ lệch pha" (overlay) -> chỉ đồng bộ Phần II.1
+                // - Tab "Tổng sóng u = uA + uB" (sum) -> chỉ đồng bộ Phần II.2
+                const fA_val = (typeof currentCalcFreqA === "number" && currentCalcFreqA > 0) ? currentCalcFreqA : 440;
+                const fB_val = (typeof currentCalcFreqB === "number" && currentCalcFreqB > 0) ? currentCalcFreqB : 440;
+                const ampA_val = Number(currentAmpA) || 0.25;
+                const ampB_val = Number(currentAmpB) || 0.25;
+                const avgF = (fA_val > 0 && fB_val > 0) ? ((fA_val + fB_val) / 2) : (fA_val || fB_val || 440);
+                let phaseRad_val = 0;
+                const hudPhaseEl = document.getElementById("hudPhaseRad");
+                const parsedHudPhase = hudPhaseEl ? parseFloat(String(hudPhaseEl.textContent || "").replace(",", ".")) : NaN;
+                if (!isNaN(parsedHudPhase)) {
+                    phaseRad_val = parsedHudPhase;
+                } else if (channelConfig?.A?.data && channelConfig?.B?.data && typeof calculatePhaseDifference === "function") {
+                    phaseRad_val = calculatePhaseDifference(channelConfig.A.data, channelConfig.B.data, avgF, sampleRate, channelConfig.A.index, channelConfig.B.index);
                 }
-            ];
-            payload.anhDoThiLienQuanBase64 = overlaySnap || sumSnap || null;
+                const overlaySnap = (activeTsTab === "overlay") ? snapImg : null;
+                const sumSnap = (activeTsTab === "sum") ? snapImg : null;
+                payload.syncFeature = (activeTsTab === "sum") ? "twoSource_sum" : "twoSource_overlay";
+                payload.tsViewMode = activeTsTab;
+                payload.fromTwoSourceModal = true;
+                payload.doThiLienQuan = [
+                    {
+                        kenh: "Kênh A",
+                        f_Hz: Number(fA_val.toFixed(1)),
+                        ampU: Number(ampA_val.toFixed(2)),
+                        phi0: 0,
+                        tsViewMode: activeTsTab,
+                        overlayImageBase64: overlaySnap,
+                        sumImageBase64: sumSnap,
+                        imageBase64: snapImg || null
+                    },
+                    {
+                        kenh: "Kênh B",
+                        f_Hz: Number(fB_val.toFixed(1)),
+                        ampU: Number(ampB_val.toFixed(2)),
+                        phi0: Number(phaseRad_val.toFixed(3)),
+                        tsViewMode: activeTsTab,
+                        overlayImageBase64: overlaySnap,
+                        sumImageBase64: sumSnap,
+                        imageBase64: snapImg || null
+                    }
+                ];
+                payload.anhDoThiLienQuanBase64 = snapImg || null;
+            }
         } else if (featureType === "fft") {
             if (typeof cacheFftSnapshotForReport === "function") cacheFftSnapshotForReport();
             if (!cachedFftSnapshot || !(cachedFftSnapshot.f0 > 0)) {
@@ -7351,13 +7345,17 @@ async function checkAppVersion() {
         }
 
         const labelMap = {
-            osc: "Phân tích đồ thị",
-            kinematics: "Đồ thị liên quan (u-t, v-t, a-t)",
+            osc: "Phân tích đồ thị (Phần I)",
+            kinematics: "Đồ thị liên quan u-t, v-t, a-t (Phần II)",
+            twoSource_points: "Đo chu kì & tần số 2 nguồn (Phần I)",
+            twoSource_overlay: "Ghép sóng & Độ lệch pha (Phần II.1)",
+            twoSource_sum: "Tổng sóng u = uA + uB (Phần II.2)",
             twoSource: "Xử lý 2 nguồn âm",
-            fft: "Phổ họa âm FFT",
-            db: "Mức cường độ âm (dB)"
+            fft: "Phổ họa âm FFT (Phần III)",
+            db: "Mức cường độ âm dB (Phần IV)"
         };
-        showExpToast(`Đã đồng bộ [${labelMap[featureType] || featureType}] sang báo cáo!`);
+        const resolvedFeatKey = payload.syncFeature || featureType;
+        showExpToast(`Đã đồng bộ [${labelMap[resolvedFeatKey] || labelMap[featureType] || featureType}] sang báo cáo!`);
     };
 
     window.syncReportToStandalone = function () {
@@ -7377,7 +7375,7 @@ async function checkAppVersion() {
     window.navigateToStandaloneReport = function () {
         const isDual = (typeof getActiveChannelMode === "function") && (getActiveChannelMode() === "2");
         window.syncChannelModeToReport(isDual);
-        const targetPage = window.FOX_REPORT_PAGE || "./report.html";
+        const targetPage = (window.FOX_REPORT_PAGE || "./report.html") + `?mode=${isDual ? "2" : "1"}`;
         const reportWin = window.open(targetPage, "FoxLabReportWindow");
         if (!reportWin) {
             window.location.href = targetPage;

@@ -2561,10 +2561,16 @@
  }
  applyHeaderAndMetaFields(data);
 
+ const feat = String(data.syncFeature || "");
+ const allowOsc = !feat || feat === "osc" || feat === "twoSource" || feat === "twoSource_points";
+ const allowKin = !feat || feat === "kinematics" || feat === "twoSource" || feat === "twoSource_overlay" || feat === "twoSource_sum";
+ const allowFft = !feat || feat === "fft";
+ const allowDb  = !feat || feat === "db";
+
  const allowDual = dualSourceMode;
  const { oscEntries, kinEntries, fftEntries, dbEntries } = extractSyncEntries(data, allowDual);
 
- if (oscEntries.length > 0) {
+ if (allowOsc && oscEntries.length > 0) {
  if (dualSourceMode) {
  const resOsc2 = applyDualEntries(oscRows2, oscEntries, isBlankOscRow, isBlankOscPair, makeBlankOscPair);
  oscRows2 = resOsc2.rows;
@@ -2579,9 +2585,18 @@
  }
  }
 
- if (kinEntries.length > 0) {
+ if (allowKin && kinEntries.length > 0) {
  if (dualSourceMode) {
- const resKin2 = applyDualEntries(kinRows2, kinEntries, isBlankKinRow, isBlankKinPair, makeBlankKinPair);
+ const normalizedKinEntries = kinEntries.map((item) => {
+ const copy = Object.assign({}, item);
+ if (feat === "twoSource_overlay") {
+ copy.sumImageBase64 = null;
+ } else if (feat === "twoSource_sum") {
+ copy.overlayImageBase64 = null;
+ }
+ return copy;
+ });
+ const resKin2 = applyDualEntries(kinRows2, normalizedKinEntries, isBlankKinRow, isBlankKinPair, makeBlankKinPair);
  kinRows2 = resKin2.rows;
  anyChanged = anyChanged || resKin2.changed;
  anyOverflow = anyOverflow || resKin2.overflow;
@@ -2594,14 +2609,14 @@
  }
  }
 
- if (fftEntries.length > 0 && !dualSourceMode) {
+ if (allowFft && fftEntries.length > 0 && !dualSourceMode) {
  const resFft1 = applySingleEntries(fftRows1, [fftEntries[0]], isBlankFftRow);
  fftRows1 = resFft1.rows;
  anyChanged = anyChanged || resFft1.changed;
  anyOverflow = anyOverflow || resFft1.overflow;
  }
 
- if (dbEntries.length > 0) {
+ if (allowDb && dbEntries.length > 0) {
  const dbToApply = dualSourceMode ? dbEntries : [dbEntries[0]];
  const resDb = applySingleEntries(dbRows, dbToApply, isBlankDbRow, (entry, prevRows) => {
  const sameNameCount = prevRows.filter(r => r.viTri === entry.viTri || r.viTri.startsWith(entry.viTri + " (")).length;
@@ -2625,14 +2640,20 @@
 
  if (anyChanged) {
  pulseSyncBadge(data._updatedAt || now);
+ const featNames = {
+ osc: "Phần I (Đo chu kì & tần số)",
+ kinematics: "Phần II (Đồ thị liên quan u–v–a)",
+ twoSource_points: "Phần I (Đo chu kì & tần số 2 nguồn)",
+ twoSource_overlay: "Phần II.1 (Ghép sóng & Độ lệch pha)",
+ twoSource_sum: "Phần II.2 (Tổng sóng u = uA + uB)",
+ fft: "Phần III (Phổ tần số FFT)",
+ db: "Phần IV (Mức cường độ âm dB)"
+ };
+ const partLabel = featNames[feat] || (routedToDual ? "mục 2 nguồn (Kênh A & B)" : "mục 1 nguồn");
  if (singleRowOverwriteMode) {
- showToast(routedToDual
- ? "Đã ghi đè dữ liệu 2 nguồn (Kênh A & B) từ Fox-lab!"
- : "Đã ghi đè dữ liệu 1 nguồn mới từ Fox-lab!");
+ showToast(`Đã ghi đè ${partLabel} từ Fox-lab!`);
  } else {
- showToast(routedToDual
- ? "Đã nhận dữ liệu vào mục 2 nguồn (Kênh A & B)!"
- : "Đã nhận dữ liệu vào mục 1 nguồn (+1 dòng)!");
+ showToast(`Đã đồng bộ ${partLabel} (+1 dòng/cặp)!`);
  }
  } else if (anyOverflow) {
  showToast(`Đã đạt tối đa ${MAX_ROWS} dòng/cặp! Bật "Chỉnh 1 dòng (Ghi đè)" hoặc xóa bớt dòng cũ.`);
@@ -4882,6 +4903,17 @@
  syncCheckboxes(false);
 
  const params = new URLSearchParams(window.location.search);
+ const modeParam = params.get("mode");
+ if (modeParam === "2" || modeParam === "1") {
+ const nextDual = (modeParam === "2");
+ if (dualSourceMode !== nextDual) {
+ dualSourceMode = nextDual;
+ updateSyncRowModeUI();
+ renderAllSections();
+ syncCheckboxes(false);
+ persistReportEdits();
+ }
+ }
  const partParam = params.get("parts") || params.get("part");
  if (partParam) {
  const selected = String(partParam).split(",");
