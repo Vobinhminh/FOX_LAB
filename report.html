@@ -1347,7 +1347,7 @@
  if (dualSourceMode) {
  routeBtn.classList.add("dual-route-active");
  routeBtn.textContent = "Chế độ: 2 nguồn";
- routeBtn.title = "Đang bật chế độ 2 nguồn: hiển thị mục I.3–I.4, III.3–III.4 và IV (không áp dụng Phần II). Bấm để chuyển về 1 nguồn.";
+ routeBtn.title = "Đang bật chế độ 2 nguồn: hiển thị mục I.3–I.4, II.1–II.2 (dừng 2 nguồn), III.3–III.4 và IV. Bấm để chuyển về 1 nguồn.";
  } else {
  routeBtn.classList.remove("dual-route-active");
  routeBtn.textContent = "Chế độ: 1 nguồn";
@@ -1612,7 +1612,6 @@
 
  function getSelectedPartIds() {
  return ["part1", "part2", "part3", "part4", "part5"].filter(id => {
- if (dualSourceMode && id === "part2") return false;
  return Boolean(byId(`chk-${id}`)?.checked);
  });
  }
@@ -4217,11 +4216,7 @@
  }
 
  function exportSinglePartToPDF(partId, fileTag) {
- if (dualSourceMode && partId === "part2") {
- showToast("Chế độ 2 nguồn không áp dụng Phần II (Đồ thị liên quan)!");
- return;
- }
- const allParts = dualSourceMode ? ["part1", "part3", "part4"] : ["part1", "part2", "part3", "part4"];
+ const allParts = ["part1", "part2", "part3", "part4"];
  const prevStates = {};
  const titleEl = byId("expTitle");
  const prevTitle = titleEl ? titleEl.textContent : DEFAULT_TITLE;
@@ -4478,10 +4473,6 @@
  fileName = "Fox-lab_Phan1_DoChuKiTanSo.csv";
  appendOscCsvRows(rows);
  } else if (partId === "part2") {
- if (dualSourceMode) {
- showToast("Chế độ 2 nguồn không áp dụng Phần II (Đồ thị liên quan)!");
- return;
- }
  fileName = "Fox-lab_Phan2_DoThiLienQuan.csv";
  appendKinCsvRows(rows);
  } else if (partId === "part3") {
@@ -4514,7 +4505,7 @@
  rows.push([]);
  }
 
- if (!dualSourceMode && byId("chk-part2")?.checked) {
+ if (byId("chk-part2")?.checked) {
  appendKinCsvRows(rows);
  rows.push([]);
  }

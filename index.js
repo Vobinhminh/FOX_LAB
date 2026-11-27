@@ -6954,6 +6954,7 @@ async function checkAppVersion() {
                 dualSource: Boolean(isDual)
             });
             delete payload.cacLanDo;
+            delete payload.doThiLienQuan;
             delete payload.phoTanSo;
             delete payload.mucCuongDoAm;
             localStorage.setItem(EXP_STORAGE_KEY, JSON.stringify(payload));
@@ -7004,10 +7005,6 @@ async function checkAppVersion() {
         delete payload.anhDbBase64;
 
         if (featureType === "kinematics") {
-            if (isDual) {
-                showExpToast("Đồ thị liên quan (u-t, v-t, a-t) chỉ áp dụng cho chế độ 1 nguồn!");
-                return;
-            }
             const kinCanvas = document.getElementById("kinematicsCanvas");
             let snapImg = null;
             if (kinCanvas && kinCanvas.width > 0) {
