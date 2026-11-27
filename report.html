@@ -1065,58 +1065,12 @@
  </div>
  </div>
 
- <!-- Khối 2 nguồn Phần II: II.1 Đo chu kì & tần số | II.2 Ghép sóng tính độ lệch pha | II.3 Tổng sóng -->
+ <!-- Khối 2 nguồn Phần II: II.1 Ghép sóng tính độ lệch pha | II.2 Tổng sóng -->
  <div id="part2DualBlock">
- <!-- II.1. ĐO CHU KÌ VÀ TẦN SỐ (2 NGUỒN) -->
+ <!-- II.1. GHÉP SÓNG – TÍNH ĐỘ LỆCH PHA -->
  <div class="sub-heading">
  <span>
- II.1. Đo chu kì và tần số (2 nguồn – Kênh A &amp; Kênh B)
- <span class="row-counter-badge no-print" id="oscCountBadge2_II">1 / 10 cặp</span>
- </span>
- <button type="button" class="inline-btn no-print" id="btnAddOsc2_II" onclick="addOscRow2()">+ Thêm cặp đo 2 nguồn (Tối đa 10)</button>
- </div>
- <div class="per-row-graphs-grid single-item" id="dualOscGraphsGridII"></div>
- <div class="table-scroll-wrap">
- <table class="data-table">
- <thead>
- <tr>
- <th style="width: 10%;">Lần đo</th>
- <th style="width: 18%;">Nguồn / Kênh</th>
- <th style="width: 11%;">Số chu kì (<i>N</i>)</th>
- <th style="width: 17%;">Δ<i>t</i> = <i>t</i><sub>2</sub> − <i>t</i><sub>1</sub> (ms)</th>
- <th style="width: 13%;">Chu kì <i>T</i> (ms)</th>
- <th style="width: 13%;">Tần số <i>f</i> (Hz)</th>
- <th style="width: 10%;">Độ lệch Δ<i>f</i> (Hz)</th>
- <th class="no-print col-delete" style="width: 8%;">Xóa</th>
- </tr>
- </thead>
- <tbody id="dualOscBodyII"></tbody>
- <tfoot>
- <tr class="summary-row">
- <td colspan="4">Trung bình Nguồn 1 (Kênh A) (<span class="overline"><i>x</i></span> ± <span class="overline">Δ<i>x</i></span>)</td>
- <td id="avgT2A_II">—</td>
- <td id="avgF2A_II">—</td>
- <td rowspan="2" id="avgDiffF2_II">—</td>
- <td rowspan="2" class="no-print col-delete"></td>
- </tr>
- <tr class="summary-row">
- <td colspan="4">Trung bình Nguồn 2 (Kênh B) (<span class="overline"><i>x</i></span> ± <span class="overline">Δ<i>x</i></span>)</td>
- <td id="avgT2B_II">—</td>
- <td id="avgF2B_II">—</td>
- </tr>
- </tfoot>
- </table>
- </div>
- <div class="result-box">
- <p id="resDualII1"><strong>Kết quả II.1 (Đo chu kì &amp; tần số 2 nguồn):</strong> &nbsp;
- <i>f</i><sub>1</sub> = — Hz &nbsp;|&nbsp; <i>f</i><sub>2</sub> = — Hz &nbsp;|&nbsp; Độ lệch |<i>f</i><sub>1</sub> − <i>f</i><sub>2</sub>| = — Hz
- </p>
- </div>
-
- <!-- II.2. GHÉP SÓNG – TÍNH ĐỘ LỆCH PHA -->
- <div class="sub-heading" style="margin-top: 14px;">
- <span>
- II.2. Ghép sóng – Tính độ lệch pha (Δ<i>φ</i>)
+ II.1. Ghép sóng – Tính độ lệch pha (Δ<i>φ</i>)
  <span class="row-counter-badge no-print" id="kinCountBadge2">1 / 10 cặp</span>
  </span>
  <button type="button" class="inline-btn no-print" id="btnAddKin2" onclick="addKinRow2()">+ Thêm lần ghép sóng (Tối đa 10)</button>
@@ -1141,15 +1095,15 @@
  </table>
  </div>
  <div class="result-box">
- <p id="resDualII2"><strong>Kết quả II.2 (Ghép sóng &amp; Độ lệch pha):</strong> &nbsp;
+ <p id="resDualII2"><strong>Kết quả II.1 (Ghép sóng &amp; Độ lệch pha):</strong> &nbsp;
  Độ lệch pha Δ<i>φ</i> = — rad (—°) &nbsp;|&nbsp; Trạng thái pha: —
  </p>
  </div>
 
- <!-- II.3. TỔNG SÓNG – TỔNG HỢP DAO ĐỘNG (u = uA + uB) -->
+ <!-- II.2. TỔNG SÓNG – TỔNG HỢP DAO ĐỘNG (u = uA + uB) -->
  <div class="sub-heading" style="margin-top: 14px;">
  <span>
- II.3. Tổng sóng – Tổng hợp dao động (<i>u</i> = <i>u</i><sub>A</sub> + <i>u</i><sub>B</sub>)
+ II.2. Tổng sóng – Tổng hợp dao động (<i>u</i> = <i>u</i><sub>A</sub> + <i>u</i><sub>B</sub>)
  <span class="row-counter-badge no-print" id="sumCountBadge2">1 / 10 cặp</span>
  </span>
  <button type="button" class="inline-btn no-print" id="btnAddSum2" onclick="addKinRow2()">+ Thêm lần tổng sóng (Tối đa 10)</button>
@@ -1172,7 +1126,7 @@
  </table>
  </div>
  <div class="result-box">
- <p id="resDualII3"><strong>Kết quả II.3 (Tổng sóng <i>u</i> = <i>u</i><sub>A</sub> + <i>u</i><sub>B</sub>):</strong> &nbsp;
+ <p id="resDualII3"><strong>Kết quả II.2 (Tổng sóng <i>u</i> = <i>u</i><sub>A</sub> + <i>u</i><sub>B</sub>):</strong> &nbsp;
  Phương trình tổng hợp: — &nbsp;|&nbsp; Biên độ tổng hợp <i>A</i><sub>th</sub> = —
  </p>
  </div>
@@ -1453,7 +1407,7 @@
  if (dualSourceMode) {
  routeBtn.classList.add("dual-route-active");
  routeBtn.textContent = "Chế độ: 2 nguồn";
- routeBtn.title = "Đang bật chế độ 2 nguồn: hiển thị Phần II (II.1 Chu kì & tần số, II.2 Ghép sóng tính Δφ, II.3 Tổng sóng) và bỏ Phần III phân tích nguồn âm. Bấm để chuyển về 1 nguồn.";
+ routeBtn.title = "Đang bật chế độ 2 nguồn: hiển thị Phần II (II.1 Ghép sóng tính Δφ, II.2 Tổng sóng) và bỏ Phần III phân tích nguồn âm. Bấm để chuyển về 1 nguồn.";
  } else {
  routeBtn.classList.remove("dual-route-active");
  routeBtn.textContent = "Chế độ: 1 nguồn";
@@ -1500,7 +1454,7 @@
  persistReportEdits();
  showToast(
  dualSourceMode
- ? "Đã chuyển sang chế độ 2 nguồn: mục II gồm II.1 Đo chu kì & tần số, II.2 Ghép sóng tính Δφ, II.3 Tổng sóng (bỏ Phần III)."
+ ? "Đã chuyển sang chế độ 2 nguồn: mục II gồm II.1 Ghép sóng tính Δφ, II.2 Tổng sóng (bỏ Phần III)."
  : "Đã chuyển sang chế độ 1 nguồn: hiển thị đầy đủ Phần I – Phần V."
  );
  }
@@ -2703,8 +2657,6 @@
  } else {
  renderOscTable2();
  renderOscGraphs2();
- renderDualOscTableII();
- renderDualOscGraphsII();
  renderKinTable2();
  renderKinGraphs2();
  }
@@ -2720,7 +2672,6 @@
  renderFftGraphs1();
  } else {
  renderOscGraphs2();
- renderDualOscGraphsII();
  renderKinGraphs2();
  }
  renderDbGraphs();
@@ -3382,120 +3333,6 @@
  ctx.fillText(`Lần ${idx + 1}: ${sumInfo.eqSumPlain} | ${sumInfo.phenomenon}`, 14, h - 8);
  }
 
- function renderDualOscGraphsII() {
- const grid = byId("dualOscGraphsGridII");
- if (!grid) return;
- grid.className = "per-row-graphs-grid" + (oscRows2.length <= 1 ? " single-item" : "");
- grid.innerHTML = "";
-
- oscRows2.forEach((pair, idx) => {
- const nA = Math.max(1, pair.a.soChuKi || 1);
- const dtA = Number(pair.a.deltaT_ms) || 0;
- const tA = dtA > 0 ? dtA / nA : 0;
- const fA = tA > 0 ? 1000 / tA : 0;
-
- const nB = Math.max(1, pair.b.soChuKi || 1);
- const dtB = Number(pair.b.deltaT_ms) || 0;
- const tB = dtB > 0 ? dtB / nB : 0;
- const fB = tB > 0 ? 1000 / tB : 0;
-
- const sharedImg = pair.a.imageBase64 || pair.b.imageBase64 || null;
- const canvasId = `canvasDualOscII_${idx}`;
- const card = document.createElement("div");
- card.className = "graph-card";
- card.innerHTML = `
- <div class="graph-card-header">
- <span>Hình II.1.${idx + 1}. Đồ thị đo chu kì &amp; tần số 2 nguồn – Lần ${idx + 1}</span>
- <button type="button" class="inline-btn inline-btn-img no-print" onclick="exportSingleCanvas('${canvasId}', 'Phan2_II1_ChuKiTanSo_Lan${idx + 1}')">Tải hình</button>
- </div>
- <canvas id="${canvasId}" width="620" height="190"></canvas>
- <div class="graph-caption" contenteditable="true" oninput="schedulePersistReportEdits()">
- Nguồn 1 (Kênh A): T₁ = ${tA > 0 ? tA.toFixed(2) : "—"} ms, f₁ = ${fA > 0 ? fA.toFixed(1) : "—"} Hz | Nguồn 2 (Kênh B): T₂ = ${tB > 0 ? tB.toFixed(2) : "—"} ms, f₂ = ${fB > 0 ? fB.toFixed(1) : "—"} Hz
- </div>
- `;
- grid.appendChild(card);
- if (sharedImg) {
- drawBase64ToCanvas(canvasId, sharedImg, () => drawGeneratedDualOscWave(canvasId, pair, idx));
- } else {
- drawGeneratedDualOscWave(canvasId, pair, idx);
- }
- });
- }
-
- function renderDualOscTableII() {
- const tbody = byId("dualOscBodyII");
- if (!tbody) return;
- tbody.innerHTML = "";
- const listTA = [], listFA = [], listTB = [], listFB = [], listDiff = [];
-
- oscRows2.forEach((pair, idx) => {
- const nA = pair.a.soChuKi >= 1 ? Math.round(pair.a.soChuKi) : 1;
- const dtA = Number(pair.a.deltaT_ms) || 0;
- const tA = dtA > 0 ? dtA / nA : 0;
- const fA = tA > 0 ? 1000 / tA : 0;
-
- const nB = pair.b.soChuKi >= 1 ? Math.round(pair.b.soChuKi) : 1;
- const dtB = Number(pair.b.deltaT_ms) || 0;
- const tB = dtB > 0 ? dtB / nB : 0;
- const fB = tB > 0 ? 1000 / tB : 0;
-
- if (tA > 0) listTA.push(tA);
- if (fA > 0) listFA.push(fA);
- if (tB > 0) listTB.push(tB);
- if (fB > 0) listFB.push(fB);
-
- const hasBothF = fA > 0 && fB > 0;
- const diffF = hasBothF ? Math.abs(fA - fB) : null;
- if (diffF !== null) listDiff.push(diffF);
-
- const trA = document.createElement("tr");
- trA.innerHTML = `
- <td rowspan="2"><strong>Lần ${idx + 1}</strong></td>
- <td><span class="ch-badge ch-badge-a">Nguồn 1 (Kênh A)</span></td>
- <td contenteditable="true" onblur="updateOsc2(${idx}, 'a', 'soChuKi', this.textContent, this)">${nA}</td>
- <td contenteditable="true" onblur="updateOsc2(${idx}, 'a', 'deltaT_ms', this.textContent, this)">${dtA.toFixed(2)}</td>
- <td>${tA > 0 ? tA.toFixed(2) : "—"}</td>
- <td>${fA > 0 ? fA.toFixed(1) : "—"}</td>
- <td rowspan="2">${diffF !== null ? diffF.toFixed(1) : "—"}</td>
- <td rowspan="2" class="no-print col-delete"><button type="button" class="row-del-btn" onclick="delOsc2(${idx})" title="Xóa lần đo này"></button></td>
- `;
- tbody.appendChild(trA);
-
- const trB = document.createElement("tr");
- trB.innerHTML = `
- <td><span class="ch-badge ch-badge-b">Nguồn 2 (Kênh B)</span></td>
- <td contenteditable="true" onblur="updateOsc2(${idx}, 'b', 'soChuKi', this.textContent, this)">${nB}</td>
- <td contenteditable="true" onblur="updateOsc2(${idx}, 'b', 'deltaT_ms', this.textContent, this)">${dtB.toFixed(2)}</td>
- <td>${tB > 0 ? tB.toFixed(2) : "—"}</td>
- <td>${fB > 0 ? fB.toFixed(1) : "—"}</td>
- `;
- tbody.appendChild(trB);
- });
-
- const badge = byId("oscCountBadge2_II");
- if (badge) badge.textContent = `${oscRows2.length} / ${MAX_ROWS} cặp`;
- const btnAdd = byId("btnAddOsc2_II");
- if (btnAdd) btnAdd.disabled = oscRows2.length >= MAX_ROWS;
-
- const stTA = calcStats(listTA), stFA = calcStats(listFA);
- const stTB = calcStats(listTB), stFB = calcStats(listFB);
- const stDiff = calcStats(listDiff);
-
- if (byId("avgT2A_II")) byId("avgT2A_II").textContent = stTA ? `${stTA.mean.toFixed(2)} ± ${stTA.err.toFixed(2)}` : "—";
- if (byId("avgF2A_II")) byId("avgF2A_II").textContent = stFA ? `${stFA.mean.toFixed(1)} ± ${stFA.err.toFixed(1)}` : "—";
- if (byId("avgT2B_II")) byId("avgT2B_II").textContent = stTB ? `${stTB.mean.toFixed(2)} ± ${stTB.err.toFixed(2)}` : "—";
- if (byId("avgF2B_II")) byId("avgF2B_II").textContent = stFB ? `${stFB.mean.toFixed(1)} ± ${stFB.err.toFixed(1)}` : "—";
- if (byId("avgDiffF2_II")) byId("avgDiffF2_II").textContent = stDiff ? `${stDiff.mean.toFixed(1)} Hz` : "—";
-
- const f1Str = stFA ? `(${stFA.mean.toFixed(1)} ± ${stFA.err.toFixed(1)}) Hz` : "— Hz";
- const f2Str = stFB ? `(${stFB.mean.toFixed(1)} ± ${stFB.err.toFixed(1)}) Hz` : "— Hz";
- const dfStr = stDiff ? `${stDiff.mean.toFixed(1)} Hz` : "— Hz";
- const resEl = byId("resDualII1");
- if (resEl) {
- resEl.innerHTML = `<strong>Kết quả II.1 (Đo chu kì &amp; tần số 2 nguồn):</strong> &nbsp; <i>f</i><sub>1</sub> = ${f1Str} &nbsp;|&nbsp; <i>f</i><sub>2</sub> = ${f2Str} &nbsp;|&nbsp; Độ lệch |<i>f</i><sub>1</sub> − <i>f</i><sub>2</sub>| = ${dfStr}`;
- }
- }
-
  function renderKinGraphs2() {
  const phaseGrid = byId("dualPhaseGraphsGrid");
  if (phaseGrid) {
@@ -3513,8 +3350,8 @@
  card.className = "graph-card";
  card.innerHTML = `
  <div class="graph-card-header">
- <span>Hình II.2.${idx + 1}. Đồ thị ghép sóng &amp; độ lệch pha – Lần ${idx + 1}</span>
- <button type="button" class="inline-btn inline-btn-img no-print" onclick="exportSingleCanvas('${canvasId}', 'Phan2_II2_GhepSong_Lan${idx + 1}')">Tải hình</button>
+ <span>Hình II.1.${idx + 1}. Đồ thị ghép sóng &amp; độ lệch pha – Lần ${idx + 1}</span>
+ <button type="button" class="inline-btn inline-btn-img no-print" onclick="exportSingleCanvas('${canvasId}', 'Phan2_II1_GhepSong_Lan${idx + 1}')">Tải hình</button>
  </div>
  <canvas id="${canvasId}" width="620" height="190"></canvas>
  <div class="graph-caption" contenteditable="true" oninput="schedulePersistReportEdits()">
@@ -3544,8 +3381,8 @@
  card.className = "graph-card";
  card.innerHTML = `
  <div class="graph-card-header">
- <span>Hình II.3.${idx + 1}. Đồ thị tổng sóng u(t) = u₁(t) + u₂(t) – Lần ${idx + 1}</span>
- <button type="button" class="inline-btn inline-btn-img no-print" onclick="exportSingleCanvas('${canvasId}', 'Phan2_II3_TongSong_Lan${idx + 1}')">Tải hình</button>
+ <span>Hình II.2.${idx + 1}. Đồ thị tổng sóng u(t) = u₁(t) + u₂(t) – Lần ${idx + 1}</span>
+ <button type="button" class="inline-btn inline-btn-img no-print" onclick="exportSingleCanvas('${canvasId}', 'Phan2_II2_TongSong_Lan${idx + 1}')">Tải hình</button>
  </div>
  <canvas id="${canvasId}" width="620" height="190"></canvas>
  <div class="graph-caption" contenteditable="true" oninput="schedulePersistReportEdits()">
@@ -3746,7 +3583,7 @@
  }
 
  function renderKinTable2() {
- // Render bảng II.2 (Ghép sóng - Tính độ lệch pha)
+ // Render bảng II.1 (Ghép sóng - Tính độ lệch pha)
  const phaseBody = byId("dualPhaseBody");
  if (phaseBody) {
  phaseBody.innerHTML = "";
@@ -3796,12 +3633,12 @@
  const resII2 = byId("resDualII2");
  if (resII2) {
  resII2.innerHTML = lastPhaseSummary
- ? `<strong>Kết quả II.2 (Ghép sóng &amp; Độ lệch pha):</strong> &nbsp; Độ lệch pha Δ<i>φ</i> = <strong>${lastPhaseSummary.dPhiStr}</strong> (${lastPhaseSummary.dPhiDegStr}) &nbsp;|&nbsp; Trạng thái pha: <strong>${lastPhaseSummary.stateText}</strong>`
- : `<strong>Kết quả II.2 (Ghép sóng &amp; Độ lệch pha):</strong> &nbsp; Độ lệch pha Δ<i>φ</i> = — rad (—°) &nbsp;|&nbsp; Trạng thái pha: —`;
+ ? `<strong>Kết quả II.1 (Ghép sóng &amp; Độ lệch pha):</strong> &nbsp; Độ lệch pha Δ<i>φ</i> = <strong>${lastPhaseSummary.dPhiStr}</strong> (${lastPhaseSummary.dPhiDegStr}) &nbsp;|&nbsp; Trạng thái pha: <strong>${lastPhaseSummary.stateText}</strong>`
+ : `<strong>Kết quả II.1 (Ghép sóng &amp; Độ lệch pha):</strong> &nbsp; Độ lệch pha Δ<i>φ</i> = — rad (—°) &nbsp;|&nbsp; Trạng thái pha: —`;
  }
  }
 
- // Render bảng II.3 (Tổng sóng u = uA + uB)
+ // Render bảng II.2 (Tổng sóng u = uA + uB)
  const sumBody = byId("dualSumBody");
  if (sumBody) {
  sumBody.innerHTML = "";
@@ -3834,8 +3671,8 @@
  const resII3 = byId("resDualII3");
  if (resII3) {
  resII3.innerHTML = lastSumSummary
- ? `<strong>Kết quả II.3 (Tổng sóng <i>u</i> = <i>u</i><sub>A</sub> + <i>u</i><sub>B</sub>):</strong> &nbsp; <strong>${lastSumSummary.eqSumHtml}</strong> &nbsp;|&nbsp; Biên độ tổng hợp <i>A</i><sub>th</sub> = <strong>${lastSumSummary.ampSumStr}</strong> &nbsp;(${lastSumSummary.phenomenon})`
- : `<strong>Kết quả II.3 (Tổng sóng <i>u</i> = <i>u</i><sub>A</sub> + <i>u</i><sub>B</sub>):</strong> &nbsp; Phương trình tổng hợp: — &nbsp;|&nbsp; Biên độ tổng hợp <i>A</i><sub>th</sub> = —`;
+ ? `<strong>Kết quả II.2 (Tổng sóng <i>u</i> = <i>u</i><sub>A</sub> + <i>u</i><sub>B</sub>):</strong> &nbsp; <strong>${lastSumSummary.eqSumHtml}</strong> &nbsp;|&nbsp; Biên độ tổng hợp <i>A</i><sub>th</sub> = <strong>${lastSumSummary.ampSumStr}</strong> &nbsp;(${lastSumSummary.phenomenon})`
+ : `<strong>Kết quả II.2 (Tổng sóng <i>u</i> = <i>u</i><sub>A</sub> + <i>u</i><sub>B</sub>):</strong> &nbsp; Phương trình tổng hợp: — &nbsp;|&nbsp; Biên độ tổng hợp <i>A</i><sub>th</sub> = —`;
  }
  }
  }
@@ -3905,7 +3742,7 @@
 
  function delKin2(i) {
  if (kinRows2.length <= 1) {
- showToast("Cần giữ lại ít nhất 1 cặp khảo sát ở mục II.2 – II.3!");
+ showToast("Cần giữ lại ít nhất 1 cặp khảo sát ở mục II.1 – II.2!");
  return;
  }
  kinRows2.splice(i, 1);
@@ -4405,8 +4242,6 @@
  }
  renderOscTable2();
  renderOscGraphs2();
- renderDualOscTableII();
- renderDualOscGraphsII();
  persistReportEdits();
  }
 
@@ -4418,8 +4253,6 @@
  oscRows2.push(makeBlankOscPair());
  renderOscTable2();
  renderOscGraphs2();
- renderDualOscTableII();
- renderDualOscGraphsII();
  persistReportEdits();
  }
 
@@ -4431,8 +4264,6 @@
  oscRows2.splice(i, 1);
  renderOscTable2();
  renderOscGraphs2();
- renderDualOscTableII();
- renderDualOscGraphsII();
  persistReportEdits();
  }
 
@@ -4882,20 +4713,7 @@
  targetRows.push([`Lần ${i + 1}`, f > 0 ? f.toFixed(1) : "—", A > 0 ? A.toFixed(2) : "—", r.eqU || "—", r.eqV || "—", r.eqA || "—"]);
  });
  } else {
- targetRows.push(["PHẦN II (II.1): ĐO CHU KÌ VÀ TẦN SỐ - 2 NGUỒN"], ["Lần đo", "Nguồn / Kênh", "Số chu kì N", "Δt (ms)", "Chu kì T (ms)", "Tần số f (Hz)", "Độ lệch Δf (Hz)"]);
- oscRows2.forEach((p, i) => {
- const nA = p.a.soChuKi >= 1 ? Math.round(p.a.soChuKi) : 1;
- const tA = p.a.deltaT_ms > 0 ? p.a.deltaT_ms / nA : 0;
- const fA = tA > 0 ? 1000 / tA : 0;
- const nB = p.b.soChuKi >= 1 ? Math.round(p.b.soChuKi) : 1;
- const tB = p.b.deltaT_ms > 0 ? p.b.deltaT_ms / nB : 0;
- const fB = tB > 0 ? 1000 / tB : 0;
- const diffStr = (fA > 0 && fB > 0) ? Math.abs(fA - fB).toFixed(1) : "—";
- targetRows.push([`Lần ${i + 1}`, "Nguồn 1 (Kênh A)", nA, Number(p.a.deltaT_ms).toFixed(2), tA > 0 ? tA.toFixed(2) : "—", fA > 0 ? fA.toFixed(1) : "—", diffStr]);
- targetRows.push([`Lần ${i + 1}`, "Nguồn 2 (Kênh B)", nB, Number(p.b.deltaT_ms).toFixed(2), tB > 0 ? tB.toFixed(2) : "—", fB > 0 ? fB.toFixed(1) : "—", ""]);
- });
- targetRows.push([]);
- targetRows.push(["PHẦN II (II.2): GHÉP SÓNG VÀ TÍNH ĐỘ LỆCH PHA - 2 NGUỒN"], ["Lần", "Nguồn / Kênh", "Tần số f (Hz)", "Chu kì T (ms)", "Biên độ A", "Độ lệch pha Δφ (rad)", "Độ lệch pha Δφ (độ)", "Trạng thái pha"]);
+ targetRows.push(["PHẦN II (II.1): GHÉP SÓNG VÀ TÍNH ĐỘ LỆCH PHA - 2 NGUỒN"], ["Lần", "Nguồn / Kênh", "Tần số f (Hz)", "Chu kì T (ms)", "Biên độ A", "Độ lệch pha Δφ (rad)", "Độ lệch pha Δφ (độ)", "Trạng thái pha"]);
  kinRows2.forEach((p, i) => {
  const fA = Number(p.a.f_Hz) || 0;
  const tA = fA > 0 ? 1000 / fA : 0;
@@ -4908,7 +4726,7 @@
  targetRows.push([`Lần ${i + 1}`, "Nguồn 2 (Kênh B)", fB > 0 ? fB.toFixed(1) : "—", tB > 0 ? tB.toFixed(2) : "—", ampB > 0 ? ampB.toFixed(2) : "—", "", "", ""]);
  });
  targetRows.push([]);
- targetRows.push(["PHẦN II (II.3): TỔNG SÓNG (u = uA + uB) - 2 NGUỒN"], ["Lần", "Phương trình u1(t) (Kênh A)", "Phương trình u2(t) (Kênh B)", "Phương trình sóng tổng hợp u(t)", "Biên độ tổng hợp A_th", "Nhận xét hiện tượng"]);
+ targetRows.push(["PHẦN II (II.2): TỔNG SÓNG (u = uA + uB) - 2 NGUỒN"], ["Lần", "Phương trình u1(t) (Kênh A)", "Phương trình u2(t) (Kênh B)", "Phương trình sóng tổng hợp u(t)", "Biên độ tổng hợp A_th", "Nhận xét hiện tượng"]);
  kinRows2.forEach((p, i) => {
  const sumInfo = computeWaveSuperpositionInfo(p);
  targetRows.push([`Lần ${i + 1}`, sumInfo.eq1, sumInfo.eq2, sumInfo.eqSumPlain, sumInfo.ampSumStr, sumInfo.phenomenon]);
