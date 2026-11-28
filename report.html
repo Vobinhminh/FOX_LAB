@@ -5054,14 +5054,48 @@
  syncCheckboxes(true);
  }
 
+ const REPORT_OPEN_KEY = "foxlab_report_open";
+ const REPORT_HB_KEY = "foxlab_report_heartbeat";
+
+ function broadcastReportPresence(isOpen) {
  try {
- if (syncChannel) syncChannel.postMessage({ type: "REPORT_READY" });
+ if (isOpen) {
+ localStorage.setItem(REPORT_OPEN_KEY, "1");
+ localStorage.setItem(REPORT_HB_KEY, String(Date.now()));
+ } else {
+ localStorage.removeItem(REPORT_OPEN_KEY);
+ localStorage.removeItem(REPORT_HB_KEY);
+ }
+ } catch (e) {}
+ try {
+ if (syncChannel) {
+ syncChannel.postMessage({ type: isOpen ? "REPORT_READY" : "REPORT_CLOSED", isOpen: Boolean(isOpen) });
+ }
  } catch (e) {}
  try {
  if (window.opener && !window.opener.closed) {
- window.opener.postMessage({ type: "REPORT_READY" }, "*");
+ window.opener.postMessage({ type: isOpen ? "REPORT_READY" : "REPORT_CLOSED", isOpen: Boolean(isOpen) }, "*");
  }
  } catch (e) {}
+ }
+
+ broadcastReportPresence(true);
+ const reportPresenceTimer = setInterval(() => {
+ if (!document.hidden) broadcastReportPresence(true);
+ else {
+ try {
+ localStorage.setItem(REPORT_OPEN_KEY, "1");
+ localStorage.setItem(REPORT_HB_KEY, String(Date.now()));
+ } catch (e) {}
+ }
+ }, 1500);
+
+ const handleReportExit = () => {
+ clearInterval(reportPresenceTimer);
+ broadcastReportPresence(false);
+ };
+ window.addEventListener("pagehide", handleReportExit);
+ window.addEventListener("beforeunload", handleReportExit);
  });
  </script>
 </body>
