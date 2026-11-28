@@ -4724,6 +4724,7 @@ async function checkAppVersion() {
     }
 
     function showTsResultModal() {
+        if (isContinuousMode || (modeSelect && modeSelect.value === 'continuous')) return;
         const el = document.getElementById('hudResults');
         if (!el) return;
         showTsResults = !showTsResults;
@@ -4731,6 +4732,7 @@ async function checkAppVersion() {
     }
 
     function showTsEquationModal() {
+        if (isContinuousMode || (modeSelect && modeSelect.value === 'continuous')) return;
         const el = document.getElementById('hudEquations');
         if (el) {
             showTsEquations = !showTsEquations;
@@ -4838,6 +4840,13 @@ async function checkAppVersion() {
         const eqBtn = document.getElementById('tsEquationBtn');
         const hudRes = document.getElementById('hudResults');
         const hudEq = document.getElementById('hudEquations');
+        const warnEl = document.getElementById('tsWarningText');
+        const modeToggleGroup = document.getElementById('tsModeToggleGroup');
+        const btnOverlay = document.getElementById('btnModeOverlay');
+        const btnSum = document.getElementById('btnModeSum');
+
+        if (btnOverlay) btnOverlay.classList.toggle('active-mode', tsViewMode !== 'sum');
+        if (btnSum) btnSum.classList.toggle('active-mode', tsViewMode === 'sum');
 
         const headerTitleEl = document.querySelector('#twoSourceModal .modal-header span');
         if (headerTitleEl) {
@@ -4846,12 +4855,15 @@ async function checkAppVersion() {
                     ? 'Phân tích & Xử lý 2 Nguồn âm — Tổng hợp sóng (u = uA + uB)'
                     : 'Phân tích & Xử lý 2 Nguồn âm — Ghép sóng (Độ lệch pha Δφ)';
             } else {
-                headerTitleEl.textContent = 'Phân tích & Xử lý 2 Nguồn âm';
+                headerTitleEl.textContent = (tsViewMode === 'sum')
+                    ? 'Phân tích & Xử lý 2 Nguồn âm — Tổng hợp sóng'
+                    : 'Phân tích & Xử lý 2 Nguồn âm — Ghép sóng';
             }
         }
 
         if (!continuousMode) {
-            // Chế độ tự dừng 2 nguồn: ẩn sẵn bảng kết quả/phương trình, chỉ hiện khi người dùng bấm nút Kết quả / Phương trình
+            // Chế độ tự dừng 2 nguồn: mở trực tiếp từ menu Phân tích đồ thị nên ẩn cụm chuyển tab, giữ nút Kết quả / Phương trình
+            if (modeToggleGroup) modeToggleGroup.style.setProperty('display', 'none', 'important');
             if (btn) btn.style.setProperty('display', 'none', 'important');
             showTsResults = false;
             showTsEquations = false;
@@ -4865,7 +4877,8 @@ async function checkAppVersion() {
                 if (eqBtn) eqBtn.style.setProperty('display', 'none', 'important');
             }
         } else {
-            // Chế độ liên tục 2 nguồn: giữ nguyên (có nút Dừng/Tiếp tục, bỏ hiển thị Phương trình và Kết quả)
+            // Chế độ liên tục (Đo không dừng) 2 nguồn: hiện cụm nút Ghép sóng / Tổng hợp, chỉ hiển thị đồ thị (ẩn toàn bộ bảng kết quả, phương trình & banner chữ)
+            if (modeToggleGroup) modeToggleGroup.style.setProperty('display', 'flex', 'important');
             if (btn) {
                 btn.style.setProperty('display', 'inline-flex', 'important');
                 if (isTsPaused) {
@@ -4880,8 +4893,9 @@ async function checkAppVersion() {
             if (eqBtn) eqBtn.style.setProperty('display', 'none', 'important');
             showTsResults = false;
             showTsEquations = false;
-            if (hudRes) hudRes.style.display = 'none';
-            if (hudEq) hudEq.style.display = 'none';
+            if (hudRes) hudRes.style.setProperty('display', 'none', 'important');
+            if (hudEq) hudEq.style.setProperty('display', 'none', 'important');
+            if (warnEl) warnEl.style.setProperty('display', 'none', 'important');
         }
     }
 
@@ -5069,8 +5083,9 @@ async function checkAppVersion() {
                 let diff = Math.abs(currentCalcFreqA - currentCalcFreqB);
                 let isSameFreq = (diff <= 3.0);
                 const warnEl = document.getElementById('tsWarningText');
+                const isContGraphOnly = isContinuousMode || (modeSelect && modeSelect.value === 'continuous');
 
-                if (currentCalcFreqA > 10 && currentCalcFreqB > 10 && !isSameFreq) {
+                if (!isContGraphOnly && currentCalcFreqA > 10 && currentCalcFreqB > 10 && !isSameFreq) {
                     if (warnEl) {
                         warnEl.style.display = 'block';
                         warnEl.style.background = 'linear-gradient(135deg, #7c3aed, #6d28d9)';

@@ -356,8 +356,12 @@
  <div class="modal-header">
  <span>Phân tích & Xử lý 2 Nguồn âm</span>
  </div>
- <div class="modal-controls" style="justify-content: space-between; padding: 6px 12px; display: flex; align-items: center;">
+ <div class="modal-controls" style="justify-content: space-between; padding: 6px 12px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
  <button class="btn-dark" onclick="closeTwoSourceModal()">Quay lại</button>
+ <div class="ts-mode-toggle" id="tsModeToggleGroup">
+ <button type="button" id="btnModeOverlay" class="active-mode" onclick="setTsMode('overlay')">Ghép sóng</button>
+ <button type="button" id="btnModeSum" onclick="setTsMode('sum')">Tổng hợp</button>
+ </div>
  <div style="display: flex; align-items: center; gap: 4px;">
  <button id="tsPlayBtn" onclick="toggleTsPlay()" class="btn-orange" style="margin-left: 4px;">Dừng</button>
  <button id="tsResultBtn" onclick="showTsResultModal()" style="display: none !important; margin-left: 4px;" class="btn-blue">Kết quả</button>
