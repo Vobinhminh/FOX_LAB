@@ -695,7 +695,32 @@ async function checkAppVersion() {
         saveAppState();
     });
 
+    function safeStopAndResetBuffersOnModeSwitch(reasonHtml) {
+        clearTimeout(stopTimer);
+        isPaused = true;
+        if (pauseButton) {
+            pauseButton.textContent = "Đo / Dừng";
+            pauseButton.className = "btn-green";
+        }
+        if (channelConfig.A.data) { channelConfig.A.data.fill(0); channelConfig.A.index = 0; }
+        if (channelConfig.B.data) { channelConfig.B.data.fill(0); channelConfig.B.index = 0; }
+        frozenCenterIdxA = null;
+        frozenCenterIdxB = null;
+        isUserZoomed = false;
+        dbHistoryA = [];
+        dbHistoryB = [];
+        selectedBarIndexA = -1;
+        selectedBarIndexB = -1;
+        dbStartTime = 0;
+        lastDbSampleTime = 0;
+        if (infoMessageText && reasonHtml) {
+            infoMessageText.innerHTML = reasonHtml;
+            infoMessageText.style.color = "#0284c7";
+        }
+    }
+
     modeSelect.addEventListener('change', (e) => {
+        const wasRunning = !isPaused;
         isContinuousMode = (e.target.value === 'continuous');
         clearTimeout(stopTimer);
         const speedGroup = document.getElementById('groupSpeed');
@@ -718,7 +743,10 @@ async function checkAppVersion() {
             if (typeof closeTwoSourceModal === 'function' && isTwoSourceModalOpen) {
                 closeTwoSourceModal();
             }
-            if (!isPaused) triggerAutoStop();
+        }
+        if (wasRunning) {
+            safeStopAndResetBuffersOnModeSwitch("Đã đổi chế độ đo — Bấm <span class='info-badge'>Đo / Dừng</span> để bắt đầu lượt đo mới.");
+            drawFrame(true);
         }
         updateAnalysisButtonState();
         updateManualAnalysisButtonState();
@@ -1402,14 +1430,19 @@ async function checkAppVersion() {
     }
 
     displayModeSelect.addEventListener('change', () => {
+        const wasRunning = !isPaused;
         if (getDisplayMode() !== 'oscilloscope') resetManualAnalysisState();
+        if (wasRunning) {
+            safeStopAndResetBuffersOnModeSwitch("Đã chuyển chức năng hiển thị — Bấm <span class='info-badge'>Đo / Dừng</span> để đo mới.");
+        }
         updateToolbarButtonsVisibility();
         updateAnalysisButtonState();
-        drawFrame();
+        drawFrame(wasRunning);
         saveAppState();
     });
 
     channelModeSelect.addEventListener('change', () => {
+        const wasRunning = !isPaused;
         resetManualAnalysisState();
         if (getActiveChannelMode() === '1') {
             document.getElementById('cardChannelB').style.display = 'none';
@@ -1419,13 +1452,20 @@ async function checkAppVersion() {
             }
         } else {
             document.getElementById('cardChannelB').style.display = 'flex';
+            dbHistoryA = [];
             dbHistoryB = [];
+            selectedBarIndexA = -1;
             selectedBarIndexB = -1;
+            dbStartTime = 0;
+            lastDbSampleTime = 0;
             if (typeof closeFFTModal === 'function') closeFFTModal();
             if (typeof closeKinematicsModal === 'function' && isKinematicsModalOpen) closeKinematicsModal();
         }
+        if (wasRunning) {
+            safeStopAndResetBuffersOnModeSwitch("Đã chuyển chế độ nguồn âm — Bấm <span class='info-badge'>Đo / Dừng</span> để đo đồng bộ.");
+        }
         updateToolbarButtonsVisibility();
-        updateUIState(); drawFrame(); saveAppState();
+        updateUIState(); drawFrame(wasRunning); saveAppState();
         if (typeof window.syncChannelModeToReport === 'function') {
             window.syncChannelModeToReport(getActiveChannelMode() === '2');
         }
@@ -1463,12 +1503,69 @@ async function checkAppVersion() {
     }
     window.addEventListener('resize', resizeCanvas);
 
+    function getRecordedTimeBounds() {
+        const sr = sampleRate || 48000;
+        let minAvailSamples = Infinity;
+        let hasActive = false;
+        ['A', 'B'].forEach((ch) => {
+            const cfg = channelConfig[ch];
+            if (cfg && cfg.active && cfg.data && cfg.index > 2) {
+                hasActive = true;
+                const avail = Math.min(cfg.index, cfg.data.length);
+                if (avail < minAvailSamples) minAvailSamples = avail;
+            }
+        });
+        if (!hasActive || !Number.isFinite(minAvailSamples) || minAvailSamples <= 2) {
+            return { minTime: 0.0005, maxTime: 2.0, availSamples: 0 };
+        }
+        const recordedSec = minAvailSamples / sr;
+        const maxTime = isPaused
+            ? Math.max(0.0005, Math.min(2.0, recordedSec))
+            : 2.0;
+        return { minTime: 0.0005, maxTime, availSamples: minAvailSamples };
+    }
+
+    function findCenteredZeroCrossingIdx(cfg) {
+        const len = cfg.data.length;
+        const avail = Math.min(cfg.index, len);
+        const startAvail = cfg.index - avail;
+        const midIdx = startAvail + Math.floor(avail / 2);
+        const searchHalf = Math.min(Math.floor(avail / 4), Math.max(64, Math.floor((sampleRate || 48000) / 60)));
+        if (searchHalf <= 4) return midIdx;
+
+        let peak = 0;
+        for (let k = -searchHalf; k <= searchHalf; k += 2) {
+            const idx = (((midIdx + k) % len) + len) % len;
+            const a = Math.abs(cfg.data[idx]);
+            if (a > peak) peak = a;
+        }
+        if (peak < 0.008) return midIdx;
+
+        const hysteresis = peak * 0.1;
+        for (let step = 0; step < searchHalf - 4; step++) {
+            const candidates = step === 0 ? [midIdx] : [midIdx - step, midIdx + step];
+            for (const c of candidates) {
+                if (c - 4 < startAvail || c >= cfg.index) continue;
+                const iCurr = ((c % len) + len) % len;
+                const iPrev = (((c - 1) % len) + len) % len;
+                const vPrev = cfg.data[iPrev], vCurr = cfg.data[iCurr];
+                if (vPrev <= 0 && vCurr > 0) {
+                    const iBack = (((c - 4) % len) + len) % len;
+                    if (cfg.data[iBack] < -hysteresis || (vCurr - vPrev) > peak * 0.02) {
+                        return c;
+                    }
+                }
+            }
+        }
+        return midIdx;
+    }
+
     function resolveChannelCenterIdx(cfg, channelKey, samplesNeeded) {
         if (!cfg || !cfg.active || !cfg.data || cfg.index <= 2) return 0;
         const computeOffsetForChannel = () => {
             if (isContinuousMode) return Math.floor(samplesNeeded / 2);
             // Ở chế độ 2 nguồn tự dừng: đồng bộ gốc thời gian t = 0 của Kênh B theo Kênh A để bảo toàn độ lệch pha Δφ
-            if (channelKey === 'B' && getActiveChannelMode() === '2' && channelConfig.A.active && channelConfig.A.index > samplesNeeded) {
+            if (channelKey === 'B' && getActiveChannelMode() === '2' && channelConfig.A.active && channelConfig.A.index > 2) {
                 const centerA = resolveChannelCenterIdx(channelConfig.A, 'A', samplesNeeded);
                 return channelConfig.A.index - centerA;
             }
@@ -1478,8 +1575,12 @@ async function checkAppVersion() {
         if (isPaused) {
             const cached = (channelKey === 'A') ? frozenCenterIdxA : frozenCenterIdxB;
             if (cached !== null) return cached;
-            const offset = computeOffsetForChannel();
-            const centerIdx = cfg.index - offset;
+            let centerIdx;
+            if (channelKey === 'B' && getActiveChannelMode() === '2' && channelConfig.A.active && channelConfig.A.index > 2) {
+                centerIdx = resolveChannelCenterIdx(channelConfig.A, 'A', samplesNeeded);
+            } else {
+                centerIdx = findCenteredZeroCrossingIdx(cfg);
+            }
             if (channelKey === 'A') frozenCenterIdxA = centerIdx;
             else if (channelKey === 'B') frozenCenterIdxB = centerIdx;
             return centerIdx;
@@ -2419,8 +2520,9 @@ async function checkAppVersion() {
 
     canvas.addEventListener('wheel', (e) => {
         e.preventDefault(); isUserZoomed = true;
+        const bounds = getRecordedTimeBounds();
         if (e.deltaY < 0) { totalTimeOnScreen *= 0.88; currentZoomY *= 1.12; } else { totalTimeOnScreen *= 1.12; currentZoomY /= 1.12; }
-        totalTimeOnScreen = Math.max(0.0005, Math.min(totalTimeOnScreen, 2.0));
+        totalTimeOnScreen = Math.max(bounds.minTime, Math.min(totalTimeOnScreen, bounds.maxTime));
         currentZoomY = Math.max(0.1, Math.min(currentZoomY, 50.0));
         if (isPaused) drawFrame();
     }, { passive: false });
@@ -2439,14 +2541,20 @@ async function checkAppVersion() {
             touchBaseTimeOnScreen = totalTimeOnScreen;
             touchBaseZoomY = currentZoomY;
         } else if (e.touches.length === 1) {
+            if (getDisplayMode() !== 'oscilloscope' || isManualAnalysisMode || isTwoSourceGraphAnalysisMode) {
+                lastTapTimestamp = 0;
+                return;
+            }
             const now = performance.now();
             if (now - lastTapTimestamp < 300) {
+                const bounds = getRecordedTimeBounds();
+                const refFreq = (lockedFrequency > 0) ? lockedFrequency : ((detectedFrequency > 0) ? detectedFrequency : 440);
                 isUserZoomed = false;
                 currentZoomY = 2.0;
-                detectedFrequency = 0;
-                lockedFrequency = 440;
-                totalTimeOnScreen = 5 * (1.0 / 440);
+                totalTimeOnScreen = Math.max(0.002, Math.min(5 * (1.0 / refFreq), bounds.maxTime));
                 if (isPaused) drawFrame();
+                lastTapTimestamp = 0;
+                return;
             }
             lastTapTimestamp = now;
         }
@@ -2460,8 +2568,9 @@ async function checkAppVersion() {
             const currentDist = Math.hypot(dx, dy);
             if (currentDist > 0) {
                 const scale = currentDist / initialTouchDist;
+                const bounds = getRecordedTimeBounds();
                 isUserZoomed = true;
-                totalTimeOnScreen = Math.max(0.0005, Math.min(touchBaseTimeOnScreen / scale, 2.0));
+                totalTimeOnScreen = Math.max(bounds.minTime, Math.min(touchBaseTimeOnScreen / scale, bounds.maxTime));
                 currentZoomY = Math.max(0.1, Math.min(touchBaseZoomY * scale, 50.0));
                 if (isPaused) drawFrame();
             }
@@ -2475,12 +2584,28 @@ async function checkAppVersion() {
     });
     canvas.addEventListener('touchcancel', () => { initialTouchDist = 0; });
 
+    function getTwoSourceTimeBounds() {
+        const sr = sampleRate || 48000;
+        const dA = isTsPaused ? snapDataA : (channelConfig.A ? channelConfig.A.data : null);
+        const dB = isTsPaused ? snapDataB : (channelConfig.B ? channelConfig.B.data : null);
+        const idxA = isTsPaused ? snapIdxA : (channelConfig.A ? channelConfig.A.index : 0);
+        const idxB = isTsPaused ? snapIdxB : (channelConfig.B ? channelConfig.B.index : 0);
+        const availA = (dA && dA.length > 0 && idxA > 2) ? Math.min(idxA, dA.length) : 0;
+        const availB = (dB && dB.length > 0 && idxB > 2) ? Math.min(idxB, dB.length) : 0;
+        const minAvail = (availA > 0 && availB > 0) ? Math.min(availA, availB) : Math.max(availA, availB);
+        if (minAvail <= 2) return { minTime: 0.0005, maxTime: 2.0, availSamples: 0 };
+        const recordedSec = minAvail / sr;
+        const maxTime = isTsPaused ? Math.max(0.0005, Math.min(2.0, recordedSec)) : 2.0;
+        return { minTime: 0.0005, maxTime, availSamples: minAvail };
+    }
+
     const twoSourceCanvasElem = document.getElementById('twoSourceCanvas');
     if (twoSourceCanvasElem) {
         twoSourceCanvasElem.addEventListener('wheel', (e) => {
             e.preventDefault(); isUserZoomed = true;
+            const bounds = getTwoSourceTimeBounds();
             if (e.deltaY < 0) { totalTimeOnScreen *= 0.88; currentZoomY *= 1.12; } else { totalTimeOnScreen *= 1.12; currentZoomY /= 1.12; }
-            totalTimeOnScreen = Math.max(0.0005, Math.min(totalTimeOnScreen, 2.0));
+            totalTimeOnScreen = Math.max(bounds.minTime, Math.min(totalTimeOnScreen, bounds.maxTime));
             currentZoomY = Math.max(0.1, Math.min(currentZoomY, 50.0));
             if (isTsPaused) calculatePhaseAndDrawLive();
         }, { passive: false });
@@ -2501,8 +2626,9 @@ async function checkAppVersion() {
                 const currentDist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
                 if (currentDist > 0) {
                     const scale = currentDist / tsTouchDist;
+                    const bounds = getTwoSourceTimeBounds();
                     isUserZoomed = true;
-                    totalTimeOnScreen = Math.max(0.0005, Math.min(tsBaseTime / scale, 2.0));
+                    totalTimeOnScreen = Math.max(bounds.minTime, Math.min(tsBaseTime / scale, bounds.maxTime));
                     currentZoomY = Math.max(0.1, Math.min(tsBaseZoomY * scale, 50.0));
                     if (isTsPaused) calculatePhaseAndDrawLive();
                 }
@@ -3068,17 +3194,22 @@ async function checkAppVersion() {
         }
 
         canvasCtx.fillStyle = '#f8fafc'; canvasCtx.fillRect(0, 0, width, height);
-        if (!isUserZoomed) totalTimeOnScreen = Math.max(0.002, Math.min(5 * (1.0 / ((lockedFrequency > 0) ? lockedFrequency : 440)), 2.4));
+        const timeBounds = getRecordedTimeBounds();
+        if (!isUserZoomed) {
+            totalTimeOnScreen = Math.max(0.002, Math.min(5 * (1.0 / ((lockedFrequency > 0) ? lockedFrequency : 440)), timeBounds.maxTime));
+        } else {
+            totalTimeOnScreen = Math.max(timeBounds.minTime, Math.min(totalTimeOnScreen, timeBounds.maxTime));
+        }
 
         const mode = getActiveChannelMode();
         let boxA_Y = 0, boxA_H = height, boxB_Y = 0, boxB_H = 0;
         if (mode === '2') { boxA_H = height / 2; boxB_Y = height / 2; boxB_H = height / 2; }
         if (isReset) { drawMainGrid(canvasCtx, 0, boxA_Y, width, boxA_H, '#dc2626', 'Kênh A (Chưa bật)', true); if (mode === '2') drawMainGrid(canvasCtx, 0, boxB_Y, width, boxB_H, '#3b82f6', 'Kênh B (Chưa bật)', true); return; }
 
-        const samplesNeeded = Math.floor(sampleRate * totalTimeOnScreen);
+        const samplesNeeded = Math.max(2, Math.floor(sampleRate * totalTimeOnScreen));
 
         drawMainGrid(canvasCtx, 0, boxA_Y, width, boxA_H, '#dc2626', channelConfig.A.active ? 'Biên độ' : 'Kênh A (Khóa)', true);
-        if (channelConfig.A.active && channelConfig.A.data && channelConfig.A.index > samplesNeeded) {
+        if (channelConfig.A.active && channelConfig.A.data && channelConfig.A.index > 2) {
             let centerIdxA = resolveChannelCenterIdx(channelConfig.A, 'A', samplesNeeded);
             let offsetA = channelConfig.A.index - centerIdxA;
             drawWaveform(canvasCtx, channelConfig.A.data, channelConfig.A.index, offsetA, samplesNeeded, 0, boxA_Y, width, boxA_H, '#ef4444', oscAmpGainA);
@@ -3089,7 +3220,7 @@ async function checkAppVersion() {
 
         if (mode === '2') {
             drawMainGrid(canvasCtx, 0, boxB_Y, width, boxB_H, '#3b82f6', channelConfig.B.active ? 'Biên độ' : 'Kênh B (Khóa)', true);
-            if (channelConfig.B.active && channelConfig.B.data && channelConfig.B.index > samplesNeeded) {
+            if (channelConfig.B.active && channelConfig.B.data && channelConfig.B.index > 2) {
                 let centerIdxB = resolveChannelCenterIdx(channelConfig.B, 'B', samplesNeeded);
                 let offsetB = channelConfig.B.index - centerIdxB;
                 drawWaveform(canvasCtx, channelConfig.B.data, channelConfig.B.index, offsetB, samplesNeeded, 0, boxB_Y, width, boxB_H, '#3b82f6', oscAmpGainB);
@@ -3192,15 +3323,20 @@ async function checkAppVersion() {
         const centerIdx = currentIndex - offset;
         const startIdx = centerIdx - halfSamples;
         const smoothed = computeSmoothedDisplaySlice(dataArray, len, currentIndex, startIdx, samplesNeeded, ampGain);
+        const minValidIdx = Math.max(0, currentIndex - len);
+        const maxValidIdx = currentIndex - 1;
         const step = Math.max(1, Math.floor(samplesNeeded / (boxW * 2)));
+        let started = false;
         for (let i = 0; i < samplesNeeded; i += step) {
+            const rawIdx = startIdx + i;
+            if (rawIdx < minValidIdx || rawIdx > maxValidIdx) continue;
             const val = smoothed[i];
             const x = boxX + boxW / 2 + ((i - halfSamples) / samplesNeeded) * boxW;
             let y = boxY + boxH / 2 - (val * currentZoomY * boxH / 2);
             y = Math.max(boxY, Math.min(boxY + boxH, y));
-            if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+            if (!started) { ctx.moveTo(x, y); started = true; } else ctx.lineTo(x, y);
         }
-        ctx.stroke();
+        if (started) ctx.stroke();
     }
 
     let animFrameId = null;
@@ -5040,12 +5176,20 @@ async function checkAppVersion() {
             ctx.fillStyle = '#f8fafc'; ctx.fillRect(0, 0, cw, ch);
             drawMainGrid(ctx, 0, 0, cw, ch, null, null, true);
 
-            let samplesDraw = Math.floor(sampleRate * totalTimeOnScreen);
+            const tsBounds = getTwoSourceTimeBounds();
+            if (isUserZoomed) {
+                totalTimeOnScreen = Math.max(tsBounds.minTime, Math.min(totalTimeOnScreen, tsBounds.maxTime));
+            } else {
+                const refF = (lockedFrequency > 0) ? lockedFrequency : ((detectedFrequency > 0) ? detectedFrequency : 440);
+                totalTimeOnScreen = Math.max(0.002, Math.min(5 * (1.0 / refF), tsBounds.maxTime));
+            }
+
+            let samplesDraw = Math.max(2, Math.floor(sampleRate * totalTimeOnScreen));
             let activeDataA = channelConfig.A ? channelConfig.A.data : null;
             let activeDataB = channelConfig.B ? channelConfig.B.data : null;
             if (!activeDataA || !activeDataB) return;
 
-            let len = activeDataA.length, cIdxA = channelConfig.A.index, cIdxB = channelConfig.B.index;
+            let cIdxA = channelConfig.A.index, cIdxB = channelConfig.B.index;
 
             if (!isTsPaused) {
                 let now = performance.now();
@@ -5059,35 +5203,58 @@ async function checkAppVersion() {
             let refDataB = isTsPaused ? snapDataB : activeDataB;
             let refIdxA = isTsPaused ? snapIdxA : cIdxA;
             let refIdxB = isTsPaused ? snapIdxB : cIdxB;
+            if (!refDataA || !refDataB || refDataA.length === 0 || refDataB.length === 0 || refIdxA <= 2 || refIdxB <= 2) {
+                if (isTwoSourceModalOpen && !isTsPaused) requestAnimationFrame(calculatePhaseAndDrawLive);
+                return;
+            }
 
-            let offsetA = findZeroCrossingOffset({ active: true, data: refDataA }, refIdxA, samplesDraw);
+            let lenA = refDataA.length;
+            let lenB = refDataB.length;
+            let offsetA;
+            if (isTsPaused) {
+                const centerA = findCenteredZeroCrossingIdx({ data: refDataA, index: refIdxA });
+                offsetA = refIdxA - centerA;
+            } else {
+                offsetA = findZeroCrossingOffset({ active: true, data: refDataA }, refIdxA, samplesDraw);
+            }
             let halfDraw = Math.floor(samplesDraw / 2);
             let startIdxA = refIdxA - offsetA - halfDraw;
             let startIdxB = refIdxB - offsetA - halfDraw;
+            const minValidA = Math.max(0, refIdxA - lenA), maxValidA = refIdxA - 1;
+            const minValidB = Math.max(0, refIdxB - lenB), maxValidB = refIdxB - 1;
 
-            ctx.lineWidth = 2.5; ctx.lineJoin = 'round';
+            ctx.lineWidth = 2.5; ctx.lineJoin = 'round'; ctx.lineCap = 'round';
             let step = Math.max(1, Math.floor(samplesDraw / (cw * 2.0)));
 
             if (tsViewMode === 'overlay') {
-                document.getElementById('tsWarningText').style.display = 'none';
+                const warnEl = document.getElementById('tsWarningText');
+                if (warnEl) warnEl.style.display = 'none';
 
                 ctx.strokeStyle = '#ef4444'; ctx.beginPath();
+                let startedA = false;
                 for (let i = 0; i < samplesDraw; i += step) {
-                    let idxA = ((startIdxA + i) % len + len) % len;
+                    let rawA = startIdxA + i;
+                    if (rawA < minValidA || rawA > maxValidA) continue;
+                    let idxA = ((rawA % lenA) + lenA) % lenA;
                     let val = refDataA[idxA] * oscAmpGainA;
-                    let x = cw / 2 + ((i - halfDraw) / samplesDraw) * cw, y = ch / 2 - (val * currentZoomY * ch / 2);
-                    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                    let x = cw / 2 + ((i - halfDraw) / samplesDraw) * cw;
+                    let y = Math.max(0, Math.min(ch, ch / 2 - (val * currentZoomY * ch / 2)));
+                    if (!startedA) { ctx.moveTo(x, y); startedA = true; } else ctx.lineTo(x, y);
                 }
-                ctx.stroke();
+                if (startedA) ctx.stroke();
 
                 ctx.strokeStyle = '#3b82f6'; ctx.beginPath();
+                let startedB = false;
                 for (let i = 0; i < samplesDraw; i += step) {
-                    let idxB = ((startIdxB + i) % len + len) % len;
+                    let rawB = startIdxB + i;
+                    if (rawB < minValidB || rawB > maxValidB) continue;
+                    let idxB = ((rawB % lenB) + lenB) % lenB;
                     let val = refDataB[idxB] * oscAmpGainB;
-                    let x = cw / 2 + ((i - halfDraw) / samplesDraw) * cw, y = ch / 2 - (val * currentZoomY * ch / 2);
-                    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                    let x = cw / 2 + ((i - halfDraw) / samplesDraw) * cw;
+                    let y = Math.max(0, Math.min(ch, ch / 2 - (val * currentZoomY * ch / 2)));
+                    if (!startedB) { ctx.moveTo(x, y); startedB = true; } else ctx.lineTo(x, y);
                 }
-                ctx.stroke();
+                if (startedB) ctx.stroke();
             }
             else if (tsViewMode === 'sum') {
                 let diff = Math.abs(currentCalcFreqA - currentCalcFreqB);
@@ -5106,15 +5273,20 @@ async function checkAppVersion() {
                 }
 
                 ctx.strokeStyle = '#8b5cf6'; ctx.beginPath();
+                let startedS = false;
                 for (let i = 0; i < samplesDraw; i += step) {
-                    let idxA = ((startIdxA + i) % len + len) % len;
-                    let idxB = ((startIdxB + i) % len + len) % len;
+                    let rawA = startIdxA + i;
+                    let rawB = startIdxB + i;
+                    if (rawA < minValidA || rawA > maxValidA || rawB < minValidB || rawB > maxValidB) continue;
+                    let idxA = ((rawA % lenA) + lenA) % lenA;
+                    let idxB = ((rawB % lenB) + lenB) % lenB;
                     let val = (refDataA[idxA] * oscAmpGainA) + (refDataB[idxB] * oscAmpGainB);
 
-                    let x = cw / 2 + ((i - halfDraw) / samplesDraw) * cw, y = ch / 2 - (val * currentZoomY * ch / 2);
-                    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                    let x = cw / 2 + ((i - halfDraw) / samplesDraw) * cw;
+                    let y = Math.max(0, Math.min(ch, ch / 2 - (val * currentZoomY * ch / 2)));
+                    if (!startedS) { ctx.moveTo(x, y); startedS = true; } else ctx.lineTo(x, y);
                 }
-                ctx.stroke();
+                if (startedS) ctx.stroke();
             }
         }
         if (isTwoSourceModalOpen && !isTsPaused) requestAnimationFrame(calculatePhaseAndDrawLive);
