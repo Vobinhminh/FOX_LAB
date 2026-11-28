@@ -2420,7 +2420,7 @@ async function checkAppVersion() {
     canvas.addEventListener('wheel', (e) => {
         e.preventDefault(); isUserZoomed = true;
         if (e.deltaY < 0) { totalTimeOnScreen *= 0.88; currentZoomY *= 1.12; } else { totalTimeOnScreen *= 1.12; currentZoomY /= 1.12; }
-        totalTimeOnScreen = Math.max(0.0005, Math.min(totalTimeOnScreen, 5.0));
+        totalTimeOnScreen = Math.max(0.0005, Math.min(totalTimeOnScreen, 2.0));
         currentZoomY = Math.max(0.1, Math.min(currentZoomY, 50.0));
         if (isPaused) drawFrame();
     }, { passive: false });
@@ -2461,7 +2461,7 @@ async function checkAppVersion() {
             if (currentDist > 0) {
                 const scale = currentDist / initialTouchDist;
                 isUserZoomed = true;
-                totalTimeOnScreen = Math.max(0.0005, Math.min(touchBaseTimeOnScreen / scale, 5.0));
+                totalTimeOnScreen = Math.max(0.0005, Math.min(touchBaseTimeOnScreen / scale, 2.0));
                 currentZoomY = Math.max(0.1, Math.min(touchBaseZoomY * scale, 50.0));
                 if (isPaused) drawFrame();
             }
@@ -2480,7 +2480,7 @@ async function checkAppVersion() {
         twoSourceCanvasElem.addEventListener('wheel', (e) => {
             e.preventDefault(); isUserZoomed = true;
             if (e.deltaY < 0) { totalTimeOnScreen *= 0.88; currentZoomY *= 1.12; } else { totalTimeOnScreen *= 1.12; currentZoomY /= 1.12; }
-            totalTimeOnScreen = Math.max(0.0005, Math.min(totalTimeOnScreen, 5.0));
+            totalTimeOnScreen = Math.max(0.0005, Math.min(totalTimeOnScreen, 2.0));
             currentZoomY = Math.max(0.1, Math.min(currentZoomY, 50.0));
             if (isTsPaused) calculatePhaseAndDrawLive();
         }, { passive: false });
@@ -2502,7 +2502,7 @@ async function checkAppVersion() {
                 if (currentDist > 0) {
                     const scale = currentDist / tsTouchDist;
                     isUserZoomed = true;
-                    totalTimeOnScreen = Math.max(0.0005, Math.min(tsBaseTime / scale, 5.0));
+                    totalTimeOnScreen = Math.max(0.0005, Math.min(tsBaseTime / scale, 2.0));
                     currentZoomY = Math.max(0.1, Math.min(tsBaseZoomY * scale, 50.0));
                     if (isTsPaused) calculatePhaseAndDrawLive();
                 }
