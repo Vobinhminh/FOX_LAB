@@ -1,4 +1,4 @@
-const CACHE_NAME = 'app-cache-v6.5.27';
+const CACHE_NAME = 'app-cache-v6.5.28';
 const CORE_ASSETS = [
   './',
   './index.html',
@@ -8,9 +8,8 @@ const CORE_ASSETS = [
 ];
 const OPTIONAL_ASSETS = [
   './manifest.json',
-  './manifest.js',
   './icon-192.png',
-  './icon.png'
+  './icon-512.png'
 ];
 
 self.addEventListener('install', (event) => {
@@ -55,7 +54,7 @@ self.addEventListener('fetch', (event) => {
           }
           return response;
         })
-        .catch(() => caches.match(event.request))
+        .catch(() => caches.match(event.request, { ignoreSearch: true }))
     );
     return;
   }
