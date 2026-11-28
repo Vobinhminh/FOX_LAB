@@ -3112,12 +3112,24 @@ async function checkAppVersion() {
         }
         const out = _oscSmoothScratchA.subarray(0, samplesNeeded);
 
+        const resolveSafeIdx = (rawIdx) => {
+            if (currentIndex <= 0) return rawIdx;
+            if (rawIdx < currentIndex) return rawIdx;
+            // Khi phóng to/thu nhỏ làm chỉ số vượt qua điểm ghi hiện tại (t > 0), phản chiếu ngược trong vùng mẫu tín hiệu thực
+            const maxIdx = currentIndex - 1;
+            const mirrorSpan = Math.max(32, Math.min(maxIdx, Math.floor((sampleRate || 48000) * 0.04)));
+            const span = Math.max(1, Math.min(maxIdx, mirrorSpan));
+            const diff = rawIdx - maxIdx;
+            const period = span * 2;
+            const mod = ((diff % period) + period) % period;
+            const bounce = (mod <= span) ? mod : (period - mod);
+            return Math.max(0, maxIdx - bounce);
+        };
+
         if (samplesNeeded < 16) {
             for (let i = 0; i < samplesNeeded; i++) {
                 const rawIdx = startIdx + i;
-                const safeIdx = (currentIndex > 0 && rawIdx >= currentIndex)
-                    ? (currentIndex - 1)
-                    : rawIdx;
+                const safeIdx = resolveSafeIdx(rawIdx);
                 const idx = ((safeIdx % len) + len) % len;
                 out[i] = dataArray[idx] * ampGain;
             }
@@ -3143,9 +3155,7 @@ async function checkAppVersion() {
         pref[0] = 0;
         for (let k = 0; k < totalLen; k++) {
             const rawIdx = startIdx - pad + k;
-            const safeIdx = (currentIndex > 0 && rawIdx >= currentIndex)
-                ? (currentIndex - 1)
-                : rawIdx;
+            const safeIdx = resolveSafeIdx(rawIdx);
             const idx = ((safeIdx % len) + len) % len;
             const v = dataArray[idx] * ampGain;
             padded[k] = v;
