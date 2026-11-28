@@ -205,9 +205,10 @@
         #twoSourceModal .modal-header { background: linear-gradient(90deg, #db2777, #c026d3); }
 
         .hud-overlay {
-            position: absolute; top: 16px; left: 16px; background: rgba(15, 23, 42, 0.88);
+            position: absolute; top: 16px; left: 16px; background: rgba(15, 23, 42, 0.90);
             color: #f8fafc; padding: 10px 14px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.2);
-            font-family: 'JetBrains Mono', monospace; font-size: 12px; line-height: 1.6; z-index: 50; display: none; max-width: calc(100% - 32px);
+            font-family: 'JetBrains Mono', monospace; font-size: 12px; line-height: 1.6; z-index: 50; display: none;
+            box-sizing: border-box; max-width: calc(100% - 32px); white-space: normal; word-break: break-word;
         }
         .hud-title { font-family: 'Be Vietnam Pro', sans-serif; font-weight: 700; color: #38bdf8; margin-bottom: 4px; font-size: 13px; text-transform: uppercase; border-bottom: 1px solid rgba(255, 255, 255, 0.2); padding-bottom: 2px; }
         .hud-highlight { color: #facc15; font-weight: bold; }

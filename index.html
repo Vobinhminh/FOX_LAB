@@ -358,10 +358,6 @@
  </div>
  <div class="modal-controls" style="justify-content: space-between; padding: 6px 12px; display: flex; align-items: center;">
  <button class="btn-dark" onclick="closeTwoSourceModal()">Quay lại</button>
- <div class="ts-mode-toggle">
- <button id="btnModeOverlay" class="active-mode" onclick="setTsMode('overlay')">Ghép sóng</button>
- <button id="btnModeSum" onclick="setTsMode('sum')">Tổng hợp (A+B)</button>
- </div>
  <div style="display: flex; align-items: center; gap: 4px;">
  <button id="tsPlayBtn" onclick="toggleTsPlay()" class="btn-orange" style="margin-left: 4px;">Dừng</button>
  <button id="tsResultBtn" onclick="showTsResultModal()" style="display: none !important; margin-left: 4px;" class="btn-blue">Kết quả</button>
@@ -1009,35 +1005,6 @@
  <script src="index.js"></script>
  <script>
  window.FOX_REPORT_PAGE = "report.html";
- (function () {
- const REPORT_KEY = "daodongki_report_data";
- window.navigateToStandaloneReport = function () {
- try {
- const isDual = (typeof window.getActiveChannelMode === "function") && (window.getActiveChannelMode() === "2");
- const raw = localStorage.getItem(REPORT_KEY);
- const parsed = raw ? JSON.parse(raw) : {};
- parsed.isDualChannel = isDual;
- parsed.dualSource = isDual;
- parsed._source = "main_app";
- parsed._updatedAt = Date.now();
- parsed.syncFeature = "mode_only";
- delete parsed.cacLanDo;
- delete parsed.doThiLienQuan;
- delete parsed.phoTanSo;
- delete parsed.mucCuongDoAm;
- const cleanStr = JSON.stringify(parsed);
- localStorage.setItem(REPORT_KEY, cleanStr);
- window.name = "FOXLAB_DATA:" + cleanStr;
- const bc = new BroadcastChannel("foxlab_report_sync");
- bc.postMessage({ type: "SYNC_REPORT_DATA", payload: parsed });
- bc.close();
- } catch (e) {}
- const reportWin = window.open("report.html", "FoxLabReportWindow");
- if (!reportWin) {
- window.location.href = "report.html";
- }
- };
- })();
  </script>
 </body>
 </html>

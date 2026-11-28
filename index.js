@@ -722,6 +722,7 @@ async function checkAppVersion() {
         }
         updateAnalysisButtonState();
         updateManualAnalysisButtonState();
+        updateReportSyncButtonsVisibility();
         saveAppState();
     });
 
@@ -1381,6 +1382,23 @@ async function checkAppVersion() {
         }
         updateManualAnalysisButtonState();
         if (typeof updateAnalysisButtonState === 'function') updateAnalysisButtonState();
+        if (typeof updateReportSyncButtonsVisibility === 'function') updateReportSyncButtonsVisibility();
+    }
+
+    function updateReportSyncButtonsVisibility() {
+        const isContinuous = isContinuousMode || (modeSelect && modeSelect.value === 'continuous');
+        const syncBtnIds = [
+            'btnSyncFftReport',
+            'btnSyncTwoSourceReport',
+            'btnSyncKinematicsReport',
+            'btnSyncDbReport'
+        ];
+        syncBtnIds.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.style.setProperty('display', isContinuous ? 'none' : 'inline-flex', 'important');
+            }
+        });
     }
 
     displayModeSelect.addEventListener('change', () => {
@@ -1828,7 +1846,7 @@ async function checkAppVersion() {
                 <div style="margin-top:6px; padding-top:5px; border-top:1px dashed rgba(255,255,255,0.18); font-size:11.5px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;">
                     <span>Công thức: <i>T = 2π·Δt / Δφ</i> &nbsp;|&nbsp; <i>f = 1 / T</i></span>
                     <span>Sai số tương đối δ: <span class="ma-val-err">${relErrorPct !== null ? relErrorPct.toFixed(2) + '%' : 'Chưa xác định'}</span></span>
-                    <button type="button"onclick="syncFeatureToReport('osc')"style="background:#059669; color:#ffffff; border:none; border-radius:4px; padding:3px 9px; font-size:11px; font-weight:700; cursor:pointer;"title="Đồng bộ kết quả phân tích đồ thị này sang Phần I báo cáo"> Đồng bộ báo cáo</button>
+                    ${!(isContinuousMode || (modeSelect && modeSelect.value === 'continuous')) ? `<button type="button" onclick="syncFeatureToReport('osc')" style="background:#059669; color:#ffffff; border:none; border-radius:4px; padding:3px 9px; font-size:11px; font-weight:700; cursor:pointer;" title="Đồng bộ kết quả phân tích đồ thị này sang Phần I báo cáo"> Đồng bộ báo cáo</button>` : ''}
                 </div>
             `;
             hud.style.display = 'block';
@@ -1990,7 +2008,7 @@ async function checkAppVersion() {
                     </div>
                     <div style="margin-top:6px; padding-top:5px; border-top:1px dashed rgba(255,255,255,0.18); font-size:11.5px; display:flex; justify-content:flex-end; align-items:center; flex-wrap:wrap; gap:6px;">
                         <button type="button" onclick="startTwoSourceGraphAnalysis(true)" style="background:#334155; color:#f8fafc; border:1px solid #475569; border-radius:4px; padding:2px 8px; font-size:11px; cursor:pointer;">Đặt lại 4 mốc</button>
-                        <button type="button" onclick="syncFeatureToReport('twoSource')" style="background:#059669; color:#ffffff; border:none; border-radius:4px; padding:3px 9px; font-size:11px; font-weight:700; cursor:pointer;" title="Đồng bộ kết quả 2 nguồn sang báo cáo">Đồng bộ báo cáo</button>
+                        ${!(isContinuousMode || (modeSelect && modeSelect.value === 'continuous')) ? `<button type="button" onclick="syncFeatureToReport('twoSource')" style="background:#059669; color:#ffffff; border:none; border-radius:4px; padding:3px 9px; font-size:11px; font-weight:700; cursor:pointer;" title="Đồng bộ kết quả 2 nguồn sang báo cáo">Đồng bộ báo cáo</button>` : ''}
                     </div>
                 `;
                 hud.style.display = 'block';
@@ -2801,6 +2819,8 @@ async function checkAppVersion() {
         if (isPaused) {
             resetManualAnalysisState();
             isPaused = false;
+            const exportBtn = document.getElementById("btnExportReport");
+            if (exportBtn) exportBtn.style.display = "inline-block";
             pauseButton.disabled = false;
             dbHistoryA = [];
             dbHistoryB = [];
@@ -2857,6 +2877,8 @@ async function checkAppVersion() {
         dbStartTime = 0;
         lastDbSampleTime = 0;
 
+        const exportBtn = document.getElementById("btnExportReport");
+        if (exportBtn) exportBtn.style.display = "inline-block";
         updateUIState();
         // Cập nhật thông báo sẵn sàng đo theo đúng kênh đang bật
         if (channelConfig.A.active || channelConfig.B.active) {
@@ -3778,6 +3800,7 @@ async function checkAppVersion() {
     }
 
     function openMcdModal() {
+        if (typeof updateReportSyncButtonsVisibility === 'function') updateReportSyncButtonsVisibility();
         const overlay = document.getElementById('mcdModalOverlay');
         overlay.style.display = 'flex';
         document.getElementById('distanceResultBox').style.display = 'none';
@@ -4691,8 +4714,10 @@ async function checkAppVersion() {
 
     function setTsMode(mode) {
         tsViewMode = mode;
-        document.getElementById('btnModeOverlay').classList.toggle('active-mode', mode === 'overlay');
-        document.getElementById('btnModeSum').classList.toggle('active-mode', mode === 'sum');
+        const btnOverlay = document.getElementById('btnModeOverlay');
+        const btnSum = document.getElementById('btnModeSum');
+        if (btnOverlay) btnOverlay.classList.toggle('active-mode', mode === 'overlay');
+        if (btnSum) btnSum.classList.toggle('active-mode', mode === 'sum');
         isContinuousMode = (modeSelect && modeSelect.value === 'continuous');
         syncTwoSourceControlsVisibility(isContinuousMode);
         if (isTsPaused) calculatePhaseAndDrawLive();
@@ -4807,29 +4832,37 @@ async function checkAppVersion() {
     }
 
     function syncTwoSourceControlsVisibility(continuousMode) {
+        if (typeof updateReportSyncButtonsVisibility === 'function') updateReportSyncButtonsVisibility();
         const btn = document.getElementById('tsPlayBtn');
         const resBtn = document.getElementById('tsResultBtn');
         const eqBtn = document.getElementById('tsEquationBtn');
         const hudRes = document.getElementById('hudResults');
         const hudEq = document.getElementById('hudEquations');
 
+        const headerTitleEl = document.querySelector('#twoSourceModal .modal-header span');
+        if (headerTitleEl) {
+            if (!continuousMode) {
+                headerTitleEl.textContent = (tsViewMode === 'sum')
+                    ? 'Phân tích & Xử lý 2 Nguồn âm — Tổng hợp sóng (u = uA + uB)'
+                    : 'Phân tích & Xử lý 2 Nguồn âm — Ghép sóng (Độ lệch pha Δφ)';
+            } else {
+                headerTitleEl.textContent = 'Phân tích & Xử lý 2 Nguồn âm';
+            }
+        }
+
         if (!continuousMode) {
-            // Chế độ tự dừng 2 nguồn: bỏ nút Dừng; Ghép sóng hiển thị kết quả tính Δφ, Tổng hợp hiển thị phương trình mỗi đồ thị & tổng hợp
+            // Chế độ tự dừng 2 nguồn: ẩn sẵn bảng kết quả/phương trình, chỉ hiện khi người dùng bấm nút Kết quả / Phương trình
             if (btn) btn.style.setProperty('display', 'none', 'important');
+            showTsResults = false;
+            showTsEquations = false;
+            if (hudRes) hudRes.style.display = 'none';
+            if (hudEq) hudEq.style.display = 'none';
             if (tsViewMode === 'sum') {
                 if (resBtn) resBtn.style.setProperty('display', 'none', 'important');
                 if (eqBtn) eqBtn.style.setProperty('display', 'inline-flex', 'important');
-                showTsResults = false;
-                if (hudRes) hudRes.style.display = 'none';
-                showTsEquations = true;
-                if (hudEq) hudEq.style.display = 'block';
             } else {
                 if (resBtn) resBtn.style.setProperty('display', 'inline-flex', 'important');
                 if (eqBtn) eqBtn.style.setProperty('display', 'none', 'important');
-                showTsEquations = false;
-                if (hudEq) hudEq.style.display = 'none';
-                showTsResults = true;
-                if (hudRes) hudRes.style.display = 'block';
             }
         } else {
             // Chế độ liên tục 2 nguồn: giữ nguyên (có nút Dừng/Tiếp tục, bỏ hiển thị Phương trình và Kết quả)
@@ -7037,6 +7070,11 @@ async function checkAppVersion() {
     };
 
     window.syncFeatureToReport = function (featureType) {
+        if (isContinuousMode || (modeSelect && modeSelect.value === 'continuous')) {
+            return;
+        }
+        const exportBtn = document.getElementById("btnExportReport");
+        if (exportBtn) exportBtn.style.display = "inline-block";
         const isDual = (typeof getActiveChannelMode === "function") && (getActiveChannelMode() === "2");
         const prev = readStoredReportData() || {};
         const now = Date.now();
@@ -7226,7 +7264,7 @@ async function checkAppVersion() {
                     entryA = { kenh: "Kênh A", soChuKi: nA, deltaT_ms: Number(((nA * 1000) / fA).toFixed(2)), imageBase64: snapImg };
                 }
                 if (!entryB) {
-                    const fB = (typeof currentCalcFreqB === "number" && currentCalcFreqB > 0) ? currentCalcFreqB : 440;
+                    const fB = (typeof currentCalcFreqB === "number" && currentCalcFreqB > 0) ? currentCalcFreqB : (computeFrozenChannelFrequency('B') || 0);
                     const nB = Math.max(1, Math.round((totalTimeOnScreen || 0.02) * fB));
                     entryB = { kenh: "Kênh B", soChuKi: nB, deltaT_ms: Number(((nB * 1000) / fB).toFixed(2)), imageBase64: snapImg };
                 }
@@ -7243,11 +7281,11 @@ async function checkAppVersion() {
                 // Đang mở modal "Xử lý 2 nguồn âm" -> chỉ đồng bộ đúng tab đang mở:
                 // - Tab "Ghép sóng & Độ lệch pha" (overlay) -> chỉ đồng bộ Phần II.1
                 // - Tab "Tổng sóng u = uA + uB" (sum) -> chỉ đồng bộ Phần II.2
-                const fA_val = (typeof currentCalcFreqA === "number" && currentCalcFreqA > 0) ? currentCalcFreqA : 440;
-                const fB_val = (typeof currentCalcFreqB === "number" && currentCalcFreqB > 0) ? currentCalcFreqB : 440;
+                const fA_val = (typeof currentCalcFreqA === "number" && currentCalcFreqA > 0) ? currentCalcFreqA : (computeFrozenChannelFrequency('A') || 0);
+                const fB_val = (typeof currentCalcFreqB === "number" && currentCalcFreqB > 0) ? currentCalcFreqB : (computeFrozenChannelFrequency('B') || 0);
                 const ampA_val = Number(currentAmpA) || 0.25;
                 const ampB_val = Number(currentAmpB) || 0.25;
-                const avgF = (fA_val > 0 && fB_val > 0) ? ((fA_val + fB_val) / 2) : (fA_val || fB_val || 440);
+                const avgF = (fA_val > 0 && fB_val > 0) ? ((fA_val + fB_val) / 2) : (fA_val || fB_val || 0);
                 let phaseRad_val = 0;
                 const hudPhaseEl = document.getElementById("hudPhaseRad");
                 const parsedHudPhase = hudPhaseEl ? parseFloat(String(hudPhaseEl.textContent || "").replace(",", ".")) : NaN;
@@ -7400,11 +7438,18 @@ async function checkAppVersion() {
     window.navigateToStandaloneReport = function () {
         const isDual = (typeof getActiveChannelMode === "function") && (getActiveChannelMode() === "2");
         window.syncChannelModeToReport(isDual);
+        try {
+            const raw = localStorage.getItem(REPORT_STORAGE_KEY);
+            if (raw) window.name = "FOXLAB_DATA:" + raw;
+        } catch (e) {}
         const targetPage = (window.FOX_REPORT_PAGE || "./report.html") + `?mode=${isDual ? "2" : "1"}`;
         const reportWin = window.open(targetPage, "FoxLabReportWindow");
         if (!reportWin) {
             window.location.href = targetPage;
         }
+        const exportBtn = document.getElementById("btnExportReport");
+        if (exportBtn) exportBtn.style.display = "none";
+        if (typeof closeExpReportModal === "function") closeExpReportModal();
     };
 
     // Thu thập tự động 1 dòng số liệu & ảnh đồ thị cho mỗi lần đồng bộ từ Fox-lab

@@ -1106,7 +1106,7 @@
  II.2. Tổng sóng – Tổng hợp dao động (<i>u</i> = <i>u</i><sub>A</sub> + <i>u</i><sub>B</sub>)
  <span class="row-counter-badge no-print" id="sumCountBadge2">1 / 10 cặp</span>
  </span>
- <button type="button" class="inline-btn no-print" id="btnAddSum2" onclick="addKinRow2()">+ Thêm lần tổng sóng (Tối đa 10)</button>
+ <button type="button" class="inline-btn no-print" id="btnAddSum2" onclick="addSumRow2()">+ Thêm lần tổng sóng (Tối đa 10)</button>
  </div>
  <div class="per-row-graphs-grid single-item" id="dualSumGraphsGrid"></div>
  <div class="table-scroll-wrap">
@@ -1292,6 +1292,7 @@
  let oscRows2 = [];
  let kinRows1 = [];
  let kinRows2 = [];
+ let sumRows2 = [];
  let fftRows1 = [];
  let fftRows2 = [];
  let dbRows = [];
@@ -1426,6 +1427,7 @@
  if (oscRows2.length > 1) { oscRows2 = [oscRows2[0]]; trimmed = true; }
  if (kinRows1.length > 1) { kinRows1 = [kinRows1[0]]; trimmed = true; }
  if (kinRows2.length > 1) { kinRows2 = [kinRows2[0]]; trimmed = true; }
+ if (sumRows2.length > 1) { sumRows2 = [sumRows2[0]]; trimmed = true; }
  if (fftRows1.length > 1) { fftRows1 = [fftRows1[0]]; trimmed = true; }
  if (fftRows2.length > 1) { fftRows2 = [fftRows2[0]]; trimmed = true; }
  if (dbRows.length > 1) { dbRows = [dbRows[0]]; trimmed = true; }
@@ -1602,6 +1604,7 @@
  doThiLienQuan: sanitizeSingleRows(kinRows1),
  doThiLienQuan1: sanitizeSingleRows(kinRows1),
  doThiLienQuan2: sanitizeDualRows(kinRows2),
+ tongHopSong2: sanitizeDualRows(sumRows2),
  phoTanSo: sanitizeSingleRows(fftRows1),
  phoTanSo1: sanitizeSingleRows(fftRows1),
  phoTanSo2: sanitizeDualRows(fftRows2),
@@ -1650,6 +1653,10 @@
  doThiLienQuan: stripOldImgs(kinRows1),
  doThiLienQuan1: stripOldImgs(kinRows1),
  doThiLienQuan2: kinRows2.map(({ a, b }) => ({
+ a: { ...a, imageBase64: null, overlayImageBase64: null, sumImageBase64: null },
+ b: { ...b, imageBase64: null, overlayImageBase64: null, sumImageBase64: null }
+ })),
+ tongHopSong2: sumRows2.map(({ a, b }) => ({
  a: { ...a, imageBase64: null, overlayImageBase64: null, sumImageBase64: null },
  b: { ...b, imageBase64: null, overlayImageBase64: null, sumImageBase64: null }
  })),
@@ -1946,6 +1953,7 @@
  oscRows2.every(isBlankOscPair) &&
  kinRows1.every(isBlankKinRow) &&
  kinRows2.every(isBlankKinPair) &&
+ sumRows2.every(isBlankKinPair) &&
  fftRows1.every(isBlankFftRow) &&
  fftRows2.every(isBlankFftPair) &&
  dbRows.every(isBlankDbRow)
@@ -2331,7 +2339,7 @@
  }
  } catch (e) {}
 
- if (oscRows1.length === 0 && oscRows2.length === 0 && kinRows1.length === 0 && kinRows2.length === 0 && fftRows1.length === 0 && fftRows2.length === 0 && dbRows.length === 0) {
+ if (oscRows1.length === 0 && oscRows2.length === 0 && kinRows1.length === 0 && kinRows2.length === 0 && sumRows2.length === 0 && fftRows1.length === 0 && fftRows2.length === 0 && dbRows.length === 0) {
  initDefaultTables();
  }
  }
@@ -2341,6 +2349,7 @@
  oscRows2 = [makeBlankOscPair()];
  kinRows1 = [makeBlankKinSingle()];
  kinRows2 = [makeBlankKinPair()];
+ sumRows2 = [makeBlankKinPair()];
  fftRows1 = [makeBlankFftSingle(0)];
  fftRows2 = [makeBlankFftPair()];
  dbRows = [makeBlankDbRow(0)];
@@ -2473,6 +2482,14 @@
  }))
  : [makeBlankKinPair()];
 
+ const rawSum2 = Array.isArray(data.tongHopSong2) ? data.tongHopSong2 : [];
+ sumRows2 = rawSum2.length > 0
+ ? rawSum2.slice(0, MAX_ROWS).map(p => ({
+ a: Object.assign({ kenh: "Kênh A" }, normalizeSavedKinSingle(p?.a || {}, true)),
+ b: Object.assign({ kenh: "Kênh B" }, normalizeSavedKinSingle(p?.b || {}, true))
+ }))
+ : [makeBlankKinPair()];
+
  const rawFft1 = Array.isArray(data.phoTanSo1) ? data.phoTanSo1 : (Array.isArray(data.phoTanSo) ? data.phoTanSo : []);
  fftRows1 = rawFft1.length > 0
  ? rawFft1.slice(0, MAX_ROWS).map((r, idx) => normalizeSavedFftSingle(r, idx, dualSourceMode))
@@ -2512,6 +2529,7 @@
  if (oscRows2.length === 0) oscRows2 = [makeBlankOscPair()];
  if (kinRows1.length === 0) kinRows1 = [makeBlankKinSingle()];
  if (kinRows2.length === 0) kinRows2 = [makeBlankKinPair()];
+ if (sumRows2.length === 0) sumRows2 = [makeBlankKinPair()];
  if (fftRows1.length === 0) fftRows1 = [makeBlankFftSingle(0)];
  if (fftRows2.length === 0) fftRows2 = [makeBlankFftPair()];
  if (dbRows.length === 0) dbRows = [makeBlankDbRow(0)];
@@ -2595,20 +2613,24 @@
 
  if (allowKin && kinEntries.length > 0) {
  if (dualSourceMode) {
- const normalizedKinEntries = kinEntries.map((item) => {
- const copy = Object.assign({}, item);
- if (feat === "twoSource_overlay") {
- copy.sumImageBase64 = null;
- } else if (feat === "twoSource_sum") {
- copy.overlayImageBase64 = null;
- }
- return copy;
- });
- const resKin2 = applyDualEntries(kinRows2, normalizedKinEntries, isBlankKinRow, isBlankKinPair, makeBlankKinPair);
+ const applyToOverlay = (!feat || feat === "twoSource" || feat === "kinematics" || feat === "twoSource_overlay");
+ const applyToSum = (!feat || feat === "twoSource" || feat === "kinematics" || feat === "twoSource_sum");
+ if (applyToOverlay) {
+ const overlayEntries = kinEntries.map((item) => Object.assign({}, item, { sumImageBase64: null }));
+ const resKin2 = applyDualEntries(kinRows2, overlayEntries, isBlankKinRow, isBlankKinPair, makeBlankKinPair);
  kinRows2 = resKin2.rows;
  anyChanged = anyChanged || resKin2.changed;
  anyOverflow = anyOverflow || resKin2.overflow;
  if (resKin2.changed) routedToDual = true;
+ }
+ if (applyToSum) {
+ const sumEntries = kinEntries.map((item) => Object.assign({}, item, { overlayImageBase64: null }));
+ const resSum2 = applyDualEntries(sumRows2, sumEntries, isBlankKinRow, isBlankKinPair, makeBlankKinPair);
+ sumRows2 = resSum2.rows;
+ anyChanged = anyChanged || resSum2.changed;
+ anyOverflow = anyOverflow || resSum2.overflow;
+ if (resSum2.changed) routedToDual = true;
+ }
  } else {
  const resKin1 = applySingleEntries(kinRows1, [kinEntries[0]], isBlankKinRow);
  kinRows1 = resKin1.rows;
@@ -3398,10 +3420,10 @@
 
  const sumGrid = byId("dualSumGraphsGrid");
  if (sumGrid) {
- sumGrid.className = "per-row-graphs-grid" + (kinRows2.length <= 1 ? " single-item" : "");
+ sumGrid.className = "per-row-graphs-grid" + (sumRows2.length <= 1 ? " single-item" : "");
  sumGrid.innerHTML = "";
 
- kinRows2.forEach((pair, idx) => {
+ sumRows2.forEach((pair, idx) => {
  const sumInfo = computeWaveSuperpositionInfo(pair);
  const smImg = pair.a.sumImageBase64 || pair.b.sumImageBase64 || null;
  const canvasId = `canvasDualSum_${idx}`;
@@ -3673,7 +3695,7 @@
  sumBody.innerHTML = "";
  let lastSumSummary = null;
 
- kinRows2.forEach((pair, idx) => {
+ sumRows2.forEach((pair, idx) => {
  const sumInfo = computeWaveSuperpositionInfo(pair);
  if ((Number(pair.a.f_Hz) || 0) > 0 || (Number(pair.b.f_Hz) || 0) > 0) {
  lastSumSummary = sumInfo;
@@ -3687,15 +3709,15 @@
  <td><strong>${sumInfo.eqSumHtml}</strong></td>
  <td>${sumInfo.ampSumStr}</td>
  <td>${sumInfo.phenomenon}</td>
- <td class="no-print col-delete"><button type="button" class="row-del-btn" onclick="delKin2(${idx})" title="Xóa lần tổng sóng này"></button></td>
+ <td class="no-print col-delete"><button type="button" class="row-del-btn" onclick="delSum2(${idx})" title="Xóa lần tổng sóng này"></button></td>
  `;
  sumBody.appendChild(tr);
  });
 
  const badge3 = byId("sumCountBadge2");
- if (badge3) badge3.textContent = `${kinRows2.length} / ${MAX_ROWS} cặp`;
+ if (badge3) badge3.textContent = `${sumRows2.length} / ${MAX_ROWS} cặp`;
  const btnAdd3 = byId("btnAddSum2");
- if (btnAdd3) btnAdd3.disabled = kinRows2.length >= MAX_ROWS;
+ if (btnAdd3) btnAdd3.disabled = sumRows2.length >= MAX_ROWS;
 
  const resII3 = byId("resDualII3");
  if (resII3) {
@@ -3771,10 +3793,32 @@
 
  function delKin2(i) {
  if (kinRows2.length <= 1) {
- showToast("Cần giữ lại ít nhất 1 cặp khảo sát ở mục II.1 – II.2!");
+ showToast("Cần giữ lại ít nhất 1 cặp khảo sát ở mục II.1!");
  return;
  }
  kinRows2.splice(i, 1);
+ renderKinTable2();
+ renderKinGraphs2();
+ persistReportEdits();
+ }
+
+ function addSumRow2() {
+ if (sumRows2.length >= MAX_ROWS) {
+ showToast(`Đã đạt tối đa ${MAX_ROWS} cặp tổng hợp sóng!`);
+ return;
+ }
+ sumRows2.push(makeBlankKinPair());
+ renderKinTable2();
+ renderKinGraphs2();
+ persistReportEdits();
+ }
+
+ function delSum2(i) {
+ if (sumRows2.length <= 1) {
+ showToast("Cần giữ lại ít nhất 1 cặp tổng hợp sóng ở mục II.2!");
+ return;
+ }
+ sumRows2.splice(i, 1);
  renderKinTable2();
  renderKinGraphs2();
  persistReportEdits();
@@ -4756,7 +4800,7 @@
  });
  targetRows.push([]);
  targetRows.push(["PHẦN II (II.2): TỔNG SÓNG (u = uA + uB) - 2 NGUỒN"], ["Lần", "Phương trình u1(t) (Kênh A)", "Phương trình u2(t) (Kênh B)", "Phương trình sóng tổng hợp u(t)", "Biên độ tổng hợp A_th", "Nhận xét hiện tượng"]);
- kinRows2.forEach((p, i) => {
+ sumRows2.forEach((p, i) => {
  const sumInfo = computeWaveSuperpositionInfo(p);
  targetRows.push([`Lần ${i + 1}`, sumInfo.eq1, sumInfo.eq2, sumInfo.eqSumPlain, sumInfo.ampSumStr, sumInfo.phenomenon]);
  });
