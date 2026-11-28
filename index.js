@@ -1941,7 +1941,6 @@ async function checkAppVersion() {
                     <div>• Độ lệch pha Δφ: <span class="ma-val-manual">${res.deltaPhiRad.toFixed(2)} rad (${res.deltaPhiDeg.toFixed(1)}°)</span></div>
                     <div>• Chu kỳ đo 2 điểm (T): <span class="ma-val-manual">${res.T_ms.toFixed(2)} ms</span></div>
                     <div>• Tần số đo 2 điểm (f): <span class="ma-val-manual">${res.f_Hz.toFixed(2)} Hz</span></div>
-                    <div>• Chu kỳ tự động (T<sub>auto</sub>): <span class="ma-val-auto">${autoFreq > 0 ? autoT_ms.toFixed(2) + 'ms' : '--'}</span></div>
                     <div>• Tần số tự động (f<sub>auto</sub>): <span class="ma-val-auto">${autoFreq > 0 ? autoFreq.toFixed(2) + 'Hz' : '--'}</span></div>
                 </div>
                 <div style="margin-top:6px; padding-top:5px; border-top:1px dashed rgba(255,255,255,0.18); font-size:11.5px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;">
@@ -2105,7 +2104,6 @@ async function checkAppVersion() {
                         <div>• Chu kỳ Đồ thị 1 (T<sub>A</sub>): <span class="ma-val-manual">${dispTA_ms > 0 ? dispTA_ms.toFixed(2) + 'ms' : '--'}</span> <span style="color:#94a3b8;">(f<sub>A</sub> = ${dispFA > 0 ? dispFA.toFixed(1) + 'Hz' : '--'})</span></div>
                         <div>• Đồ thị 2 (P<sub>B1</sub>, P<sub>B2</sub>): Δt<sub>B</sub> = <span class="ma-val-auto">${resB ? resB.dt_ms.toFixed(2) + 'ms' : '--'}</span></div>
                         <div>• Chu kỳ Đồ thị 2 (T<sub>B</sub>): <span class="ma-val-auto">${dispTB_ms > 0 ? dispTB_ms.toFixed(2) + 'ms' : '--'}</span> <span style="color:#94a3b8;">(f<sub>B</sub> = ${dispFB > 0 ? dispFB.toFixed(1) + 'Hz' : '--'})</span></div>
-                        <div>• Chu kỳ tự động (T<sub>A0</sub> / T<sub>B0</sub>): <span style="color:#cbd5e1; font-weight:600;">${autoTA_ms > 0 ? autoTA_ms.toFixed(2) : '--'} / ${autoTB_ms > 0 ? autoTB_ms.toFixed(2) : '--'} ms</span></div>
                     </div>
                     <div style="margin-top:6px; padding-top:5px; border-top:1px dashed rgba(255,255,255,0.18); font-size:11.5px; display:flex; justify-content:flex-end; align-items:center; flex-wrap:wrap; gap:6px;">
                         <button type="button" onclick="startTwoSourceGraphAnalysis(true)" style="background:#334155; color:#f8fafc; border:1px solid #475569; border-radius:4px; padding:2px 8px; font-size:11px; cursor:pointer;">Đặt lại 4 mốc</button>
@@ -2945,8 +2943,7 @@ async function checkAppVersion() {
         if (isPaused) {
             resetManualAnalysisState();
             isPaused = false;
-            const exportBtn = document.getElementById("btnExportReport");
-            if (exportBtn) exportBtn.style.display = "inline-block";
+            if (typeof syncExportReportButtonVisibility === "function") syncExportReportButtonVisibility();
             pauseButton.disabled = false;
             dbHistoryA = [];
             dbHistoryB = [];
@@ -3003,8 +3000,7 @@ async function checkAppVersion() {
         dbStartTime = 0;
         lastDbSampleTime = 0;
 
-        const exportBtn = document.getElementById("btnExportReport");
-        if (exportBtn) exportBtn.style.display = "inline-block";
+        if (typeof syncExportReportButtonVisibility === "function") syncExportReportButtonVisibility();
         updateUIState();
         // Cập nhật thông báo sẵn sàng đo theo đúng kênh đang bật
         if (channelConfig.A.active || channelConfig.B.active) {
@@ -7270,8 +7266,7 @@ async function checkAppVersion() {
         if (isContinuousMode || (modeSelect && modeSelect.value === 'continuous')) {
             return;
         }
-        const exportBtn = document.getElementById("btnExportReport");
-        if (exportBtn) exportBtn.style.display = "inline-block";
+        if (typeof syncExportReportButtonVisibility === "function") syncExportReportButtonVisibility();
         const isDual = (typeof getActiveChannelMode === "function") && (getActiveChannelMode() === "2");
         const prev = readStoredReportData() || {};
         const now = Date.now();
@@ -7595,7 +7590,10 @@ async function checkAppVersion() {
 
         const targetPage = window.FOX_REPORT_PAGE || "./report.html";
         const reportWin = window.open(targetPage, "FoxLabReportWindow");
-        if (!reportWin) {
+        if (reportWin) {
+            window._foxReportWinRef = reportWin;
+            window._foxReportIsOpen = true;
+        } else {
             const link = document.createElement("a");
             link.href = targetPage;
             link.target = "FoxLabReportWindow";
@@ -7603,6 +7601,7 @@ async function checkAppVersion() {
             link.click();
             document.body.removeChild(link);
         }
+        if (typeof syncExportReportButtonVisibility === "function") syncExportReportButtonVisibility();
 
         const labelMap = {
             osc: "Phân tích đồ thị (Phần I)",
@@ -7632,6 +7631,30 @@ async function checkAppVersion() {
         document.body.classList.remove("printing-exp-report");
     };
 
+    window.isFoxReportOpen = function () {
+        try {
+            if (window._foxReportWinRef) {
+                if (!window._foxReportWinRef.closed) return true;
+                window._foxReportWinRef = null;
+                window._foxReportIsOpen = false;
+            }
+        } catch (e) {}
+        try {
+            const isOpenFlag = localStorage.getItem("foxlab_report_open") === "1";
+            const hb = Number(localStorage.getItem("foxlab_report_heartbeat") || 0);
+            if (isOpenFlag && hb > 0 && (Date.now() - hb) < 6000) {
+                return true;
+            }
+        } catch (e) {}
+        return Boolean(window._foxReportIsOpen);
+    };
+
+    window.syncExportReportButtonVisibility = function () {
+        const exportBtn = document.getElementById("btnExportReport");
+        if (!exportBtn) return;
+        exportBtn.style.display = window.isFoxReportOpen() ? "none" : "inline-block";
+    };
+
     window.navigateToStandaloneReport = function () {
         const isDual = (typeof getActiveChannelMode === "function") && (getActiveChannelMode() === "2");
         window.syncChannelModeToReport(isDual);
@@ -7641,11 +7664,13 @@ async function checkAppVersion() {
         } catch (e) {}
         const targetPage = (window.FOX_REPORT_PAGE || "./report.html") + `?mode=${isDual ? "2" : "1"}`;
         const reportWin = window.open(targetPage, "FoxLabReportWindow");
-        if (!reportWin) {
+        if (reportWin) {
+            window._foxReportWinRef = reportWin;
+            window._foxReportIsOpen = true;
+        } else {
             window.location.href = targetPage;
         }
-        const exportBtn = document.getElementById("btnExportReport");
-        if (exportBtn) exportBtn.style.display = "none";
+        window.syncExportReportButtonVisibility();
         if (typeof closeExpReportModal === "function") closeExpReportModal();
     };
 
@@ -8794,9 +8819,57 @@ async function checkAppVersion() {
 
     function bindExportButtonOnce() {
         upgradeExportReportButtonsToSync();
+        if (typeof window.syncExportReportButtonVisibility === "function") {
+            window.syncExportReportButtonVisibility();
+        }
         const btn = document.getElementById("btnExportReport");
         return Boolean(btn && btn.dataset.exportBound === "true");
     }
+
+    try {
+        const reportPresenceBc = new BroadcastChannel("foxlab_report_sync");
+        reportPresenceBc.onmessage = (ev) => {
+            const msg = ev && ev.data;
+            if (!msg) return;
+            if (msg.type === "REPORT_READY") {
+                window._foxReportIsOpen = true;
+                if (typeof window.syncExportReportButtonVisibility === "function") window.syncExportReportButtonVisibility();
+            } else if (msg.type === "REPORT_CLOSED") {
+                window._foxReportIsOpen = false;
+                window._foxReportWinRef = null;
+                if (typeof window.syncExportReportButtonVisibility === "function") window.syncExportReportButtonVisibility();
+            }
+        };
+    } catch (e) {}
+
+    window.addEventListener("message", (ev) => {
+        const msg = ev && ev.data;
+        if (!msg) return;
+        if (msg.type === "REPORT_READY") {
+            window._foxReportIsOpen = true;
+            if (typeof window.syncExportReportButtonVisibility === "function") window.syncExportReportButtonVisibility();
+        } else if (msg.type === "REPORT_CLOSED") {
+            window._foxReportIsOpen = false;
+            window._foxReportWinRef = null;
+            if (typeof window.syncExportReportButtonVisibility === "function") window.syncExportReportButtonVisibility();
+        }
+    });
+
+    window.addEventListener("storage", (ev) => {
+        if (!ev || ev.key === "foxlab_report_open" || ev.key === "foxlab_report_heartbeat") {
+            if (ev && ev.key === "foxlab_report_open" && ev.newValue !== "1") {
+                window._foxReportIsOpen = false;
+                window._foxReportWinRef = null;
+            }
+            if (typeof window.syncExportReportButtonVisibility === "function") window.syncExportReportButtonVisibility();
+        }
+    });
+
+    setInterval(() => {
+        if (typeof window.syncExportReportButtonVisibility === "function") {
+            window.syncExportReportButtonVisibility();
+        }
+    }, 1500);
 
     if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", bindExportButtonOnce);
