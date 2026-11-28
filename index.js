@@ -6936,7 +6936,7 @@ async function checkAppVersion() {
     let expLiveImages = { osc: null, fft: null, db: null };
     let cachedFftSnapshot = null;
     let lastSyncedDbSignature = "";
-    let expSingleRowFlags = { osc: false, fft: false, db: false };
+    let expSingleRowFlags = { osc: true, fft: true, db: true };
 
     function showExpToast(text) {
         const toast = document.getElementById("expToastMsg");
@@ -7439,7 +7439,7 @@ async function checkAppVersion() {
         const isDual = (typeof getActiveChannelMode === "function") && (getActiveChannelMode() === "2");
         window.syncChannelModeToReport(isDual);
         try {
-            const raw = localStorage.getItem(REPORT_STORAGE_KEY);
+            const raw = localStorage.getItem(EXP_STORAGE_KEY);
             if (raw) window.name = "FOXLAB_DATA:" + raw;
         } catch (e) {}
         const targetPage = (window.FOX_REPORT_PAGE || "./report.html") + `?mode=${isDual ? "2" : "1"}`;

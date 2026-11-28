@@ -162,6 +162,14 @@
  color: #f3e8ff;
  border-color: #c084fc;
  }
+.btn-reset {
+ background: #dc2626;
+ color: #ffffff;
+ border: 1px solid #f87171;
+ }
+.btn-reset:hover {
+ background: #b91c1c;
+ }
 
  /* Dropdown Menu */
  .tb-dropdown {
@@ -807,6 +815,7 @@
  </span>
  <button type="button" class="btn btn-sync-mode" id="btnSyncRowMode" onclick="toggleSyncRowMode()" title="Mặc định: mỗi tín hiệu đồng bộ thêm 1 dòng dữ liệu &amp; 1 hình ảnh. Bật chỉnh 1 dòng để ghi đè.">Mỗi đồng bộ = +1 dòng</button>
  <button type="button" class="btn btn-route-mode" id="btnTargetSourceMode" onclick="toggleSingleChannelRouteMode()" title="Mặc định 1 nguồn: dữ liệu 1 kênh nạp vào mục 1 nguồn (I.1–I.2, II.1–II.2, III.1–III.2). Bấm để bật chế độ 2 nguồn.">Chế độ: 1 nguồn</button>
+ <button type="button" class="btn btn-reset" id="btnResetReport" onclick="resetReportToInitialTemplate()" title="Xóa toàn bộ số liệu đã đồng bộ và đưa báo cáo về mẫu ban đầu">Reset báo cáo</button>
  </div>
 
  <div class="toolbar-right">
@@ -1297,7 +1306,7 @@
  let fftRows2 = [];
  let dbRows = [];
 
- let singleRowOverwriteMode = false;
+ let singleRowOverwriteMode = true;
  let dualSourceMode = false;
  let lastAppliedPayloadHash = "";
  let lastRawStorageString = "";
@@ -1947,6 +1956,18 @@
  return !r || ((Number(r.lAvg) || 0) <= 0 && (Number(r.lMax) || 0) <= 0 && !r.imageBase64);
  }
 
+ function isSampleDataArray(rows, checkerFn) {
+ if (!Array.isArray(rows) || rows.length === 0) return true;
+ if (rows.length === 1 && checkerFn(rows[0])) return true;
+ if (rows.length === 3) {
+ const r0 = rows[0] || {};
+ if (r0.soChuKi === 5 && Math.abs(Number(r0.deltaT_ms) - 11.35) < 0.01) return true;
+ if (String(r0.nguon || "").includes("Âm thoa chuẩn 440 Hz")) return true;
+ if (Number(r0.r) === 0.5 && Math.abs(Number(r0.lAvg) - 75.0) < 0.05) return true;
+ }
+ return false;
+ }
+
  function isReportCompletelyBlank() {
  return (
  oscRows1.every(isBlankOscRow) &&
@@ -2176,14 +2197,14 @@
  if (entry.imageBase64) cacheCompressedThumb(entry.imageBase64);
  });
 
- if (singleRowOverwriteMode) {
- const entry = newEntries[0];
- const prevImg = currentRows[0] && currentRows[0].imageBase64 ? currentRows[0].imageBase64 : null;
- const nextRow = Object.assign({}, entry, {
+ if (singleRowOverwriteMode || isSampleDataArray(currentRows, isBlankFn)) {
+ const nextRows = newEntries.slice(0, MAX_ROWS).map((entry) => {
+ return Object.assign({}, entry, {
  kenh: dualSourceMode ? entry.kenh : "",
- imageBase64: entry.imageBase64 || prevImg
+ imageBase64: entry.imageBase64 || null
  });
- return { rows: [nextRow], changed: true, overflow: false, addedCount: 1 };
+ });
+ return { rows: nextRows, changed: true, overflow: false, addedCount: nextRows.length };
  }
 
  let rows = [...currentRows];
@@ -2353,10 +2374,67 @@
  fftRows1 = [makeBlankFftSingle(0)];
  fftRows2 = [makeBlankFftPair()];
  dbRows = [makeBlankDbRow(0)];
- singleRowOverwriteMode = false;
+ singleRowOverwriteMode = true;
  dualSourceMode = false;
  updateSyncRowModeUI();
  renderAllSections();
+ }
+
+ function resetReportToInitialTemplate() {
+ if (!confirm("Bạn có chắc muốn xóa toàn bộ số liệu đã đồng bộ và đưa báo cáo về mẫu ban đầu?")) {
+ return;
+ }
+
+ isApplyingExternalData = true;
+ try {
+ localStorage.removeItem(STORAGE_KEY);
+ lastAppliedPayloadHash = "";
+ lastRawStorageString = "";
+ lastIncomingSyncToken = "";
+ lastIncomingSignalSig = "";
+ lastIncomingSignalAt = 0;
+ pendingIncomingPayload = null;
+ compressedThumbCache.clear();
+
+ const defaultMeta = {
+ schoolName: "TRƯỜNG THPT ........................................",
+ deptName: "Vật lí - Công nghệ",
+ expTitle: DEFAULT_TITLE,
+ expSubtitle: "(Chương trình Vật lí 11 – Kết nối tri thức với cuộc sống)",
+ groupName: "Nhóm 01",
+ className: "11A1",
+ studentNames: "..........................................................",
+ soundSource: "Âm thoa chuẩn 440 Hz & Nhạc cụ",
+ scaleX: "2,00 ms/ô",
+ scaleY: "0,20 V/ô",
+ sampleRate: "48000 Hz",
+ filterStatus: "45 – 3000 Hz"
+ };
+ Object.keys(defaultMeta).forEach((id) => {
+ const el = byId(id);
+ if (el) el.textContent = defaultMeta[id];
+ });
+ if (byId("studentNotes")) {
+ byId("studentNotes").innerHTML = "";
+ }
+
+ oscRows1 = [makeBlankOscSingle()];
+ oscRows2 = [makeBlankOscPair()];
+ kinRows1 = [makeBlankKinSingle()];
+ kinRows2 = [makeBlankKinPair()];
+ sumRows2 = [makeBlankKinPair()];
+ fftRows1 = [makeBlankFftSingle(0)];
+ fftRows2 = [makeBlankFftPair()];
+ dbRows = [makeBlankDbRow(0)];
+
+ singleRowOverwriteMode = true;
+ updateSyncRowModeUI();
+ renderAllSections();
+ syncCheckboxes(false);
+ showToast("Đã reset báo cáo về mẫu ban đầu!");
+ } finally {
+ isApplyingExternalData = false;
+ }
  }
 
  function normalizeNumber(val, fallback) {
